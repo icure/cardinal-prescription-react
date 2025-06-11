@@ -1,0 +1,26 @@
+/* Responsive media queries:
+  ========================================================================== */
+
+@sm: 576px;
+@md: 768px;
+@lg: 992px;
+@xl: 1200px;
+@xxl: 1400px;
+
+.media-breakpoint-up(@start, @rules) {
+  @media only screen and (min-width: @start) {
+    @rules();
+  }
+}
+
+.media-breakpoint-down(@end, @rules) {
+  @media only screen and (max-width: @end) {
+    @rules();
+  }
+}
+
+.media-breakpoint-between(@start, @end, @rules) {
+  @media (min-width: @start) and (max-width: @end) {
+    @rules();
+  }
+}

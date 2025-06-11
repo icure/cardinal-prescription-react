@@ -1,0 +1,144 @@
+@import '../../style/app.less';
+
+.snippetLink {
+  color: @blue-900;
+  font-size: 14px !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tooltip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: min-content;
+
+  .chevron {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+  }
+
+  &.tr,
+  &.tl {
+    .chevron {
+      border-top: 7px solid @blue-900;
+      bottom: 23px;
+    }
+  }
+
+  &.br,
+  &.bl {
+    .chevron {
+      border-bottom: 7px solid @blue-900;
+      bottom: -8px;
+    }
+  }
+
+  &.tr, &.br {
+    .chevron {
+      right: 50%;
+    }
+  }
+
+  &.tr:hover,
+  &.tl:hover,
+  &.br:hover,
+  &.bl:hover {
+    .chevron {
+      display: flex;
+    }
+  }
+
+  .icon {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .popup {
+    display: none;
+    position: absolute;
+    z-index: 15;
+    min-height: 32px;
+    width: auto;
+    min-width: 300px;
+    padding: 8px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    align-self: stretch;
+    border-radius: 6px;
+    border: 1px solid @blue-900;
+    background: #FFF;
+
+    &__iconWrap {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      border-bottom: 1px solid @blue-500;
+      padding-bottom: 6px;
+    }
+
+    &__icon {
+      display: flex;
+      width: 22px;
+      height: 22px;
+      align-items: center;
+      border-radius: 16px;
+      // background: fade(@orange-500, 26%);
+    }
+
+    p {
+      color: @gray-900;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+
+  &.tr, &.tl {
+    .popup {
+      bottom: 28px;
+    }
+  }
+
+  &.br, &.bl {
+    .popup {
+      top: 30px;
+    }
+  }
+
+  &.tl, &.bl {
+    .popup {
+      left: -12px;
+    }
+  }
+
+  &.tr, &.br {
+    .popup {
+      right: -12px;
+    }
+  }
+
+  &.active {
+    .popup {
+      display: flex;
+    }
+  }
+}

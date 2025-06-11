@@ -1,0 +1,140 @@
+/* Reset:
+  ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+html,
+body {
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #F5F5F5;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+:focus {
+  outline: 0;
+}
+img,
+audio,
+video {
+  max-width: 100%;
+  height: auto;
+}
+iframe {
+  border: 0;
+}
+textarea {
+  resize: none;
+  /*remove the resize handle on the bottom right*/
+  overflow: auto;
+  vertical-align: top;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+input,
+textarea,
+select,
+button {
+  outline: none;
+  border: none;
+  font-size: 100%;
+  margin: 0;
+}
+button,
+input {
+  line-height: normal;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000000;
+  transition: background-color 5000s ease-in-out 0s;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td,
+th {
+  padding: 0;
+  text-align: left;
+}
+/* Responsive media queries:
+  ========================================================================== */
+button.Button {
+  display: flex;
+  height: 32px;
+  padding: 0 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  border: 1px solid #511F3A;
+  cursor: pointer;
+  min-width: 64px;
+}
+button.Button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+button.Button.primary {
+  background: #511F3A;
+  color: #FFFFFF;
+}
+button.Button.primary:not([disabled]):hover {
+  background: #762D54;
+  border-color: #762D54;
+}
+button.Button.outlined {
+  border-radius: 6px;
+  border-color: #D1D1D6;
+  background: #FCFCFD;
+  color: #511F3A;
+}
+button.Button.outlined:not([disabled]):hover {
+  background: #F6F6F6;
+}
+button.Button.busy {
+  border-radius: 6px;
+  border-color: #D1D1D6;
+  background: #FCFCFD;
+  color: #511F3A;
+}
+/*# sourceMappingURL=Button.css.map */

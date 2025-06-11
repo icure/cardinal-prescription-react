@@ -1,0 +1,149 @@
+/* Reset:
+  ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+html,
+body {
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #F5F5F5;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+:focus {
+  outline: 0;
+}
+img,
+audio,
+video {
+  max-width: 100%;
+  height: auto;
+}
+iframe {
+  border: 0;
+}
+textarea {
+  resize: none;
+  /*remove the resize handle on the bottom right*/
+  overflow: auto;
+  vertical-align: top;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+button,
+input {
+  line-height: normal;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000000;
+  transition: background-color 5000s ease-in-out 0s;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td,
+th {
+  padding: 0;
+  text-align: left;
+}
+/* Responsive media queries:
+  ========================================================================== */
+.selectInput {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  align-self: stretch;
+}
+.selectInput label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #3F3F46;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+}
+.selectInput label span {
+  display: none;
+}
+.selectInput label.required span {
+  display: flex;
+  color: red;
+}
+.selectInput select {
+  display: flex;
+  height: 32px;
+  padding: 5px 12px;
+  align-items: center;
+  gap: 4px;
+  align-self: stretch;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #D1D1D6;
+  background: #FFF;
+  box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+  color: #5C5157;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+}
+.selectInput select::placeholder {
+  color: #5C5157;
+  opacity: 0.7;
+  font-size: 14px;
+}
+.selectInput select:hover {
+  border-color: #511F3A;
+}
+.selectInput select.disabled {
+  cursor: not-allowed;
+  background-color: rgba(241, 241, 241, 0.7);
+  border-color: #D1D1D6;
+  opacity: 0.7;
+}
+.selectInput select.disabled:hover {
+  border-color: #D1D1D6;
+}
+/*# sourceMappingURL=Select.css.map */

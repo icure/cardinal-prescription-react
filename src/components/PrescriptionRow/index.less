@@ -1,0 +1,129 @@
+@import '../../style/app.less';
+
+.tooltipBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prescriptionRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+  border-radius: 6px;
+  background: @blue-200;
+  border: 1px solid @blue-100;
+
+  &:hover {
+    border-radius: 6px;
+    border: 1px solid @blue-800;
+    background: #FFF;
+    box-shadow: 0 0 0 2px fade(@blue-900, 30%);
+  }
+
+  &.prescribed {
+    background: @green-200;
+    border-color: green;
+
+    &:hover {
+      border-color: green;
+      border-radius: inherit;
+      background: @green-200;
+      box-shadow: inherit;
+    }
+  }
+
+  .header {
+    width: 83%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+
+    .header__prescription {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .header__prescription__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+        .header__prescription__content__title {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+
+          h3 {
+            color: @gray-900;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+          }
+        }
+
+        p {
+          color: @gray-900;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: normal;
+        }
+      }
+    }
+  }
+
+  .rid {
+    font-size: 10px;
+    color: green;
+  }
+
+  .actions {
+    width: 36px;
+    display: flex;
+    gap: 8px;
+
+    .actions__btn {
+      border: none;
+      padding: 0;
+      min-width: 16px;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: @sm) {
+  .prescriptionRow {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+
+    .header {
+      width: 100%;
+    }
+
+    .actions {
+      width: 100%;
+      gap: 4px;
+
+      .actions__btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid @blue-300;
+        background: fade(@blue-300, 30%);
+        border-radius: 6px;
+      }
+    }
+  }
+}

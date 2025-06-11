@@ -1,0 +1,240 @@
+.addMedicationModal {
+  @import '../../style/app.less';
+
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+
+  display: flex;
+
+  background: rgba(154, 153, 178, 0.3);
+
+  &__content {
+    width: 900px;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0.2em;
+    border: none;
+    padding: 0;
+    background-color: white;
+    margin: 0 0 0 auto;
+
+  .media-breakpoint-down(@lg) {
+    width: 100%;
+  }
+  }
+
+
+  .addMedicationForm {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+
+    &__header {
+      display: flex;
+      padding: 20px 24px;
+      justify-content: space-between;
+      align-items: center;
+      align-self: stretch;
+
+      border-radius: 8px 8px 0px 0px;
+      border-bottom: 1px solid @gray-300;
+      background: #FFF;
+
+      .media-breakpoint-down(@lg) {
+        padding: 20px 16px;
+      }
+
+      h3 {
+        color: @gray-900;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+      }
+
+      &__closeIcn {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: #FFFFFF;
+        border-radius: 4px;
+
+        &:hover {
+          background-color: rgba(@gray-300, 0.4);
+        }
+      }
+    }
+
+    &__body {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      flex: 1 0 0;
+      gap: 12px;
+      background-color: @gray-50;
+
+      .media-breakpoint-down(@lg) {
+        padding: 16px;
+      }
+
+      .media-breakpoint-down(@sm) {
+        padding: 8px;
+      }
+
+      &__content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: stretch;
+        border-radius: 12px;
+        border: 1px solid @gray-300;
+        background: #FFF;
+
+        &__inputs {
+          display: flex;
+          padding: 24px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+          align-self: stretch;
+
+          .media-breakpoint-down(@lg) {
+            padding: 18px;
+          }
+
+          &__group {
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            align-self: stretch;
+
+            .media-breakpoint-down(@sm) {
+              flex-direction: column;
+              gap: 12px;
+            }
+          }
+        }
+      }
+
+      &__extraFieldsPreview {
+        display: flex;
+        width: 100%;
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: stretch;
+
+        border-radius: 12px;
+        border: 1px solid @gray-300;
+        background: #FFF;
+        box-shadow: 0px 1px 1px 0px rgba(218, 218, 222, 0.25);
+
+        p {
+          color: rgba(@gray-600, 0.70);
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 22px; /* 169.231% */
+        }
+      }
+    }
+
+    &__footer {
+      display: flex;
+      padding: 20px 24px;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 12px;
+      align-self: stretch;
+      border-top: 1px solid @gray-300;
+      background: #FFF;
+    }
+
+  }
+
+  .dosageInput {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__dropdown {
+      position: absolute;
+      top: calc(100% + 2px);
+
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 5px;
+
+      background-color: #Fff;
+      border: 1px solid @burgundy-900;
+      border-radius: 6px;
+      box-shadow: 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 3px 6px 0px rgba(0, 0, 0, 0.12);
+
+      li {
+        width: 100%;
+        border-radius: 4px;
+        background: none;
+
+        &.disableHover:hover {
+          background: none;
+        }
+
+        &:hover, &.focused, &.disableHover.focused:hover {
+          background: @gray-300;
+        }
+
+        button {
+          width: 100%;
+          cursor: pointer;
+          padding: 8px;
+          background: none;
+          text-align: left;
+        }
+      }
+    }
+  }
+
+  @keyframes zoom {
+    from {
+      transform: scale(0.95);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  button {
+    display: block;
+  }
+
+}
