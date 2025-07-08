@@ -59,6 +59,15 @@ textarea {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
 }
+input,
+textarea,
+select,
+button {
+  outline: none;
+  border: none;
+  font-size: 100%;
+  margin: 0;
+}
 button,
 input {
   line-height: normal;
@@ -97,10 +106,10 @@ main {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background: #FCFCFD;
+  background: #fcfcfd;
 }
 .divider {
-  border-bottom: 1px dashed #C7D7E4;
+  border-bottom: 1px dashed #3d87c5;
 }
 .certificate {
   width: 50%;

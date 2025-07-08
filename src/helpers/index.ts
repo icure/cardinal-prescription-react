@@ -1,10 +1,5 @@
-import { Medication } from '@icure/be-fhc-api'
+import { Medication } from '@icure/be-fhc-lite-api'
 import type { PharmacistVisibility, PractitionerVisibility } from '../types'
-
-export function capitalize(s?: string): string | undefined {
-  if (!s) return s
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
-}
 
 function findCommonSequence(str1: string, str2: string) {
   let commonSequence = ''

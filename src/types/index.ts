@@ -1,5 +1,5 @@
-import { Address, type Duration, Medication } from '@icure/be-fhc-api'
-import { Commercialization, Reimbursement, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam'
+import { Address, type Duration, Medication } from '@icure/be-fhc-lite-api'
+import { Commercialization, Reimbursement, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
 
 export type PractitionerVisibility = 'open' | 'locked' | 'gmd_prescriber'
 export type PharmacistVisibility = 'NULL' | 'locked'

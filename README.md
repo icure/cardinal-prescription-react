@@ -1,5 +1,5 @@
-![Preventi logo](./preventi_logo.svg)
 
-# Preventi Care
+
+# Prescription module React
 
 Web application for healthcare professionals 

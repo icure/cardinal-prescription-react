@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import { CardinalBeSamSdk, Credentials } from '@icure/cardinal-be-sam-sdk'
 import '@fontsource-variable/inter'
 // Placeholder imports for components to be implemented
-import PrescribeMedicationsSearch from './components/PrescribeMedicationsSearch'
-import MedicationPrescriptionModal from './components/MedicationPrescriptionModal'
-import Prescriptions from './components/Prescriptions'
-import CertificateUpload from './components/CertificateUpload'
-import Button from './components/common/Button'
-import Input from './components/common/Input'
-import PrescriptionPrintModal from './components/PrescriptionPrintModal'
-import { CardinalBeSamSdk, Credentials } from '@icure/cardinal-be-sam'
-import { getSamVersion } from './lib/cardinal'
-import { loadAndDecryptCertificate, loadCertificateInformation, openCertificatesDatabase, sendRecipe } from './lib/fhc'
+import PrescribeMedicationsSearch from './components/medication-elements/MedicationSearch'
+import MedicationPrescriptionModal from './components/prescription-elements/PrescriptionModal'
+import Prescriptions from './components/prescription-elements/PrescriptionList'
+import CertificateUpload from './components/certificate-elements/CertificateUpload'
+import Button from './components/form-elements/Button'
+import TextInput from './components/form-elements/TextInput'
+import PrintPrescriptionModal from './components/prescription-elements/PrintPrescriptionModal'
+import { getSamVersion } from './services/cardinal-sam'
+import { loadAndDecryptCertificate, loadCertificateInformation, openCertificatesDatabase, sendRecipe } from './services/fhc'
 
 import './App.css'
 
@@ -170,7 +170,7 @@ const App: () => React.JSX.Element = () => {
             {certificateUploaded ? (
               <div>
                 <div className="line">
-                  <Input id="passphrase" type="password" label="Password" value={passphrase} onChange={(e) => setPassphrase(e.target.value)} />
+                  <TextInput id="passphrase" type="password" label="Password" value={passphrase} onChange={(e) => setPassphrase(e.target.value)} />
                   <Button type={'button'} title="Reset&nbsp;Certificate" view="outlined" handleClick={() => setCertificateUploaded(false)} />
                 </div>
                 <div>
@@ -242,7 +242,7 @@ const App: () => React.JSX.Element = () => {
               />
             </>
           )}
-          {showPrintModal && <PrescriptionPrintModal prescribedMedications={prescribedMedications} prescriber={hcp} patient={patient} closeModal={closePrintModal} />}
+          {showPrintModal && <PrintPrescriptionModal prescribedMedications={prescribedMedications} prescriber={hcp} patient={patient} closeModal={closePrintModal} />}
         </>
       )}
     </main>

@@ -1,0 +1,162 @@
+/* Reset:
+  ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+html,
+body {
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #F5F5F5;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+:focus {
+  outline: 0;
+}
+img,
+audio,
+video {
+  max-width: 100%;
+  height: auto;
+}
+iframe {
+  border: 0;
+}
+textarea {
+  resize: none;
+  /*remove the resize handle on the bottom right*/
+  overflow: auto;
+  vertical-align: top;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+input,
+textarea,
+select,
+button {
+  outline: none;
+  border: none;
+  font-size: 100%;
+  margin: 0;
+}
+button,
+input {
+  line-height: normal;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000000;
+  transition: background-color 5000s ease-in-out 0s;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td,
+th {
+  padding: 0;
+  text-align: left;
+}
+/* Responsive media queries:
+  ========================================================================== */
+@media print {
+  .prescription {
+    page-break-after: always;
+  }
+}
+.prescription {
+  border: 1px solid #000;
+  padding: 20px;
+  font-size: 12px;
+}
+.prescription .header {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+}
+.prescription .header h1 {
+  margin: 0;
+  font-size: 18px;
+  border-bottom: 1px solid #000;
+}
+.prescription .header p {
+  padding-top: 12px;
+}
+.prescription .options {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+.prescription .options li {
+  margin-top: 8px;
+  font-size: 10px;
+}
+.prescription .prescription-section {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.prescription .prescription-section h3 {
+  font-size: 14px;
+  padding-top: 12px;
+}
+.prescription .prescription-item {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #000;
+  padding-top: 20px;
+}
+.prescription .prescription-item div {
+  width: 48%;
+}
+.prescription .barcode {
+  border: none;
+  width: 12mm;
+  height: 40px;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: row;
+}
+.prescription .barcode svg {
+  height: 40px;
+}
+.prescription .right {
+  margin-left: auto;
+}
+/*# sourceMappingURL=index.css.map */
