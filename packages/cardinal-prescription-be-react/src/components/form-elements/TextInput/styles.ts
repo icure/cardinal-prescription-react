@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 import {
+  colors,
   errorMessageCommonStyles,
   fieldCommonStyles,
   inputCommonStyles,
@@ -39,16 +40,21 @@ export const StyledInput = styled.input<{ $disabled?: boolean; $error?: boolean 
     cursor: pointer;
     background-color: white;
     border: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.16);
+    border-right: 1px solid ${colors.grey[550]};
     margin-right: 16px;
     padding-right: 12px;
     transition: background-color 200ms;
+    color: ${colors.grey[650]};
   }
 
   ${({ $error }) =>
     !!$error &&
     css`
       ${inputCommonStyles_error}
+      &::file-selector-button {
+        color: rgba(255, 0, 0, 0.5);
+        border-color: red;
+      }
     `};
   ${({ $disabled }) =>
     !!$disabled &&

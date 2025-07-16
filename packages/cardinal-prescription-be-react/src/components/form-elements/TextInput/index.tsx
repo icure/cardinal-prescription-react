@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { forwardRef, useEffect, useRef } from 'react'
 import { StyledInput, StyledTextInput, StyledTextInputLabel } from './styles'
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -10,12 +10,12 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   autoFocus?: boolean
 }
 
-export const TextInput: React.FC<Props> = ({ label, id, required, errorMessage, disabled, autoFocus, ...rest }) => {
-  const inputRef = useRef<HTMLInputElement>(null)
+export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
+  const localRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus()
+    if (autoFocus && localRef.current) {
+      localRef.current.focus()
     }
   }, [autoFocus])
 
@@ -25,8 +25,25 @@ export const TextInput: React.FC<Props> = ({ label, id, required, errorMessage, 
         <span>*</span>
         {label}
       </StyledTextInputLabel>
-      <StyledInput id={id} name={id} ref={inputRef} required={required} placeholder={label} {...rest} $disabled={disabled} $error={!!errorMessage} />
+      <StyledInput
+        id={id}
+        name={id}
+        ref={(node) => {
+          if (typeof ref === 'function') {
+            ref(node)
+          } else if (ref) {
+            ref.current = node
+          }
+          localRef.current = node
+        }}
+        placeholder={label}
+        {...rest}
+        $disabled={disabled}
+        $error={!!errorMessage}
+      />
       {errorMessage && <p className="error">{errorMessage}</p>}
     </StyledTextInput>
   )
-}
+})
+
+TextInput.displayName = 'TextInput'

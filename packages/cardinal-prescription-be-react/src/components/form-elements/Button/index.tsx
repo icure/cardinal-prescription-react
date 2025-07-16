@@ -14,11 +14,13 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   handleClick?: () => void
 }
 
-export const Button: React.FC<Props> = ({ title, view = 'primary', handleClick, type = 'button', ...rest }) => (
-  <>
-    <GlobalStyles />
-    <StyledButton $view={view} onClick={handleClick} type={type} {...rest}>
-      {view === 'withSpinner' ? SpinnerIcn({}) : title}
-    </StyledButton>
-  </>
-)
+export const Button: React.FC<Props> = ({ title, view = 'primary', handleClick, type = 'button', ...rest }) => {
+  return (
+    <>
+      <GlobalStyles />
+      <StyledButton $view={view} onClick={handleClick} type={type} {...rest}>
+        {view === 'withSpinner' ? SpinnerIcn({}) : title}
+      </StyledButton>
+    </>
+  )
+}
