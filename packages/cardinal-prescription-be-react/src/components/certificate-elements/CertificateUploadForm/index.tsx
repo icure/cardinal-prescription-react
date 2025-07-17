@@ -1,14 +1,15 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 import { readFileAsArrayBuffer } from '../../../utils/file-helpers'
 import { Button } from '../../form-elements/Button'
 import { TextInput } from '../../form-elements/TextInput'
 import { StyledCertificateForm, StyledCertificateUpload } from './styles'
+import { t } from '../../../services/i18n'
 
 interface CertificateUploadFormProps {
-  onSubmit: (certificateData: ArrayBuffer, passphrase: string) => void
-  onReset: () => void | Promise<void>
+  onUploadCertificate: (certificateData: ArrayBuffer, passphrase: string) => void
+  onResetCertificate: () => void
+  onDecryptCertificate: (passphrase: string) => void
   certificateAlreadyUploaded: boolean
 }
 
@@ -17,9 +18,7 @@ type CertificateFormType = {
   password: string
 }
 
-export const CertificateUploadForm: React.FC<CertificateUploadFormProps> = ({ onSubmit, onReset, certificateAlreadyUploaded }) => {
-  const { t } = useTranslation()
-
+export const CertificateUploadForm: React.FC<CertificateUploadFormProps> = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
     register,
     handleSubmit,
@@ -28,12 +27,16 @@ export const CertificateUploadForm: React.FC<CertificateUploadFormProps> = ({ on
   } = useForm<CertificateFormType>()
 
   const handleFormSubmit = async ({ certificate, password }: CertificateFormType) => {
-    const certificateData: ArrayBuffer = await readFileAsArrayBuffer(certificate[0])
-    onSubmit(certificateData, password)
+    if (certificateAlreadyUploaded) {
+      onDecryptCertificate(password)
+    } else {
+      const certificateData: ArrayBuffer = await readFileAsArrayBuffer(certificate[0])
+      onUploadCertificate(certificateData, password)
+    }
   }
 
   const onUploadedAnotherCertificate = async (): Promise<void> => {
-    onReset()
+    onResetCertificate()
     reset()
   }
 
@@ -43,18 +46,19 @@ export const CertificateUploadForm: React.FC<CertificateUploadFormProps> = ({ on
         <h3>{!certificateAlreadyUploaded ? t('practitioner.certificateUpload.titleUpload') : t('practitioner.certificateUpload.titlePassword')}</h3>
 
         <div className="inputs">
-          <TextInput
-            label={t('practitioner.certificateUpload.fileLabel')}
-            type="file"
-            id="certificate"
-            accept=".p12,.acc-p12"
-            required
-            {...register('certificate', {
-              required: t('practitioner.certificateUpload.errorRequired'),
-            })}
-            errorMessage={certificateFormError['certificate']?.message}
-          />
-
+          {!certificateAlreadyUploaded && (
+            <TextInput
+              label={t('practitioner.certificateUpload.fileLabel')}
+              type="file"
+              id="certificate"
+              accept=".p12,.acc-p12"
+              required
+              {...register('certificate', {
+                required: t('practitioner.certificateUpload.errorRequired'),
+              })}
+              errorMessage={certificateFormError['certificate']?.message}
+            />
+          )}
           <TextInput
             label={t('practitioner.certificateUpload.passwordLabel')}
             type="password"

@@ -1,7 +1,6 @@
 // index.tsx
 import React from 'react'
 import { StyledRadioButton, StyledRadioButtonLabel, StyledRadioButtonToggle, StyledRadioButtonToggleStuffing, StyledRadioGroupLabel, StyledRadioInput } from './styles'
-import { GlobalStyles } from '../../../styles'
 
 export interface RadioOption {
   label: string
@@ -21,34 +20,31 @@ interface RadioInputProps {
 export const RadioInput: React.FC<RadioInputProps> = ({ label, name, options, required, errorMessage }) => {
   const [value, setValue] = React.useState(false)
   return (
-    <>
-      <GlobalStyles />
-      <StyledRadioInput>
-        <StyledRadioGroupLabel $required={required} $error={!!errorMessage}>
-          <span>*</span>
-          {label}
-        </StyledRadioGroupLabel>
-        <div className="radioBtnsGroup">
-          {options.map((option) => (
-            <StyledRadioButton key={option.id} htmlFor={option.id} $error={!!errorMessage}>
-              <input
-                id={option.id}
-                name={name}
-                type="radio"
-                checked={value === option.value}
-                value={String(option.value)}
-                required={required}
-                onChange={() => setValue(option.value)}
-              />
-              <StyledRadioButtonToggle $error={!!errorMessage}>
-                <StyledRadioButtonToggleStuffing />
-              </StyledRadioButtonToggle>
-              <StyledRadioButtonLabel $error={!!errorMessage}>{option.label}</StyledRadioButtonLabel>
-            </StyledRadioButton>
-          ))}
-        </div>
-        {!!errorMessage && <p className="error">{errorMessage}</p>}
-      </StyledRadioInput>
-    </>
+    <StyledRadioInput>
+      <StyledRadioGroupLabel $required={required} $error={!!errorMessage}>
+        <span>*</span>
+        {label}
+      </StyledRadioGroupLabel>
+      <div className="radioBtnsGroup">
+        {options.map((option) => (
+          <StyledRadioButton key={option.id} htmlFor={option.id} $error={!!errorMessage}>
+            <input
+              id={option.id}
+              name={name}
+              type="radio"
+              checked={value === option.value}
+              value={String(option.value)}
+              required={required}
+              onChange={() => setValue(option.value)}
+            />
+            <StyledRadioButtonToggle $error={!!errorMessage}>
+              <StyledRadioButtonToggleStuffing />
+            </StyledRadioButtonToggle>
+            <StyledRadioButtonLabel $error={!!errorMessage}>{option.label}</StyledRadioButtonLabel>
+          </StyledRadioButton>
+        ))}
+      </div>
+      {!!errorMessage && <p className="error">{errorMessage}</p>}
+    </StyledRadioInput>
   )
 }

@@ -1,35 +1,28 @@
-import * as i18next_typescript_helpers from 'i18next/typescript/helpers';
-import * as i18next from 'i18next';
 import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/cardinal-be-sam-sdk';
-import { Medication, Duration, HealthcareParty, Patient, Prescription, Code } from '@icure/be-fhc-lite-api';
+import { Medication, Duration, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
 
 type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de'];
-declare class I18nService {
-    private static instance;
-    private i18n;
-    private constructor();
-    static getInstance(): I18nService;
-    setLanguage(lang: AvailableLanguagesType): Promise<i18next.TFunction<"translation", undefined>>;
-    getCurrentLanguage(): string;
-    t(key: string, options?: any): string | i18next_typescript_helpers.$SpecialObject | i18next.TFunctionDetailedResult<string | i18next_typescript_helpers.$SpecialObject, any>;
+declare class CardinalLanguage {
+    private language;
+    setLanguage(language: string): void;
+    getLanguage(): string;
 }
+declare const cardinalLanguage: CardinalLanguage;
+declare const t: (key: string) => string;
 
-declare class SamSdkService {
-    private sdk;
-    constructor(sdk: SamV2Api);
-    /**
-     * Search for medications matching the given query and language.
-     * @param language Language code (e.g., 'en', 'fr', 'nl' or 'de')
-     * @param query Medication search query string
-     * @returns Paginated lists of AMP, VMPGroup, and NMP matches
-     */
-    findMedicationsByLabel(language: string, query: string): Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
-    /**
-     * Fetch the current version information for the SAM database.
-     */
-    fetchSamVersion(): Promise<SamVersion | undefined>;
-}
+/**
+ * Search for medications matching the given query and language.
+ * @param sdk
+ * @param language Language code (e.g., 'en', 'fr', 'nl' or 'de')
+ * @param query Medication search query string
+ * @returns Paginated lists of AMP, VMPGroup, and NMP matches
+ */
+declare const findMedicationsByLabel: (sdk: SamV2Api, language: string, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
+/**
+ * Fetch the current version information for the SAM database.
+ */
+declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
 
 type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1';
 type MedicationType = {
@@ -96,6 +89,8 @@ type PrescriptionFormType = {
 };
 
 interface CertificateValidationResultType {
+    keystoreUuid?: string;
+    stsTokenId?: string;
     status: boolean;
     error?: SamText;
 }
@@ -116,24 +111,14 @@ interface CertificateRecordType {
     encryptedCertificate: number[];
 }
 
-declare class CertificateService {
-    private indexedDbService;
-    private certificateStore;
-    constructor();
-    /** You MUST call this before using any instance methods. */
-    initialize(): Promise<void>;
-    loadCertificateInformation(hcp_ssin: string): Promise<{
-        salt: ArrayBuffer;
-        iv: ArrayBuffer;
-        encryptedCertificate: ArrayBuffer;
-    } | undefined>;
-    loadAndDecryptCertificate(hcp_ssin: string, passphrase: string): Promise<ArrayBuffer | undefined>;
-    uploadAndEncryptCertificate(hcp_ssin: string, passphrase: string, certificate: ArrayBuffer): Promise<CertificateRecordType | undefined>;
-    deleteCertificate(hcp_ssin: string): Promise<boolean>;
-    private saveCertificateInStore;
-    private getCertificateFromStore;
-    private deleteCertificateFromStore;
-}
+declare const loadCertificateInformation: (hcp_ssin: string) => Promise<{
+    salt: ArrayBuffer;
+    iv: ArrayBuffer;
+    encryptedCertificate: ArrayBuffer;
+} | undefined>;
+declare const loadAndDecryptCertificate: (hcp_ssin: string, passphrase: string) => Promise<ArrayBuffer | undefined>;
+declare const uploadAndEncryptCertificate: (hcp_ssin: string, passphrase: string, certificate: ArrayBuffer) => Promise<CertificateRecordType | undefined>;
+declare const deleteCertificate: (hcp_ssin: string) => Promise<boolean>;
 
 interface VendorType {
     vendorName: string;
@@ -148,36 +133,22 @@ interface FhcServiceConfig {
     vendor: VendorType;
     samPackage: SamPackageType;
 }
-declare class FhcService {
-    private tokenStore;
-    private certificateService;
-    private indexedDbService;
-    private vendor;
-    private samPackage;
-    private constructor();
-    static initialize(config: FhcServiceConfig, certificateService: CertificateService): Promise<FhcService>;
-    sendRecipe(samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string): Promise<Prescription[]>;
-    verifyCertificateWithSts(prescriber: HealthcareParty, passphrase: string): Promise<CertificateValidationResultType>;
-    validateDecryptedCertificate(hcp: HealthcareParty, passphrase: string): Promise<CertificateValidationResultType>;
-    createFhcCode(type: string, code: string, version?: string): Code;
-    private getTokenFromStore;
-    private saveTokenInStore;
-    private loadAndDecryptCertificate;
-    private buildTokenStorageKeys;
-    private makePrescriptionRequest;
-}
+declare const createFhcCode: (type: string, code: string, version?: string) => Code;
+declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string) => Promise<Prescription[]>;
+declare const verifyCertificateWithSts: (keystore: ArrayBuffer, prescriber: HealthcareParty, passphrase: string) => Promise<CertificateValidationResultType>;
+declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string) => Promise<CertificateValidationResultType>;
 
-declare class IndexedDbService {
-    private db;
+declare class IndexedDbServiceStore<T> {
+    private readonly db;
     private readonly config;
     constructor(config: {
         DB_NAME: string;
         STORE_NAME: string;
         KEY_PATH: string;
     });
-    initializeIndexedDb(): Promise<void>;
-    getIndexedDb(): IDBDatabase;
-    getIndexedDbStore<T>(): GenericStoreType<T>;
+    get(key: string): Promise<T>;
+    put(key: string, value: T): Promise<T>;
+    delete(key: string): Promise<void>;
 }
 
 interface PractitionerCertificate {
@@ -185,8 +156,9 @@ interface PractitionerCertificate {
     certificateUploaded: boolean;
     errorWhileVerifyingCertificate: string | undefined;
     onUploadCertificate: (certificateData: ArrayBuffer, passphrase: string) => void;
-    onResetCertificate: () => void | Promise<void>;
+    onResetCertificate: () => void;
+    onDecryptCertificate: (passphrase: string) => void;
 }
 declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
-export { type CertificateRecordType, CertificateService, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, FhcService, type GenericStoreType, I18nService, type IconComponentBase, IndexedDbService, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, type ReimbursementType, SamSdkService };
+export { type AvailableLanguagesType, type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

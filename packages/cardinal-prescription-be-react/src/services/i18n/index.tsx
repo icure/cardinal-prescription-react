@@ -1,53 +1,37 @@
-import i18n, { i18n as I18nInstance } from 'i18next'
-import { initReactI18next } from 'react-i18next'
 import { SamText } from '@icure/cardinal-be-sam-sdk'
 import { appTranslations } from './translations'
-import { DEFAULT_APP_LANGULAGE } from '../constants'
 
 export type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de']
 
-export class I18nService {
-  private static instance: I18nService
-  private i18n: I18nInstance
+class CardinalLanguage {
+  private language = 'en'
 
-  private constructor() {
-    this.i18n = i18n
-
-    this.i18n
-      .use(initReactI18next)
-      .init({
-        resources: {
-          en: { translation: appTranslations.en },
-          fr: { translation: appTranslations.fr },
-          nl: { translation: appTranslations.nl },
-          de: { translation: appTranslations.de },
-        },
-        lng: DEFAULT_APP_LANGULAGE,
-        fallbackLng: DEFAULT_APP_LANGULAGE,
-        interpolation: { escapeValue: false },
-      })
-      .catch((error) => {
-        console.error('i18n init error:', error)
-      })
+  public setLanguage(language: string): void {
+    this.language = language
   }
 
-  // Singleton pattern to avoid multiple initializations
-  public static getInstance(): I18nService {
-    if (!I18nService.instance) {
-      I18nService.instance = new I18nService()
+  public getLanguage(): string {
+    return this.language
+  }
+}
+
+export const cardinalLanguage = new CardinalLanguage()
+
+export const t = (key: string): string => {
+  const getKeyValue = (collection: Record<string, any>, complexKey: string): string | undefined => {
+    const keys = complexKey.split('.')
+    let value: any = collection
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k]
+      } else {
+        return undefined
+      }
     }
-    return I18nService.instance
+
+    return typeof value === 'string' ? value : undefined
   }
 
-  public setLanguage(lang: AvailableLanguagesType) {
-    return this.i18n.changeLanguage(lang)
-  }
-
-  public getCurrentLanguage(): string {
-    return this.i18n.language
-  }
-
-  public t(key: string, options?: any) {
-    return this.i18n.t(key, options)
-  }
+  return getKeyValue(appTranslations[cardinalLanguage.getLanguage()], key) ?? key
 }

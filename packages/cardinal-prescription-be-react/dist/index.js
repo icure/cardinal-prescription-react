@@ -29,18 +29,22 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  CertificateService: () => CertificateService,
-  FhcService: () => FhcService,
-  I18nService: () => I18nService,
-  IndexedDbService: () => IndexedDbService,
+  IndexedDbServiceStore: () => IndexedDbServiceStore,
   PractitionerCertificate: () => PractitionerCertificate,
-  SamSdkService: () => SamSdkService
+  cardinalLanguage: () => cardinalLanguage,
+  createFhcCode: () => createFhcCode,
+  deleteCertificate: () => deleteCertificate,
+  fetchSamVersion: () => fetchSamVersion,
+  findMedicationsByLabel: () => findMedicationsByLabel,
+  loadAndDecryptCertificate: () => loadAndDecryptCertificate,
+  loadCertificateInformation: () => loadCertificateInformation,
+  sendRecipe: () => sendRecipe,
+  t: () => t,
+  uploadAndEncryptCertificate: () => uploadAndEncryptCertificate,
+  validateDecryptedCertificate: () => validateDecryptedCertificate,
+  verifyCertificateWithSts: () => verifyCertificateWithSts
 });
 module.exports = __toCommonJS(index_exports);
-
-// src/services/i18n/index.tsx
-var import_i18next = __toESM(require("i18next"));
-var import_react_i18next = require("react-i18next");
 
 // src/services/i18n/translations/components/home.translations.ts
 var homeTranslations = {
@@ -614,7 +618,7 @@ var practitionerTranslations = {
       successTitle: "T\xE9l\xE9chargement du certificat r\xE9ussi",
       successDescription: "Le certificat du praticien a \xE9t\xE9 t\xE9l\xE9charg\xE9 avec succ\xE8s et le mot de passe a \xE9t\xE9 enregistr\xE9 en toute s\xE9curit\xE9. Vous pouvez maintenant poursuivre les prochaines \xE9tapes.",
       failureTitle: "\xC9chec du t\xE9l\xE9chargement du certificat",
-      failureDescription: "Une erreur est survenue lors du t\xE9l\xE9chargement du certificat du praticien ou de l'enregistrement du mot de passe. Veuillez vous assurer que le certificat est valide et r\xE9essayez. Si le probl\xE8me persiste, contactez le support.",
+      failureDescription: "Une erreur est survenue lors du t\xE9l\xE9chargement du certificat du praticien. Veuillez v\xE9rifier que votre certificat est valide et que vous avez saisi le bon mot de passe. R\xE9essayez, et si le probl\xE8me persiste, contactez le support.",
       verificationErrorTitle: "Erreur de v\xE9rification du certificat"
     },
     printModal: {
@@ -639,9 +643,9 @@ var practitionerTranslations = {
     },
     certificateFeedback: {
       successTitle: "Certificate upload successful",
-      successDescription: "The certificate\u2019s certificate was uploaded successfully and the password has been securely saved. You may proceed with the next steps.",
+      successDescription: "The certificate\u2019s certificate was uploaded successfully. You may proceed with the next steps.",
       failureTitle: "Certificate upload failed",
-      failureDescription: "An error occurred while uploading the certificate or saving the password. Please ensure the certificate is valid and try again. If the problem persists, contact support.",
+      failureDescription: "An error occurred while uploading the certificate. Please check that your certificate is valid and that you\u2019ve entered the correct password. Try again, and if the issue continues, contact support.",
       verificationErrorTitle: "Certificate verification error"
     },
     printModal: {
@@ -668,7 +672,7 @@ var practitionerTranslations = {
       successTitle: "Certificaat succesvol ge\xFCpload",
       successDescription: "Het certificaat van de zorgverlener is succesvol ge\xFCpload en het wachtwoord is veilig opgeslagen. U kunt nu doorgaan met de volgende stappen.",
       failureTitle: "Uploaden van certificaat mislukt",
-      failureDescription: "Er is een fout opgetreden bij het uploaden van het certificaat of het opslaan van het wachtwoord. Zorg ervoor dat het certificaat geldig is en probeer het opnieuw. Neem contact op met de ondersteuning als het probleem aanhoudt.",
+      failureDescription: "Er is een fout opgetreden bij het uploaden van het certificaat van het wachtwoord. Controleer of uw certificaat geldig is en of u het juiste wachtwoord hebt ingevoerd. Probeer het opnieuw. Neem contact op met de ondersteuning als het probleem aanhoudt.",
       verificationErrorTitle: "Fout bij verificatie van certificaat"
     },
     printModal: {
@@ -695,7 +699,7 @@ var practitionerTranslations = {
       successTitle: "Zertifikat erfolgreich hochgeladen",
       successDescription: "Das Zertifikat des Arztes wurde erfolgreich hochgeladen und das Passwort wurde sicher gespeichert. Sie k\xF6nnen nun mit den n\xE4chsten Schritten fortfahren.",
       failureTitle: "Zertifikat-Upload fehlgeschlagen",
-      failureDescription: "Beim Hochladen des Zertifikats oder beim Speichern des Passworts ist ein Fehler aufgetreten. Bitte stellen Sie sicher, dass das Zertifikat g\xFCltig ist, und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
+      failureDescription: "Beim Hochladen des Zertifikats ist ein Fehler aufgetreten. Bitte \xFCberpr\xFCfen Sie, ob Ihr Zertifikat g\xFCltig ist und ob Sie das richtige Passwort eingegeben haben. Versuchen Sie es erneut. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
       verificationErrorTitle: "Fehler bei der Zertifikatspr\xFCfung"
     },
     printModal: {
@@ -998,105 +1002,58 @@ var appTranslations = {
   }
 };
 
-// src/services/constants.ts
-var FHC_URL = "https://fhcacc.icure.cloud";
-var DEFAULT_APP_LANGULAGE = "fr";
-var CERTIFICATE_IDB_CONFIG = {
-  DB_NAME: "certificate-store",
-  STORE_NAME: "certificates",
-  KEY_PATH: "id"
-};
-var TOKEN_IDB_CONFIG = {
-  DB_NAME: "token-store",
-  STORE_NAME: "tokens",
-  KEY_PATH: "id"
-};
-
 // src/services/i18n/index.tsx
-var I18nService = class _I18nService {
-  static instance;
-  i18n;
-  constructor() {
-    this.i18n = import_i18next.default;
-    this.i18n.use(import_react_i18next.initReactI18next).init({
-      resources: {
-        en: { translation: appTranslations.en },
-        fr: { translation: appTranslations.fr },
-        nl: { translation: appTranslations.nl },
-        de: { translation: appTranslations.de }
-      },
-      lng: DEFAULT_APP_LANGULAGE,
-      fallbackLng: DEFAULT_APP_LANGULAGE,
-      interpolation: { escapeValue: false }
-    }).catch((error) => {
-      console.error("i18n init error:", error);
-    });
+var CardinalLanguage = class {
+  language = "en";
+  setLanguage(language) {
+    this.language = language;
   }
-  // Singleton pattern to avoid multiple initializations
-  static getInstance() {
-    if (!_I18nService.instance) {
-      _I18nService.instance = new _I18nService();
+  getLanguage() {
+    return this.language;
+  }
+};
+var cardinalLanguage = new CardinalLanguage();
+var t = (key) => {
+  const getKeyValue = (collection, complexKey) => {
+    const keys = complexKey.split(".");
+    let value = collection;
+    for (const k of keys) {
+      if (value && typeof value === "object" && k in value) {
+        value = value[k];
+      } else {
+        return void 0;
+      }
     }
-    return _I18nService.instance;
-  }
-  setLanguage(lang) {
-    return this.i18n.changeLanguage(lang);
-  }
-  getCurrentLanguage() {
-    return this.i18n.language;
-  }
-  t(key, options) {
-    return this.i18n.t(key, options);
-  }
+    return typeof value === "string" ? value : void 0;
+  };
+  return getKeyValue(appTranslations[cardinalLanguage.getLanguage()], key) ?? key;
 };
 
 // src/services/cardinal-sam/index.ts
-var SamSdkService = class {
-  sdk;
-  constructor(sdk) {
-    if (!sdk) throw new Error("SamV2Api instance is required");
-    this.sdk = sdk;
+var findMedicationsByLabel = async (sdk, language, query) => {
+  try {
+    return await Promise.all([sdk.findPaginatedAmpsByLabel(language, query), sdk.findPaginatedVmpGroupsByLabel(language, query), sdk.findPaginatedNmpsByLabel(language, query)]);
+  } catch (error) {
+    console.error("Error in findMedicationsByLabel:", error);
+    throw error;
   }
-  /**
-   * Search for medications matching the given query and language.
-   * @param language Language code (e.g., 'en', 'fr', 'nl' or 'de')
-   * @param query Medication search query string
-   * @returns Paginated lists of AMP, VMPGroup, and NMP matches
-   */
-  async findMedicationsByLabel(language, query) {
-    try {
-      return await Promise.all([
-        this.sdk.findPaginatedAmpsByLabel(language, query),
-        this.sdk.findPaginatedVmpGroupsByLabel(language, query),
-        this.sdk.findPaginatedNmpsByLabel(language, query)
-      ]);
-    } catch (error) {
-      console.error("Error in findMedicationsByLabel:", error);
-      throw error;
-    }
-  }
-  /**
-   * Fetch the current version information for the SAM database.
-   */
-  async fetchSamVersion() {
-    try {
-      return await this.sdk.getSamVersion();
-    } catch (error) {
-      console.error("Error in fetchSamVersion:", error);
-      return void 0;
-    }
+};
+var fetchSamVersion = async (sdk) => {
+  try {
+    return await sdk.getSamVersion();
+  } catch (error) {
+    console.error("Error in fetchSamVersion:", error);
+    return void 0;
   }
 };
 
 // src/services/indexed-db/index.ts
-var IndexedDbService = class {
+var IndexedDbServiceStore = class {
   db;
   config;
   constructor(config) {
     this.config = config;
-  }
-  async initializeIndexedDb() {
-    this.db = await new Promise((resolve, reject) => {
+    this.db = new Promise((resolve, reject) => {
       const request = indexedDB.open(this.config.DB_NAME, 1);
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
@@ -1108,174 +1065,140 @@ var IndexedDbService = class {
       request.onerror = () => reject(request.error);
     });
   }
-  getIndexedDb() {
-    if (!this.db) {
-      throw new Error("IndexedDB not initialized. Call initializeIndexedDb() first.");
-    }
-    return this.db;
+  get(key) {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, "readonly");
+      const store = tx.objectStore(this.config.STORE_NAME);
+      const request = store.get(key);
+      request.onsuccess = () => {
+        request.result?.value != null ? resolve(request.result.value) : reject(new Error(`No value for key: ${key}`));
+      };
+      request.onerror = () => reject(request.error);
+    });
   }
-  getIndexedDbStore() {
-    const db = this.getIndexedDb();
-    const storeName = this.config.STORE_NAME;
-    return {
-      get: (key) => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, "readonly");
-          const store = tx.objectStore(storeName);
-          const request = store.get(key);
-          request.onsuccess = () => {
-            request.result != null ? resolve(request.result) : reject(new Error(`No value for key: ${key}`));
-          };
-          request.onerror = () => reject(request.error);
-        });
-      },
-      put: (key, value) => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, "readwrite");
-          const store = tx.objectStore(storeName);
-          const getRequest = store.get(key);
-          getRequest.onsuccess = () => {
-            const exists = !!getRequest.result;
-            console.log("exists");
-            console.log(exists);
-            const record = { id: key, value };
-            const request = exists ? store.put(record) : store.add(record);
-            request.onsuccess = () => resolve(value);
-            request.onerror = () => reject(request.error);
-          };
-          getRequest.onerror = () => reject(getRequest.error);
-        });
-      },
-      delete: (key) => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, "readwrite");
-          const store = tx.objectStore(storeName);
-          console.log("store");
-          console.log(store);
-          const request = store.delete(key);
-          console.log("request");
-          console.log(request);
-          request.onsuccess = () => resolve();
-          request.onerror = () => reject(request.error);
-        });
-      }
-    };
+  put(key, value) {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, "readwrite");
+      const store = tx.objectStore(this.config.STORE_NAME);
+      const getRequest = store.get(key);
+      getRequest.onsuccess = () => {
+        const exists = !!getRequest.result;
+        const record = { id: key, value };
+        const request = exists ? store.put(record) : store.add(record);
+        request.onsuccess = () => resolve(value);
+        request.onerror = () => reject(request.error);
+      };
+      getRequest.onerror = () => reject(getRequest.error);
+    });
+  }
+  delete(key) {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, "readwrite");
+      const store = tx.objectStore(this.config.STORE_NAME);
+      console.log("store");
+      console.log(store);
+      const request = store.delete(key);
+      console.log("request");
+      console.log(request);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   }
 };
 
+// src/services/constants.ts
+var FHC_URL = "https://fhcacc.icure.cloud";
+var CERTIFICATE_IDB_CONFIG = {
+  DB_NAME: "certificate-store",
+  STORE_NAME: "certificates",
+  KEY_PATH: "id"
+};
+var TOKEN_IDB_CONFIG = {
+  DB_NAME: "token-store",
+  STORE_NAME: "tokens",
+  KEY_PATH: "id"
+};
+
 // src/services/certificate/index.ts
-var CertificateService = class {
-  indexedDbService;
-  certificateStore = null;
-  constructor() {
-    this.indexedDbService = new IndexedDbService(CERTIFICATE_IDB_CONFIG);
+var certificateStore = new IndexedDbServiceStore(CERTIFICATE_IDB_CONFIG);
+var loadCertificateInformation = async (hcp_ssin) => {
+  try {
+    const record = await certificateStore.get(hcp_ssin);
+    return {
+      salt: new Uint8Array(record.salt).buffer,
+      iv: new Uint8Array(record.iv).buffer,
+      encryptedCertificate: new Uint8Array(record.encryptedCertificate).buffer
+    };
+  } catch (error) {
+    console.error(`No certificate record found for HCP SSIN ${hcp_ssin}:`, error);
+    return void 0;
   }
-  /** You MUST call this before using any instance methods. */
-  async initialize() {
-    await this.indexedDbService.initializeIndexedDb();
-    this.certificateStore = this.indexedDbService.getIndexedDbStore();
+};
+var loadAndDecryptCertificate = async (hcp_ssin, passphrase) => {
+  try {
+    const info = await loadCertificateInformation(hcp_ssin);
+    if (!info) return void 0;
+    const { salt, iv, encryptedCertificate } = info;
+    const encoder = new TextEncoder();
+    const passwordKey = await crypto.subtle.importKey("raw", encoder.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
+    const decryptionKey = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: new Uint8Array(salt), iterations: 1e5, hash: "SHA-256" },
+      passwordKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["decrypt"]
+    );
+    return await crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: new Uint8Array(iv)
+      },
+      decryptionKey,
+      new Uint8Array(encryptedCertificate)
+    );
+  } catch (error) {
+    console.error(`Decryption failed for HCP SSIN "${hcp_ssin}":`, error);
+    return void 0;
   }
-  async loadCertificateInformation(hcp_ssin) {
-    try {
-      const record = await this.getCertificateFromStore(hcp_ssin);
-      return {
-        salt: new Uint8Array(record.salt).buffer,
-        iv: new Uint8Array(record.iv).buffer,
-        encryptedCertificate: new Uint8Array(record.encryptedCertificate).buffer
-      };
-    } catch (error) {
-      console.error(`No certificate record found for HCP SSIN ${hcp_ssin}:`, error);
-      return void 0;
-    }
+};
+var uploadAndEncryptCertificate = async (hcp_ssin, passphrase, certificate) => {
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const passwordKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
+    const encryptionKey = await crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt,
+        iterations: 1e5,
+        hash: "SHA-256"
+      },
+      passwordKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt"]
+    );
+    const encryptedCertificate = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, encryptionKey, certificate);
+    const record = {
+      id: hcp_ssin,
+      salt: Array.from(salt),
+      iv: Array.from(iv),
+      encryptedCertificate: Array.from(new Uint8Array(encryptedCertificate))
+    };
+    return await certificateStore.put(hcp_ssin, record);
+  } catch (error) {
+    console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error);
+    return void 0;
   }
-  async loadAndDecryptCertificate(hcp_ssin, passphrase) {
-    console.log("hcp_ssin: " + hcp_ssin);
-    console.log("passphrase: " + passphrase);
-    try {
-      const info = await this.loadCertificateInformation(hcp_ssin);
-      console.log("info: ");
-      console.log(info);
-      if (!info) return void 0;
-      const { salt, iv, encryptedCertificate } = info;
-      const encoder = new TextEncoder();
-      const passwordKey = await crypto.subtle.importKey("raw", encoder.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
-      const decryptionKey = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: new Uint8Array(salt), iterations: 1e5, hash: "SHA-256" },
-        passwordKey,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"]
-      );
-      return await crypto.subtle.decrypt(
-        {
-          name: "AES-GCM",
-          iv: new Uint8Array(iv)
-        },
-        decryptionKey,
-        new Uint8Array(encryptedCertificate)
-      );
-    } catch (error) {
-      console.error(`Decryption failed for HCP SSIN "${hcp_ssin}":`, error);
-      return void 0;
-    }
-  }
-  async uploadAndEncryptCertificate(hcp_ssin, passphrase, certificate) {
-    try {
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      const iv = crypto.getRandomValues(new Uint8Array(12));
-      const passwordKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
-      const encryptionKey = await crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt,
-          iterations: 1e5,
-          hash: "SHA-256"
-        },
-        passwordKey,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["encrypt"]
-      );
-      const encryptedCertificate = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, encryptionKey, certificate);
-      const record = {
-        id: hcp_ssin,
-        salt: Array.from(salt),
-        iv: Array.from(iv),
-        encryptedCertificate: Array.from(new Uint8Array(encryptedCertificate))
-      };
-      const res = await this.saveCertificateInStore(hcp_ssin, record);
-      console.log("uploadAndEncryptCertificate res");
-      console.log(res);
-      return res;
-    } catch (error) {
-      console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error);
-      return void 0;
-    }
-  }
-  async deleteCertificate(hcp_ssin) {
-    try {
-      await this.deleteCertificateFromStore(hcp_ssin).then((res) => {
-        console.log("deleteCertificateFromStore res");
-        console.log(res);
-      });
-      console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`);
-      return true;
-    } catch (error) {
-      console.error(`Failed to delete certificate with ID ${hcp_ssin}:`, error);
-      return false;
-    }
-  }
-  async saveCertificateInStore(id, certificate) {
-    if (!this.certificateStore) throw new Error("CertificateService not initialized");
-    return await this.certificateStore.put(id, certificate);
-  }
-  async getCertificateFromStore(id) {
-    if (!this.certificateStore) throw new Error("CertificateService not initialized");
-    return this.certificateStore.get(id);
-  }
-  async deleteCertificateFromStore(id) {
-    if (!this.certificateStore) throw new Error("CertificateService not initialized");
-    await this.certificateStore.delete(id);
+};
+var deleteCertificate = async (hcp_ssin) => {
+  try {
+    await certificateStore.delete(hcp_ssin);
+    console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`);
+    return true;
+  } catch (error) {
+    console.error(`Failed to delete certificate with ID ${hcp_ssin}:`, error);
+    return false;
   }
 };
 
@@ -1288,167 +1211,121 @@ function dateEncode(date) {
 }
 
 // src/services/fhc/index.ts
-var FhcService = class _FhcService {
-  tokenStore;
-  certificateService;
-  indexedDbService;
-  vendor;
-  samPackage;
-  constructor(config) {
-    this.vendor = config.vendor;
-    this.samPackage = config.samPackage;
-    this.indexedDbService = new IndexedDbService(TOKEN_IDB_CONFIG);
-  }
-  // Use this static method to create and initialize the service!
-  static async initialize(config, certificateService) {
-    const service = new _FhcService(config);
-    await service.indexedDbService.initializeIndexedDb();
-    service.tokenStore = service.indexedDbService.getIndexedDbStore();
-    service.certificateService = certificateService;
-    return service;
-  }
-  async sendRecipe(samVersion, prescriber, patient, prescribedMedication, passphrase) {
-    const prescription = this.makePrescriptionRequest(samVersion, prescriber, patient, prescribedMedication);
-    if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
-    const keystore = await this.loadAndDecryptCertificate(prescriber.ssin, passphrase);
-    if (!keystore) throw new Error("Cannot obtain keystore");
-    const sts = new import_be_fhc_lite_api.fhcStsApi(FHC_URL, []);
-    const recipe = new import_be_fhc_lite_api.fhcRecipeApi(FHC_URL, []);
-    const { STORE_KEY, TOKEN_KEY } = this.buildTokenStorageKeys(prescriber);
-    let keystoreUuid = await this.getTokenFromStore(STORE_KEY).catch(() => void 0);
-    if (!keystoreUuid) {
-      const { uuid } = await sts.uploadKeystoreUsingPOST(keystore);
-      if (!uuid) throw new Error("Cannot obtain keystore uuid");
-      await this.saveTokenInStore(STORE_KEY, uuid);
-      keystoreUuid = uuid;
-    }
-    const tokenValue = await this.getTokenFromStore(TOKEN_KEY).catch(() => void 0);
-    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor", tokenValue);
-    if (!stsToken.tokenId) throw new Error("Cannot obtain token");
-    return Promise.all(
-      prescription.medications?.map(
-        (m) => recipe.createPrescriptionV4UsingPOST(
-          keystoreUuid,
-          stsToken.tokenId,
-          passphrase,
-          "persphysician",
-          prescriber.nihii,
-          prescriber.ssin,
-          `${prescriber.firstName} ${prescriber.lastName}`,
-          "iCure",
-          "1",
-          new import_be_fhc_lite_api.PrescriptionRequest({ ...prescription, medications: [m] })
-        )
-      ) ?? []
-    );
-  }
-  async verifyCertificateWithSts(prescriber, passphrase) {
-    if (!prescriber?.ssin || !prescriber?.nihii) {
-      return {
-        status: false,
-        error: {
-          en: "Missing prescriber information",
-          fr: "Informations du prescripteur manquantes",
-          nl: "Ontbrekende voorschrijversinformatie",
-          de: "Fehlende Verschreiberinformationen"
-        }
-      };
-    }
-    try {
-      const keystore = await this.loadAndDecryptCertificate(prescriber.ssin, passphrase);
-      if (!keystore) {
-        return {
-          status: false,
-          error: {
-            en: "Cannot obtain the certificate",
-            fr: "Impossible d\u2019obtenir le certificat",
-            nl: "Certificaat kan niet worden verkregen",
-            de: "Zertifikat kann nicht abgerufen werden"
-          }
-        };
-      }
-      const { STORE_KEY } = this.buildTokenStorageKeys(prescriber);
-      const sts = new import_be_fhc_lite_api.fhcStsApi(FHC_URL, []);
-      const { uuid } = await sts.uploadKeystoreUsingPOST(keystore);
-      if (!uuid) throw new Error("Cannot obtain keystore uuid");
-      await this.saveTokenInStore(STORE_KEY, uuid);
-      const token = await this.getTokenFromStore(STORE_KEY);
-      const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, token, "doctor", token);
-      return { status: !!stsToken.tokenId };
-    } catch (error) {
-      return {
-        status: false,
-        error: {
-          en: error?.message || "Unknown error occurred",
-          fr: error?.message || "Une erreur inconnue est survenue",
-          nl: error?.message || "Er is een onbekende fout opgetreden",
-          de: error?.message || "Ein unbekannter Fehler ist aufgetreten"
-        }
-      };
-    }
-  }
-  async validateDecryptedCertificate(hcp, passphrase) {
-    try {
-      await this.loadAndDecryptCertificate(hcp.ssin, passphrase);
-      return await this.verifyCertificateWithSts(hcp, passphrase);
-    } catch {
-      return { status: false };
-    }
-  }
-  createFhcCode(type, code, version = "1.0") {
-    return new import_be_fhc_lite_api.Code({ id: `${type}:${code}:${version}`, type, code, version });
-  }
-  async getTokenFromStore(id) {
-    if (!this.tokenStore) throw new Error("PrescriptionService not initialized");
-    return this.tokenStore.get(id);
-  }
-  async saveTokenInStore(id, token) {
-    if (!this.tokenStore) throw new Error("PrescriptionService not initialized");
-    return await this.tokenStore.put(id, token);
-  }
-  async loadAndDecryptCertificate(hcp_ssin, passphrase) {
-    return this.certificateService.loadAndDecryptCertificate(hcp_ssin, passphrase);
-  }
-  buildTokenStorageKeys(hcp) {
+var tokenStore = new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
+var getTokenStorageKeys = (hcp) => ({
+  STORE_KEY: `keystore.${hcp.ssin}`,
+  TOKEN_KEY: `token.${hcp.ssin}`
+});
+var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new import_be_fhc_lite_api.PrescriptionRequest({
+  medications: [prescribedMedication.medication],
+  patient: {
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    ssin: patient.ssin,
+    dateOfBirth: patient.dateOfBirth
+  },
+  hcp: {
+    firstName: prescriber.firstName,
+    lastName: prescriber.lastName,
+    ssin: prescriber.ssin,
+    nihii: prescriber.nihii,
+    addresses: prescriber.addresses
+  },
+  feedback: false,
+  vendorName: config.vendor.vendorName,
+  vendorEmail: config.vendor.vendorEmail,
+  vendorPhone: config.vendor.vendorPhone,
+  packageName: config.samPackage.packageName,
+  packageVersion: config.samPackage.packageVersion,
+  vision: prescribedMedication.pharmacistVisibility,
+  visionOthers: prescribedMedication.prescriberVisibility,
+  samVersion,
+  deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
+  expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
+  lang: "fr"
+});
+var createFhcCode = (type, code, version = "1.0") => new import_be_fhc_lite_api.Code({
+  id: `${type}:${code}:${version}`,
+  type,
+  code,
+  version
+});
+var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase) => {
+  const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication);
+  if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
+  const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
+  if (!keystore) throw new Error("Cannot obtain keystore");
+  const recipe = new import_be_fhc_lite_api.fhcRecipeApi(FHC_URL, []);
+  const { keystoreUuid, stsTokenId } = await verifyCertificateWithSts(keystore, prescriber, passphrase);
+  return Promise.all(
+    prescription.medications?.map(
+      (m) => recipe.createPrescriptionV4UsingPOST(
+        keystoreUuid,
+        stsTokenId,
+        passphrase,
+        "persphysician",
+        prescriber.nihii,
+        prescriber.ssin,
+        `${prescriber.firstName} ${prescriber.lastName}`,
+        "iCure",
+        "1",
+        new import_be_fhc_lite_api.PrescriptionRequest({ ...prescription, medications: [m] })
+      )
+    ) ?? []
+  );
+};
+var verifyCertificateWithSts = async (keystore, prescriber, passphrase) => {
+  if (!prescriber?.ssin || !prescriber?.nihii) {
     return {
-      STORE_KEY: `keystore.${hcp.ssin}`,
-      TOKEN_KEY: `token.${hcp.ssin}`
+      status: false,
+      error: {
+        en: "Missing prescriber information",
+        fr: "Informations du prescripteur manquantes",
+        nl: "Ontbrekende voorschrijversinformatie",
+        de: "Fehlende Verschreiberinformationen"
+      }
     };
   }
-  makePrescriptionRequest(samVersion, prescriber, patient, prescribedMedication) {
-    return new import_be_fhc_lite_api.PrescriptionRequest({
-      medications: [prescribedMedication.medication],
-      patient: {
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        ssin: patient.ssin,
-        dateOfBirth: patient.dateOfBirth
-      },
-      hcp: {
-        firstName: prescriber.firstName,
-        lastName: prescriber.lastName,
-        ssin: prescriber.ssin,
-        nihii: prescriber.nihii,
-        addresses: prescriber.addresses
-      },
-      feedback: false,
-      vendorName: this.vendor.vendorName,
-      vendorEmail: this.vendor.vendorEmail,
-      vendorPhone: this.vendor.vendorPhone,
-      packageName: this.samPackage.packageName,
-      packageVersion: this.samPackage.packageVersion,
-      vision: prescribedMedication.pharmacistVisibility,
-      visionOthers: prescribedMedication.prescriberVisibility,
-      samVersion,
-      deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
-      expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
-      lang: "fr"
-    });
+  try {
+    const { STORE_KEY, TOKEN_KEY } = getTokenStorageKeys(prescriber);
+    const sts = new import_be_fhc_lite_api.fhcStsApi(FHC_URL, []);
+    const { uuid } = await sts.uploadKeystoreUsingPOST(keystore);
+    if (!uuid) throw new Error("Cannot obtain keystore uuid");
+    await tokenStore.put(STORE_KEY, uuid);
+    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, uuid, "doctor");
+    await tokenStore.put(TOKEN_KEY, stsToken.tokenId);
+    return { stsTokenId: stsToken.tokenId, keystoreUuid: uuid, status: !!stsToken.tokenId };
+  } catch (error) {
+    return {
+      status: false,
+      error: {
+        en: error?.message || "Unknown error occurred",
+        fr: error?.message || "Une erreur inconnue est survenue",
+        nl: error?.message || "Er is een onbekende fout opgetreden",
+        de: error?.message || "Ein unbekannter Fehler ist aufgetreten"
+      }
+    };
   }
 };
-
-// src/components/certificate-elements/PractitionerCertificate/index.tsx
-var import_react_i18next3 = require("react-i18next");
+var validateDecryptedCertificate = async (hcp, passphrase) => {
+  try {
+    const keystore = await loadAndDecryptCertificate(hcp.ssin, passphrase);
+    if (!keystore) {
+      return {
+        status: false,
+        error: {
+          en: "Cannot obtain the certificate",
+          fr: "Impossible d\u2019obtenir le certificat",
+          nl: "Certificaat kan niet worden verkregen",
+          de: "Zertifikat kann nicht abgerufen werden"
+        }
+      };
+    }
+    return await verifyCertificateWithSts(keystore, hcp, passphrase);
+  } catch {
+    return { status: false };
+  }
+};
 
 // src/components/common/Alert/styles.ts
 var import_styled_components4 = __toESM(require("styled-components"));
@@ -1755,6 +1632,11 @@ var StyledAlert = import_styled_components4.default.div`
     align-items: center;
     gap: 10px;
     align-self: stretch;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   h4 {
@@ -1828,7 +1710,6 @@ var Alert = ({ status, title, description }) => {
 
 // src/components/certificate-elements/CertificateUploadForm/index.tsx
 var import_react_hook_form = require("react-hook-form");
-var import_react_i18next2 = require("react-i18next");
 
 // src/utils/file-helpers.ts
 var readFileAsArrayBuffer = (file) => {
@@ -1904,10 +1785,7 @@ var StyledButton = import_styled_components5.default.button`
 // src/components/form-elements/Button/index.tsx
 var import_jsx_runtime3 = require("react/jsx-runtime");
 var Button = ({ title, view = "primary", handleClick, type = "button", ...rest }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StyledButton, { $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StyledButton, { $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
 };
 
 // src/components/form-elements/TextInput/index.tsx
@@ -2042,8 +1920,7 @@ var StyledCertificateForm = import_styled_components7.default.form`
 
 // src/components/certificate-elements/CertificateUploadForm/index.tsx
 var import_jsx_runtime5 = require("react/jsx-runtime");
-var CertificateUploadForm = ({ onSubmit, onReset, certificateAlreadyUploaded }) => {
-  const { t } = (0, import_react_i18next2.useTranslation)();
+var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
     register,
     handleSubmit,
@@ -2051,18 +1928,22 @@ var CertificateUploadForm = ({ onSubmit, onReset, certificateAlreadyUploaded }) 
     formState: { errors: certificateFormError }
   } = (0, import_react_hook_form.useForm)();
   const handleFormSubmit = async ({ certificate, password }) => {
-    const certificateData = await readFileAsArrayBuffer(certificate[0]);
-    onSubmit(certificateData, password);
+    if (certificateAlreadyUploaded) {
+      onDecryptCertificate(password);
+    } else {
+      const certificateData = await readFileAsArrayBuffer(certificate[0]);
+      onUploadCertificate(certificateData, password);
+    }
   };
   const onUploadedAnotherCertificate = async () => {
-    onReset();
+    onResetCertificate();
     reset();
   };
   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(StyledCertificateUpload, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(StyledCertificateForm, { onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
       /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "inputs", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+        !certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
           TextInput,
           {
             label: t("practitioner.certificateUpload.fileLabel"),
@@ -2122,28 +2003,47 @@ var StyledPractitionerCertificate = import_styled_components8.default.div`
 // src/components/certificate-elements/PractitionerCertificate/index.tsx
 var import_jsx_runtime6 = require("react/jsx-runtime");
 var PractitionerCertificate = ({
-  onResetCertificate,
   certificateValid,
   onUploadCertificate,
+  onResetCertificate,
+  onDecryptCertificate,
   certificateUploaded,
   errorWhileVerifyingCertificate
 }) => {
-  const { t } = (0, import_react_i18next3.useTranslation)();
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(StyledPractitionerCertificate, { children: [
-    certificateValid && !errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
-    !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
-    errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
-    certificateUploaded && errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
-    (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(CertificateUploadForm, { onSubmit: onUploadCertificate, onReset: onResetCertificate, certificateAlreadyUploaded: certificateUploaded })
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(StyledPractitionerCertificate, { children: [
+      certificateValid && certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
+      !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
+      errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
+      certificateUploaded && !certificateValid && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
+      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+        CertificateUploadForm,
+        {
+          onUploadCertificate,
+          onResetCertificate,
+          onDecryptCertificate,
+          certificateAlreadyUploaded: certificateUploaded
+        }
+      )
+    ] })
   ] });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  CertificateService,
-  FhcService,
-  I18nService,
-  IndexedDbService,
+  IndexedDbServiceStore,
   PractitionerCertificate,
-  SamSdkService
+  cardinalLanguage,
+  createFhcCode,
+  deleteCertificate,
+  fetchSamVersion,
+  findMedicationsByLabel,
+  loadAndDecryptCertificate,
+  loadCertificateInformation,
+  sendRecipe,
+  t,
+  uploadAndEncryptCertificate,
+  validateDecryptedCertificate,
+  verifyCertificateWithSts
 });
 //# sourceMappingURL=index.js.map

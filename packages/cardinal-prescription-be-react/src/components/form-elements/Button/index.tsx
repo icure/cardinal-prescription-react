@@ -1,7 +1,6 @@
 import React from 'react'
 import { SpinnerIcn } from '../../common/Icons'
 import { StyledButton } from './styles'
-import { GlobalStyles } from '../../../styles'
 
 export type ButtonViewType = 'primary' | 'withSpinner' | 'outlined'
 
@@ -16,11 +15,8 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button: React.FC<Props> = ({ title, view = 'primary', handleClick, type = 'button', ...rest }) => {
   return (
-    <>
-      <GlobalStyles />
-      <StyledButton $view={view} onClick={handleClick} type={type} {...rest}>
-        {view === 'withSpinner' ? SpinnerIcn({}) : title}
-      </StyledButton>
-    </>
+    <StyledButton $view={view} onClick={handleClick} type={type} {...rest}>
+      {view === 'withSpinner' ? SpinnerIcn({}) : title}
+    </StyledButton>
   )
 }

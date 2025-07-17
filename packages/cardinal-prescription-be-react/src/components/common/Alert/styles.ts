@@ -17,6 +17,11 @@ export const StyledAlert = styled.div<{ $success: boolean; $error: boolean }>`
     align-items: center;
     gap: 10px;
     align-self: stretch;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   h4 {

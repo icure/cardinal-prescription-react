@@ -1,5 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { CertificateService, FhcService, I18nService, PractitionerCertificate, SamSdkService } from '@icure/cardinal-prescription-be-react'
+import React, { useEffect, useState } from 'react'
+import {
+  cardinalLanguage,
+  deleteCertificate,
+  fetchSamVersion,
+  loadCertificateInformation,
+  PractitionerCertificate,
+  uploadAndEncryptCertificate,
+  validateDecryptedCertificate,
+} from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamVersion } from '@icure/cardinal-be-sam-sdk'
@@ -51,21 +59,13 @@ const ICURE_URL = 'https://nightly.icure.cloud'
 
 export const App = () => {
   // Service instance refs
-  const i18nService = useRef(I18nService.getInstance())
-  const certificateServiceRef = useRef<CertificateService | null>(null)
-  const fhcServiceRef = useRef<FhcService | null>(null)
-  const [samService, setSamService] = useState<SamSdkService | null>(null)
   const [certificateUploaded, setCertificateUploaded] = useState(false)
   const [certificateValid, setCertificateValid] = useState(false)
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [uiReady, setUiReady] = useState(false)
 
-  // Initialize language on mount
-  useEffect(() => {
-    i18nService.current.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE).catch((err) => console.error('Could not set language', err))
-  }, [])
+  cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
   // Initialize all backend services on mount
   useEffect(() => {
@@ -77,104 +77,82 @@ export const App = () => {
           ICURE_URL,
           new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
         )
-        const samSdkService = new SamSdkService(cardinalSdkInstance.sam)
-        setSamService(samSdkService)
-        setSamVersion(await samSdkService.fetchSamVersion())
-
-        // Initialize CertificateService
-        certificateServiceRef.current = new CertificateService()
-        await certificateServiceRef.current.initialize()
-
-        // Initialize FhcService and inject CertificateService
-        fhcServiceRef.current = await FhcService.initialize(
-          {
-            vendor,
-            samPackage,
-          },
-          certificateServiceRef.current,
-        )
+        setSamVersion(await fetchSamVersion(cardinalSdkInstance.sam))
 
         try {
           if (hcp.ssin) {
-            const res = await certificateServiceRef.current.loadCertificateInformation(hcp.ssin)
+            const res = await loadCertificateInformation(hcp.ssin)
             setCertificateUploaded(!!res)
           }
         } catch {
           setCertificateUploaded(false)
-        }
-
-        try {
-          if (certificateUploaded && passphrase) {
-            const certificateValidationResult = await fhcServiceRef.current.validateDecryptedCertificate(hcp, passphrase)
-
-            setCertificateValid(certificateValidationResult.status)
-            setErrorWhileVerifyingCertificate(certificateValidationResult.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
-          }
-        } catch {
-          setCertificateValid(false)
-          setErrorWhileVerifyingCertificate('Unexpected error')
         }
       } catch (error) {
         console.error('Initialization error:', error)
         setErrorWhileVerifyingCertificate('Initialization failed')
       }
     }
-    initializeAll().then(() => setUiReady(true))
+    initializeAll()
   }, [])
 
-  const validateCertificate = async () => {
-    if (fhcServiceRef.current && passphrase) {
-      try {
-        setUiReady(false)
-        await fhcServiceRef.current.validateDecryptedCertificate(hcp, passphrase).then((res) => {
-          console.log('validateDecryptedCertificate res')
-          console.log(res)
-          setCertificateValid(res.status)
-          setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
-        })
-      } catch (error) {
-        setCertificateValid(false)
-        setErrorWhileVerifyingCertificate('Unexpected error')
-        console.error('Error while validating certificate from the Demo App:', error)
-      } finally {
-        setUiReady(true)
-      }
+  const validateCertificate = async (passphrase: string) => {
+    try {
+      const res = await validateDecryptedCertificate(hcp, passphrase)
+
+      setCertificateValid(res.status)
+      setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
+      setCertificateUploaded(!res.error)
+    } catch (error) {
+      setCertificateValid(false)
+      setErrorWhileVerifyingCertificate('Unexpected error')
+      setCertificateUploaded(false)
+
+      console.error('Error while validating certificate from the Demo App:', error)
+    } finally {
     }
   }
 
+  useEffect(() => {
+    if (certificateUploaded && passphrase) {
+      validateCertificate(passphrase).catch(console.error)
+    } else {
+      setCertificateValid(false)
+      setErrorWhileVerifyingCertificate(undefined)
+    }
+  }, [passphrase, certificateUploaded])
+
+  // We do this certificate is uploaded, but the passphrase is not set
+  const onDecryptCertificate = (passphrase: string) => {
+    setPassphrase(passphrase)
+  }
+
+  // We do this when no certificate is uploaded
   const onUploadCertificate = async (certificateData: ArrayBuffer, passphrase: string) => {
-    if (!certificateServiceRef.current || !hcp.ssin) return
+    if (!hcp.ssin) return
 
     try {
-      setUiReady(false)
-      await certificateServiceRef.current.uploadAndEncryptCertificate(hcp.ssin, passphrase, certificateData).then((res) => {
-        console.log('uploadAndEncryptCertificate res')
-        console.log(res)
-      })
+      await uploadAndEncryptCertificate(hcp.ssin, passphrase, certificateData)
 
-      setPassphrase(passphrase)
+      onDecryptCertificate(passphrase)
       setCertificateUploaded(true)
     } catch (error) {
       setCertificateUploaded(false)
       console.error('Error while uploading certificate from the Demo App:', error)
-    } finally {
-      setUiReady(true)
     }
   }
 
   const onResetCertificate = async (): Promise<void> => {
-    if (!certificateServiceRef.current || !hcp.ssin) return
-
-    const certificateService = certificateServiceRef.current
-    if (!certificateService) return
-    await certificateService.deleteCertificate(hcp.ssin)
+    if (!hcp.ssin) return
+    await deleteCertificate(hcp.ssin)
+    setPassphrase(undefined)
+    setCertificateUploaded(false)
+    setCertificateValid(false)
+    setErrorWhileVerifyingCertificate(undefined)
   }
 
   return (
     <div className="App">
       <h1>Hello from the Demo App</h1>
-      <div className="divider"></div>
-      uiReady: {uiReady ? <strong>True</strong> : <strong>False</strong>}
       <div className="divider"></div>
       <div>
         <PractitionerCertificate
@@ -183,6 +161,7 @@ export const App = () => {
           errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
           onResetCertificate={onResetCertificate}
           onUploadCertificate={onUploadCertificate}
+          onDecryptCertificate={onDecryptCertificate}
         />
       </div>
       <div className="divider"></div>

@@ -1,7 +1,5 @@
-import { GenericStoreType } from '../../types' // adjust path as needed
-
-export class IndexedDbService {
-  private db!: IDBDatabase
+export class IndexedDbServiceStore<T> {
+  private readonly db: Promise<IDBDatabase>
   private readonly config: {
     DB_NAME: string
     STORE_NAME: string
@@ -10,10 +8,7 @@ export class IndexedDbService {
 
   constructor(config: { DB_NAME: string; STORE_NAME: string; KEY_PATH: string }) {
     this.config = config
-  }
-
-  async initializeIndexedDb(): Promise<void> {
-    this.db = await new Promise((resolve, reject) => {
+    this.db = new Promise((resolve, reject) => {
       const request = indexedDB.open(this.config.DB_NAME, 1)
 
       request.onupgradeneeded = (event) => {
@@ -28,69 +23,53 @@ export class IndexedDbService {
     })
   }
 
-  getIndexedDb(): IDBDatabase {
-    if (!this.db) {
-      throw new Error('IndexedDB not initialized. Call initializeIndexedDb() first.')
-    }
-    return this.db
+  public get(key: string): Promise<T> {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readonly')
+      const store = tx.objectStore(this.config.STORE_NAME)
+      const request = store.get(key)
+
+      request.onsuccess = () => {
+        request.result?.value != null ? resolve(request.result.value as T) : reject(new Error(`No value for key: ${key}`))
+      }
+      request.onerror = () => reject(request.error)
+    })
   }
 
-  getIndexedDbStore<T>(): GenericStoreType<T> {
-    const db = this.getIndexedDb()
-    const storeName = this.config.STORE_NAME
+  public put(key: string, value: T): Promise<T> {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readwrite')
+      const store = tx.objectStore(this.config.STORE_NAME)
 
-    return {
-      get: (key: string): Promise<T> => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, 'readonly')
-          const store = tx.objectStore(storeName)
-          const request = store.get(key)
+      const getRequest = store.get(key)
+      getRequest.onsuccess = () => {
+        const exists = !!getRequest.result
 
-          request.onsuccess = () => {
-            request.result != null ? resolve(request.result as T) : reject(new Error(`No value for key: ${key}`))
-          }
-          request.onerror = () => reject(request.error)
-        })
-      },
+        const record = { id: key, value }
+        const request = exists ? store.put(record) : store.add(record)
 
-      put: (key: string, value: T): Promise<T> => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, 'readwrite')
-          const store = tx.objectStore(storeName)
+        request.onsuccess = () => resolve(value)
+        request.onerror = () => reject(request.error)
+      }
+      getRequest.onerror = () => reject(getRequest.error)
+    })
+  }
 
-          const getRequest = store.get(key)
-          getRequest.onsuccess = () => {
-            const exists = !!getRequest.result
-            console.log('exists')
-            console.log(exists)
+  public delete(key: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readwrite')
+      const store = tx.objectStore(this.config.STORE_NAME)
 
-            const record = { id: key, value }
-            const request = exists ? store.put(record) : store.add(record)
+      console.log('store')
+      console.log(store)
 
-            request.onsuccess = () => resolve(value)
-            request.onerror = () => reject(request.error)
-          }
-          getRequest.onerror = () => reject(getRequest.error)
-        })
-      },
+      const request = store.delete(key)
 
-      delete: (key: string): Promise<void> => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(storeName, 'readwrite')
-          const store = tx.objectStore(storeName)
+      console.log('request')
+      console.log(request)
 
-          console.log('store')
-          console.log(store)
-
-          const request = store.delete(key)
-
-          console.log('request')
-          console.log(request)
-
-          request.onsuccess = () => resolve()
-          request.onerror = () => reject(request.error)
-        })
-      },
-    }
+      request.onsuccess = () => resolve()
+      request.onerror = () => reject(request.error)
+    })
   }
 }

@@ -21,7 +21,7 @@ export const practitionerTranslations = {
         'Le certificat du praticien a été téléchargé avec succès et le mot de passe a été enregistré en toute sécurité. Vous pouvez maintenant poursuivre les prochaines étapes.',
       failureTitle: 'Échec du téléchargement du certificat',
       failureDescription:
-        "Une erreur est survenue lors du téléchargement du certificat du praticien ou de l'enregistrement du mot de passe. Veuillez vous assurer que le certificat est valide et réessayez. Si le problème persiste, contactez le support.",
+        'Une erreur est survenue lors du téléchargement du certificat du praticien. Veuillez vérifier que votre certificat est valide et que vous avez saisi le bon mot de passe. Réessayez, et si le problème persiste, contactez le support.',
       verificationErrorTitle: 'Erreur de vérification du certificat',
     },
     printModal: {
@@ -46,10 +46,10 @@ export const practitionerTranslations = {
     },
     certificateFeedback: {
       successTitle: 'Certificate upload successful',
-      successDescription: 'The certificate’s certificate was uploaded successfully and the password has been securely saved. You may proceed with the next steps.',
+      successDescription: 'The certificate’s certificate was uploaded successfully. You may proceed with the next steps.',
       failureTitle: 'Certificate upload failed',
       failureDescription:
-        'An error occurred while uploading the certificate or saving the password. Please ensure the certificate is valid and try again. If the problem persists, contact support.',
+        'An error occurred while uploading the certificate. Please check that your certificate is valid and that you’ve entered the correct password. Try again, and if the issue continues, contact support.',
       verificationErrorTitle: 'Certificate verification error',
     },
     printModal: {
@@ -78,7 +78,7 @@ export const practitionerTranslations = {
       successDescription: 'Het certificaat van de zorgverlener is succesvol geüpload en het wachtwoord is veilig opgeslagen. U kunt nu doorgaan met de volgende stappen.',
       failureTitle: 'Uploaden van certificaat mislukt',
       failureDescription:
-        'Er is een fout opgetreden bij het uploaden van het certificaat of het opslaan van het wachtwoord. Zorg ervoor dat het certificaat geldig is en probeer het opnieuw. Neem contact op met de ondersteuning als het probleem aanhoudt.',
+        'Er is een fout opgetreden bij het uploaden van het certificaat van het wachtwoord. Controleer of uw certificaat geldig is en of u het juiste wachtwoord hebt ingevoerd. Probeer het opnieuw. Neem contact op met de ondersteuning als het probleem aanhoudt.',
       verificationErrorTitle: 'Fout bij verificatie van certificaat',
     },
     printModal: {
@@ -108,7 +108,7 @@ export const practitionerTranslations = {
         'Das Zertifikat des Arztes wurde erfolgreich hochgeladen und das Passwort wurde sicher gespeichert. Sie können nun mit den nächsten Schritten fortfahren.',
       failureTitle: 'Zertifikat-Upload fehlgeschlagen',
       failureDescription:
-        'Beim Hochladen des Zertifikats oder beim Speichern des Passworts ist ein Fehler aufgetreten. Bitte stellen Sie sicher, dass das Zertifikat gültig ist, und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.',
+        'Beim Hochladen des Zertifikats ist ein Fehler aufgetreten. Bitte überprüfen Sie, ob Ihr Zertifikat gültig ist und ob Sie das richtige Passwort eingegeben haben. Versuchen Sie es erneut. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.',
       verificationErrorTitle: 'Fehler bei der Zertifikatsprüfung',
     },
     printModal: {

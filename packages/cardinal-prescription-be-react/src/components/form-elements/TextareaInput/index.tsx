@@ -1,5 +1,4 @@
 import React from 'react'
-import { GlobalStyles } from '../../../styles'
 import { StyledTextarea, StyledTextareaInput, StyledTextareaInputLabel } from './styles'
 
 interface TextareaInputProps {
@@ -14,27 +13,24 @@ interface TextareaInputProps {
 
 export const TextareaInput: React.FC<TextareaInputProps> = ({ label, id, required, disabled, value, onChange, errorMessage }) => {
   return (
-    <>
-      <GlobalStyles />
-      <StyledTextareaInput>
-        <StyledTextareaInputLabel htmlFor={id} $required={required} $error={!!errorMessage}>
-          <span>*</span>
-          {label}
-        </StyledTextareaInputLabel>
+    <StyledTextareaInput>
+      <StyledTextareaInputLabel htmlFor={id} $required={required} $error={!!errorMessage}>
+        <span>*</span>
+        {label}
+      </StyledTextareaInputLabel>
 
-        <StyledTextarea
-          placeholder={label}
-          name={id}
-          id={id}
-          value={value}
-          $disabled={disabled}
-          $error={!!errorMessage}
-          disabled={disabled}
-          rows={3}
-          onChange={(e) => onChange(e.target.value)}
-        />
-        {errorMessage && <p className="error">{errorMessage}</p>}
-      </StyledTextareaInput>
-    </>
+      <StyledTextarea
+        placeholder={label}
+        name={id}
+        id={id}
+        value={value}
+        $disabled={disabled}
+        $error={!!errorMessage}
+        disabled={disabled}
+        rows={3}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {errorMessage && <p className="error">{errorMessage}</p>}
+    </StyledTextareaInput>
   )
 }
