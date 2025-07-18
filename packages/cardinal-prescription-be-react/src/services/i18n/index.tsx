@@ -4,7 +4,7 @@ import { appTranslations } from './translations'
 export type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de']
 
 class CardinalLanguage {
-  private language = 'en'
+  private language: AvailableLanguagesType = 'en'
 
   public setLanguage(language: string): void {
     this.language = language
@@ -34,4 +34,13 @@ export const t = (key: string): string => {
   }
 
   return getKeyValue(appTranslations[cardinalLanguage.getLanguage()], key) ?? key
+}
+
+export const getSamTextTranslation = (samText?: SamText): string | undefined => {
+  if (!samText) {
+    return undefined
+  }
+  const lang = cardinalLanguage.getLanguage() as keyof SamText
+  const fallback = 'fr' as keyof SamText
+  return samText[lang] ?? samText[fallback]
 }

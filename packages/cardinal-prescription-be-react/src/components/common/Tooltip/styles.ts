@@ -1,5 +1,6 @@
 import { TooltipOrientationType } from './index'
 import styled, { css } from 'styled-components'
+import { colors } from '../../../styles'
 
 export const tooltipArrow = css`
   content: '';
@@ -12,7 +13,7 @@ export const tooltipTopOriented = css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-top: 7px solid global.$blue-500;
+    border-top: 7px solid ${colors.blue[500]};
     position: absolute;
     bottom: 23px;
     left: 50%;
@@ -27,7 +28,7 @@ export const tooltipBottomOriented = css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-bottom: 7px solid global.$blue-500;
+    border-bottom: 7px solid ${colors.blue[500]};
     position: absolute;
     bottom: -8px;
     left: 50%;
@@ -92,14 +93,6 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
 
   ${({ $tooltipOrientation }) => tooltipOrientationStyles($tooltipOrientation)};
 
-  ${({ $active }) =>
-    !!$active &&
-    css`
-      .popup {
-        display: flex;
-      }
-    `};
-
   &:hover {
     .chevron {
       display: flex;
@@ -126,7 +119,7 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
     gap: 6px;
     align-self: stretch;
     border-radius: 6px;
-    border: 1px solid global.$blue-500;
+    border: 1px solid ${colors.blue[500]};
     background: #fff;
 
     &__iconWrap {
@@ -134,7 +127,7 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      border-bottom: 1px solid global.$blue-500;
+      border-bottom: 1px solid ${colors.blue[500]};
       padding-bottom: 6px;
     }
 
@@ -148,11 +141,19 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
     }
 
     p {
-      color: global.$grey-900;
+      color: ${colors.grey[900]};
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
     }
   }
+
+  ${({ $active }) =>
+    !!$active &&
+    css`
+      .popup {
+        display: flex;
+      }
+    `};
 `

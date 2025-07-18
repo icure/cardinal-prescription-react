@@ -1,4 +1,4 @@
-import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/cardinal-be-sam-sdk';
+import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement, StandardDosage } from '@icure/cardinal-be-sam-sdk';
 import { Medication, Duration, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
 
@@ -10,6 +10,7 @@ declare class CardinalLanguage {
 }
 declare const cardinalLanguage: CardinalLanguage;
 declare const t: (key: string) => string;
+declare const getSamTextTranslation: (samText?: SamText) => string | undefined;
 
 /**
  * Search for medications matching the given query and language.
@@ -24,7 +25,6 @@ declare const findMedicationsByLabel: (sdk: SamV2Api, language: string, query: s
  */
 declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
 
-type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1';
 type MedicationType = {
     ampId?: string;
     vmpGroupId?: string;
@@ -45,15 +45,16 @@ type MedicationType = {
     rmaProfessionalLink?: string;
     spcLink?: string;
     dhpcLink?: string;
-    rmakeyMessages?: string;
+    rmakeyMessages?: SamText;
     vmp?: VmpStub;
     supplyProblems?: SupplyProblem[];
     commercializations?: Commercialization[];
     deliveryModusCode?: string;
     deliveryModus?: string;
-    deliveryModusSpecificationCode?: DeliveryModusSpecificationCodeType;
+    deliveryModusSpecificationCode?: string;
     deliveryModusSpecification?: string;
     reimbursements?: Reimbursement;
+    standardDosage?: StandardDosage[];
 };
 type PrescribedMedicationType = {
     uuid: string;
@@ -161,4 +162,13 @@ interface PractitionerCertificate {
 }
 declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
-export { type AvailableLanguagesType, type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+interface MedicationSearchProps {
+    sdk: SamV2Api;
+    deliveryEnvironment: string;
+    handleAddPrescription: (medication: MedicationType) => void;
+    disableInputEventsTracking: boolean;
+    short?: boolean;
+}
+declare const MedicationSearch: React.FC<MedicationSearchProps>;
+
+export { type AvailableLanguagesType, type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

@@ -4,13 +4,15 @@ import {
   deleteCertificate,
   fetchSamVersion,
   loadCertificateInformation,
+  MedicationSearch,
+  MedicationType,
   PractitionerCertificate,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
 } from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
-import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamVersion } from '@icure/cardinal-be-sam-sdk'
+import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
 import { CARDINAL_PRESCRIPTION_LANGUAGE } from './services/constants'
 
 const patient: Patient = {
@@ -64,6 +66,9 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
+  const [cardinalSdkInstance, setCardinalSdkInstance] = useState<SamV2Api | undefined>(undefined)
+  const [showMedicationPrescriptionModal, setShowMedicationPrescriptionModal] = useState(false)
+  const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -72,12 +77,13 @@ export const App = () => {
     const initializeAll = async () => {
       try {
         // Initialize Cardinal SDK (SAM)
-        const cardinalSdkInstance: CardinalBeSamApi = await CardinalBeSamSdk.initialize(
+        const cardinalBeSamAInstance: CardinalBeSamApi = await CardinalBeSamSdk.initialize(
           undefined,
           ICURE_URL,
           new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
         )
-        setSamVersion(await fetchSamVersion(cardinalSdkInstance.sam))
+        setCardinalSdkInstance(cardinalBeSamAInstance.sam)
+        setSamVersion(await fetchSamVersion(cardinalBeSamAInstance.sam))
 
         try {
           if (hcp.ssin) {
@@ -150,11 +156,15 @@ export const App = () => {
     setErrorWhileVerifyingCertificate(undefined)
   }
 
+  const handleAddPrescription = (medication: any) => {
+    setShowMedicationPrescriptionModal(true)
+    setMedicationToPrescribe(medication)
+  }
   return (
     <div className="App">
       <h1>Hello from the Demo App</h1>
       <div className="divider"></div>
-      <div>
+      <div className="element">
         <PractitionerCertificate
           certificateValid={certificateValid}
           certificateUploaded={certificateUploaded}
@@ -170,6 +180,17 @@ export const App = () => {
         <strong>{samVersion?.version}</strong>
       </p>
       <div className="divider"></div>
+      <div className="element">
+        {cardinalSdkInstance && certificateValid && (
+          <MedicationSearch
+            sdk={cardinalSdkInstance}
+            deliveryEnvironment="P"
+            short={true}
+            handleAddPrescription={handleAddPrescription}
+            disableInputEventsTracking={showMedicationPrescriptionModal}
+          />
+        )}
+      </div>
     </div>
   )
 }

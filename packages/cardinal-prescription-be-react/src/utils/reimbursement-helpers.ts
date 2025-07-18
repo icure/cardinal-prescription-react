@@ -1,8 +1,8 @@
 import { Medication } from '@icure/be-fhc-lite-api'
 import { ReimbursementType } from '../types'
-import type { TFunction } from 'i18next'
+import { t } from '../services/i18n'
 
-export const getReimbursementOptions = (t: TFunction): { value: ReimbursementType; label: string }[] => [
+export const getReimbursementOptions = (): { value: ReimbursementType; label: string }[] => [
   {
     value: null,
     label: t('reimbursementHelper.practitionerSelectionOptions.none'),
@@ -49,7 +49,7 @@ export const getReimbursementOptions = (t: TFunction): { value: ReimbursementTyp
   },
 ]
 
-export function getCategoryLabelForReimbursement(code: string | undefined, t: TFunction): string {
+export function getCategoryLabelForReimbursement(code: string | undefined): string {
   if (!code) return ''
   return t(`reimbursementHelper.categoryOptions.${code}`) || code
 }

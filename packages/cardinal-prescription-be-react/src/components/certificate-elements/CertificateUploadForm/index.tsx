@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { readFileAsArrayBuffer } from '../../../utils/file-helpers'
 import { Button } from '../../form-elements/Button'
@@ -18,7 +18,7 @@ type CertificateFormType = {
   password: string
 }
 
-export const CertificateUploadForm: React.FC<CertificateUploadFormProps> = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
+export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
     register,
     handleSubmit,

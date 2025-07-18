@@ -2,8 +2,7 @@ import styled from 'styled-components'
 import { displayResolution, responsiveMediaQueries } from '../../../styles'
 
 export const StyledPractitionerCertificate = styled.div`
-  width: 50%;
-  min-width: 700px;
+  width: 100%;
 
   display: flex;
   flex-direction: column;

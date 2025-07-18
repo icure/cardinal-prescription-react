@@ -40,7 +40,6 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, contentSnippet, iconS
       $tooltipOrientation={tooltipOrientation}
       $active={active}
       onMouseEnter={() => {
-        console.log('enter')
         repositionTooltip(boundaryBox)
         setActive(true)
       }}

@@ -1,9 +1,7 @@
 import { Medication } from '@icure/be-fhc-lite-api'
-import { Commercialization, Reimbursement, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
+import { Commercialization, Reimbursement, SamText, StandardDosage, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
 
-import { PractitionerVisibilityType, PharmacistVisibilityType } from './index'
-
-export type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1'
+import { PharmacistVisibilityType, PractitionerVisibilityType } from './index'
 
 export type MedicationType = {
   ampId?: string
@@ -25,15 +23,16 @@ export type MedicationType = {
   rmaProfessionalLink?: string
   spcLink?: string
   dhpcLink?: string
-  rmakeyMessages?: string
+  rmakeyMessages?: SamText
   vmp?: VmpStub
   supplyProblems?: SupplyProblem[]
   commercializations?: Commercialization[]
   deliveryModusCode?: string
   deliveryModus?: string
-  deliveryModusSpecificationCode?: DeliveryModusSpecificationCodeType
+  deliveryModusSpecificationCode?: string
   deliveryModusSpecification?: string
   reimbursements?: Reimbursement
+  standardDosage?: StandardDosage[]
 }
 
 export type PrescribedMedicationType = {

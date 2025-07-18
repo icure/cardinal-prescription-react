@@ -1,6 +1,7 @@
 import { css } from 'styled-components'
 import { colors } from './variables'
 
+// Input common styles
 export const fieldCommonStyles = css`
   width: 100%;
   display: flex;
@@ -103,4 +104,67 @@ export const labelCommonStyles_error = css`
 export const errorMessageCommonStyles = css`
   color: red;
   font-size: 13px;
+`
+
+// Infographic-elements common styles
+
+export const infographicElementCommonStyles = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+export const infographicElementTitleCommonStyles = css`
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+`
+
+export const infographicElementTextCommonStyles = css`
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+`
+
+export const infographicElementContentCommonStyles = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      color: ${colors.blue[600]};
+    }
+
+    p {
+      ${infographicElementTextCommonStyles};
+    }
+
+    a {
+      ${infographicElementTextCommonStyles};
+      color: ${colors.blue[600]};
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+`
+
+export const infographicElementLinkCommonStyles = css`
+  ${infographicElementTextCommonStyles};
+  color: ${colors.blue[500]};
+
+  &:hover {
+    text-decoration: underline;
+  }
 `

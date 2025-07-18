@@ -30,12 +30,14 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   IndexedDbServiceStore: () => IndexedDbServiceStore,
+  MedicationSearch: () => MedicationSearch,
   PractitionerCertificate: () => PractitionerCertificate,
   cardinalLanguage: () => cardinalLanguage,
   createFhcCode: () => createFhcCode,
   deleteCertificate: () => deleteCertificate,
   fetchSamVersion: () => fetchSamVersion,
   findMedicationsByLabel: () => findMedicationsByLabel,
+  getSamTextTranslation: () => getSamTextTranslation,
   loadAndDecryptCertificate: () => loadAndDecryptCertificate,
   loadCertificateInformation: () => loadCertificateInformation,
   sendRecipe: () => sendRecipe,
@@ -1028,6 +1030,14 @@ var t = (key) => {
   };
   return getKeyValue(appTranslations[cardinalLanguage.getLanguage()], key) ?? key;
 };
+var getSamTextTranslation = (samText) => {
+  if (!samText) {
+    return void 0;
+  }
+  const lang = cardinalLanguage.getLanguage();
+  const fallback = "fr";
+  return samText[lang] ?? samText[fallback];
+};
 
 // src/services/cardinal-sam/index.ts
 var findMedicationsByLabel = async (sdk, language, query) => {
@@ -1206,6 +1216,17 @@ var deleteCertificate = async (hcp_ssin) => {
 var import_be_fhc_lite_api = require("@icure/be-fhc-lite-api");
 
 // src/utils/date-helpers.ts
+var formatTimestamp = (timestamp) => {
+  if (!timestamp) {
+    return void 0;
+  } else {
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+};
 function dateEncode(date) {
   return date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate();
 }
@@ -1460,12 +1481,14 @@ var colors = {
     800: "#084b83",
     600: "#4b6682",
     500: "#3d87c5",
+    400: "#add5ff",
     300: "#eef6fe",
     200: "#f9fbfe",
     100: "#dce7f2"
   },
   grey: {
     900: "#1d2235",
+    700: "#7e827f",
     650: "#9ca8b2",
     600: "#848482",
     550: "#cad0d5",
@@ -1474,15 +1497,19 @@ var colors = {
     100: "#fcfcfd"
   },
   orange: {
-    900: "#ef762f"
+    900: "#ef762f",
+    950: "#e5a613",
+    800: "#ffda83"
   },
   green: {
+    600: "#33b96b",
     400: "#b7eb8f",
     300: "#f6ffed",
     200: "#e5fae5"
   },
   red: {
     800: "#FF0000FF",
+    700: "#ee5d59",
     400: "#ffccc7",
     300: "#fff1f0"
   }
@@ -1585,6 +1612,62 @@ var labelCommonStyles_error = import_styled_components2.css`
 var errorMessageCommonStyles = import_styled_components2.css`
   color: red;
   font-size: 13px;
+`;
+var infographicElementCommonStyles = import_styled_components2.css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+var infographicElementTitleCommonStyles = import_styled_components2.css`
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+`;
+var infographicElementTextCommonStyles = import_styled_components2.css`
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+`;
+var infographicElementContentCommonStyles = import_styled_components2.css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      color: ${colors.blue[600]};
+    }
+
+    p {
+      ${infographicElementTextCommonStyles};
+    }
+
+    a {
+      ${infographicElementTextCommonStyles};
+      color: ${colors.blue[600]};
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+`;
+var infographicElementLinkCommonStyles = import_styled_components2.css`
+  ${infographicElementTextCommonStyles};
+  color: ${colors.blue[500]};
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 // src/styles/responsive-media-queries.ts
@@ -1694,6 +1777,202 @@ var StatusErrorIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { 
     fill: "#FF4D4F"
   }
 ) });
+var BlackTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
+    fill: "#000000"
+  }
+) });
+var OrangeTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
+    fill: "#FF5E00"
+  }
+) });
+var ChevronIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "12px", height: "12px", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { clipPath: "url(#clip0_153_633)", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "path",
+    {
+      d: "M2.57153 1.018L2.57153 2.02247C2.57153 2.09077 2.60502 2.15505 2.65993 2.19523L7.90457 6.00014L2.65993\n        9.80506C2.60502 9.84523 2.57153 9.90952 2.57153 9.97782L2.57153 10.9823C2.57153 11.0693 2.67064 11.1202 2.74162\n         11.0693L9.25189 6.34702C9.4876 6.17559 9.4876 5.8247 9.25189 5.65461L2.74162 0.932286C2.67064 0.880054 2.57153\n          0.930947 2.57153 1.018Z",
+      fill: "#3D87C5"
+    }
+  ) }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_153_633", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "12px", height: "12px", fill: "white", transform: "matrix(0 -1 1 0 0 12)" }) }) })
+] });
+var EndOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { clipPath: "url(#clip0_330_2250)", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M4.65801 10.3098C4.52446 10.2195 4.36185 10.1662 4.18897 10.1664C4.07385 10.1664 3.96278 10.1899 3.86218\n        10.2325C3.71139 10.2963 3.58384 10.4023 3.49335 10.5362C3.40283 10.6698 3.34991 10.8324 3.3501 11.0052C3.34991\n        11.1204 3.37335 11.2314 3.416 11.3318C3.47997 11.4828 3.58579 11.6104 3.71952 11.7007C3.85328 11.7914 4.01608\n        11.8443 4.18897 11.8443C4.3041 11.8443 4.41496 11.8208 4.51536 11.7782C4.66635 11.7144 4.79408 11.6082 4.88439\n         11.4745C4.97472 11.3409 5.0278 11.1781 5.0278 11.0052C5.0278 10.8901 5.00415 10.7793 4.96171 10.6787C4.89793\n          10.5277 4.79174 10.4002 4.65801 10.3098ZM4.50062 11.1368C4.47503 11.1973 4.43181 11.2495 4.37772\n          11.2859C4.32346 11.3224 4.2599 11.3435 4.18895 11.3437C4.14147 11.3435 4.09745 11.3342 4.05735\n          11.3169C3.99707 11.2917 3.94473 11.2483 3.90829 11.1944C3.87184 11.1399 3.85091 11.0762 3.85054\n          11.0052C3.85072 10.9579 3.86022 10.9141 3.87728 10.8736C3.90247 10.8134 3.9459 10.7612 3.99995\n          10.7246C4.05423 10.6882 4.11798 10.6672 4.18893 10.667C4.23622 10.667 4.28003 10.6766 4.32032\n          10.6936C4.38079 10.719 4.43272 10.7622 4.46938 10.8165C4.50583 10.8708 4.52694 10.9343 4.52694\n          11.0053C4.52699 11.0527 4.51766 11.0966 4.50062 11.1368Z",
+        fill: "#EE1313"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M3.95443 9.20724C3.86373 9.20724 3.77884 9.189 3.70093 9.15623C3.58466 9.10702 3.48425 9.02405 3.41408\n         8.91977C3.34663 8.81956 3.30671 8.70155 3.3036 8.57208C3.30709 8.4176 3.35633 8.28349 3.44277 8.17629C3.48756\n         8.12107 3.54278 8.0726 3.60983 8.03248C3.67611 7.99294 3.75423 7.96156 3.84592 7.94177L9.57245 7.00971C9.9467\n         6.94866 10.2442 6.6626 10.3198 6.29102L11.0203 2.84747V2.84709C11.0284 2.80716 11.0323 2.76645 11.0323\n          2.72616C11.0323 2.58698 10.9846 2.45093 10.895 2.34122C10.7797 2.20013 10.6068 2.11814 10.4243\n          2.11814H2.495L2.22481 1.18997V1.19016C2.10078 0.775195 1.76042 0.460828 1.33714 0.370125L0.367674\n          0.162539C0.203705 0.127266 0.0420336 0.231938 0.00678359 0.396094C-0.0283023 0.56025 0.0761586 0.721899\n          0.240526 0.756985L1.20962 0.964758C1.41601 1.00894 1.58192 1.16205 1.64221 1.36441L3.41371 7.44949C3.37379\n          7.4681 3.33521 7.48826 3.29821 7.51055C3.1071 7.62434 2.95398 7.78404 2.85125 7.97049C2.753 8.14763 2.70085\n          8.34844 2.696 8.55563H2.69502V8.5872H2.69579C2.69968 8.74906 2.73418 8.90431 2.79406 9.04599C2.89002 9.27256\n          3.04932 9.46425 3.25011 9.59991C3.4509 9.73575 3.69472 9.81541 3.95443 9.81523H7.17163C7.17064 9.7852 7.16717\n           9.75593 7.16717 9.7257C7.16717 9.54834 7.18538 9.37526 7.21815 9.20724H3.95443ZM8.28413 3.16263C8.45488\n           3.11302 8.63356 3.2107 8.68318 3.38145L9.33556 5.61441C9.38518 5.78517 9.28728 5.96367 9.11656\n           6.01366C8.94599 6.06349 8.7673 5.96562 8.71749 5.79485L8.06527 3.56187C8.01549 3.39134 8.11337 3.21265\n           8.28413 3.16263ZM6.87643 3.16845C7.04699 3.11843 7.2257 3.21631 7.27548 3.38707L7.99009 5.83418C8.0401\n           6.00476 7.94202 6.18363 7.77146 6.23346C7.60091 6.28324 7.4222 6.18539 7.37218 6.01463L6.65757\n           3.56747C6.60781 3.39696 6.70567 3.21806 6.87643 3.16845ZM5.46835 3.17348C5.6391 3.12387 5.81781 3.22174\n           5.8674 3.39248L6.64074 6.04022C6.69074 6.21099 6.59267 6.38967 6.42212 6.43948C6.25159 6.48931 6.07288\n           6.39143 6.02286 6.22066L5.24952 3.57274C5.19971 3.40219 5.29759 3.22348 5.46835 3.17348ZM4.06046\n           3.17911C4.23123 3.12928 4.40992 3.22718 4.45972 3.39795L5.29332 6.25249C5.34334 6.42324 5.24525 6.60213\n           5.0747 6.65175C4.90414 6.70174 4.72543 6.60368 4.67542 6.43313L3.84163 3.5782C3.79203 3.40763 3.88972\n           3.22891 4.06046 3.17911Z",
+        fill: "#EE1313"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M9.88112 7.60687C8.71086 7.60687 7.7627 8.55541 7.7627 9.72569C7.7627 10.8958 8.71086 11.8443 9.88112\n        11.8443C11.0514 11.8443 11.9999 10.8958 11.9999 9.72569C11.9999 8.55541 11.0514 7.60687 9.88112\n        7.60687ZM11.0917 10.0788H8.67055V9.37235H11.0917V10.0788Z",
+        fill: "#EE1313"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_330_2250", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "12", height: "12", fill: "white" }) }) })
+] });
+var LeafIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { clipPath: "url(#clip0_618_2370)", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("mask", { id: "mask0_618_2370", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { mask: "url(#mask0_618_2370)", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M7.87489 0C4.49192 0 1.74989 2.74203 1.74989 6.125V11.0128L0.256266 12.5064C-0.085422 12.8481 -0.085422\n          13.4019 0.256266 13.7436C0.42711 13.9145 0.65111 14 0.874891 14C1.09867 14 1.32267 13.9145 1.49352\n          13.7436L2.98714 12.25H7.87489C11.2579 12.25 13.9999 9.50797 13.9999 6.125V0H7.87489ZM11.1185 4.11862L8.23627\n          7.00088H9.62489C10.1085 7.00088 10.4999 7.39222 10.4999 7.87588C10.4999 8.35953 10.1085 8.75088 9.62489\n          8.75088H6.48627L5.86852 9.36862C5.69767 9.53947 5.47367 9.625 5.24989 9.625C5.02611 9.625 4.80211 9.53947\n          4.63127 9.36862C4.28958 9.02694 4.28958 8.47306 4.63127 8.13138L5.24989 7.51275V4.375C5.24989 3.89134 5.64124\n           3.5 6.12489 3.5C6.60855 3.5 6.99989 3.89134 6.99989 4.375V5.76275L9.88127 2.88137C10.223 2.53969 10.7768\n           2.53969 11.1185 2.88137C11.4602 3.22306 11.4604 3.77694 11.1185 4.11862Z",
+        fill: "#197437"
+      }
+    ) })
+  ] }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_618_2370", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var MoleculeIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { clipPath: "url(#clip0_618_936)", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("mask", { id: "mask0_618_936", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { mask: "url(#mask0_618_936)", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        "path",
+        {
+          d: "M10.1245 5.15595V2.10851C10.1245 1.90286 10.016 1.71436 9.84181 1.60869L7.29986 0.0835404C7.11421\n          -0.0278468 6.88572 -0.0278468 6.70008 0.0835404L4.15531 1.60869C3.97824 1.71436 3.87256 1.90286 3.87256\n          2.10851V5.15595C3.87256 5.36159 3.98109 5.55009 4.15531 5.65576L6.70008 7.18091C6.96856 7.33514 7.19133\n          7.25231 7.29986 7.18091L9.84181 5.65576C10.016 5.55009 10.1245 5.36159 10.1245 5.15595Z",
+          fill: "#EFAC2F"
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        "path",
+        {
+          d: "M5.96922 8.3405L3.4273 6.81532C3.24165 6.70393 3.01317 6.70393 2.82753 6.81532L0.282753 8.3405C0.105675\n          8.44612 0 8.63465 0 8.8403V11.8877C0 12.0934 0.108531 12.2819 0.282753 12.3875L2.82753 13.9127C3.096 14.0669\n          3.31877 13.9841 3.4273 13.9127L5.96922 12.3875C6.1463 12.2819 6.25197 12.0934 6.25197 11.8877V8.8403C6.25197\n          8.63465 6.1463 8.44612 5.96922 8.3405Z",
+          fill: "#EFAC2F"
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        "path",
+        {
+          d: "M13.7119 8.33763L11.17 6.81248C10.9843 6.7011 10.7559 6.7011 10.5702 6.81248L8.02541 8.33763C7.84831\n          8.44333 7.74268 8.63178 7.74268 8.83743V11.8849C7.74268 12.0906 7.85119 12.279 8.02541 12.3847L10.5673\n          13.9099C10.8358 14.0641 11.0586 13.9813 11.1671 13.9099L13.709 12.3847C13.8861 12.279 13.9918 12.0906\n          13.9918 11.8849V8.83743C13.9946 8.63178 13.8861 8.44333 13.7119 8.33763Z",
+          fill: "#EFAC2F"
+        }
+      )
+    ] })
+  ] }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_618_936", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var PillsBottleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { clipPath: "url(#clip0_165_1782)", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "path",
+    {
+      d: "M7.8751 4.34052C7.86877 4.11591 7.75782 3.91751 7.58907 3.79252C7.40655 3.62106 7.2094 3.46818 7.01846\n        3.26338C6.98683 3.22948 6.96046 3.19954 6.93778 3.17205C6.93517 3.16894 6.93256 3.1658 6.92996 3.16263C6.92681\n        3.1587 6.92397 3.155 6.92093 3.15118L6.91757 3.14688C6.82224 3.02447 6.81289 2.95561 6.81289 2.83826C6.81289\n        2.77897 6.81289 2.65316 6.81289 2.52272H6.9662C7.18556 2.52272 7.3634 2.36418 7.3634 2.16861V1.35413C7.3634\n        1.15854 7.18557 1 6.9662 1H3.03366C2.81429 1 2.63645 1.15854 2.63645 1.35413V2.16859C2.63645 2.36416 2.81429\n        2.5227 3.03366 2.5227H3.18697C3.18697 2.65314 3.18697 2.77896 3.18697 2.83824C3.18697 2.95559 3.17762 3.02446\n        3.08227 3.14687L3.07893 3.15116C3.07589 3.15498 3.07308 3.1587 3.06991 3.16261C3.06734 3.16578 3.06474 3.16891\n        3.06208 3.17203C3.0394 3.19952 3.01303 3.22948 2.98144 3.26336C2.79046 3.46817 2.59332 3.62099 2.41079\n        3.79246C2.24204 3.91746 2.13109 4.11591 2.12476 4.34051C2.12476 4.34635 2.12427 4.35356 2.12427 4.36032C2.12427\n         4.86656 2.12427 7.86047 2.12427 8.24009C2.12427 8.62504 2.40714 9 2.88414 9C3.12245 9 3.82162 9 4.98483\n         9C4.98483 9 4.9887 9 4.99588 9H4.99991H5.00395C5.01113 9 5.015 9 5.015 9C6.17819 9 6.87738 9 7.11569 9C7.59269\n          9 7.87556 8.62504 7.87556 8.24009C7.87556 7.86047 7.87556 4.8673 7.87556 4.36108C7.87556 4.35432 7.8751\n          4.34637 7.8751 4.34052ZM7.08025 6.21274C7.08025 6.43213 6.90241 6.60997 6.68304\n          6.60997H4.99995H3.31686C3.0975 6.60997 2.91965 6.43213 2.91965 6.21274V5.5681C2.91965 5.34872 3.0975 5.17088\n           3.31686 5.17088H6.68304C6.90241 5.17088 7.08025 5.34874 7.08025 5.5681V6.21274Z",
+      fill: "#000000"
+    }
+  ) }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_165_1782", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "8", height: "8", fill: "white", transform: "translate(1 1)" }) }) })
+] });
+var PrescriptionIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  "path",
+  {
+    d: "M8.56078 8.25L10.3903 6.42047C10.5368 6.27398 10.5368 6.03656 10.3903 5.89008L9.85992 5.35969C9.71344 5.2132\n       9.47602 5.2132 9.32953 5.35969L7.5 7.18922L5.53219 5.22141C6.64008 5.08125 7.5 4.14586 7.5 3C7.5 1.75734 6.49266\n        0.75 5.25 0.75H1.875C1.66781 0.75 1.5 0.917813 1.5 1.125V7.125C1.5 7.33219 1.66781 7.5 1.875 7.5H2.625C2.83219\n         7.5 3 7.33219 3 7.125V5.25H3.43945L6.43945 8.25L4.60992 10.0795C4.46344 10.226 4.46344 10.4634 4.60992\n          10.6099L5.14031 11.1403C5.2868 11.2868 5.52422 11.2868 5.6707 11.1403L7.5 9.31055L9.32953 11.1401C9.47602\n           11.2866 9.71344 11.2866 9.85992 11.1401L10.3903 10.6097C10.5368 10.4632 10.5368 10.2258 10.3903\n           10.0793L8.56078 8.25ZM3 2.25H5.25C5.66344 2.25 6 2.58656 6 3C6 3.41344 5.66344 3.75 5.25 3.75H3V2.25Z",
+    fill: "#000000"
+  }
+) });
+var SolidPillIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { clipPath: "url(#clip0_618_3928)", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "path",
+    {
+      d: "M12.5957 9.11825C12.1339 8.62182 11.5084 8.31967 10.8342 8.26742L10.8168 8.26608L3.19964 8.25861C1.71537\n        8.25861 0.507812 9.46617 0.507812 10.9505C0.507812 12.4347 1.71537 13.6423 3.19964 13.6423H3.20011L10.7994\n        13.6348L10.8342 13.6335C11.5083 13.5812 12.1339 13.2791 12.5957 12.7827C13.0601 12.2834 13.3159 11.6327 13.3159\n        10.9505C13.3159 10.2682 13.0601 9.61754 12.5957 9.11825ZM6.98957 12.7251L3.19931 12.7288C2.21893 12.7286\n        1.42131 11.9309 1.42131 10.9505C1.42131 9.96992 2.21907 9.17214 3.19918 9.17214L6.98957\n        9.17586V12.7251ZM1.69844 7.39865C2.15702 7.73348 2.72102 7.91788 3.28648 7.91794H3.28659C3.48032 7.91794\n        3.67493 7.89669 3.86497 7.85477L3.882 7.85103L11.1737 5.64824C12.5941 5.21763 13.3994 3.71168 12.9688\n        2.2912C12.7979 1.72734 12.4566 1.24606 11.9819 0.899316C11.5232 0.564246 10.9591 0.37973 10.3935\n         0.37973C10.1285 0.379872 9.86494 0.419123 9.61137 0.496215L2.34107 2.70811L2.30812 2.71951C1.67812 2.96508\n         1.16713 3.43572 0.869242 4.04475C0.569637 4.65728 0.513664 5.35421 0.711578 6.00713C0.882531 6.5709 1.22378\n         7.05207 1.69844 7.39865ZM9.87685 1.37031C10.0443 1.31935 10.2185 1.29337 10.3935 1.29323C11.1697 1.29323\n         11.8691 1.8126 12.0946 2.55621C12.379 3.49462 11.847 4.48952 10.9091 4.77387L7.28069 5.86997L6.25098\n         2.47344L9.87685 1.37031Z",
+      fill: "#3D87C5"
+    }
+  ) }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_618_3928", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var StartOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { clipPath: "url(#clip0_330_2383)", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M4.65803 10.3099C4.52448 10.2196 4.36187 10.1663 4.18897 10.1665C4.07385 10.1665 3.96278 10.1899 3.86218\n        10.2326C3.71139 10.2964 3.58384 10.4024 3.49335 10.5363C3.40283 10.6698 3.34991 10.8325 3.3501 11.0054C3.34991\n        11.1205 3.37337 11.2316 3.41601 11.3319C3.47997 11.4829 3.58579 11.6105 3.71952 11.7008C3.85326 11.7915 4.01608\n         11.8444 4.18897 11.8444C4.3041 11.8444 4.41496 11.8209 4.51536 11.7783C4.66635 11.7145 4.79408 11.6083 4.88441\n          11.4746C4.97474 11.341 5.02783 11.1782 5.02783 11.0053C5.02783 10.8902 5.00418 10.7793 4.96173\n          10.6788C4.89796 10.5278 4.79176 10.4002 4.65803 10.3099ZM4.50062 11.1369C4.47503 11.1974 4.43181\n          11.2496 4.37772 11.286C4.32346 11.3224 4.25987 11.3436 4.18895 11.3437C4.14147 11.3436 4.09745 11.3343\n          4.05735 11.317C3.99707 11.2918 3.94473 11.2484 3.90829 11.1945C3.87184 11.14 3.85091 11.0763 3.85054\n          11.0053C3.85075 10.958 3.86024 10.9142 3.8773 10.8737C3.9025 10.8134 3.94593 10.7613 3.99997 10.7247C4.05426\n          10.6882 4.11803 10.6673 4.18895 10.6671C4.23625 10.6671 4.28005 10.6766 4.32036 10.6937C4.38083 10.719\n          4.43277 10.7623 4.46943 10.8165C4.50587 10.8708 4.52699 10.9344 4.52699 11.0053C4.52699 11.0528 4.51768\n          11.0966 4.50062 11.1369Z",
+        fill: "#09853D"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M3.9545 9.20728C3.8638 9.20728 3.77891 9.18907 3.701 9.15631C3.58471 9.10709 3.4843 9.02412 3.41415\n        8.91985C3.3467 8.81965 3.30676 8.7016 3.30367 8.57215C3.30716 8.41765 3.3564 8.28354 3.44284 8.17636C3.4876\n        8.12112 3.54285 8.07267 3.6099 8.03255C3.67618 7.99301 3.75428 7.96163 3.84599 7.94185L9.57261 7.00976C9.94686\n         6.94871 10.2444 6.66263 10.32 6.29107L11.0205 2.84745V2.84707C11.0286 2.80714 11.0325 2.76645 11.0325\n         2.72614C11.0325 2.58696 10.9848 2.45091 10.8952 2.3412C10.7799 2.2001 10.607 2.11812 10.4245\n         2.11812H2.49505L2.22486 1.1899V1.19009C2.10081 0.775128 1.76045 0.460738 1.33714 0.370035L0.367674\n         0.162449C0.203705 0.127175 0.0420336 0.231824 0.00678359 0.396003C-0.0283023 0.56016 0.0761586 0.721808\n          0.240526 0.756894L1.20964 0.964667C1.41606 1.00885 1.58195 1.16196 1.64223 1.36432L3.41375 7.44949C3.37384\n           7.4681 3.33526 7.48826 3.29825 7.51055C3.10714 7.62434 2.95403 7.78404 2.8513 7.97049C2.75305 8.14765 2.7009\n            8.34844 2.69605 8.55565H2.69506V8.58722H2.69584C2.69973 8.74908 2.73423 8.90433 2.79411 9.04601C2.89006\n             9.27258 3.04937 9.46428 3.25016 9.59993C3.45095 9.73577 3.69477 9.81546 3.9545 9.81525H7.17174C7.17076\n              9.78523 7.16729 9.75595 7.16729 9.72572C7.16729 9.54837 7.1855 9.37528 7.21827\n              9.20724H3.9545V9.20728ZM8.28428 3.16259C8.45502 3.11297 8.63373 3.21066 8.68335 3.3814L9.33575\n              5.61441C9.38537 5.78517 9.28749 5.96368 9.11675 6.01367C8.94617 6.0635 8.76749 5.96562 8.71768\n              5.79485L8.06546 3.56185C8.01561 3.39129 8.11351 3.2126 8.28428 3.16259ZM6.87655 3.1684C7.04713 3.11839\n              7.22581 3.21626 7.27562 3.38703L7.99023 5.83418C8.04024 6.00476 7.94216 6.18366 7.7716 6.23346C7.60103\n              6.28327 7.42234 6.18539 7.37232 6.01463L6.65771 3.56745C6.60791 3.39694 6.70578 3.21802 6.87655\n              3.1684ZM5.46845 3.17344C5.63919 3.12382 5.8179 3.2217 5.86752 3.39244L6.64086 6.04022C6.69085 6.21099\n              6.59279 6.3897 6.42224 6.43948C6.25168 6.48931 6.07297 6.39143 6.02296 6.22067L5.24961 3.5727C5.19978\n              3.40214 5.29768 3.22346 5.46845 3.17344ZM4.06053 3.17907C4.2313 3.12924 4.41001 3.22714 4.45982\n              3.3979L5.29344 6.25249C5.34346 6.42324 5.24537 6.60214 5.07481 6.65178C4.90424 6.70177 4.72555 6.60371\n               4.67553 6.43315L3.84172 3.57818C3.79208 3.40758 3.88977 3.22889 4.06053 3.17907Z",
+        fill: "#09853D"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M9.88135 7.6069C8.71107 7.6069 7.7627 8.55547 7.7627 9.72575C7.7627 10.8958 8.71107 11.8444 9.88135\n        11.8444C11.0514 11.8444 12 10.8958 12 9.72575C12 8.55547 11.0514 7.6069 9.88135 7.6069ZM9.76121 10.7154L8.74831\n         9.90502L9.13266 9.42455L9.6583 9.84514L10.5439 8.70664L11.0298 9.0844L9.76121 10.7154Z",
+        fill: "#09853D"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_330_2383", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "12", height: "12", fill: "white" }) }) })
+] });
+var SupplyIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { clipPath: "url(#clip0_329_708)", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M5.18757 9.96101C4.45959 9.96101 3.86963 10.5508 3.86963 11.2788C3.86963 12.0069 4.45959 12.5966 5.18757\n        12.5966C5.91581 12.5966 6.50562 12.0069 6.50562 11.2788C6.50562 10.5508 5.91581 9.96101 5.18757\n        9.96101ZM5.18757 11.8517C4.87111 11.8517 4.61468 11.5953 4.61468 11.2788C4.61468 10.9622 4.87111 10.7059\n        5.18757 10.7059C5.50406 10.7059 5.76067 10.9622 5.76067 11.2788C5.76067 11.5953 5.50406 11.8517 5.18757 11.8517Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M12.1372 9.96101C11.4093 9.96101 10.8193 10.5508 10.8193 11.2788C10.8193 12.0069 11.4093 12.5966 12.1372\n        12.5966C12.8655 12.5966 13.4553 12.0069 13.4553 11.2788C13.4553 10.5508 12.8655 9.96101 12.1372 9.96101ZM12.1372\n         11.8517C11.8208 11.8517 11.5644 11.5953 11.5644 11.2788C11.5644 10.9622 11.8208 10.7059 12.1372\n         10.7059C12.4538 10.7059 12.7104 10.9622 12.7104 11.2788C12.7104 11.5953 12.4538 11.8517 12.1372 11.8517Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M6.6703 5.9117C6.6703 6.09636 6.51918 6.24744 6.33455 6.24744H1.70143C1.51676 6.24744 1.36572 6.09636 1.36572\n         5.9117V5.71025C1.36572 5.52562 1.5168 5.37454 1.70143 5.37454H6.33455C6.51922 5.37454 6.6703 5.52562 6.6703\n         5.71025V5.9117Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M14.7198 7.87737C14.2365 7.75174 13.96 7.67276 13.7703 7.30629L13.1358 6.02162C12.9459 5.65516 12.4529\n        5.35529 12.0403 5.35529H11.1725C11.1725 5.35529 11.0557 5.35773 11.0557 5.24024C11.0557 4.97087 11.0557\n        4.1628 11.0557 4.1628C11.0557 3.74512 10.8194 3.40337 10.3166 3.40337H3.24371C2.52388 3.40337 2.18213 3.74516\n        2.18213 4.1628V4.83801C2.18213 4.83801 2.18213 5.03883 2.3765 5.03883C3.36599 5.03883 6.33452 5.03883 6.33452\n        5.03883C6.70477 5.03883 7.006 5.34003 7.006 5.71028V5.91173C7.006 6.28199 6.70477 6.58318 6.33452\n        6.58318H2.3765C2.3765 6.58318 2.18213 6.56703 2.18213 6.77685C2.18213 6.88106 2.18213 6.95101 2.18213\n        7.00905C2.18213 7.19372 2.43524 7.19361 2.43524 7.19361H5.09958C5.46984 7.19361 5.77107 7.49483 5.77107\n        7.86506V8.0665C5.77107 8.43676 5.46984 8.73795 5.09958 8.73795H2.47727C2.47727 8.73795 2.18213 8.7325\n        2.18213 8.9675C2.18213 9.37541 2.18213 10.5991 2.18213 10.5991C2.18213 11.0167 2.52388 11.3585 2.94156\n        11.3585C2.94156 11.3585 3.25618 11.3585 3.36105 11.3585C3.45619 11.3585 3.4702 11.3055 3.4702 11.2789C3.4702\n        10.332 4.24066 9.5617 5.1876 9.5617C6.13462 9.5617 6.90504 10.332 6.90504 11.2789C6.90504 11.3056 6.89744\n        11.3585 6.9702 11.3585C7.80172 11.3585 10.3555 11.3585 10.3555 11.3585C10.4226 11.3585 10.4199 11.3019 10.4199\n        11.2789C10.4199 10.332 11.1903 9.5617 12.1373 9.5617C13.0843 9.5617 13.8547 10.332 13.8547 11.2789C13.8547\n        11.3056 13.854 11.3585 13.896 11.3585C14.2773 11.3585 14.7495 11.3585 14.7495 11.3585C15.1624 11.3585 15.5\n        11.0208 15.5 10.6081V9.18233C15.5001 7.98165 15.1209 7.98165 14.7198 7.87737ZM13.2917 7.81059C13.2917 7.81059\n        11.6981 7.81059 11.1557 7.81059C11.0674 7.81059 11.0557 7.72468 11.0557 7.72468V5.94529C11.0557 5.94529 11.0507\n         5.87696 11.164 5.87696C11.3164 5.87696 11.7735 5.87696 11.7735 5.87696C12.1408 5.87696 12.5794 6.14378 12.7483\n          6.46987L13.3129 7.61298C13.3367 7.659 13.3621 7.69986 13.3893 7.73647C13.4094 7.76332 13.3757 7.81059 13.2917\n           7.81059Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M5.43524 8.06651C5.43524 8.25118 5.28416 8.40226 5.09953 8.40226H0.835707C0.651039 8.40226 0.5 8.25118 0.5\n        8.06651V7.86506C0.5 7.68043 0.651076 7.52936 0.835707 7.52936H5.09953C5.2842 7.52936 5.43524 7.68043 5.43524\n        7.86506V8.06651Z",
+        fill: "#FF5E00"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("clipPath", { id: "clip0_329_708", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { width: "15", height: "15", fill: "white", transform: "translate(0.5 0.5)" }) }) })
+] });
+var SearchIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width: "20px", height: "20px", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { mask: "url(#mask0_16_247)", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  "path",
+  {
+    d: "M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333\n        7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5\n        6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431\n        11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417\n        9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833\n        11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021\n        5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042\n        5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958\n        11.3021 6.875 11.6667 7.91667 11.6667Z",
+    fill: "#9CA8B2"
+  }
+) }) });
 
 // src/components/common/Alert/index.tsx
 var import_jsx_runtime2 = require("react/jsx-runtime");
@@ -1987,8 +2266,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
 // src/components/certificate-elements/PractitionerCertificate/styles.ts
 var import_styled_components8 = __toESM(require("styled-components"));
 var StyledPractitionerCertificate = import_styled_components8.default.div`
-  width: 50%;
-  min-width: 700px;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
@@ -2029,15 +2307,1554 @@ var PractitionerCertificate = ({
     ] })
   ] });
 };
+
+// src/components/medication-elements/MedicationSearch/index.tsx
+var import_react6 = require("react");
+
+// src/components/medication-elements/MedicationCard/index.tsx
+var import_react4 = require("react");
+
+// src/components/common/Tooltip/index.tsx
+var import_react2 = __toESM(require("react"));
+
+// src/components/common/Tooltip/styles.ts
+var import_styled_components9 = __toESM(require("styled-components"));
+var tooltipArrow = import_styled_components9.css`
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+`;
+var tooltipTopOriented = import_styled_components9.css`
+  .chevron {
+    display: none;
+    ${tooltipArrow};
+    border-top: 7px solid ${colors.blue[500]};
+    position: absolute;
+    bottom: 23px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  .popup {
+    bottom: 28px;
+  }
+`;
+var tooltipBottomOriented = import_styled_components9.css`
+  .chevron {
+    display: none;
+    ${tooltipArrow};
+    border-bottom: 7px solid ${colors.blue[500]};
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  .popup {
+    top: 30px;
+  }
+`;
+var tooltipRightOriented = import_styled_components9.css`
+  .chevron {
+    right: 50%;
+  }
+
+  .popup {
+    // Half width of the chevron
+    right: -7px;
+  }
+`;
+var tooltipLeftOriented = import_styled_components9.css`
+  .popup {
+    // Half width of the chevron
+    left: -7px;
+  }
+`;
+var tooltipOrientationStyles = ($tooltipOrientation) => {
+  switch ($tooltipOrientation) {
+    case "tr":
+      return import_styled_components9.css`
+        ${tooltipTopOriented};
+        ${tooltipRightOriented};
+      `;
+    case "tl":
+      return import_styled_components9.css`
+        ${tooltipTopOriented};
+        ${tooltipLeftOriented};
+      `;
+    case "br":
+      return import_styled_components9.css`
+        ${tooltipBottomOriented};
+        ${tooltipRightOriented};
+      `;
+    case "bl":
+      return import_styled_components9.css`
+        ${tooltipBottomOriented};
+        ${tooltipLeftOriented};
+      `;
+    default:
+      return null;
+  }
+};
+var StyleTooltip = import_styled_components9.default.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: min-content;
+  cursor: pointer;
+
+  ${({ $tooltipOrientation }) => tooltipOrientationStyles($tooltipOrientation)};
+
+  &:hover {
+    .chevron {
+      display: flex;
+    }
+  }
+
+  .icon {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .popup {
+    display: none;
+    position: absolute;
+    z-index: 15;
+    min-height: 32px;
+    min-width: 300px;
+    padding: 8px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    align-self: stretch;
+    border-radius: 6px;
+    border: 1px solid ${colors.blue[500]};
+    background: #fff;
+
+    &__iconWrap {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      border-bottom: 1px solid ${colors.blue[500]};
+      padding-bottom: 6px;
+    }
+
+    &__icon {
+      display: flex;
+      min-width: 22px;
+      height: 22px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+    }
+
+    p {
+      color: ${colors.grey[900]};
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+
+  ${({ $active }) => !!$active && import_styled_components9.css`
+      .popup {
+        display: flex;
+      }
+    `};
+`;
+
+// src/components/common/Tooltip/index.tsx
+var import_jsx_runtime7 = require("react/jsx-runtime");
+var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", boundaryBox }) => {
+  const [active, setActive] = (0, import_react2.useState)(false);
+  const [tooltipOrientation, setTooltipOrientation] = (0, import_react2.useState)(orientation);
+  const tooltipRef = import_react2.default.useRef(null);
+  const repositionTooltip = (boundaryBox2) => {
+    const tooltipElement = tooltipRef?.current;
+    const boundaryBoxElement = boundaryBox2?.current;
+    if (!tooltipElement || !boundaryBoxElement) return;
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+    const boundaryBoxRect = boundaryBoxElement.getBoundingClientRect();
+    const widthOfTooltipPopUp = 300;
+    if (boundaryBoxRect.right - tooltipRect.right > widthOfTooltipPopUp) {
+      setTooltipOrientation("bl");
+    } else if (boundaryBoxRect.right - tooltipRect.right < widthOfTooltipPopUp || boundaryBoxRect.right - tooltipRect.right === widthOfTooltipPopUp) {
+      setTooltipOrientation("br");
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+    StyleTooltip,
+    {
+      ref: tooltipRef,
+      $tooltipOrientation: tooltipOrientation,
+      $active: active,
+      onMouseEnter: () => {
+        repositionTooltip(boundaryBox);
+        setActive(true);
+      },
+      onMouseLeave: () => setActive(false),
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "icon", children: iconSnippet }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "chevron" }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "popup", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "popup__iconWrap", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "popup__icon", children: iconSnippet }) }),
+          !!content && /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { children: content }),
+          !!contentSnippet && contentSnippet
+        ] })
+      ]
+    }
+  );
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
+var import_styled_components10 = __toESM(require("styled-components"));
+var StyledRmaLink = import_styled_components10.default.div`
+  ${infographicElementCommonStyles};
+
+  .content {
+    ${infographicElementContentCommonStyles};
+
+    p {
+      ${infographicElementTextCommonStyles};
+    }
+
+    a {
+      ${infographicElementLinkCommonStyles};
+    }
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/index.tsx
+var import_jsx_runtime8 = require("react/jsx-runtime");
+var RmaProfessionalLinkContent = ({ rmaProfessionalLink, rmakeyMessages }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(StyledRmaLink, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "content", children: [
+    !!rmakeyMessages && /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { children: rmakeyMessages }),
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("a", { href: rmaProfessionalLink, children: t("medication.links.rma") })
+  ] }) });
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/styles.ts
+var import_styled_components11 = __toESM(require("styled-components"));
+var StyledSupplyProblems = import_styled_components11.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.orange[800]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/index.tsx
+var import_jsx_runtime9 = require("react/jsx-runtime");
+var SupplyProblemsContent = ({ medicationSupplyProblem }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(StyledSupplyProblems, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h6", { children: t("medication.supply.issueTitle") }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "content", children: [
+      medicationSupplyProblem.from && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.startDate") }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { children: formatTimestamp(medicationSupplyProblem.from) })
+      ] }),
+      medicationSupplyProblem.expectedEndOn && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.expectedEndDate") }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { children: formatTimestamp(medicationSupplyProblem.expectedEndOn) })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.reason) && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.reason") }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { children: getSamTextTranslation(medicationSupplyProblem.reason) })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.impact) && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.impact") }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { children: getSamTextTranslation(medicationSupplyProblem.impact) })
+      ] }),
+      medicationSupplyProblem.impact?.fr === "Importation possible par le pharmacien" && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.prescriberNote") }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("a", { target: "_blank", rel: "noopener noreferrer", href: "https://www.afmps.be/sites/default/files/content/INSP/NARC/declaration-medecin.pdf", children: t("medication.supply.downloadPdf") })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.additionalInformation) && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { children: t("medication.supply.extraInfo") }),
+        getSamTextTranslation(medicationSupplyProblem.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { children: line }, idx))
+      ] })
+    ] })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
+var import_styled_components12 = __toESM(require("styled-components"));
+var StyledEndCommercialization = import_styled_components12.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.red[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/index.tsx
+var import_jsx_runtime10 = require("react/jsx-runtime");
+var EndOfCommercialisationContent = ({ medicationCommercialization }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(StyledEndCommercialization, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("h6", { children: t("medication.commercialization.end") }),
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "content", children: [
+      medicationCommercialization.from && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.limitedAvailabilityFrom") }),
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: formatTimestamp(medicationCommercialization.from) })
+      ] }),
+      medicationCommercialization.to && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.end") }),
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: formatTimestamp(medicationCommercialization.to) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.endOfComercialization) && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.unavailableFrom") }),
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: getSamTextTranslation(medicationCommercialization.endOfComercialization) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.reason) && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.endReason") }),
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: getSamTextTranslation(medicationCommercialization.reason) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.impact) && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.endImpact") }),
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: getSamTextTranslation(medicationCommercialization.impact) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.additionalInformation) && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { children: t("medication.commercialization.endAdditionalInformation") }),
+        getSamTextTranslation(medicationCommercialization.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { children: line }, idx))
+      ] })
+    ] })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
+var import_styled_components13 = __toESM(require("styled-components"));
+var StyledStartCommercialization = import_styled_components13.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/index.tsx
+var import_jsx_runtime11 = require("react/jsx-runtime");
+var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(StyledStartCommercialization, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h6", { children: t("medication.commercialization.start") }),
+    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "content", children: medicationCommercialization.from && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { children: t("medication.commercialization.startAvailableFrom") }),
+      /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { children: formatTimestamp(medicationCommercialization.from) })
+    ] }) })
+  ] });
+};
+
+// src/utils/reimbursement-helpers.ts
+var import_be_fhc_lite_api2 = require("@icure/be-fhc-lite-api");
+function getCategoryLabelForReimbursement(code) {
+  if (!code) return "";
+  return t(`reimbursementHelper.categoryOptions.${code}`) || code;
+}
+
+// src/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/styles.ts
+var import_styled_components14 = __toESM(require("styled-components"));
+var StyledReimbursement = import_styled_components14.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/index.tsx
+var import_jsx_runtime12 = require("react/jsx-runtime");
+var ReimbursementsContent = ({ reimbursement }) => {
+  const computeFeeAmount = (fee) => Math.round(+fee * 100) / 100 + "\u20AC";
+  return reimbursement ? /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(StyledReimbursement, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("h6", { children: [
+      " ",
+      t("medication.reimbursement.title")
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "content", children: [
+      reimbursement.reimbursementCriterion?.category && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(import_jsx_runtime12.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("span", { children: t("medication.reimbursement.category") }),
+          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { children: reimbursement.reimbursementCriterion?.category })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("span", { children: t("medication.reimbursement.categoryLabel") }),
+          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { children: getCategoryLabelForReimbursement(reimbursement.reimbursementCriterion?.category) })
+        ] })
+      ] }),
+      reimbursement.copayments && reimbursement.copayments.map((el, index) => {
+        return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
+          el.regimeType === 1 && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("span", { children: [
+            t("medication.reimbursement.copay"),
+            " ",
+            /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("strong", { children: t("medication.reimbursement.copayPreferential") })
+          ] }),
+          el.regimeType === 2 && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("span", { children: [
+            t("medication.reimbursement.copay"),
+            " ",
+            /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("strong", { children: t("medication.reimbursement.copayActive") })
+          ] }),
+          el.feeAmount && /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { className: "feeAmount", children: computeFeeAmount(el.feeAmount) })
+        ] }, index);
+      }),
+      reimbursement.temporary && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("span", { children: t("medication.reimbursement.temporary") }),
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { className: "textRed", children: reimbursement.temporary })
+      ] }),
+      getSamTextTranslation(reimbursement.reimbursementCriterion?.description) && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("span", { children: t("medication.reimbursement.chapter") }),
+        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { children: getSamTextTranslation(reimbursement.reimbursementCriterion?.description) })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "supplyProblemsTooltip", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { className: " title  title--green", children: "Conditions de prescription" }),
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: " content", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { children: "Not applicable" }) }) })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
+var import_styled_components15 = __toESM(require("styled-components"));
+var StyledDeliveryConditions = import_styled_components15.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.orange[800]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+var StyledDeliveryConditionsNotApplicable = import_styled_components15.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/index.tsx
+var import_jsx_runtime13 = require("react/jsx-runtime");
+var DeliveryConditionsContent = ({ deliveryModusCode, deliveryModus, deliveryModusSpecification }) => {
+  return deliveryModusCode ? /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(StyledDeliveryConditions, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("h6", { children: t("medication.delivery.title") }),
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "content", children: [
+      deliveryModusCode && /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { children: t("medication.delivery.code") }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { children: deliveryModusCode })
+      ] }),
+      deliveryModus && /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { children: t("medication.delivery.modus") }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { children: deliveryModus })
+      ] }),
+      deliveryModusSpecification && /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { children: t("medication.delivery.specification") }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { children: deliveryModusSpecification })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(StyledDeliveryConditionsNotApplicable, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("h6", { children: t("medication.delivery.title") }),
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { children: t("medication.delivery.notApplicable") }) }) })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
+var import_styled_components16 = __toESM(require("styled-components"));
+var StyledPrescriptionConditions = import_styled_components16.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.red[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+var StyledPrescriptionConditionsNotApplicable = import_styled_components16.default.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/index.tsx
+var import_jsx_runtime14 = require("react/jsx-runtime");
+var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryModusSpecification }) => {
+  return deliveryModusSpecificationCode ? /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(StyledPrescriptionConditions, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h6", { children: t("medication.prescription.title") }),
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "content", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { children: t("medication.delivery.code") }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { children: deliveryModusSpecificationCode })
+      ] }),
+      deliveryModusSpecification && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { children: t("medication.delivery.specification") }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { children: deliveryModusSpecification })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(StyledPrescriptionConditionsNotApplicable, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h6", { children: t("medication.prescription.title") }),
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { children: t("medication.delivery.notApplicable") }) }) })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+var import_react3 = require("react");
+
+// src/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
+var import_styled_components17 = __toESM(require("styled-components"));
+var StyledHeader = import_styled_components17.default.div`
+  width: 100%;
+  display: flex;
+  padding: 8px 12px;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  align-self: stretch;
+  background: #fff;
+  border-radius: 6px;
+
+  ${responsiveMediaQueries.down(displayResolution.s)`
+  gap: 4px;
+  `};
+
+  .medication {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ${responsiveMediaQueries.down(displayResolution.s)`
+    gap: 8px;
+  `};
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+
+      &__heading {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        &__title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          h3 {
+            color: ${colors.grey[900]};
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+          }
+        }
+
+        &__infographics {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .medicationInfographics,
+          .medicationAvailabilityInfographics,
+          .deliveryPrescriptionConditions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+          }
+
+          .medicationInfographics {
+            &__item {
+              display: flex;
+              width: 22px;
+              height: 22px;
+              justify-content: center;
+              align-items: center;
+
+              border-radius: 5px;
+              border: 1px solid ${colors.blue[400]};
+            }
+          }
+
+          .medicationAvailabilityInfographics {
+            &__item {
+              display: flex;
+              width: 22px;
+              height: 22px;
+              justify-content: center;
+              align-items: center;
+
+              border-radius: 5px;
+
+              &--red {
+                background-color: ${colors.red[400]};
+              }
+
+              &--orange {
+                background-color: ${colors.orange[800]};
+              }
+
+              &--green {
+                background-color: ${colors.green[400]};
+              }
+            }
+          }
+        }
+
+        &__activeIngredient {
+          color: ${colors.grey[900]};
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: normal;
+        }
+      }
+
+      &__description {
+        width: 100%;
+        display: flex;
+        gap: 32px;
+        row-gap: 8px;
+        flex-wrap: wrap;
+
+        &__item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          span {
+            font-size: 12px;
+            font-weight: 400;
+            color: ${colors.blue[600]};
+          }
+
+          p {
+            font-size: 14px;
+            font-weight: 400;
+            color: black;
+            font-style: normal;
+            line-height: normal;
+          }
+
+          .price {
+            color: ${colors.orange[900]};
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+`;
+var StyledExpandButton = import_styled_components17.default.button`
+  width: 18px;
+  background: none;
+  cursor: pointer;
+
+  ${({ $isExpanded }) => !!$isExpanded && import_styled_components17.css`
+      transform: rotate(90deg);
+    `};
+`;
+var StyledTextToIcon = import_styled_components17.default.div`
+  height: 22px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-radius: 5px;
+
+  p {
+    font-size: 11px !important;
+    font-weight: 600;
+    color: white !important;
+  }
+
+  ${({ $color }) => $color === "green" && import_styled_components17.css`
+      background-color: ${colors.green[600]};
+    `};
+
+  ${({ $color }) => $color === "orange" && import_styled_components17.css`
+      background-color: ${colors.orange[950]};
+    `};
+
+  ${({ $color }) => $color === "red" && import_styled_components17.css`
+      background-color: ${colors.red[700]};
+    `};
+
+  ${({ $color }) => $color === "grey" && import_styled_components17.css`
+      background-color: ${colors.grey[700]};
+    `};
+`;
+
+// src/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+var import_jsx_runtime15 = require("react/jsx-runtime");
+var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded }) => {
+  const medicationCardRef = (0, import_react3.useRef)(null);
+  const medicationCommercialization = medication.commercializations?.[0];
+  const medicationSupplyProblem = medication.supplyProblems?.[0];
+  const medicationReimbursement = medication.reimbursements;
+  const getSpecialRegulation = (code) => {
+    switch (code) {
+      case 1:
+        return t("medication.drugSpecialRegulation.noNarcoticRegulation");
+      case 2:
+        return t("medication.drugSpecialRegulation.narcoticRegulation");
+      default:
+        return t("medication.drugSpecialRegulation.noSpecialRegulation");
+    }
+  };
+  const ReimbursementIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { $color: "green", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medicationReimbursement.reimbursementCriterion?.category }) });
+  const DeliveryConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { $color: "orange", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medication.deliveryModusCode }) });
+  const PrescriptionConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { $color: "red", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medication.deliveryModusSpecificationCode }) });
+  const NonApplicableIcn = ({ text, colorGrey }) => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { $color: colorGrey ? "grey" : "green", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: text }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(StyledHeader, { ref: medicationCardRef, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+      "div",
+      {
+        className: "medication",
+        onClick: handleAddPrescription,
+        role: "button",
+        tabIndex: 0,
+        onKeyDown: (event) => {
+          if (event.key === "Enter") handleAddPrescription();
+        },
+        children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__heading", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__heading__title", children: [
+              medication.ampId ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.nmpId ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.vmpGroupId ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null,
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("h3", { children: medication.title }),
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__heading__infographics", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medicationInfographics", children: [
+                  medication.blackTriangle && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(BlackTriangleIcn, {}), boundaryBox: medicationCardRef }) }),
+                  medication.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: getSamTextTranslation(medication.rmakeyMessages) }),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(OrangeTriangleIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  ) }),
+                  medication.speciallyRegulated && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: getSpecialRegulation(medication.speciallyRegulated), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PillsBottleIcn, {}), boundaryBox: medicationCardRef }) }),
+                  medication.genericPrescriptionRequired && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionIcn, {}), boundaryBox: medicationCardRef }) })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medicationAvailabilityInfographics", children: [
+                  medicationSupplyProblem && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(SupplyProblemsContent, { medicationSupplyProblem }),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(SupplyIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  ) }),
+                  medicationCommercialization?.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--red", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(EndOfCommercialisationContent, { medicationCommercialization }),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(EndOfCommercialisationIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  ) }),
+                  medicationCommercialization && !medicationCommercialization?.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--green", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StartOfCommercialisationContent, { medicationCommercialization }),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StartOfCommercialisationIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  ) })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "deliveryPrescriptionConditions", children: [
+                  medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementsContent, { reimbursement: medication.reimbursements }), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementIcn, {}) }),
+                  medication.deliveryModusCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                        DeliveryConditionsContent,
+                        {
+                          deliveryModus: medication.deliveryModus,
+                          deliveryModusSpecification: medication.deliveryModusSpecification,
+                          deliveryModusCode: medication.deliveryModusCode
+                        }
+                      ),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(DeliveryConditionsIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  ),
+                  medication.deliveryModusCode && medication.deliveryModusSpecificationCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                    Tooltip,
+                    {
+                      contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+                        PrescriptionConditionsContent,
+                        {
+                          deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
+                          deliveryModusSpecification: medication.deliveryModusSpecification
+                        }
+                      ),
+                      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionConditionsIcn, {}),
+                      boundaryBox: medicationCardRef
+                    }
+                  )
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__description", children: [
+            medication.price && /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(import_jsx_runtime15.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__description__item", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("span", { children: t("medication.ui.price") }),
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { className: "price", children: medication.price })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__description__item", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("span", { children: [
+                  " ",
+                  t("medication.reimbursement.title")
+                ] }),
+                medicationReimbursement ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(NonApplicableIcn, { text: t("medication.reimbursement.non"), colorGrey: true })
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__description__item", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("span", { children: t("medication.delivery.title") }),
+              medication.deliveryModusCode ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(DeliveryConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medication__content__description__item", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("span", { children: t("medication.prescription.title") }),
+              medication.deliveryModusSpecificationCode ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(NonApplicableIcn, { text: t("medication.prescription.free") })
+            ] })
+          ] })
+        ] })
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+      StyledExpandButton,
+      {
+        $isExpanded: isMedicationCardExpanded,
+        onClick: (e) => {
+          e.stopPropagation();
+          setMedicationCardExpanded(!isMedicationCardExpanded);
+        },
+        type: "button",
+        children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ChevronIcn, {})
+      }
+    )
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/medication-card-elements/Extension/styles.ts
+var import_styled_components18 = __toESM(require("styled-components"));
+var StyledExtension = import_styled_components18.default.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px;
+  gap: 18px;
+
+  background-color: ${colors.blue[200]};
+
+  border-radius: 0 0 6px 6px;
+
+  border-top: 1px dashed ${colors.blue[500]};
+
+  .vmp {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__item {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      span {
+        font-size: 12px;
+        font-weight: 400;
+        color: ${colors.blue[600]};
+      }
+
+      p {
+        font-size: 14px;
+        font-weight: 400;
+        color: black;
+      }
+    }
+  }
+
+  .divider {
+    width: 100%;
+    display: flex;
+    border-bottom: 1px dashed rgba(${colors.blue[500]}, 0.25);
+  }
+
+  .links {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    row-gap: 8px;
+
+    a {
+      width: 49%;
+      color: ${colors.blue[500]};
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+`;
+
+// src/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
+var import_jsx_runtime16 = require("react/jsx-runtime");
+var Extension = ({ medication }) => {
+  const medicationCommercialization = medication.commercializations?.[0];
+  const medicationSupplyProblem = medication.supplyProblems?.[0];
+  const medicationReimbursement = medication.reimbursements;
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(StyledExtension, { children: [
+    medication.vmp && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp", children: [
+      medication.vmp.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: "VMP:" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.vmp.name.fr })
+      ] }),
+      medication.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: "VMP-group:" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.vmp.vmpGroup.name.fr })
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "links", children: [
+      medication.crmLink && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("a", { href: medication.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
+      medication.patientInformationLeafletLink && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("a", { href: medication.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
+      medication.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("a", { href: medication.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
+      medication.spcLink && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("a", { href: medication.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
+      medication.dhpcLink && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("a", { href: medication.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
+    ] }),
+    medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(ReimbursementsContent, { reimbursement: medication.reimbursements })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+      PrescriptionConditionsContent,
+      {
+        deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
+        deliveryModusSpecification: medication.deliveryModusSpecification
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+      DeliveryConditionsContent,
+      {
+        deliveryModus: medication.deliveryModus,
+        deliveryModusSpecification: medication.deliveryModusSpecification,
+        deliveryModusCode: medication.deliveryModusCode
+      }
+    ),
+    medication.supplyProblems && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(SupplyProblemsContent, { medicationSupplyProblem })
+    ] }),
+    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(EndOfCommercialisationContent, { medicationCommercialization })
+    ] }),
+    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "divider" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StartOfCommercialisationContent, { medicationCommercialization })
+    ] })
+  ] });
+};
+
+// src/components/medication-elements/MedicationCard/styles.ts
+var import_styled_components19 = __toESM(require("styled-components"));
+var activeMedicationCard = import_styled_components19.css`
+  border-color: ${colors.blue[500]};
+  box-shadow: 0 0 0 2px rgba(${colors.blue[500]}, 0.3);
+`;
+var StyledMedicationCard = import_styled_components19.default.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid ${colors.blue[100]};
+  cursor: pointer;
+
+  &:hover {
+    ${activeMedicationCard};
+  }
+
+  ${({ $isExpanded }) => $isExpanded && import_styled_components19.css`
+      ${activeMedicationCard};
+
+      ${StyledHeader} {
+        border-radius: 6px 6px 0 0;
+      }
+    `};
+
+  ${({ $focused, $disableHover }) => $focused && $disableHover && import_styled_components19.css`
+      &:hover {
+        ${activeMedicationCard};
+      }
+    `};
+
+  ${({ $focused }) => $focused && import_styled_components19.css`
+      ${activeMedicationCard};
+    `};
+
+  ${({ $disableHover }) => $disableHover && import_styled_components19.css`
+      &:hover {
+        border-color: ${colors.blue[100]};
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+    `};
+`;
+
+// src/components/medication-elements/MedicationCard/index.tsx
+var import_jsx_runtime17 = require("react/jsx-runtime");
+var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover }) => {
+  const [isExpanded, setIsExpanded] = (0, import_react4.useState)(false);
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(StyledMedicationCard, { $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, id, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
+      Header,
+      {
+        handleAddPrescription: () => handleAddPrescription(medication),
+        medication,
+        isMedicationCardExpanded: isExpanded,
+        setMedicationCardExpanded: (status) => setIsExpanded(status)
+      }
+    ),
+    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Extension, { medication })
+  ] });
+};
+
+// src/components/common/InfiniteScroll/index.tsx
+var import_react5 = require("react");
+var import_jsx_runtime18 = require("react/jsx-runtime");
+var InfiniteScroll = ({ threshold = 0, loadMore }) => {
+  const infiniteScrollRef = (0, import_react5.useRef)(null);
+  const isLoadMore = (0, import_react5.useRef)(false);
+  (0, import_react5.useEffect)(() => {
+    const element = infiniteScrollRef.current?.parentElement;
+    if (!element) return;
+    const onScroll = (e) => {
+      const target = e.target;
+      const offset = target.scrollHeight - target.clientHeight - target.scrollTop;
+      if (offset <= threshold) {
+        if (!isLoadMore.current) {
+          loadMore();
+        }
+        isLoadMore.current = true;
+      } else {
+        isLoadMore.current = false;
+      }
+    };
+    element.addEventListener("scroll", onScroll);
+    element.addEventListener("resize", onScroll);
+    return () => {
+      element.removeEventListener("scroll", onScroll);
+      element.removeEventListener("resize", onScroll);
+    };
+  }, [threshold, loadMore]);
+  return /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("div", { ref: infiniteScrollRef, style: { width: 0 } });
+};
+
+// src/utils/loader-helpers.ts
+async function mergeSortedPartialArraysN(limit, arrays, fetchMissingCallbacks) {
+  if (arrays.length !== fetchMissingCallbacks.length) {
+    throw new Error("Each array must have a corresponding fetch callback.");
+  }
+  const result = [];
+  const pointers = arrays.map(() => 0);
+  let lastPushedName = "";
+  async function drainArrayUpTo(k, limitName, limit2) {
+    const arr = arrays[k];
+    let p = pointers[k];
+    const fetchMissing = fetchMissingCallbacks[k];
+    while (result.length < limit2) {
+      if (p < arr.length) {
+        const itemName = arr[p].title.toLowerCase();
+        if (limitName === null || itemName < limitName) {
+          result.push(arr[p]);
+          lastPushedName = itemName;
+          p++;
+        } else {
+          break;
+        }
+      } else {
+        const upper = limitName === null ? void 0 : limitName;
+        const newItems = await fetchMissing(lastPushedName, upper);
+        if (newItems.length === 0) {
+          break;
+        }
+        arr.splice(p, 0, ...newItems);
+      }
+    }
+    pointers[k] = p;
+  }
+  function indexOfSmallestFront() {
+    let smallestIndex = null;
+    let smallestName = "";
+    for (let k = 0; k < arrays.length; k++) {
+      const p = pointers[k];
+      if (p < arrays[k].length) {
+        const candidateName = arrays[k][p].title.toLowerCase();
+        if (smallestIndex === null || candidateName < smallestName) {
+          smallestIndex = k;
+          smallestName = candidateName;
+        }
+      }
+    }
+    return smallestIndex;
+  }
+  while (result.length < limit) {
+    const si = indexOfSmallestFront();
+    if (si === null) {
+      break;
+    }
+    const nextName = arrays[si][pointers[si]].title.toLowerCase();
+    for (let k = 0; k < arrays.length; k++) {
+      await drainArrayUpTo(k, nextName, limit);
+    }
+    if (result.length < limit) {
+      if (pointers[si] < arrays[si].length) {
+        const item = arrays[si][pointers[si]];
+        if (item.title.toLowerCase() === nextName) {
+          result.push(item);
+          lastPushedName = nextName;
+          pointers[si]++;
+        }
+      }
+    }
+  }
+  if (result.length < limit) {
+    for (let k = 0; k < arrays.length; k++) {
+      await drainArrayUpTo(k, null, limit);
+    }
+  }
+  return [result, pointers];
+}
+
+// src/services/medication-mapper/index.ts
+var import_cardinal_be_sam_sdk = require("@icure/cardinal-be-sam-sdk");
+
+// src/utils/string-helpers.ts
+function capitalize(s) {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+// src/services/medication-mapper/index.ts
+var nmpToMedicationTypes = (nmp) => {
+  const now = Date.now();
+  return nmp.to && nmp.to < now ? [] : [
+    {
+      nmpId: nmp.id,
+      id: nmp.code,
+      title: capitalize(nmp.name?.fr) ?? ""
+    }
+  ];
+};
+var vmpGroupToMedicationTypes = (vmp) => {
+  const now = Date.now();
+  return vmp.to && vmp.to < now ? [] : [
+    {
+      vmpGroupId: vmp.id,
+      id: vmp.code,
+      title: capitalize(vmp.name?.fr) ?? "",
+      standardDosage: vmp.standardDosage
+    }
+  ];
+};
+var ampToMedicationTypes = (amp, deliveryEnvironment) => {
+  const now = Date.now();
+  const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
+  return amp.to && amp.to < now ? [] : amp.ampps.filter((ampp) => {
+    return ampp.from && ampp.from < now && (!ampp.to || ampp.to > now) && ampp.status == import_cardinal_be_sam_sdk.AmpStatus.Authorized && ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)) && ampp.dmpps?.some((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment);
+  }).map((ampp) => {
+    const dmpp = ampp.dmpps?.find(
+      (dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp2.codeType == import_cardinal_be_sam_sdk.DmppCodeType.Cnk
+    );
+    return {
+      ampId: amp.id,
+      vmpGroupId: amp.vmp?.vmpGroup?.id,
+      id: ampp.ctiExtended,
+      cnk: dmpp?.code,
+      dmppProductId: dmpp?.productId,
+      title: ampp.prescriptionName?.fr ?? ampp.abbreviatedName?.fr ?? amp.prescriptionName?.fr ?? amp.name?.fr ?? amp.abbreviatedName?.fr ?? "",
+      vmpTitle: amp.vmp?.name?.fr ?? "",
+      activeIngredient: amp.vmp?.vmpGroup?.name?.fr ?? "",
+      price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
+      crmLink: ampp.crmLink?.fr,
+      patientInformationLeafletLink: ampp.leafletLink?.fr,
+      blackTriangle: amp.blackTriangle,
+      speciallyRegulated: ampp.speciallyRegulated,
+      genericPrescriptionRequired: ampp.genericPrescriptionRequired,
+      intendedName: ampp.prescriptionName?.fr,
+      rmaProfessionalLink: ampp.rmaProfessionalLink?.fr,
+      spcLink: ampp.spcLink?.fr,
+      dhpcLink: ampp.dhpcLink?.fr,
+      rmakeyMessages: ampp.rmaKeyMessages,
+      vmp: amp.vmp,
+      supplyProblems: ampp.supplyProblems,
+      commercializations: ampp?.commercializations,
+      deliveryModusCode: ampp.deliveryModusCode,
+      deliveryModus: ampp.deliveryModus?.fr,
+      deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
+      deliveryModusSpecification: ampp.deliveryModusSpecification?.fr,
+      reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now))
+    };
+  });
+};
+
+// src/components/medication-elements/MedicationSearch/styles.ts
+var import_styled_components20 = __toESM(require("styled-components"));
+var StyledMedicationSearch = import_styled_components20.default.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+var StyledMedicationSearchInput = import_styled_components20.default.div`
+  ${fieldCommonStyles};
+
+  p {
+    ${labelCommonStyles};
+  }
+
+  input {
+    width: 100%;
+
+    &::placeholder {
+      color: ${colors.grey[650]};
+    }
+  }
+
+  ${({ $dropdownDisplayed }) => !!$dropdownDisplayed && import_styled_components20.css`
+      label {
+        border-color: ${colors.blue[800]};
+        box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+        border-radius: 6px;
+      }
+    `};
+
+  ${({ $error }) => !!$error && import_styled_components20.css`
+      p {
+        ${labelCommonStyles_error};
+      }
+    `};
+
+  .error {
+    ${errorMessageCommonStyles}
+  }
+`;
+var StyledLabel = import_styled_components20.default.label`
+  ${inputCommonStyles};
+
+  justify-content: space-between;
+
+  &:focus-within {
+    border-color: ${colors.blue[800]};
+    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+  }
+
+  ${({ $error }) => !!$error && import_styled_components20.css`
+      ${inputCommonStyles_error};
+    `};
+`;
+var StyledMedicationSearchDropdown = import_styled_components20.default.div`
+  width: 100%;
+  height: 400px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  position: relative;
+
+  padding: 6px 8px 6px 6px;
+  gap: 5px;
+
+  border-radius: 0 0 6px 6px;
+  border-top: none;
+  background: ${colors.blue[300]};
+  box-shadow:
+    0 9px 28px 0 rgba(0, 0, 0, 0.05),
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px 0 rgba(0, 0, 0, 0.12);
+
+  .medicationCardWrap {
+    width: 100%;
+  }
+`;
+
+// src/components/medication-elements/MedicationSearch/index.tsx
+var import_jsx_runtime19 = require("react/jsx-runtime");
+var MedicationSearch = ({ sdk, deliveryEnvironment, handleAddPrescription, disableInputEventsTracking, short = false }) => {
+  const [searchQuery, setSearchQuery] = (0, import_react6.useState)("");
+  const searchQueryRef = (0, import_react6.useRef)(searchQuery);
+  (0, import_react6.useEffect)(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+  const [dropdownDisplayed, setDropdownDisplayed] = (0, import_react6.useState)(false);
+  const [pages, setPages] = (0, import_react6.useState)([]);
+  const [medications, setMedications] = (0, import_react6.useState)();
+  const [molecules, setMolecules] = (0, import_react6.useState)();
+  const [products, setProducts] = (0, import_react6.useState)();
+  const [medicationsPage, setMedicationsPage] = (0, import_react6.useState)([]);
+  const [moleculesPage, setMoleculesPage] = (0, import_react6.useState)([]);
+  const [productsPage, setProductsPage] = (0, import_react6.useState)([]);
+  const [focusedMedicationIndex, setFocusedMedicationIndex] = (0, import_react6.useState)(-1);
+  const [disableHover, setDisableHover] = (0, import_react6.useState)(false);
+  const resultRefs = (0, import_react6.useRef)([]);
+  (0, import_react6.useEffect)(() => {
+    setFocusedMedicationIndex(0);
+  }, []);
+  (0, import_react6.useEffect)(() => {
+    setDropdownDisplayed(!!searchQuery);
+  }, [searchQuery]);
+  (0, import_react6.useEffect)(() => {
+    if (searchQuery && searchQuery.length >= 3) {
+      const cachedQuery = searchQueryRef.current;
+      setPages([]);
+      setTimeout(() => {
+        if (cachedQuery === searchQueryRef.current) {
+          findMedicationsByLabel(sdk, "fr", cachedQuery).then(async ([meds, mols, prods]) => {
+            setMedications(meds);
+            setMolecules(mols);
+            setProducts(prods);
+            if (cachedQuery !== searchQueryRef.current) {
+              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
+              return;
+            }
+            const [medsPage, molsPage, prodsPage] = await Promise.all([
+              meds ? loadMedicationsPage(meds, 10) : [],
+              mols ? loadMoleculesPage(mols, 10) : [],
+              prods ? loadNonMedicinalPage(prods, 10) : []
+            ]);
+            if (cachedQuery !== searchQueryRef.current) {
+              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
+              return;
+            }
+            setMedicationsPage(medsPage);
+            setMoleculesPage(molsPage);
+            setProductsPage(prodsPage);
+            loadMore({ medicationsPage: medsPage, moleculesPage: molsPage, productsPage: prodsPage }).then((result) => {
+              if (cachedQuery === searchQueryRef.current) {
+                console.log(`Search query ${cachedQuery} results loaded, setting pages...`);
+                setPages(result);
+              } else {
+                console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
+              }
+            });
+          });
+        } else {
+          console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
+        }
+      }, 100);
+    }
+  }, [searchQuery, searchQueryRef, sdk]);
+  async function loadMedicationsPage(medications2, min, acc = []) {
+    const page = (!await medications2.hasNext() ? [] : await medications2.next(min)).flatMap((amp) => ampToMedicationTypes(amp, deliveryEnvironment));
+    return (!await medications2.hasNext() ? [] : await medications2.next(min)).length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications2, min, [...acc, ...page]);
+  }
+  async function loadMoleculesPage(molecules2, min, acc = []) {
+    const page = (!await molecules2.hasNext() ? [] : await molecules2.next(min)).flatMap((vmp) => vmpGroupToMedicationTypes(vmp));
+    return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules2, min, [...acc, ...page]);
+  }
+  async function loadNonMedicinalPage(products2, min, acc = []) {
+    const page = (!await products2.hasNext() ? [] : await products2.next(min)).flatMap((nmp) => nmpToMedicationTypes(nmp));
+    return (!await products2.hasNext() ? [] : await products2.next(min)).length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products2, min, [...acc, ...page]);
+  }
+  const loadUntil = async (toName, loadPage) => {
+    let page = await loadPage();
+    const lcToName = toName?.toLowerCase();
+    while (page.length && (!lcToName || page[page.length - 1].title.toLowerCase() < lcToName)) {
+      const newPage = await loadPage();
+      if (!newPage.length) {
+        break;
+      }
+      page = [...page, ...newPage];
+    }
+    return page;
+  };
+  const loadMore = async ({
+    medicationsPage: medicationsPage2,
+    moleculesPage: moleculesPage2,
+    productsPage: productsPage2
+  }) => {
+    const [result, pointers] = await mergeSortedPartialArraysN(
+      10,
+      [[...medicationsPage2], [...moleculesPage2], [...productsPage2]],
+      [
+        async (_, toName) => {
+          const loaded = await loadUntil(toName, () => medications ? loadMedicationsPage(medications, 10) : Promise.resolve([]));
+          setMedicationsPage((medicationsPage3) => [...medicationsPage3, ...loaded]);
+          return loaded;
+        },
+        async (_, toName) => {
+          const loaded = await loadUntil(toName, () => molecules ? loadMoleculesPage(molecules, 10) : Promise.resolve([]));
+          setMoleculesPage((moleculesPage3) => [...moleculesPage3, ...loaded]);
+          return loaded;
+        },
+        async (_, toName) => {
+          const loaded = await loadUntil(toName, () => products ? loadNonMedicinalPage(products, 10) : Promise.resolve([]));
+          setProductsPage((productsPage3) => [...productsPage3, ...loaded]);
+          return loaded;
+        }
+      ]
+    );
+    setMedicationsPage(medicationsPage2.slice(pointers[0]));
+    setMoleculesPage(moleculesPage2.slice(pointers[1]));
+    setProductsPage(productsPage2.slice(pointers[2]));
+    return result;
+  };
+  const handleKeyDown = (event) => {
+    if (disableInputEventsTracking) return;
+    const totalPagesLength = pages.length;
+    const defaultActions = () => {
+      event.preventDefault();
+      setDisableHover(true);
+    };
+    if (event.key === "ArrowDown") {
+      defaultActions();
+      setFocusedMedicationIndex((prev) => (prev + 1) % totalPagesLength);
+      scrollToFocusedItem((focusedMedicationIndex + 1) % totalPagesLength);
+    } else if (event.key === "ArrowUp") {
+      defaultActions();
+      setFocusedMedicationIndex((prev) => (prev - 1 + totalPagesLength) % totalPagesLength);
+      scrollToFocusedItem((focusedMedicationIndex - 1 + totalPagesLength) % totalPagesLength);
+    } else if (event.key === "Enter" && focusedMedicationIndex >= 0) {
+      event.preventDefault();
+      setDisableHover(false);
+      handleAddPrescription(pages[focusedMedicationIndex]);
+    }
+  };
+  const scrollToFocusedItem = (index) => {
+    if (index >= 0 && resultRefs.current[index]) {
+      resultRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+  const handleMouseMove = () => {
+    if (!disableInputEventsTracking) setDisableHover(false);
+  };
+  const showSearchError = () => {
+    const value = searchQuery?.trim();
+    return !!value && value.length < 3;
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(import_jsx_runtime19.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(StyledMedicationSearch, { onKeyDown: handleKeyDown, "aria-activedescendant": focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : void 0, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(StyledMedicationSearchInput, { $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
+        /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("p", { children: [
+          t("medication.search.label"),
+          ":"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(StyledLabel, { $error: showSearchError(), htmlFor: "searchMedications", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
+            "input",
+            {
+              id: "searchMedications",
+              type: "text",
+              placeholder: t("medication.search.label"),
+              autoComplete: "off",
+              autoCapitalize: "off",
+              value: searchQuery,
+              onChange: (e) => setSearchQuery(e.target.value)
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(SearchIcn, {})
+        ] }),
+        showSearchError() && /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("p", { className: "error", children: t("medication.search.errorMessage") })
+      ] }),
+      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", onMouseMove: handleMouseMove, children: [
+        pages.map((medication, index) => /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { ref: (el) => resultRefs.current[index] = el, className: "medicationCardWrap", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
+          MedicationCard,
+          {
+            medication,
+            handleAddPrescription,
+            id: `result-${index}`,
+            focused: focusedMedicationIndex === index,
+            disableHover,
+            short
+          }
+        ) }, index)),
+        /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
+          InfiniteScroll,
+          {
+            threshold: 50,
+            loadMore: () => loadMore({
+              medicationsPage,
+              moleculesPage,
+              productsPage
+            }).then((results) => setPages([...pages, ...results]))
+          }
+        )
+      ] })
+    ] })
+  ] });
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   IndexedDbServiceStore,
+  MedicationSearch,
   PractitionerCertificate,
   cardinalLanguage,
   createFhcCode,
   deleteCertificate,
   fetchSamVersion,
   findMedicationsByLabel,
+  getSamTextTranslation,
   loadAndDecryptCertificate,
   loadCertificateInformation,
   sendRecipe,

@@ -6,3 +6,4 @@ export * from './services/indexed-db'
 export * from './types'
 
 export * from './components/certificate-elements/PractitionerCertificate'
+export * from './components/medication-elements/MedicationSearch'
