@@ -7,3 +7,4 @@ export * from './types'
 
 export * from './components/certificate-elements/PractitionerCertificate'
 export * from './components/medication-elements/MedicationSearch'
+export * from './components/prescription-elements/PrescriptionModal'

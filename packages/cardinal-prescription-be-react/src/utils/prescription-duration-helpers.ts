@@ -1,11 +1,11 @@
-import { TFunction } from 'i18next'
+import { t } from '../services/i18n'
 
 export enum durationTimeUnitsEnum {
   DAY = 'DAY',
   WEEK = 'WEEK',
 }
 
-export const getDurationTimeUnits = (t: TFunction) => [
+export const getDurationTimeUnits = () => [
   {
     value: durationTimeUnitsEnum.DAY,
     label: t('prescriptionDurationHelper.durationUnits.day'),
@@ -24,7 +24,7 @@ export enum periodicityTimeUnitsEnum {
   NUMBER_OF_DAYS = '1',
 }
 
-export const getPeriodicityTimeUnits = (t: TFunction) => [
+export const getPeriodicityTimeUnits = () => [
   {
     value: periodicityTimeUnitsEnum.NONE,
     label: t('prescriptionDurationHelper.periodicityUnits.none'),

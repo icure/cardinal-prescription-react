@@ -2,16 +2,14 @@ import { SamText } from '@icure/cardinal-be-sam-sdk'
 import { appTranslations } from './translations'
 import { DEFAULT_APP_LANGULAGE } from '../constants'
 
-export type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de']
-
 class CardinalLanguage {
-  private language: AvailableLanguagesType = DEFAULT_APP_LANGULAGE
+  private language: keyof SamText = DEFAULT_APP_LANGULAGE
 
-  public setLanguage(language: string): void {
+  public setLanguage(language: keyof SamText): void {
     this.language = language
   }
 
-  public getLanguage(): string {
+  public getLanguage(): keyof SamText {
     return this.language
   }
 }

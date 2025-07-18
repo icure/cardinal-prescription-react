@@ -2,11 +2,10 @@ import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersio
 import { Medication, Duration, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
 
-type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de'];
 declare class CardinalLanguage {
     private language;
-    setLanguage(language: string): void;
-    getLanguage(): string;
+    setLanguage(language: keyof SamText): void;
+    getLanguage(): keyof SamText;
 }
 declare const cardinalLanguage: CardinalLanguage;
 declare const t: (key: string) => string;
@@ -164,4 +163,13 @@ interface MedicationSearchProps {
 }
 declare const MedicationSearch: React.FC<MedicationSearchProps>;
 
-export { type AvailableLanguagesType, type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+interface Props {
+    medicationToPrescribe?: MedicationType;
+    prescriptionToModify?: PrescribedMedicationType;
+    onClose: () => void;
+    onSubmit: (meds: PrescribedMedicationType[]) => void;
+    modalMood: 'create' | 'modify';
+}
+declare const PrescriptionModal: React.FC<Props>;
+
+export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

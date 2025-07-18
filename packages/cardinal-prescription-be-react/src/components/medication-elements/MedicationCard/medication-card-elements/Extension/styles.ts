@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors } from '../../../../../styles'
+import { colors, colorsRgb } from '../../../../../styles'
 
 export const StyledExtension = styled.div`
   width: 100%;
@@ -43,7 +43,7 @@ export const StyledExtension = styled.div`
   .divider {
     width: 100%;
     display: flex;
-    border-bottom: 1px dashed rgba(${colors.blue[500]}, 0.25);
+    border-bottom: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
   }
 
   .links {

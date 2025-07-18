@@ -7,6 +7,8 @@ import {
   MedicationSearch,
   MedicationType,
   PractitionerCertificate,
+  PrescribedMedicationType,
+  PrescriptionModal,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
 } from '@icure/cardinal-prescription-be-react'
@@ -14,6 +16,7 @@ import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
 import { CARDINAL_PRESCRIPTION_LANGUAGE } from './services/constants'
+import { createPortal } from 'react-dom'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -69,6 +72,9 @@ export const App = () => {
   const [cardinalSdkInstance, setCardinalSdkInstance] = useState<SamV2Api | undefined>(undefined)
   const [showMedicationPrescriptionModal, setShowMedicationPrescriptionModal] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
+  const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
+  const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
+  const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -131,7 +137,6 @@ export const App = () => {
   const onDecryptCertificate = (passphrase: string) => {
     setPassphrase(passphrase)
   }
-
   // We do this when no certificate is uploaded
   const onUploadCertificate = async (certificateData: ArrayBuffer, passphrase: string) => {
     if (!hcp.ssin) return
@@ -146,7 +151,6 @@ export const App = () => {
       console.error('Error while uploading certificate from the Demo App:', error)
     }
   }
-
   const onResetCertificate = async (): Promise<void> => {
     if (!hcp.ssin) return
     await deleteCertificate(hcp.ssin)
@@ -156,41 +160,90 @@ export const App = () => {
     setErrorWhileVerifyingCertificate(undefined)
   }
 
-  const handleAddPrescription = (medication: any) => {
+  const onCreatePrescription = (medication: MedicationType) => {
     setShowMedicationPrescriptionModal(true)
+    setPrescriptionModalMode('create')
     setMedicationToPrescribe(medication)
   }
+  const onClosePrescriptionModal = () => {
+    setPrescriptionModalMode(null)
+    setMedicationToPrescribe(undefined)
+    setPrescriptionToModify(undefined)
+    setShowMedicationPrescriptionModal(false)
+  }
+  const onSubmitCreatePrescription = (newPrescriptions: PrescribedMedicationType[]) => {
+    setPrescriptions((prev) => [...prev, ...newPrescriptions])
+    onClosePrescriptionModal()
+  }
+
+  const onSubmitModifyPrescription = (prescriptionsToModify: PrescribedMedicationType[]) => {
+    setPrescriptions((prev) => prev?.map((item) => (item.uuid === prescriptionsToModify[0].uuid ? prescriptionsToModify[0] : item)))
+
+    onClosePrescriptionModal()
+  }
+
+  const onModifyPrescription = (prescription: PrescribedMedicationType) => {
+    setShowMedicationPrescriptionModal(true)
+    setPrescriptionModalMode('modify')
+    setPrescriptionToModify(prescription)
+  }
+
+  const onDeletePrescription = (prescription: PrescribedMedicationType) => {
+    setPrescriptions((prev) => prev?.filter((item) => item.uuid !== prescription.uuid))
+  }
   return (
-    <div className="App">
-      <h1>Hello from the Demo App</h1>
-      <div className="divider"></div>
-      <div className="element">
-        <PractitionerCertificate
-          certificateValid={certificateValid}
-          certificateUploaded={certificateUploaded}
-          errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
-          onResetCertificate={onResetCertificate}
-          onUploadCertificate={onUploadCertificate}
-          onDecryptCertificate={onDecryptCertificate}
-        />
-      </div>
-      <div className="divider"></div>
-      <p>
-        SamVersion:
-        <strong>{samVersion?.version}</strong>
-      </p>
-      <div className="divider"></div>
-      <div className="element">
-        {cardinalSdkInstance && certificateValid && (
-          <MedicationSearch
-            sdk={cardinalSdkInstance}
-            deliveryEnvironment="P"
-            short={true}
-            handleAddPrescription={handleAddPrescription}
-            disableInputEventsTracking={showMedicationPrescriptionModal}
+    <>
+      <div className="App">
+        <h1>Hello from the Demo App</h1>
+        <div className="divider"></div>
+        <div className="element">
+          <PractitionerCertificate
+            certificateValid={certificateValid}
+            certificateUploaded={certificateUploaded}
+            errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
+            onResetCertificate={onResetCertificate}
+            onUploadCertificate={onUploadCertificate}
+            onDecryptCertificate={onDecryptCertificate}
           />
-        )}
+        </div>
+        <div className="divider"></div>
+        <p>
+          SamVersion:
+          <strong>{samVersion?.version}</strong>
+        </p>
+        <div className="divider"></div>
+        <div className="element">
+          {cardinalSdkInstance && certificateValid && (
+            <MedicationSearch
+              sdk={cardinalSdkInstance}
+              deliveryEnvironment="P"
+              short={true}
+              handleAddPrescription={onCreatePrescription}
+              disableInputEventsTracking={showMedicationPrescriptionModal}
+            />
+          )}
+        </div>
       </div>
-    </div>
+      {prescriptionModalMode === 'create' &&
+        createPortal(
+          <PrescriptionModal
+            onClose={onClosePrescriptionModal}
+            onSubmit={onSubmitCreatePrescription}
+            modalMood={prescriptionModalMode}
+            medicationToPrescribe={medicationToPrescribe}
+          />,
+          document.body,
+        )}
+      {prescriptionModalMode === 'modify' &&
+        createPortal(
+          <PrescriptionModal
+            onClose={onClosePrescriptionModal}
+            onSubmit={onSubmitModifyPrescription}
+            modalMood={prescriptionModalMode}
+            prescriptionToModify={prescriptionToModify}
+          />,
+          document.body,
+        )}
+    </>
   )
 }

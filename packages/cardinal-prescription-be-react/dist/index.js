@@ -32,6 +32,7 @@ __export(index_exports, {
   IndexedDbServiceStore: () => IndexedDbServiceStore,
   MedicationSearch: () => MedicationSearch,
   PractitionerCertificate: () => PractitionerCertificate,
+  PrescriptionModal: () => PrescriptionModal,
   cardinalLanguage: () => cardinalLanguage,
   createFhcCode: () => createFhcCode,
   deleteCertificate: () => deleteCertificate,
@@ -1229,8 +1230,16 @@ var formatTimestamp = (timestamp) => {
     return `${day}-${month}-${year}`;
   }
 };
+function dateDecode(date) {
+  return date > 9999e4 ? new Date(date / 1e10, date / 1e8 % 100 - 1, date / 1e6 % 100) : new Date(date / 1e4, date / 100 % 100 - 1, date % 100);
+}
 function dateEncode(date) {
   return date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate();
+}
+function offsetDate(date, offsetInDays) {
+  const result = new Date(dateDecode(date));
+  result.setDate(result.getDate() + offsetInDays);
+  return dateEncode(result);
 }
 
 // src/services/fhc/index.ts
@@ -1313,12 +1322,12 @@ var verifyCertificateWithSts = async (keystore, prescriber, passphrase) => {
   try {
     const { STORE_KEY, TOKEN_KEY } = getTokenStorageKeys(prescriber);
     const sts = new import_be_fhc_lite_api.fhcStsApi(FHC_URL, []);
-    const { uuid } = await sts.uploadKeystoreUsingPOST(keystore);
-    if (!uuid) throw new Error("Cannot obtain keystore uuid");
-    await tokenStore.put(STORE_KEY, uuid);
-    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, uuid, "doctor");
+    const { uuid: uuid2 } = await sts.uploadKeystoreUsingPOST(keystore);
+    if (!uuid2) throw new Error("Cannot obtain keystore uuid");
+    await tokenStore.put(STORE_KEY, uuid2);
+    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, uuid2, "doctor");
     await tokenStore.put(TOKEN_KEY, stsToken.tokenId);
-    return { stsTokenId: stsToken.tokenId, keystoreUuid: uuid, status: !!stsToken.tokenId };
+    return { stsTokenId: stsToken.tokenId, keystoreUuid: uuid2, status: !!stsToken.tokenId };
   } catch (error) {
     return {
       status: false,
@@ -1515,6 +1524,44 @@ var colors = {
     700: "#ee5d59",
     400: "#ffccc7",
     300: "#fff1f0"
+  }
+};
+var colorsRgb = {
+  blue: {
+    800: "8, 75, 131",
+    600: "75, 102, 130",
+    500: "61, 135, 197",
+    400: "173, 213, 255",
+    300: "238, 246, 254",
+    200: "249, 251, 254",
+    100: "220, 231, 242"
+  },
+  grey: {
+    900: "29, 34, 53",
+    700: "126, 130, 127",
+    650: "156, 168, 178",
+    600: "132, 132, 130",
+    550: "202, 208, 213",
+    300: "228, 228, 231",
+    200: "245, 245, 245",
+    100: "252, 252, 253"
+  },
+  orange: {
+    900: "239, 118, 47",
+    950: "229, 166, 19",
+    800: "255, 218, 131"
+  },
+  green: {
+    600: "51, 185, 107",
+    400: "183, 235, 143",
+    300: "246, 255, 237",
+    200: "229, 250, 229"
+  },
+  red: {
+    800: "255, 0, 0",
+    700: "238, 93, 89",
+    400: "255, 204, 199",
+    300: "255, 241, 240"
   }
 };
 
@@ -1976,6 +2023,15 @@ var SearchIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width
     fill: "#9CA8B2"
   }
 ) }) });
+var CloseIcn = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M13.1404 2.32697C13.1407 2.32697 13.1411 2.32732 13.1418 2.32804L14.172 3.3584C14.1727 3.35893 14.1729 3.35929\n       14.1731 3.35982C14.1732 3.36018 14.1732 3.36054 14.1731 3.3609C14.1731 3.36143 14.1727 3.36179 14.172\n       3.3625L9.0345 8.5L14.172 13.6375C14.1727 13.6382 14.1729 13.6386 14.1731 13.6391C14.1732 13.6395 14.1732 13.64\n       14.1731 13.6404C14.1731 13.6407 14.1727 13.6411 14.172 13.6418L13.1416 14.672C13.1411 14.6727 13.1407 14.6729\n       13.1404 14.673C13.14 14.6732 13.1395 14.6732 13.1391 14.673C13.1386 14.673 13.1382 14.6727 13.1375 14.672L8.00003\n        9.53447L2.86253 14.672C2.86182 14.6727 2.86146 14.6729 2.86093 14.673C2.86052 14.6732 2.86008 14.6732 2.85968\n         14.673C2.85932 14.673 2.85896 14.6727 2.85825 14.672L1.82807 13.6416C1.82735 13.6411 1.82718 13.6407 1.827\n         13.6404C1.82687 13.64 1.82687 13.6395 1.827 13.6391C1.827 13.6386 1.82735 13.6382 1.82807 13.6375L6.96557\n         8.5L1.82807 3.3625C1.82735 3.36179 1.82718 3.36143 1.827 3.3609C1.82687 3.36049 1.82687 3.36005 1.827\n         3.35965C1.827 3.35929 1.82735 3.35893 1.82807 3.35822L2.85843 2.32804C2.85896 2.32732 2.85932 2.32715 2.85968\n         2.32697C2.86008 2.32684 2.86052 2.32684 2.86093 2.32697C2.86146 2.32697 2.86182 2.32732 2.86253 2.32804L8.00003\n          7.46554L13.1375 2.32804C13.1382 2.32732 13.1386 2.32715 13.1391 2.32697C13.1395 2.32684 13.14 2.32684 13.1404\n           2.32697Z",
+    fill: "#4B6682"
+  }
+) });
 
 // src/components/common/Alert/index.tsx
 var import_jsx_runtime2 = require("react/jsx-runtime");
@@ -2671,6 +2727,52 @@ var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
 
 // src/utils/reimbursement-helpers.ts
 var import_be_fhc_lite_api2 = require("@icure/be-fhc-lite-api");
+var getReimbursementOptions = () => [
+  {
+    value: null,
+    label: t("reimbursementHelper.practitionerSelectionOptions.none")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.PAYINGTHIRDPARTY,
+    label: t("reimbursementHelper.practitionerSelectionOptions.PAYINGTHIRDPARTY")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.FIRSTDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.FIRSTDOSE")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.SECONDDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.SECONDDOSE")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.THIRDDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.THIRDDOSE")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.CHRONICKINDEYDISEASE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.CHRONICKINDEYDISEASE")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.DIABETESTREATMENT,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESTREATMENT")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.DIABETESCONVENTION,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESCONVENTION")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.NOTREIMBURSABLE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.NOTREIMBURSABLE")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.EXPLAINMEDICATION,
+    label: t("reimbursementHelper.practitionerSelectionOptions.EXPLAINMEDICATION")
+  },
+  {
+    value: import_be_fhc_lite_api2.Medication.InstructionsForReimbursementEnum.DIABETESSTARTPATH,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESSTARTPATH")
+  }
+];
 function getCategoryLabelForReimbursement(code) {
   if (!code) return "";
   return t(`reimbursementHelper.categoryOptions.${code}`) || code;
@@ -3230,7 +3332,7 @@ var StyledExtension = import_styled_components18.default.div`
   .divider {
     width: 100%;
     display: flex;
-    border-bottom: 1px dashed rgba(${colors.blue[500]}, 0.25);
+    border-bottom: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
   }
 
   .links {
@@ -3847,11 +3949,1154 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, handleAddPrescription, disab
     ] })
   ] });
 };
+
+// src/components/prescription-elements/PrescriptionModal/index.tsx
+var import_react9 = require("react");
+var import_medication_sdk = require("@icure/medication-sdk");
+var import_be_fhc_lite_api3 = require("@icure/be-fhc-lite-api");
+var import_uuid = require("uuid");
+
+// src/utils/dosage-helpers.ts
+var findCommonSequence = (str1, str2) => {
+  let commonSequence = "";
+  const maxOverlap = Math.min(str1.length, str2.length);
+  for (let i = 1; i <= maxOverlap; i++) {
+    const suffix = str1.slice(-i);
+    const prefix = str2.slice(0, i);
+    if (suffix === prefix) {
+      commonSequence = suffix;
+    }
+  }
+  return commonSequence;
+};
+
+// src/utils/prescription-duration-helpers.ts
+var getDurationTimeUnits = () => [
+  {
+    value: "DAY" /* DAY */,
+    label: t("prescriptionDurationHelper.durationUnits.day")
+  },
+  {
+    value: "WEEK" /* WEEK */,
+    label: t("prescriptionDurationHelper.durationUnits.week")
+  }
+];
+var getPeriodicityTimeUnits = () => [
+  {
+    value: "0" /* NONE */,
+    label: t("prescriptionDurationHelper.periodicityUnits.none")
+  },
+  {
+    value: "7" /* WEEK */,
+    label: t("prescriptionDurationHelper.periodicityUnits.week")
+  },
+  {
+    value: "14" /* TWO_WEEKS */,
+    label: t("prescriptionDurationHelper.periodicityUnits.twoWeeks")
+  },
+  {
+    value: "21" /* THREE_WEEKS */,
+    label: t("prescriptionDurationHelper.periodicityUnits.threeWeeks")
+  },
+  {
+    value: "1" /* NUMBER_OF_DAYS */,
+    label: t("prescriptionDurationHelper.periodicityUnits.numberOfDays")
+  }
+];
+
+// src/utils/visibility-helpers.ts
+function getPractitionerVisibilityOptions() {
+  return [
+    {
+      value: "open",
+      label: t("prescriptionVisibilityHelper.practitionerVisibility.open")
+    },
+    {
+      value: "locked",
+      label: t("prescriptionVisibilityHelper.practitionerVisibility.locked")
+    },
+    {
+      value: "gmd_prescriber",
+      label: t("prescriptionVisibilityHelper.practitionerVisibility.gmd_prescriber")
+    }
+  ];
+}
+function getPharmacistVisibilityOptions() {
+  return [
+    {
+      value: null,
+      label: t("prescriptionVisibilityHelper.pharmacistVisibility.null")
+    },
+    {
+      value: "locked",
+      label: t("prescriptionVisibilityHelper.pharmacistVisibility.locked")
+    }
+  ];
+}
+
+// src/components/form-elements/SelectInput/styles.ts
+var import_styled_components21 = __toESM(require("styled-components"));
+var StyledSelectInputLabel = import_styled_components21.default.label`
+  ${labelCommonStyles};
+  ${({ $error }) => !!$error && import_styled_components21.css`
+      ${labelCommonStyles_error}
+    `};
+  ${({ $required }) => !!$required && import_styled_components21.css`
+      ${labelCommonStyles_required}
+    `};
+`;
+var StyledSelectInput = import_styled_components21.default.div`
+  ${fieldCommonStyles};
+
+  .error {
+    ${errorMessageCommonStyles}
+  }
+`;
+var StyledSelectDropdown = import_styled_components21.default.select`
+  ${inputCommonStyles};
+
+  ${({ $error }) => !!$error && import_styled_components21.css`
+      ${inputCommonStyles_error}
+    `};
+  ${({ $disabled }) => !!$disabled && import_styled_components21.css`
+      ${inputCommonStyles_disabled}
+    `};
+`;
+
+// src/components/form-elements/SelectInput/index.tsx
+var import_jsx_runtime20 = require("react/jsx-runtime");
+var SelectInput = ({ label, id, required, disabled, options, value, onChange, errorMessage }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(StyledSelectInput, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(StyledSelectInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { children: "*" }),
+      label
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(StyledSelectDropdown, { $disabled: disabled, $error: !!errorMessage, id, name: id, value, disabled, onChange: (e) => onChange(e.target.value), children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
+    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("p", { className: "error", children: errorMessage })
+  ] });
+};
+
+// src/components/form-elements/RadioInput/index.tsx
+var import_react7 = __toESM(require("react"));
+
+// src/components/form-elements/RadioInput/styles.ts
+var import_styled_components22 = __toESM(require("styled-components"));
+var StyledRadioGroupLabel = import_styled_components22.default.p`
+  ${labelCommonStyles};
+  ${({ $error }) => !!$error && import_styled_components22.css`
+      ${labelCommonStyles_error}
+    `};
+  ${({ $required }) => !!$required && import_styled_components22.css`
+      ${labelCommonStyles_required}
+    `};
+`;
+var StyledRadioButtonToggleStuffing = import_styled_components22.default.span`
+  display: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: ${colors.blue[800]};
+`;
+var StyledRadioButtonToggle = import_styled_components22.default.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  padding: 2px;
+  border-radius: 50%;
+  border: 1px solid ${colors.grey[600]};
+  background: #fff;
+
+  ${({ $error }) => !!$error && import_styled_components22.css`
+      border-color: red;
+
+      &:hover {
+        box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+      }
+
+      ${StyledRadioButtonToggleStuffing} {
+        background: red;
+      }
+    `}
+`;
+var StyledRadioButtonLabel = import_styled_components22.default.span`
+  ${labelCommonStyles};
+
+  ${({ $error }) => !!$error && import_styled_components22.css`
+      ${labelCommonStyles_error}
+    `}
+
+  width: auto;
+  font-weight: 400;
+`;
+var StyledRadioButton = import_styled_components22.default.label`
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  cursor: pointer;
+
+  &:hover {
+    ${StyledRadioButtonToggle} {
+      box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+      border-color: ${colors.blue[800]};
+    }
+  }
+
+  input {
+    display: none;
+
+    &:checked + ${StyledRadioButtonToggle} {
+      border-color: ${colors.blue[800]};
+
+      ${StyledRadioButtonToggleStuffing} {
+        display: flex;
+      }
+    }
+  }
+
+  ${({ $error }) => !!$error && import_styled_components22.css`
+      &:hover {
+        ${StyledRadioButtonToggle} {
+          box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+          border-color: red;
+        }
+      }
+
+      input {
+        display: none;
+
+        &:checked + ${StyledRadioButtonToggle} {
+          border-color: red;
+
+          ${StyledRadioButtonToggleStuffing} {
+            display: flex;
+          }
+        }
+      }
+    `}
+`;
+var StyledRadioInput = import_styled_components22.default.div`
+  ${fieldCommonStyles};
+
+  .radioBtnsGroup {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .error {
+    ${errorMessageCommonStyles}
+  }
+`;
+
+// src/components/form-elements/RadioInput/index.tsx
+var import_jsx_runtime21 = require("react/jsx-runtime");
+var RadioInput = ({ label, name, options, required, errorMessage }) => {
+  const [value, setValue] = import_react7.default.useState(false);
+  return /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(StyledRadioInput, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(StyledRadioGroupLabel, { $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { children: "*" }),
+      label
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(StyledRadioButton, { htmlFor: option.id, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(
+        "input",
+        {
+          id: option.id,
+          name,
+          type: "radio",
+          checked: value === option.value,
+          value: String(option.value),
+          required,
+          onChange: () => setValue(option.value)
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(StyledRadioButtonToggle, { $error: !!errorMessage, children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(StyledRadioButtonToggleStuffing, {}) }),
+      /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
+    ] }, option.id)) }),
+    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "error", children: errorMessage })
+  ] });
+};
+
+// src/components/form-elements/ToggleSwitch/index.tsx
+var import_react8 = __toESM(require("react"));
+
+// src/components/form-elements/ToggleSwitch/styles.ts
+var import_styled_components23 = __toESM(require("styled-components"));
+var StyledSwitch = import_styled_components23.default.div`
+
+  ${fieldCommonStyles};
+
+  .toggleSwitchLabel {
+    ${labelCommonStyles};
+  }
+
+  .toggleWrapper {
+    display: flex;
+    padding: 4px 0;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: ${colors.grey[550]};
+        border: 1px solid transparent;
+        transition: 0.4s;
+        border-radius: 34px;
+
+        &:hover {
+          border-color: ${colors.blue[800]};
+          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+        }
+
+        &::before {
+          position: absolute;
+          content: '';
+          height: 18px;
+          width: 18px;
+          left: 2px;
+          bottom: 2px;
+          background-color: white;
+          transition: 0.4s;
+          border-radius: 50%;
+        }
+      }
+
+      input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        &:checked + .slider {
+          background-color: ${colors.blue[800]};
+        }
+
+        &:checked + .slider:hover {
+          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+        }
+
+        &:focus + .slider {
+          box-shadow: 0 0 1px ${colors.blue[800]};
+        }
+
+        &:checked + .slider::before {
+          -webkit-transform: translateX(20px);
+          -ms-transform: translateX(20px);
+          transform: translateX(20px);
+        }
+      }
+    }
+
+    p {
+      ${labelCommonStyles};
+    }
+`;
+
+// src/components/form-elements/ToggleSwitch/index.tsx
+var import_jsx_runtime22 = require("react/jsx-runtime");
+var ToggleSwitch = ({ id, value, checked, label, onChange }) => {
+  const [localChecked, setLocalChecked] = import_react8.default.useState(checked);
+  const handleChange = (newChecked) => {
+    setLocalChecked(newChecked);
+    if (onChange) {
+      onChange(newChecked);
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)(StyledSwitch, { children: [
+    label && /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("p", { className: "toggleSwitchLabel", children: label }),
+    /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)("div", { className: "toggleWrapper", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)("label", { htmlFor: id, className: "toggle", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("input", { id, name: id, type: "checkbox", checked: localChecked, onChange: (e) => handleChange(e.target.checked) }),
+        /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("span", { className: "slider" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("p", { children: value })
+    ] })
+  ] });
+};
+
+// src/components/form-elements/TextareaInput/styles.ts
+var import_styled_components24 = __toESM(require("styled-components"));
+var StyledTextareaInputLabel = import_styled_components24.default.label`
+  ${labelCommonStyles};
+  ${({ $error }) => !!$error && import_styled_components24.css`
+      ${labelCommonStyles_error}
+    `};
+  ${({ $required }) => !!$required && import_styled_components24.css`
+      ${labelCommonStyles_required}
+    `};
+`;
+var StyledTextareaInput = import_styled_components24.default.div`
+  ${fieldCommonStyles};
+
+  .error {
+    ${errorMessageCommonStyles}
+  }
+`;
+var StyledTextarea = import_styled_components24.default.textarea`
+  ${inputCommonStyles};
+  height: unset;
+
+  ${({ $error }) => !!$error && import_styled_components24.css`
+      ${inputCommonStyles_error}
+    `};
+  ${({ $disabled }) => !!$disabled && import_styled_components24.css`
+      ${inputCommonStyles_disabled}
+    `};
+`;
+
+// src/components/form-elements/TextareaInput/index.tsx
+var import_jsx_runtime23 = require("react/jsx-runtime");
+var TextareaInput = ({ label, id, required, disabled, value, onChange, errorMessage }) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)(StyledTextareaInput, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)(StyledTextareaInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("span", { children: "*" }),
+      label
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+      StyledTextarea,
+      {
+        placeholder: label,
+        name: id,
+        id,
+        value,
+        $disabled: disabled,
+        $error: !!errorMessage,
+        disabled,
+        rows: 3,
+        onChange: (e) => onChange(e.target.value)
+      }
+    ),
+    errorMessage && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "error", children: errorMessage })
+  ] });
+};
+
+// src/components/prescription-elements/PrescriptionModal/styles.ts
+var import_styled_components25 = __toESM(require("styled-components"));
+var StyledPrescriptionModal = import_styled_components25.default.div`
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  background-color: rgba(${colorsRgb.blue[800]}, 0.3);
+
+  .content {
+    width: 900px;
+    height: 100%;
+    max-height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0 0 0 auto;
+
+    ${responsiveMediaQueries.down(displayResolution.l)`
+      width: 100%;
+      border-radius: 0.2em;
+  `};
+  }
+
+  .addMedicationForm {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+
+    &__header {
+      display: flex;
+      padding: 20px 24px;
+      justify-content: space-between;
+      align-items: center;
+      align-self: stretch;
+
+      border-bottom: 1px solid ${colors.grey[300]};
+      background: #fff;
+
+      ${responsiveMediaQueries.down(displayResolution.l)`
+      padding: 20px 16px;
+  `};
+
+      h3 {
+        color: ${colors.grey[900]};
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+      }
+
+      &__closeIcn {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: #ffffff;
+        border-radius: 4px;
+
+        &:hover {
+          background-color: rgba(${colorsRgb.grey[300]};, 0.4);
+        }
+      }
+    }
+
+    &__body {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      flex: 1 0 0;
+      gap: 12px;
+      background-color: ${colors.blue[200]};
+
+      ${responsiveMediaQueries.down(displayResolution.l)`
+       padding: 16px;
+      `};
+
+      ${responsiveMediaQueries.down(displayResolution.s)`
+        padding: 8px;
+      `};
+
+      &__content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: stretch;
+        border-radius: 12px;
+        border: 1px solid ${colors.grey[300]};
+        background: #fff;
+        padding: 24px;
+        gap: 12px;
+
+        ${responsiveMediaQueries.down(displayResolution.l)`
+           padding: 18px;
+        `};
+
+        &__inputsGroup {
+          width: 100%;
+          display: flex;
+          align-items: flex-start;
+          gap: 4px;
+          align-self: stretch;
+
+          ${responsiveMediaQueries.down(displayResolution.s)`
+          flex-direction: column;
+            gap: 12px;
+        `};
+        }
+      }
+
+      &__extraFieldsPreview {
+        display: flex;
+        width: 100%;
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: stretch;
+
+        border-radius: 12px;
+        border: 1px solid ${colors.grey[300]};
+        background: #fff;
+        box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+
+        p {
+          color: rgba(${colorsRgb.grey[600]}, 0.7);
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 22px; /* 169.231% */
+        }
+      }
+    }
+
+    &__footer {
+      display: flex;
+      padding: 20px 24px;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 12px;
+      align-self: stretch;
+      border-top: 1px solid ${colors.grey[300]};
+      background: #fff;
+    }
+
+    @keyframes zoom {
+      from {
+        transform: scale(0.95);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+`;
+var StyledDosageInput = import_styled_components25.default.div`
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .suggestionsDropdown {
+    position: absolute;
+    top: calc(100% + 2px);
+
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2px;
+    gap: 2px;
+
+    border-radius: 6px;
+    background: #fff;
+    box-shadow:
+      0 9px 28px 0 rgba(0, 0, 0, 0.05),
+      0 6px 16px 0 rgba(0, 0, 0, 0.08),
+      0 3px 6px 0 rgba(0, 0, 0, 0.12);
+  }
+`;
+var suggestionItemOnAction = import_styled_components25.css`
+  background: ${colors.blue[300]};
+  color: ${colors.blue[800]} !important;
+`;
+var StyledSuggestionItem = import_styled_components25.default.li`
+  width: 100%;
+  display: flex;
+  padding: 8px;
+  align-items: center;
+  align-self: stretch;
+
+  border-radius: 4px;
+  background: #fff;
+
+  color: ${colors.grey[900]};
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+
+  button {
+    background: none;
+  }
+
+  &:hover {
+    ${suggestionItemOnAction}
+  }
+
+  ${({ $focused }) => !!$focused && import_styled_components25.css`
+      ${suggestionItemOnAction}
+    `};
+
+  ${({ $disableHover }) => !!$disableHover && import_styled_components25.css`
+      &:hover {
+        background: none;
+      }
+    `};
+
+  ${({ $disableHover, $focused }) => !!$disableHover && $focused && import_styled_components25.css`
+      &:hover {
+        ${suggestionItemOnAction}
+      }
+    `};
+`;
+
+// src/components/prescription-elements/PrescriptionModal/index.tsx
+var import_jsx_runtime24 = require("react/jsx-runtime");
+var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
+  const [dosage, setDosage] = (0, import_react9.useState)(prescriptionToModify?.medication?.instructionForPatient ?? "");
+  const [duration, setDuration] = (0, import_react9.useState)(prescriptionToModify?.medication?.duration?.value ?? 1);
+  const [durationTimeUnit, setDurationTimeUnit] = (0, import_react9.useState)(prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value);
+  const [treatmentStartDate, setTreatmentStartDate] = (0, import_react9.useState)(() => {
+    if (prescriptionToModify?.medication?.beginMoment) {
+      const dateNumber = prescriptionToModify.medication.beginMoment;
+      const year = Math.floor(dateNumber / 1e4);
+      const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
+      const day = (dateNumber % 100).toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  });
+  const [executableUntil, setExecutableUntil] = (0, import_react9.useState)(() => {
+    if (prescriptionToModify?.medication?.endMoment) {
+      const dateNumber = prescriptionToModify.medication.endMoment;
+      const year = Math.floor(dateNumber / 1e4);
+      const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
+      const day = (dateNumber % 100).toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    const startDay = /* @__PURE__ */ new Date();
+    const nextYear = new Date(startDay);
+    nextYear.setFullYear(startDay.getFullYear() + 1);
+    return nextYear.toISOString().split("T")[0];
+  });
+  const [prescriptionsNumber, setPrescriptionsNumber] = (0, import_react9.useState)(1);
+  const [periodicityTimeUnit, setPeriodicityTimeUnit] = (0, import_react9.useState)(getPeriodicityTimeUnits()[0].value);
+  const [periodicityDaysNumber, setPeriodicityDaysNumber] = (0, import_react9.useState)(1);
+  const [substitutionAllowed, setSubstitutionAllowed] = (0, import_react9.useState)(prescriptionToModify?.medication?.substitutionAllowed ?? false);
+  const [showExtraFields, setShowExtraFields] = (0, import_react9.useState)(false);
+  const [recipeInstructionForPatient, setRecipeInstructionForPatient] = (0, import_react9.useState)(prescriptionToModify?.medication?.recipeInstructionForPatient ?? void 0);
+  const [instructionsForReimbursement, setInstructionsForReimbursement] = (0, import_react9.useState)(prescriptionToModify?.medication?.instructionsForReimbursement ?? void 0);
+  const [practitionerVisibility, setPractitionerVisibility] = (0, import_react9.useState)(prescriptionToModify?.prescriberVisibility ?? getPractitionerVisibilityOptions()[0]?.value);
+  const [pharmacistVisibility, setPharmacistVisibility] = (0, import_react9.useState)(prescriptionToModify?.pharmacistVisibility ?? getPharmacistVisibilityOptions()[0]?.value);
+  const [errors, setErrors] = (0, import_react9.useState)({});
+  const [posologySuggestions, setPosologySuggestions] = (0, import_react9.useState)([]);
+  const [focusedDosageIndex, setFocusedDosageIndex] = (0, import_react9.useState)(-1);
+  const resultRefs = (0, import_react9.useRef)([]);
+  const [disableHover, setDisableHover] = (0, import_react9.useState)(false);
+  const [dosageFromSuggestion, setDosageFromSuggestion] = (0, import_react9.useState)("");
+  const medicationTitle = medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? "";
+  const errorMessages = {
+    isRequired: "Ce champ est obligatoire."
+  };
+  const language3 = cardinalLanguage.getLanguage();
+  const { completePosology: completeDosage } = (0, import_medication_sdk.makeParser)(language3);
+  const dosageRef = (0, import_react9.useRef)(dosage);
+  (0, import_react9.useEffect)(() => {
+    dosageRef.current = dosage;
+  }, [dosage]);
+  (0, import_react9.useEffect)(() => {
+    const dosageWhenCalled = dosage;
+    setTimeout(() => {
+      if (dosageWhenCalled && dosageWhenCalled === dosageRef.current && dosageWhenCalled != dosageFromSuggestion) {
+        setPosologySuggestions(completeDosage(dosageWhenCalled));
+      }
+    }, 100);
+  }, [dosage]);
+  const validateForm = (data) => {
+    const setError = (inputName, isValid) => {
+      setErrors((prev) => ({
+        ...prev,
+        [inputName]: {
+          validationError: !isValid ? errorMessages.isRequired : void 0
+        }
+      }));
+    };
+    const isRequiredFieldValid = (value) => value != null && value !== "";
+    const inputsToValidate = [
+      "dosage",
+      "duration",
+      "durationTimeUnit",
+      "treatmentStartDate",
+      "executableUntil",
+      "prescriptionsNumber",
+      "substitutionAllowed",
+      prescriptionsNumber && prescriptionsNumber > 1 ? "periodicityTimeUnit" : null,
+      periodicityTimeUnit && periodicityTimeUnit === "1" ? "periodicityDaysNumber" : null
+    ].filter((x) => !!x);
+    inputsToValidate.forEach((input) => setError(input, isRequiredFieldValid(data[input])));
+  };
+  const isFormValid = () => {
+    return !Object.keys(errors).some((inputName) => errors[inputName].validationError);
+  };
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const data = {
+      dosage,
+      duration,
+      durationTimeUnit,
+      treatmentStartDate,
+      executableUntil,
+      prescriptionsNumber,
+      periodicityTimeUnit,
+      periodicityDaysNumber,
+      substitutionAllowed,
+      recipeInstructionForPatient,
+      instructionsForReimbursement,
+      prescriberVisibility: practitionerVisibility,
+      pharmacistVisibility
+    };
+    validateForm(data);
+    if (isFormValid()) {
+      const getDurationInDays = (timeUnit, value) => {
+        if (timeUnit === "jour") {
+          return value;
+        } else if (timeUnit === "semaine") {
+          return value * 7;
+        }
+      };
+      const prescribedMedications = prescriptionToModify ? [
+        {
+          ...prescriptionToModify,
+          medication: new import_be_fhc_lite_api3.Medication({
+            ...prescriptionToModify.medication,
+            duration: new import_be_fhc_lite_api3.Duration({
+              unit: createFhcCode("CD-TIMEUNIT", "D"),
+              value: getDurationInDays(data.durationTimeUnit, data.duration)
+            }),
+            instructionForPatient: data.dosage,
+            recipeInstructionForPatient: data.recipeInstructionForPatient,
+            instructionsForReimbursement: data.instructionsForReimbursement,
+            substitutionAllowed: data.substitutionAllowed
+          }),
+          prescriberVisibility: data.prescriberVisibility,
+          pharmacistVisibility: data.pharmacistVisibility
+        }
+      ] : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
+        (idx) => ({
+          uuid: (0, import_uuid.v4)(),
+          medication: new import_be_fhc_lite_api3.Medication({
+            ...medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired ? {
+              medicinalProduct: new import_be_fhc_lite_api3.Medicinalproduct({
+                samId: medicationToPrescribe.dmppProductId,
+                intendedcds: [createFhcCode("CD-DRUG-CNK", medicationToPrescribe.cnk)],
+                intendedname: medicationToPrescribe.intendedName
+              })
+            } : medicationToPrescribe?.vmpGroupId ? {
+              substanceProduct: new import_be_fhc_lite_api3.Substanceproduct({
+                samId: medicationToPrescribe.vmpGroupId,
+                intendedcds: [createFhcCode("CD_VMPGROUP", medicationToPrescribe.vmpGroupId)],
+                intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title
+              })
+            } : {
+              compoundPrescription: medicationToPrescribe.title
+            },
+            beginMoment: offsetDate(
+              parseInt(data.treatmentStartDate.replace(/-/g, "")),
+              data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
+            ),
+            endMoment: offsetDate(
+              parseInt(data.executableUntil.replace(/-/g, "")),
+              data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
+            ),
+            duration: new import_be_fhc_lite_api3.Duration({
+              unit: createFhcCode("CD-TIMEUNIT", "D"),
+              value: getDurationInDays(data.durationTimeUnit, data.duration)
+            }),
+            instructionForPatient: data.dosage,
+            recipeInstructionForPatient: data.recipeInstructionForPatient,
+            instructionsForReimbursement: data.instructionsForReimbursement,
+            substitutionAllowed: data.substitutionAllowed
+          }),
+          prescriberVisibility: data.prescriberVisibility,
+          pharmacistVisibility: data.pharmacistVisibility
+        })
+      );
+      onSubmit(prescribedMedications);
+      onClose();
+    }
+  };
+  const handleKeyDown = (event) => {
+    const length = posologySuggestions.length;
+    const defaultActions = () => {
+      event.preventDefault();
+      setDisableHover(true);
+    };
+    if (event.key === "ArrowDown") {
+      defaultActions();
+      setFocusedDosageIndex((prev) => (prev + 1) % length);
+      scrollToFocusedItem((focusedDosageIndex + 1) % length);
+    } else if (event.key === "ArrowUp") {
+      defaultActions();
+      setFocusedDosageIndex((prev) => (prev - 1 + length) % length);
+      scrollToFocusedItem((focusedDosageIndex - 1 + length) % length);
+    } else if (event.key === "Enter" && focusedDosageIndex >= 0) {
+      event.preventDefault();
+      setDisableHover(false);
+      validateSuggestion(posologySuggestions[focusedDosageIndex]);
+    } else if (event.key === "Escape") {
+      if (posologySuggestions.length) {
+        event.preventDefault();
+        event.stopPropagation();
+        setPosologySuggestions([]);
+        setFocusedDosageIndex(-1);
+      }
+    } else if (event.key === "Enter") {
+      handleFormSubmit(event);
+    }
+  };
+  const scrollToFocusedItem = (index) => {
+    if (index >= 0 && resultRefs.current[index]) {
+      resultRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+  const handleMouseMove = () => {
+    setDisableHover(false);
+  };
+  const validateSuggestion = (suggestion) => {
+    if (suggestion) {
+      const common = findCommonSequence(dosage ?? "", suggestion);
+      setDosage((dosageRef.current + (common.length ? suggestion.slice(common.length) : " " + suggestion)).replace(/ {2,}/g, " ").replace(/\/ /g, "/"));
+      setDosageFromSuggestion(dosageRef.current);
+      setPosologySuggestions([]);
+      setFocusedDosageIndex(1);
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(import_jsx_runtime24.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(StyledPrescriptionModal, { children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleFormSubmit, autoComplete: "off", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__header", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
+        /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("button", { className: "addMedicationForm__header__closeIcn", onClick: onClose, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(CloseIcn, {}) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(
+        "div",
+        {
+          className: "addMedicationForm__body",
+          onKeyDown: handleKeyDown,
+          role: "listbox",
+          tabIndex: 0,
+          "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(TextInput, { label: t("prescription.form.medicationTitle"), value: medicationTitle, required: true, disabled: true, id: "drugName" }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(StyledDosageInput, { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.dosage"),
+                    id: "dosage",
+                    value: dosage,
+                    onChange: (e) => setDosage(e.target.value),
+                    required: true,
+                    autoFocus: true,
+                    errorMessage: errors.dosage?.validationError
+                  }
+                ),
+                posologySuggestions.length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(StyledSuggestionItem, { id: `posology-${index}`, $disableHover: disableHover, $focused: focusedDosageIndex === index, children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  "button",
+                  {
+                    onClick: (e) => {
+                      e.preventDefault();
+                      validateSuggestion(posology);
+                    },
+                    children: posology
+                  }
+                ) }, index)) })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.duration"),
+                    id: "duration",
+                    type: "number",
+                    min: 1,
+                    value: duration,
+                    onChange: (e) => setDuration(Number(e.target.value)),
+                    required: true,
+                    errorMessage: errors.duration?.validationError
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  SelectInput,
+                  {
+                    label: t("prescription.form.durationTimeUnit"),
+                    id: "durationTimeUnit",
+                    required: true,
+                    options: getDurationTimeUnits(),
+                    value: durationTimeUnit,
+                    onChange: setDurationTimeUnit
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.treatmentStartDate"),
+                    id: "treatmentStartDate",
+                    type: "date",
+                    value: treatmentStartDate,
+                    onChange: (e) => setTreatmentStartDate(e.target.value),
+                    required: true,
+                    errorMessage: errors.treatmentStartDate?.validationError
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.executableUntil"),
+                    id: "executableUntil",
+                    type: "date",
+                    value: executableUntil,
+                    onChange: (e) => setExecutableUntil(e.target.value),
+                    required: true,
+                    errorMessage: errors.executableUntil?.validationError
+                  }
+                )
+              ] }),
+              !prescriptionToModify && /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.prescriptionsNumber"),
+                    id: "prescriptionsNumber",
+                    type: "number",
+                    min: 1,
+                    max: 12,
+                    value: prescriptionsNumber,
+                    onChange: (e) => setPrescriptionsNumber(Number(e.target.value)),
+                    required: true,
+                    errorMessage: errors.prescriptionsNumber?.validationError
+                  }
+                ),
+                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  SelectInput,
+                  {
+                    label: t("prescription.form.periodicityTimeUnit"),
+                    id: "periodicityTimeUnit",
+                    required: true,
+                    options: getPeriodicityTimeUnits(),
+                    value: periodicityTimeUnit,
+                    onChange: setPeriodicityTimeUnit
+                  }
+                ),
+                periodicityTimeUnit === "1" && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                  TextInput,
+                  {
+                    label: t("prescription.form.periodicityDaysNumber"),
+                    id: "periodicityDaysNumber",
+                    type: "number",
+                    min: 1,
+                    value: periodicityDaysNumber,
+                    onChange: (e) => setPeriodicityDaysNumber(Number(e.target.value)),
+                    required: true,
+                    errorMessage: errors.periodicityDaysNumber?.validationError
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                RadioInput,
+                {
+                  name: "substitutionAllowed",
+                  label: t("prescription.form.substitutionAllowed"),
+                  options: [
+                    { label: "Non", value: false, id: "substitutionIsNotAllowed" },
+                    { label: "Oui", value: true, id: "substitutionIsAllowed" }
+                  ],
+                  required: true,
+                  errorMessage: errors.substitutionAllowed?.validationError,
+                  onChange: setSubstitutionAllowed
+                }
+              ) })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(ToggleSwitch, { id: "showExtraFields", value: t("prescription.form.toggleExtraFields"), checked: showExtraFields, onChange: setShowExtraFields }),
+            !showExtraFields ? /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("span", { children: [
+                  t("prescription.form.patientInstructions"),
+                  " :"
+                ] }),
+                " ",
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("span", { children: [
+                  t("prescription.form.reimbursementInstructions"),
+                  " :"
+                ] }),
+                " ",
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("span", { children: [
+                  t("prescription.form.prescriberVisibility"),
+                  " :"
+                ] }),
+                " ",
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === practitionerVisibility)?.label }) })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("span", { children: [
+                  t("prescription.form.pharmacistVisibility"),
+                  " :"
+                ] }),
+                " ",
+                /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
+              ] })
+            ] }) : /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                TextareaInput,
+                {
+                  label: t("prescription.form.patientInstructions"),
+                  id: "recipeInstructionForPatient",
+                  value: recipeInstructionForPatient,
+                  onChange: setRecipeInstructionForPatient
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                SelectInput,
+                {
+                  label: t("prescription.form.reimbursementInstructions"),
+                  id: "instructionsForReimbursement",
+                  value: instructionsForReimbursement,
+                  onChange: setInstructionsForReimbursement,
+                  options: getReimbursementOptions()
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                SelectInput,
+                {
+                  label: t("prescription.form.prescriberVisibility"),
+                  id: "prescriberVisibility",
+                  value: practitionerVisibility,
+                  onChange: setPractitionerVisibility,
+                  options: getPractitionerVisibilityOptions()
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+                SelectInput,
+                {
+                  label: t("prescription.form.pharmacistVisibility"),
+                  id: "pharmacyVisibility",
+                  value: pharmacistVisibility,
+                  onChange: setPharmacistVisibility,
+                  options: getPharmacistVisibilityOptions()
+                }
+              )
+            ] })
+          ]
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "addMedicationForm__footer", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: onClose }),
+        /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+      ] })
+    ] }) }) })
+  ] });
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   IndexedDbServiceStore,
   MedicationSearch,
   PractitionerCertificate,
+  PrescriptionModal,
   cardinalLanguage,
   createFhcCode,
   deleteCertificate,

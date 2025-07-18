@@ -24,9 +24,11 @@
   "dependencies": {
     "@icure/be-fhc-lite-api": "^0.6.4",
     "@icure/cardinal-be-sam-sdk": "^0.0.1",
+    "@icure/medication-sdk": "^0.0.8",
     "i18next": "^25.3.2",
     "react-hook-form": "^7.60.0",
     "react-i18next": "^15.6.0",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "uuid": "^11.0.5"
   }
 }

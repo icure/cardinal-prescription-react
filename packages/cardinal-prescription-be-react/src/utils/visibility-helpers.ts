@@ -1,7 +1,7 @@
 import { PharmacistVisibilityType, PractitionerVisibilityType } from '../types'
-import type { TFunction } from 'i18next'
+import { t } from '../services/i18n'
 
-export function getPractitionerVisibilityOptions(t: TFunction): {
+export function getPractitionerVisibilityOptions(): {
   value: PractitionerVisibilityType
   label: string
 }[] {
@@ -21,7 +21,7 @@ export function getPractitionerVisibilityOptions(t: TFunction): {
   ]
 }
 
-export function getPharmacistVisibilityOptions(t: TFunction): {
+export function getPharmacistVisibilityOptions(): {
   value: PharmacistVisibilityType
   label: string
 }[] {
