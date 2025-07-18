@@ -1,17 +1,16 @@
 import { type Amp, Nmp, type PaginatedListIterator, type SamV2Api, type SamVersion, VmpGroup } from '@icure/cardinal-be-sam-sdk'
+import { cardinalLanguage } from '../i18n'
 
 /**
  * Search for medications matching the given query and language.
- * @param sdk
- * @param language Language code (e.g., 'en', 'fr', 'nl' or 'de')
+ * @param sdk Instance of the SamV2Api sdk
  * @param query Medication search query string
  * @returns Paginated lists of AMP, VMPGroup, and NMP matches
  */
-export const findMedicationsByLabel = async (
-  sdk: SamV2Api,
-  language: string,
-  query: string,
-): Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]> => {
+
+const language = cardinalLanguage.getLanguage()
+
+export const findMedicationsByLabel = async (sdk: SamV2Api, query: string): Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]> => {
   try {
     return await Promise.all([sdk.findPaginatedAmpsByLabel(language, query), sdk.findPaginatedVmpGroupsByLabel(language, query), sdk.findPaginatedNmpsByLabel(language, query)])
   } catch (error) {

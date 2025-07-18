@@ -954,11 +954,25 @@ var appTranslations = {
   }
 };
 
+// src/services/constants.ts
+var FHC_URL = "https://fhcacc.icure.cloud";
+var DEFAULT_APP_LANGULAGE = "fr";
+var CERTIFICATE_IDB_CONFIG = {
+  DB_NAME: "certificate-store",
+  STORE_NAME: "certificates",
+  KEY_PATH: "id"
+};
+var TOKEN_IDB_CONFIG = {
+  DB_NAME: "token-store",
+  STORE_NAME: "tokens",
+  KEY_PATH: "id"
+};
+
 // src/services/i18n/index.tsx
 var CardinalLanguage = class {
-  language = "en";
-  setLanguage(language) {
-    this.language = language;
+  language = DEFAULT_APP_LANGULAGE;
+  setLanguage(language3) {
+    this.language = language3;
   }
   getLanguage() {
     return this.language;
@@ -985,12 +999,13 @@ var getSamTextTranslation = (samText) => {
     return void 0;
   }
   const lang = cardinalLanguage.getLanguage();
-  const fallback = "fr";
+  const fallback = DEFAULT_APP_LANGULAGE;
   return samText[lang] ?? samText[fallback];
 };
 
 // src/services/cardinal-sam/index.ts
-var findMedicationsByLabel = async (sdk, language, query) => {
+var language = cardinalLanguage.getLanguage();
+var findMedicationsByLabel = async (sdk, query) => {
   try {
     return await Promise.all([sdk.findPaginatedAmpsByLabel(language, query), sdk.findPaginatedVmpGroupsByLabel(language, query), sdk.findPaginatedNmpsByLabel(language, query)]);
   } catch (error) {
@@ -1064,19 +1079,6 @@ var IndexedDbServiceStore = class {
       request.onerror = () => reject(request.error);
     });
   }
-};
-
-// src/services/constants.ts
-var FHC_URL = "https://fhcacc.icure.cloud";
-var CERTIFICATE_IDB_CONFIG = {
-  DB_NAME: "certificate-store",
-  STORE_NAME: "certificates",
-  KEY_PATH: "id"
-};
-var TOKEN_IDB_CONFIG = {
-  DB_NAME: "token-store",
-  STORE_NAME: "tokens",
-  KEY_PATH: "id"
 };
 
 // src/services/certificate/index.ts
@@ -1187,6 +1189,7 @@ var getTokenStorageKeys = (hcp) => ({
   STORE_KEY: `keystore.${hcp.ssin}`,
   TOKEN_KEY: `token.${hcp.ssin}`
 });
+var language2 = cardinalLanguage.getLanguage();
 var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new PrescriptionRequest({
   medications: [prescribedMedication.medication],
   patient: {
@@ -1213,7 +1216,7 @@ var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescrib
   samVersion,
   deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
   expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
-  lang: "fr"
+  lang: language2
 });
 var createFhcCode = (type, code, version = "1.0") => new FhcCode({
   id: `${type}:${code}:${version}`,
@@ -3022,7 +3025,7 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
                   medication.rmaProfessionalLink && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(
                     Tooltip,
                     {
-                      contentSnippet: /* @__PURE__ */ jsx15(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: getSamTextTranslation(medication.rmakeyMessages) }),
+                      contentSnippet: /* @__PURE__ */ jsx15(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: medication.rmakeyMessages }),
                       iconSnippet: /* @__PURE__ */ jsx15(OrangeTriangleIcn, {}),
                       boundaryBox: medicationCardRef
                     }
@@ -3451,7 +3454,7 @@ var nmpToMedicationTypes = (nmp) => {
     {
       nmpId: nmp.id,
       id: nmp.code,
-      title: capitalize(nmp.name?.fr) ?? ""
+      title: capitalize(getSamTextTranslation(nmp.name))
     }
   ];
 };
@@ -3461,7 +3464,7 @@ var vmpGroupToMedicationTypes = (vmp) => {
     {
       vmpGroupId: vmp.id,
       id: vmp.code,
-      title: capitalize(vmp.name?.fr) ?? "",
+      title: capitalize(getSamTextTranslation(vmp.name)),
       standardDosage: vmp.standardDosage
     }
   ];
@@ -3481,27 +3484,27 @@ var ampToMedicationTypes = (amp, deliveryEnvironment) => {
       id: ampp.ctiExtended,
       cnk: dmpp?.code,
       dmppProductId: dmpp?.productId,
-      title: ampp.prescriptionName?.fr ?? ampp.abbreviatedName?.fr ?? amp.prescriptionName?.fr ?? amp.name?.fr ?? amp.abbreviatedName?.fr ?? "",
-      vmpTitle: amp.vmp?.name?.fr ?? "",
-      activeIngredient: amp.vmp?.vmpGroup?.name?.fr ?? "",
-      price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
-      crmLink: ampp.crmLink?.fr,
-      patientInformationLeafletLink: ampp.leafletLink?.fr,
+      title: getSamTextTranslation(ampp.prescriptionName ?? ampp.abbreviatedName ?? amp.prescriptionName ?? amp.name ?? amp.abbreviatedName),
+      vmpTitle: getSamTextTranslation(amp.vmp?.name),
+      activeIngredient: getSamTextTranslation(amp.vmp?.vmpGroup?.name),
+      price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : void 0,
+      crmLink: getSamTextTranslation(ampp.crmLink),
+      patientInformationLeafletLink: getSamTextTranslation(ampp.leafletLink),
       blackTriangle: amp.blackTriangle,
       speciallyRegulated: ampp.speciallyRegulated,
       genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-      intendedName: ampp.prescriptionName?.fr,
-      rmaProfessionalLink: ampp.rmaProfessionalLink?.fr,
-      spcLink: ampp.spcLink?.fr,
-      dhpcLink: ampp.dhpcLink?.fr,
-      rmakeyMessages: ampp.rmaKeyMessages,
+      intendedName: getSamTextTranslation(ampp.prescriptionName),
+      rmaProfessionalLink: getSamTextTranslation(ampp.rmaProfessionalLink),
+      spcLink: getSamTextTranslation(ampp.spcLink),
+      dhpcLink: getSamTextTranslation(ampp.dhpcLink),
+      rmakeyMessages: getSamTextTranslation(ampp.rmaKeyMessages),
       vmp: amp.vmp,
       supplyProblems: ampp.supplyProblems,
       commercializations: ampp?.commercializations,
       deliveryModusCode: ampp.deliveryModusCode,
-      deliveryModus: ampp.deliveryModus?.fr,
+      deliveryModus: getSamTextTranslation(ampp.deliveryModus),
       deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
-      deliveryModusSpecification: ampp.deliveryModusSpecification?.fr,
+      deliveryModusSpecification: getSamTextTranslation(ampp.deliveryModusSpecification),
       reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now))
     };
   });
@@ -3619,7 +3622,7 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, handleAddPrescription, disab
       setPages([]);
       setTimeout(() => {
         if (cachedQuery === searchQueryRef.current) {
-          findMedicationsByLabel(sdk, "fr", cachedQuery).then(async ([meds, mols, prods]) => {
+          findMedicationsByLabel(sdk, cachedQuery).then(async ([meds, mols, prods]) => {
             setMedications(meds);
             setMolecules(mols);
             setProducts(prods);

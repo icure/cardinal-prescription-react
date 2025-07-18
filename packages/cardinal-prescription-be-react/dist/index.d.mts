@@ -12,14 +12,7 @@ declare const cardinalLanguage: CardinalLanguage;
 declare const t: (key: string) => string;
 declare const getSamTextTranslation: (samText?: SamText) => string | undefined;
 
-/**
- * Search for medications matching the given query and language.
- * @param sdk
- * @param language Language code (e.g., 'en', 'fr', 'nl' or 'de')
- * @param query Medication search query string
- * @returns Paginated lists of AMP, VMPGroup, and NMP matches
- */
-declare const findMedicationsByLabel: (sdk: SamV2Api, language: string, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
+declare const findMedicationsByLabel: (sdk: SamV2Api, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
 /**
  * Fetch the current version information for the SAM database.
  */
@@ -45,7 +38,7 @@ type MedicationType = {
     rmaProfessionalLink?: string;
     spcLink?: string;
     dhpcLink?: string;
-    rmakeyMessages?: SamText;
+    rmakeyMessages?: string;
     vmp?: VmpStub;
     supplyProblems?: SupplyProblem[];
     commercializations?: Commercialization[];

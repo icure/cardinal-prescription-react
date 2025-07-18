@@ -1,5 +1,6 @@
 import { Amp, AmpStatus, DmppCodeType, Nmp, VmpGroup } from '@icure/cardinal-be-sam-sdk'
 import { MedicationType } from '../../types'
+import { getSamTextTranslation } from '../i18n'
 import { capitalize } from '../../utils/string-helpers'
 
 export const nmpToMedicationTypes = (nmp: Nmp): MedicationType[] => {
@@ -11,7 +12,7 @@ export const nmpToMedicationTypes = (nmp: Nmp): MedicationType[] => {
         {
           nmpId: nmp.id,
           id: nmp.code,
-          title: capitalize(nmp.name?.fr) ?? '',
+          title: capitalize(getSamTextTranslation(nmp.name)),
         },
       ]
 }
@@ -25,7 +26,7 @@ export const vmpGroupToMedicationTypes = (vmp: VmpGroup): MedicationType[] => {
         {
           vmpGroupId: vmp.id,
           id: vmp.code,
-          title: capitalize(vmp.name?.fr) ?? '',
+          title: capitalize(getSamTextTranslation(vmp.name)),
           standardDosage: vmp.standardDosage,
         },
       ]
@@ -60,27 +61,27 @@ export const ampToMedicationTypes = (amp: Amp, deliveryEnvironment: string): Med
             id: ampp.ctiExtended,
             cnk: dmpp?.code,
             dmppProductId: dmpp?.productId,
-            title: ampp.prescriptionName?.fr ?? ampp.abbreviatedName?.fr ?? amp.prescriptionName?.fr ?? amp.name?.fr ?? amp.abbreviatedName?.fr ?? '',
-            vmpTitle: amp.vmp?.name?.fr ?? '',
-            activeIngredient: amp.vmp?.vmpGroup?.name?.fr ?? '',
-            price: ampp?.exFactoryPrice ? `€${ampp.exFactoryPrice}` : '',
-            crmLink: ampp.crmLink?.fr,
-            patientInformationLeafletLink: ampp.leafletLink?.fr,
+            title: getSamTextTranslation(ampp.prescriptionName ?? ampp.abbreviatedName ?? amp.prescriptionName ?? amp.name ?? amp.abbreviatedName),
+            vmpTitle: getSamTextTranslation(amp.vmp?.name),
+            activeIngredient: getSamTextTranslation(amp.vmp?.vmpGroup?.name),
+            price: ampp?.exFactoryPrice ? `€${ampp.exFactoryPrice}` : undefined,
+            crmLink: getSamTextTranslation(ampp.crmLink),
+            patientInformationLeafletLink: getSamTextTranslation(ampp.leafletLink),
             blackTriangle: amp.blackTriangle,
             speciallyRegulated: ampp.speciallyRegulated,
             genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-            intendedName: ampp.prescriptionName?.fr,
-            rmaProfessionalLink: ampp.rmaProfessionalLink?.fr,
-            spcLink: ampp.spcLink?.fr,
-            dhpcLink: ampp.dhpcLink?.fr,
-            rmakeyMessages: ampp.rmaKeyMessages,
+            intendedName: getSamTextTranslation(ampp.prescriptionName),
+            rmaProfessionalLink: getSamTextTranslation(ampp.rmaProfessionalLink),
+            spcLink: getSamTextTranslation(ampp.spcLink),
+            dhpcLink: getSamTextTranslation(ampp.dhpcLink),
+            rmakeyMessages: getSamTextTranslation(ampp.rmaKeyMessages),
             vmp: amp.vmp,
             supplyProblems: ampp.supplyProblems,
             commercializations: ampp?.commercializations,
             deliveryModusCode: ampp.deliveryModusCode,
-            deliveryModus: ampp.deliveryModus?.fr,
+            deliveryModus: getSamTextTranslation(ampp.deliveryModus),
             deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
-            deliveryModusSpecification: ampp.deliveryModusSpecification?.fr,
+            deliveryModusSpecification: getSamTextTranslation(ampp.deliveryModusSpecification),
             reimbursements: dmpp?.reimbursements?.find((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now)),
           }
         })

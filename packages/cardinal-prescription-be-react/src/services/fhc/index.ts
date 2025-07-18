@@ -4,6 +4,7 @@ import { IndexedDbServiceStore } from '../indexed-db'
 import { FHC_URL, TOKEN_IDB_CONFIG } from '../constants'
 import { dateEncode } from '../../utils/date-helpers'
 import { loadAndDecryptCertificate } from '../certificate'
+import { cardinalLanguage } from '../i18n'
 
 const tokenStore = new IndexedDbServiceStore<string>(TOKEN_IDB_CONFIG)
 
@@ -27,6 +28,8 @@ const getTokenStorageKeys = (hcp: HealthcareParty) => ({
   STORE_KEY: `keystore.${hcp.ssin}`,
   TOKEN_KEY: `token.${hcp.ssin}`,
 })
+
+const language = cardinalLanguage.getLanguage()
 
 const makePrescriptionRequest = (
   config: FhcServiceConfig,
@@ -61,7 +64,7 @@ const makePrescriptionRequest = (
     samVersion,
     deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date()),
     expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+new Date() + 1000 * 3600 * 24 * 90)),
-    lang: 'fr',
+    lang: language,
   })
 
 export const createFhcCode = (type: string, code: string, version = '1.0') =>

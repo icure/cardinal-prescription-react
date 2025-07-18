@@ -54,7 +54,7 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
       setPages([])
       setTimeout(() => {
         if (cachedQuery === searchQueryRef.current) {
-          findMedicationsByLabel(sdk, 'fr', cachedQuery).then(async ([meds, mols, prods]: any) => {
+          findMedicationsByLabel(sdk, cachedQuery).then(async ([meds, mols, prods]: any) => {
             setMedications(meds)
             setMolecules(mols)
             setProducts(prods)

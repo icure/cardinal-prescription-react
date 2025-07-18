@@ -21,7 +21,7 @@ import { DeliveryConditionsContent } from '../../infographic-elements/DeliveryCo
 import { PrescriptionConditionsContent } from '../../infographic-elements/PrescriptionConditionsContent'
 import React, { FC, useRef } from 'react'
 import type { MedicationType } from '../../../../../types'
-import { getSamTextTranslation, t } from '../../../../../services/i18n'
+import { t } from '../../../../../services/i18n'
 import { StyledExpandButton, StyledHeader, StyledTextToIcon } from './styles'
 
 interface Props {
@@ -103,9 +103,7 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
                   {medication.rmaProfessionalLink && (
                     <div className="medicationInfographics__item">
                       <Tooltip
-                        contentSnippet={
-                          <RmaProfessionalLinkContent rmaProfessionalLink={medication.rmaProfessionalLink} rmakeyMessages={getSamTextTranslation(medication.rmakeyMessages)} />
-                        }
+                        contentSnippet={<RmaProfessionalLinkContent rmaProfessionalLink={medication.rmaProfessionalLink} rmakeyMessages={medication.rmakeyMessages} />}
                         iconSnippet={<OrangeTriangleIcn />}
                         boundaryBox={medicationCardRef}
                       />

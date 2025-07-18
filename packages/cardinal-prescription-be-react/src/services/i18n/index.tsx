@@ -1,10 +1,11 @@
 import { SamText } from '@icure/cardinal-be-sam-sdk'
 import { appTranslations } from './translations'
+import { DEFAULT_APP_LANGULAGE } from '../constants'
 
 export type AvailableLanguagesType = SamText['fr'] | SamText['en'] | SamText['nl'] | SamText['de']
 
 class CardinalLanguage {
-  private language: AvailableLanguagesType = 'en'
+  private language: AvailableLanguagesType = DEFAULT_APP_LANGULAGE
 
   public setLanguage(language: string): void {
     this.language = language
@@ -41,6 +42,6 @@ export const getSamTextTranslation = (samText?: SamText): string | undefined => 
     return undefined
   }
   const lang = cardinalLanguage.getLanguage() as keyof SamText
-  const fallback = 'fr' as keyof SamText
+  const fallback = DEFAULT_APP_LANGULAGE as keyof SamText
   return samText[lang] ?? samText[fallback]
 }

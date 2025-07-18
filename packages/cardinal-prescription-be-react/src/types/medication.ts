@@ -1,5 +1,5 @@
 import { Medication } from '@icure/be-fhc-lite-api'
-import { Commercialization, Reimbursement, SamText, StandardDosage, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
+import { Commercialization, Reimbursement, StandardDosage, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
 
 import { PharmacistVisibilityType, PractitionerVisibilityType } from './index'
 
@@ -23,7 +23,7 @@ export type MedicationType = {
   rmaProfessionalLink?: string
   spcLink?: string
   dhpcLink?: string
-  rmakeyMessages?: SamText
+  rmakeyMessages?: string
   vmp?: VmpStub
   supplyProblems?: SupplyProblem[]
   commercializations?: Commercialization[]
