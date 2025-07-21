@@ -1168,6 +1168,29 @@ var deleteCertificate = async (hcp_ssin) => {
 import { Code as FhcCode, fhcRecipeApi, fhcStsApi, PrescriptionRequest } from "@icure/be-fhc-lite-api";
 
 // src/utils/date-helpers.ts
+var convertYyyyMmDdNumberToIsoDate = (dateNumber) => {
+  const year = Math.floor(dateNumber / 1e4);
+  const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
+  const day = (dateNumber % 100).toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+var getTreatmentStartDate = (prescribedMedication) => {
+  if (prescribedMedication?.medication.beginMoment) {
+    return convertYyyyMmDdNumberToIsoDate(prescribedMedication?.medication.beginMoment);
+  } else {
+    return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  }
+};
+var getExecutableUntilDate = (prescribedMedication) => {
+  if (prescribedMedication?.medication.endMoment) {
+    return convertYyyyMmDdNumberToIsoDate(prescribedMedication.medication.endMoment);
+  } else {
+    const startDay = /* @__PURE__ */ new Date();
+    const nextYear = new Date(startDay);
+    nextYear.setFullYear(startDay.getFullYear() + 1);
+    return nextYear.toISOString().split("T")[0];
+  }
+};
 var formatTimestamp = (timestamp) => {
   if (!timestamp) {
     return void 0;
@@ -2126,7 +2149,7 @@ var StyledInput = styled3.input`
 
 // src/components/form-elements/TextInput/index.tsx
 import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
-var TextInput = forwardRef(({ label, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
+var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
   const localRef = useRef(null);
   useEffect(() => {
     if (autoFocus && localRef.current) {
@@ -2152,6 +2175,8 @@ var TextInput = forwardRef(({ label, id, required, errorMessage, disabled, autoF
           localRef.current = node;
         },
         placeholder: label,
+        type: type ?? "text",
+        min,
         ...rest,
         $disabled: disabled,
         $error: !!errorMessage
@@ -3983,6 +4008,9 @@ function getPharmacistVisibilityOptions() {
   ];
 }
 
+// src/components/form-elements/SelectInput/index.tsx
+import { forwardRef as forwardRef2 } from "react";
+
 // src/components/form-elements/SelectInput/styles.ts
 import styled18, { css as css10 } from "styled-components";
 var StyledSelectInputLabel = styled18.label`
@@ -4014,19 +4042,29 @@ var StyledSelectDropdown = styled18.select`
 
 // src/components/form-elements/SelectInput/index.tsx
 import { jsx as jsx20, jsxs as jsxs18 } from "react/jsx-runtime";
-var SelectInput = ({ label, id, required, disabled, options, value, onChange, errorMessage }) => {
-  return /* @__PURE__ */ jsxs18(StyledSelectInput, { children: [
-    /* @__PURE__ */ jsxs18(StyledSelectInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx20("span", { children: "*" }),
-      label
-    ] }),
-    /* @__PURE__ */ jsx20(StyledSelectDropdown, { $disabled: disabled, $error: !!errorMessage, id, name: id, value, disabled, onChange: (e) => onChange(e.target.value), children: options.map((option) => /* @__PURE__ */ jsx20("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
-    !!errorMessage && /* @__PURE__ */ jsx20("p", { className: "error", children: errorMessage })
-  ] });
-};
+var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs18(StyledSelectInput, { children: [
+  /* @__PURE__ */ jsxs18(StyledSelectInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx20("span", { children: "*" }),
+    label
+  ] }),
+  /* @__PURE__ */ jsx20(
+    StyledSelectDropdown,
+    {
+      ref,
+      id,
+      name: id,
+      value,
+      onChange,
+      disabled,
+      ...rest,
+      children: options.map((option) => /* @__PURE__ */ jsx20("option", { value: option.value ?? "", children: option.label }, option.value ?? ""))
+    }
+  ),
+  !!errorMessage && /* @__PURE__ */ jsx20("p", { className: "error", children: errorMessage })
+] }));
 
 // src/components/form-elements/RadioInput/index.tsx
-import React7 from "react";
+import { forwardRef as forwardRef3 } from "react";
 
 // src/components/form-elements/RadioInput/styles.ts
 import styled19, { css as css11 } from "styled-components";
@@ -4146,8 +4184,7 @@ var StyledRadioInput = styled19.div`
 
 // src/components/form-elements/RadioInput/index.tsx
 import { jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
-var RadioInput = ({ label, name, options, required, errorMessage }) => {
-  const [value, setValue] = React7.useState(false);
+var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
   return /* @__PURE__ */ jsxs19(StyledRadioInput, { children: [
     /* @__PURE__ */ jsxs19(StyledRadioGroupLabel, { $required: required, $error: !!errorMessage, children: [
       /* @__PURE__ */ jsx21("span", { children: "*" }),
@@ -4163,7 +4200,8 @@ var RadioInput = ({ label, name, options, required, errorMessage }) => {
           checked: value === option.value,
           value: String(option.value),
           required,
-          onChange: () => setValue(option.value)
+          onChange: () => onChange?.(option.value),
+          ref
         }
       ),
       /* @__PURE__ */ jsx21(StyledRadioButtonToggle, { $error: !!errorMessage, children: /* @__PURE__ */ jsx21(StyledRadioButtonToggleStuffing, {}) }),
@@ -4171,10 +4209,11 @@ var RadioInput = ({ label, name, options, required, errorMessage }) => {
     ] }, option.id)) }),
     !!errorMessage && /* @__PURE__ */ jsx21("p", { className: "error", children: errorMessage })
   ] });
-};
+});
+RadioInput.displayName = "RadioInput";
 
 // src/components/form-elements/ToggleSwitch/index.tsx
-import React8 from "react";
+import { forwardRef as forwardRef4 } from "react";
 
 // src/components/form-elements/ToggleSwitch/styles.ts
 import styled20 from "styled-components";
@@ -4261,25 +4300,22 @@ var StyledSwitch = styled20.div`
 
 // src/components/form-elements/ToggleSwitch/index.tsx
 import { jsx as jsx22, jsxs as jsxs20 } from "react/jsx-runtime";
-var ToggleSwitch = ({ id, value, checked, label, onChange }) => {
-  const [localChecked, setLocalChecked] = React8.useState(checked);
-  const handleChange = (newChecked) => {
-    setLocalChecked(newChecked);
-    if (onChange) {
-      onChange(newChecked);
-    }
-  };
+var ToggleSwitch = forwardRef4(({ id, value, label, onChange, checked }, ref) => {
   return /* @__PURE__ */ jsxs20(StyledSwitch, { children: [
     label && /* @__PURE__ */ jsx22("p", { className: "toggleSwitchLabel", children: label }),
     /* @__PURE__ */ jsxs20("div", { className: "toggleWrapper", children: [
       /* @__PURE__ */ jsxs20("label", { htmlFor: id, className: "toggle", children: [
-        /* @__PURE__ */ jsx22("input", { id, name: id, type: "checkbox", checked: localChecked, onChange: (e) => handleChange(e.target.checked) }),
+        /* @__PURE__ */ jsx22("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
         /* @__PURE__ */ jsx22("span", { className: "slider" })
       ] }),
       /* @__PURE__ */ jsx22("p", { children: value })
     ] })
   ] });
-};
+});
+ToggleSwitch.displayName = "ToggleSwitch";
+
+// src/components/form-elements/TextareaInput/index.tsx
+import React10 from "react";
 
 // src/components/form-elements/TextareaInput/styles.ts
 import styled21, { css as css12 } from "styled-components";
@@ -4313,29 +4349,14 @@ var StyledTextarea = styled21.textarea`
 
 // src/components/form-elements/TextareaInput/index.tsx
 import { jsx as jsx23, jsxs as jsxs21 } from "react/jsx-runtime";
-var TextareaInput = ({ label, id, required, disabled, value, onChange, errorMessage }) => {
-  return /* @__PURE__ */ jsxs21(StyledTextareaInput, { children: [
-    /* @__PURE__ */ jsxs21(StyledTextareaInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx23("span", { children: "*" }),
-      label
-    ] }),
-    /* @__PURE__ */ jsx23(
-      StyledTextarea,
-      {
-        placeholder: label,
-        name: id,
-        id,
-        value,
-        $disabled: disabled,
-        $error: !!errorMessage,
-        disabled,
-        rows: 3,
-        onChange: (e) => onChange(e.target.value)
-      }
-    ),
-    errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
-  ] });
-};
+var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs21(StyledTextareaInput, { children: [
+  /* @__PURE__ */ jsxs21(StyledTextareaInputLabel, { htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx23("span", { children: "*" }),
+    label
+  ] }),
+  /* @__PURE__ */ jsx23(StyledTextarea, { placeholder: label, name: id, id, $disabled: disabled, $error: !!errorMessage, disabled, rows: 3, ref, ...rest }),
+  errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
+] }));
 
 // src/components/prescription-elements/PrescriptionModal/styles.ts
 import styled22, { css as css13 } from "styled-components";
@@ -4586,58 +4607,55 @@ var StyledSuggestionItem = styled22.li`
 `;
 
 // src/components/prescription-elements/PrescriptionModal/index.tsx
+import { Controller, useForm as useForm2 } from "react-hook-form";
 import { Fragment as Fragment6, jsx as jsx24, jsxs as jsxs22 } from "react/jsx-runtime";
 var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
-  const [dosage, setDosage] = useState4(prescriptionToModify?.medication?.instructionForPatient ?? "");
-  const [duration, setDuration] = useState4(prescriptionToModify?.medication?.duration?.value ?? 1);
-  const [durationTimeUnit, setDurationTimeUnit] = useState4(prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value);
-  const [treatmentStartDate, setTreatmentStartDate] = useState4(() => {
-    if (prescriptionToModify?.medication?.beginMoment) {
-      const dateNumber = prescriptionToModify.medication.beginMoment;
-      const year = Math.floor(dateNumber / 1e4);
-      const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
-      const day = (dateNumber % 100).toString().padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-    return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-  });
-  const [executableUntil, setExecutableUntil] = useState4(() => {
-    if (prescriptionToModify?.medication?.endMoment) {
-      const dateNumber = prescriptionToModify.medication.endMoment;
-      const year = Math.floor(dateNumber / 1e4);
-      const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
-      const day = (dateNumber % 100).toString().padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-    const startDay = /* @__PURE__ */ new Date();
-    const nextYear = new Date(startDay);
-    nextYear.setFullYear(startDay.getFullYear() + 1);
-    return nextYear.toISOString().split("T")[0];
-  });
-  const [prescriptionsNumber, setPrescriptionsNumber] = useState4(1);
-  const [periodicityTimeUnit, setPeriodicityTimeUnit] = useState4(getPeriodicityTimeUnits()[0].value);
-  const [periodicityDaysNumber, setPeriodicityDaysNumber] = useState4(1);
-  const [substitutionAllowed, setSubstitutionAllowed] = useState4(prescriptionToModify?.medication?.substitutionAllowed ?? false);
-  const [showExtraFields, setShowExtraFields] = useState4(false);
-  const [recipeInstructionForPatient, setRecipeInstructionForPatient] = useState4(prescriptionToModify?.medication?.recipeInstructionForPatient ?? void 0);
-  const [instructionsForReimbursement, setInstructionsForReimbursement] = useState4(prescriptionToModify?.medication?.instructionsForReimbursement ?? void 0);
-  const [practitionerVisibility, setPractitionerVisibility] = useState4(prescriptionToModify?.prescriberVisibility ?? getPractitionerVisibilityOptions()[0]?.value);
-  const [pharmacistVisibility, setPharmacistVisibility] = useState4(prescriptionToModify?.pharmacistVisibility ?? getPharmacistVisibilityOptions()[0]?.value);
-  const [errors, setErrors] = useState4({});
   const [posologySuggestions, setPosologySuggestions] = useState4([]);
   const [focusedDosageIndex, setFocusedDosageIndex] = useState4(-1);
-  const resultRefs = useRef5([]);
   const [disableHover, setDisableHover] = useState4(false);
   const [dosageFromSuggestion, setDosageFromSuggestion] = useState4("");
-  const medicationTitle = medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? "";
-  const errorMessages = {
-    isRequired: "Ce champ est obligatoire."
+  const resultRefs = useRef5([]);
+  const defaultValues = {
+    medicationTitle: medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? "",
+    dosage: prescriptionToModify?.medication?.instructionForPatient ?? "",
+    duration: prescriptionToModify?.medication?.duration?.value ?? 1,
+    durationTimeUnit: prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value,
+    treatmentStartDate: getTreatmentStartDate(prescriptionToModify),
+    executableUntil: getExecutableUntilDate(prescriptionToModify),
+    prescriptionsNumber: 1,
+    substitutionAllowed: false,
+    showExtraFields: false,
+    periodicityTimeUnit: getPeriodicityTimeUnits()[0].value,
+    periodicityDaysNumber: 1,
+    recipeInstructionForPatient: prescriptionToModify?.medication?.recipeInstructionForPatient ?? void 0,
+    instructionsForReimbursement: prescriptionToModify?.medication?.instructionsForReimbursement ?? void 0,
+    prescriberVisibility: prescriptionToModify?.prescriberVisibility ?? getPractitionerVisibilityOptions()[0]?.value,
+    pharmacistVisibility: prescriptionToModify?.pharmacistVisibility ?? getPharmacistVisibilityOptions()[0]?.value
   };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors: prescriptionFormErrors }
+  } = useForm2({ defaultValues });
+  const dosage = watch("dosage");
+  const prescriptionsNumber = watch("prescriptionsNumber");
+  const periodicityTimeUnit = watch("periodicityTimeUnit");
+  const showExtraFields = watch("showExtraFields");
+  const recipeInstructionForPatient = watch("recipeInstructionForPatient");
+  const instructionsForReimbursement = watch("instructionsForReimbursement");
+  const prescriberVisibility = watch("prescriberVisibility");
+  const pharmacistVisibility = watch("pharmacistVisibility");
   const language3 = cardinalLanguage.getLanguage();
   const { completePosology: completeDosage } = makeParser(language3);
   const dosageRef = useRef5(dosage);
   useEffect4(() => {
-    dosageRef.current = dosage;
+    if (dosage !== void 0) {
+      dosageRef.current = dosage;
+    }
   }, [dosage]);
   useEffect4(() => {
     const dosageWhenCalled = dosage;
@@ -4647,118 +4665,77 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
       }
     }, 100);
   }, [dosage]);
-  const validateForm = (data) => {
-    const setError = (inputName, isValid) => {
-      setErrors((prev) => ({
-        ...prev,
-        [inputName]: {
-          validationError: !isValid ? errorMessages.isRequired : void 0
-        }
-      }));
-    };
-    const isRequiredFieldValid = (value) => value != null && value !== "";
-    const inputsToValidate = [
-      "dosage",
-      "duration",
-      "durationTimeUnit",
-      "treatmentStartDate",
-      "executableUntil",
-      "prescriptionsNumber",
-      "substitutionAllowed",
-      prescriptionsNumber && prescriptionsNumber > 1 ? "periodicityTimeUnit" : null,
-      periodicityTimeUnit && periodicityTimeUnit === "1" ? "periodicityDaysNumber" : null
-    ].filter((x) => !!x);
-    inputsToValidate.forEach((input) => setError(input, isRequiredFieldValid(data[input])));
+  const handleModalClose = () => {
+    onClose();
+    reset();
   };
-  const isFormValid = () => {
-    return !Object.keys(errors).some((inputName) => errors[inputName].validationError);
-  };
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    const data = {
-      dosage,
-      duration,
-      durationTimeUnit,
-      treatmentStartDate,
-      executableUntil,
-      prescriptionsNumber,
-      periodicityTimeUnit,
-      periodicityDaysNumber,
-      substitutionAllowed,
-      recipeInstructionForPatient,
-      instructionsForReimbursement,
-      prescriberVisibility: practitionerVisibility,
-      pharmacistVisibility
+  const handleFormSubmit = (data) => {
+    const getDurationInDays = (timeUnit, value) => {
+      if (timeUnit === "jour") {
+        return value;
+      } else if (timeUnit === "semaine") {
+        return value * 7;
+      }
     };
-    validateForm(data);
-    if (isFormValid()) {
-      const getDurationInDays = (timeUnit, value) => {
-        if (timeUnit === "jour") {
-          return value;
-        } else if (timeUnit === "semaine") {
-          return value * 7;
-        }
-      };
-      const prescribedMedications = prescriptionToModify ? [
-        {
-          ...prescriptionToModify,
-          medication: new Medication2({
-            ...prescriptionToModify.medication,
-            duration: new Duration({
-              unit: createFhcCode("CD-TIMEUNIT", "D"),
-              value: getDurationInDays(data.durationTimeUnit, data.duration)
-            }),
-            instructionForPatient: data.dosage,
-            recipeInstructionForPatient: data.recipeInstructionForPatient,
-            instructionsForReimbursement: data.instructionsForReimbursement,
-            substitutionAllowed: data.substitutionAllowed
+    const prescribedMedications = prescriptionToModify ? [
+      {
+        ...prescriptionToModify,
+        medication: new Medication2({
+          ...prescriptionToModify.medication,
+          duration: new Duration({
+            unit: createFhcCode("CD-TIMEUNIT", "D"),
+            value: getDurationInDays(data.durationTimeUnit, data.duration)
           }),
-          prescriberVisibility: data.prescriberVisibility,
-          pharmacistVisibility: data.pharmacistVisibility
-        }
-      ] : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
-        (idx) => ({
-          uuid: uuid(),
-          medication: new Medication2({
-            ...medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired ? {
-              medicinalProduct: new Medicinalproduct({
-                samId: medicationToPrescribe.dmppProductId,
-                intendedcds: [createFhcCode("CD-DRUG-CNK", medicationToPrescribe.cnk)],
-                intendedname: medicationToPrescribe.intendedName
-              })
-            } : medicationToPrescribe?.vmpGroupId ? {
-              substanceProduct: new Substanceproduct({
-                samId: medicationToPrescribe.vmpGroupId,
-                intendedcds: [createFhcCode("CD_VMPGROUP", medicationToPrescribe.vmpGroupId)],
-                intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title
-              })
-            } : {
-              compoundPrescription: medicationToPrescribe.title
-            },
-            beginMoment: offsetDate(
-              parseInt(data.treatmentStartDate.replace(/-/g, "")),
-              data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
-            ),
-            endMoment: offsetDate(
-              parseInt(data.executableUntil.replace(/-/g, "")),
-              data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
-            ),
-            duration: new Duration({
-              unit: createFhcCode("CD-TIMEUNIT", "D"),
-              value: getDurationInDays(data.durationTimeUnit, data.duration)
-            }),
-            instructionForPatient: data.dosage,
-            recipeInstructionForPatient: data.recipeInstructionForPatient,
-            instructionsForReimbursement: data.instructionsForReimbursement,
-            substitutionAllowed: data.substitutionAllowed
+          instructionForPatient: data.dosage,
+          recipeInstructionForPatient: data.recipeInstructionForPatient,
+          instructionsForReimbursement: data.instructionsForReimbursement,
+          substitutionAllowed: data.substitutionAllowed
+        }),
+        prescriberVisibility: data.prescriberVisibility,
+        pharmacistVisibility: data.pharmacistVisibility
+      }
+    ] : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
+      (idx) => ({
+        uuid: uuid(),
+        medication: new Medication2({
+          ...medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired ? {
+            medicinalProduct: new Medicinalproduct({
+              samId: medicationToPrescribe.dmppProductId,
+              intendedcds: [createFhcCode("CD-DRUG-CNK", medicationToPrescribe.cnk)],
+              intendedname: medicationToPrescribe.intendedName
+            })
+          } : medicationToPrescribe?.vmpGroupId ? {
+            substanceProduct: new Substanceproduct({
+              samId: medicationToPrescribe.vmpGroupId,
+              intendedcds: [createFhcCode("CD_VMPGROUP", medicationToPrescribe.vmpGroupId)],
+              intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title
+            })
+          } : {
+            compoundPrescription: medicationToPrescribe.title
+          },
+          beginMoment: offsetDate(
+            parseInt(data.treatmentStartDate.replace(/-/g, "")),
+            data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
+          ),
+          endMoment: offsetDate(
+            parseInt(data.executableUntil.replace(/-/g, "")),
+            data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0
+          ),
+          duration: new Duration({
+            unit: createFhcCode("CD-TIMEUNIT", "D"),
+            value: getDurationInDays(data.durationTimeUnit, data.duration)
           }),
-          prescriberVisibility: data.prescriberVisibility,
-          pharmacistVisibility: data.pharmacistVisibility
-        })
-      );
-      onSubmit(prescribedMedications);
-      onClose();
-    }
+          instructionForPatient: data.dosage,
+          recipeInstructionForPatient: data.recipeInstructionForPatient,
+          instructionsForReimbursement: data.instructionsForReimbursement,
+          substitutionAllowed: data.substitutionAllowed
+        }),
+        prescriberVisibility: data.prescriberVisibility,
+        pharmacistVisibility: data.pharmacistVisibility
+      })
+    );
+    onSubmit(prescribedMedications);
+    handleModalClose();
   };
   const handleKeyDown = (event) => {
     const length = posologySuggestions.length;
@@ -4800,7 +4777,11 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
   const validateSuggestion = (suggestion) => {
     if (suggestion) {
       const common = findCommonSequence(dosage ?? "", suggestion);
-      setDosage((dosageRef.current + (common.length ? suggestion.slice(common.length) : " " + suggestion)).replace(/ {2,}/g, " ").replace(/\/ /g, "/"));
+      setValue("dosage", (dosageRef.current + (common.length ? suggestion.slice(common.length) : " " + suggestion)).replace(/ {2,}/g, " ").replace(/\/ /g, "/"), {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
       setDosageFromSuggestion(dosageRef.current);
       setPosologySuggestions([]);
       setFocusedDosageIndex(1);
@@ -4808,10 +4789,10 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
   };
   return /* @__PURE__ */ jsxs22(Fragment6, { children: [
     /* @__PURE__ */ jsx24(GlobalStyles, {}),
-    /* @__PURE__ */ jsx24(StyledPrescriptionModal, { children: /* @__PURE__ */ jsx24("div", { className: "content", children: /* @__PURE__ */ jsxs22("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleFormSubmit, autoComplete: "off", children: [
+    /* @__PURE__ */ jsx24(StyledPrescriptionModal, { children: /* @__PURE__ */ jsx24("div", { className: "content", children: /* @__PURE__ */ jsxs22("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
       /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__header", children: [
         /* @__PURE__ */ jsx24("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
-        /* @__PURE__ */ jsx24("button", { className: "addMedicationForm__header__closeIcn", onClick: onClose, type: "reset", children: /* @__PURE__ */ jsx24(CloseIcn, {}) })
+        /* @__PURE__ */ jsx24("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ jsx24(CloseIcn, {}) })
       ] }),
       /* @__PURE__ */ jsxs22(
         "div",
@@ -4823,18 +4804,31 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
           "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
           children: [
             /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ jsx24(TextInput, { label: t("prescription.form.medicationTitle"), value: medicationTitle, required: true, disabled: true, id: "drugName" }),
+              /* @__PURE__ */ jsx24(
+                TextInput,
+                {
+                  label: t("prescription.form.medicationTitle"),
+                  required: true,
+                  disabled: true,
+                  id: "medicationTitle",
+                  ...register("medicationTitle", {
+                    required: t("prescription.form.fieldRequired")
+                  }),
+                  errorMessage: prescriptionFormErrors["medicationTitle"]?.message
+                }
+              ),
               /* @__PURE__ */ jsxs22(StyledDosageInput, { children: [
                 /* @__PURE__ */ jsx24(
                   TextInput,
                   {
                     label: t("prescription.form.dosage"),
                     id: "dosage",
-                    value: dosage,
-                    onChange: (e) => setDosage(e.target.value),
                     required: true,
                     autoFocus: true,
-                    errorMessage: errors.dosage?.validationError
+                    ...register("dosage", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["dosage"]?.message
                   }
                 ),
                 posologySuggestions.length !== 0 && /* @__PURE__ */ jsx24("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ jsx24(StyledSuggestionItem, { id: `posology-${index}`, $disableHover: disableHover, $focused: focusedDosageIndex === index, children: /* @__PURE__ */ jsx24(
@@ -4856,21 +4850,30 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     id: "duration",
                     type: "number",
                     min: 1,
-                    value: duration,
-                    onChange: (e) => setDuration(Number(e.target.value)),
                     required: true,
-                    errorMessage: errors.duration?.validationError
+                    ...register("duration", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["duration"]?.message
                   }
                 ),
                 /* @__PURE__ */ jsx24(
-                  SelectInput,
+                  Controller,
                   {
-                    label: t("prescription.form.durationTimeUnit"),
-                    id: "durationTimeUnit",
-                    required: true,
-                    options: getDurationTimeUnits(),
-                    value: durationTimeUnit,
-                    onChange: setDurationTimeUnit
+                    name: "durationTimeUnit",
+                    control,
+                    rules: { required: t("prescription.form.fieldRequired") },
+                    render: ({ field }) => /* @__PURE__ */ jsx24(
+                      SelectInput,
+                      {
+                        ...field,
+                        label: t("prescription.form.durationTimeUnit"),
+                        id: "durationTimeUnit",
+                        required: true,
+                        options: getDurationTimeUnits(),
+                        errorMessage: prescriptionFormErrors["durationTimeUnit"]?.message
+                      }
+                    )
                   }
                 )
               ] }),
@@ -4881,10 +4884,11 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     label: t("prescription.form.treatmentStartDate"),
                     id: "treatmentStartDate",
                     type: "date",
-                    value: treatmentStartDate,
-                    onChange: (e) => setTreatmentStartDate(e.target.value),
                     required: true,
-                    errorMessage: errors.treatmentStartDate?.validationError
+                    ...register("treatmentStartDate", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
                   }
                 ),
                 /* @__PURE__ */ jsx24(
@@ -4893,10 +4897,11 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     label: t("prescription.form.executableUntil"),
                     id: "executableUntil",
                     type: "date",
-                    value: executableUntil,
-                    onChange: (e) => setExecutableUntil(e.target.value),
                     required: true,
-                    errorMessage: errors.executableUntil?.validationError
+                    ...register("executableUntil", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["executableUntil"]?.message
                   }
                 )
               ] }),
@@ -4909,21 +4914,30 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     type: "number",
                     min: 1,
                     max: 12,
-                    value: prescriptionsNumber,
-                    onChange: (e) => setPrescriptionsNumber(Number(e.target.value)),
                     required: true,
-                    errorMessage: errors.prescriptionsNumber?.validationError
+                    ...register("prescriptionsNumber", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
                   }
                 ),
                 prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ jsx24(
-                  SelectInput,
+                  Controller,
                   {
-                    label: t("prescription.form.periodicityTimeUnit"),
-                    id: "periodicityTimeUnit",
-                    required: true,
-                    options: getPeriodicityTimeUnits(),
-                    value: periodicityTimeUnit,
-                    onChange: setPeriodicityTimeUnit
+                    name: "periodicityTimeUnit",
+                    control,
+                    rules: { required: t("prescription.form.fieldRequired") },
+                    render: ({ field }) => /* @__PURE__ */ jsx24(
+                      SelectInput,
+                      {
+                        ...field,
+                        label: t("prescription.form.periodicityTimeUnit"),
+                        id: "periodicityTimeUnit",
+                        required: true,
+                        options: getPeriodicityTimeUnits(),
+                        errorMessage: prescriptionFormErrors["periodicityTimeUnit"]?.message
+                      }
+                    )
                   }
                 ),
                 periodicityTimeUnit === "1" && /* @__PURE__ */ jsx24(
@@ -4933,29 +4947,45 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     id: "periodicityDaysNumber",
                     type: "number",
                     min: 1,
-                    value: periodicityDaysNumber,
-                    onChange: (e) => setPeriodicityDaysNumber(Number(e.target.value)),
                     required: true,
-                    errorMessage: errors.periodicityDaysNumber?.validationError
+                    ...register("periodicityDaysNumber", {
+                      required: t("prescription.form.fieldRequired")
+                    }),
+                    errorMessage: prescriptionFormErrors["periodicityDaysNumber"]?.message
                   }
                 )
               ] }),
               /* @__PURE__ */ jsx24("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ jsx24(
-                RadioInput,
+                Controller,
                 {
                   name: "substitutionAllowed",
-                  label: t("prescription.form.substitutionAllowed"),
-                  options: [
-                    { label: "Non", value: false, id: "substitutionIsNotAllowed" },
-                    { label: "Oui", value: true, id: "substitutionIsAllowed" }
-                  ],
-                  required: true,
-                  errorMessage: errors.substitutionAllowed?.validationError,
-                  onChange: setSubstitutionAllowed
+                  control,
+                  render: ({ field }) => /* @__PURE__ */ jsx24(
+                    RadioInput,
+                    {
+                      ...field,
+                      value: field.value,
+                      onChange: (val) => field.onChange(val),
+                      label: t("prescription.form.substitutionAllowed"),
+                      options: [
+                        { label: "Non", value: false, id: "substitutionIsNotAllowed" },
+                        { label: "Oui", value: true, id: "substitutionIsAllowed" }
+                      ],
+                      required: true,
+                      errorMessage: prescriptionFormErrors["substitutionAllowed"]?.message
+                    }
+                  )
                 }
               ) })
             ] }),
-            /* @__PURE__ */ jsx24(ToggleSwitch, { id: "showExtraFields", value: t("prescription.form.toggleExtraFields"), checked: showExtraFields, onChange: setShowExtraFields }),
+            /* @__PURE__ */ jsx24(
+              Controller,
+              {
+                name: "showExtraFields",
+                control,
+                render: ({ field }) => /* @__PURE__ */ jsx24(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
+              }
+            ),
             !showExtraFields ? /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
               /* @__PURE__ */ jsxs22("p", { children: [
                 /* @__PURE__ */ jsxs22("span", { children: [
@@ -4979,7 +5009,7 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === practitionerVisibility)?.label }) })
+                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
               ] }),
               /* @__PURE__ */ jsxs22("p", { children: [
                 /* @__PURE__ */ jsxs22("span", { children: [
@@ -4990,43 +5020,29 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                 /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
               ] })
             ] }) : /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ jsx24(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
               /* @__PURE__ */ jsx24(
-                TextareaInput,
+                Controller,
                 {
-                  label: t("prescription.form.patientInstructions"),
-                  id: "recipeInstructionForPatient",
-                  value: recipeInstructionForPatient,
-                  onChange: setRecipeInstructionForPatient
+                  name: "instructionsForReimbursement",
+                  control,
+                  render: ({ field }) => /* @__PURE__ */ jsx24(SelectInput, { ...field, label: t("prescription.form.reimbursementInstructions"), id: "instructionsForReimbursement", options: getReimbursementOptions() })
                 }
               ),
               /* @__PURE__ */ jsx24(
-                SelectInput,
+                Controller,
                 {
-                  label: t("prescription.form.reimbursementInstructions"),
-                  id: "instructionsForReimbursement",
-                  value: instructionsForReimbursement,
-                  onChange: setInstructionsForReimbursement,
-                  options: getReimbursementOptions()
+                  name: "prescriberVisibility",
+                  control,
+                  render: ({ field }) => /* @__PURE__ */ jsx24(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
                 }
               ),
               /* @__PURE__ */ jsx24(
-                SelectInput,
+                Controller,
                 {
-                  label: t("prescription.form.prescriberVisibility"),
-                  id: "prescriberVisibility",
-                  value: practitionerVisibility,
-                  onChange: setPractitionerVisibility,
-                  options: getPractitionerVisibilityOptions()
-                }
-              ),
-              /* @__PURE__ */ jsx24(
-                SelectInput,
-                {
-                  label: t("prescription.form.pharmacistVisibility"),
-                  id: "pharmacyVisibility",
-                  value: pharmacistVisibility,
-                  onChange: setPharmacistVisibility,
-                  options: getPharmacistVisibilityOptions()
+                  name: "pharmacistVisibility",
+                  control,
+                  render: ({ field }) => /* @__PURE__ */ jsx24(SelectInput, { ...field, label: t("prescription.form.pharmacistVisibility"), id: "pharmacistVisibility", options: getPharmacistVisibilityOptions() })
                 }
               )
             ] })
@@ -5034,7 +5050,7 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
         }
       ),
       /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__footer", children: [
-        /* @__PURE__ */ jsx24(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: onClose }),
+        /* @__PURE__ */ jsx24(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
         /* @__PURE__ */ jsx24(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
       ] })
     ] }) }) })

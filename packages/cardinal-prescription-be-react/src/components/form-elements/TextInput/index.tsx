@@ -8,9 +8,11 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   disabled?: boolean
   errorMessage?: string
   autoFocus?: boolean
+  type?: 'text' | 'number' | 'date' | 'password' | 'file'
+  min?: string | number
 }
 
-export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
+export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, min, type, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
   const localRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -37,6 +39,8 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, id, requi
           localRef.current = node
         }}
         placeholder={label}
+        type={type ?? 'text'}
+        min={min}
         {...rest}
         $disabled={disabled}
         $error={!!errorMessage}

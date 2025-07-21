@@ -4,7 +4,7 @@ import { Duration, Medication, Medicinalproduct, Substanceproduct } from '@icure
 import { v4 as uuid } from 'uuid'
 import { MedicationType, PharmacistVisibilityType, PractitionerVisibilityType, PrescribedMedicationType } from '../../../types'
 import { createFhcCode } from '../../../services/fhc'
-import { offsetDate } from '../../../utils/date-helpers'
+import { getExecutableUntilDate, getTreatmentStartDate, offsetDate } from '../../../utils/date-helpers'
 import { findCommonSequence } from '../../../utils/dosage-helpers'
 import { cardinalLanguage, t } from '../../../services/i18n'
 import { SamText } from '@icure/cardinal-be-sam-sdk'
@@ -20,6 +20,7 @@ import { TextareaInput } from '../../form-elements/TextareaInput'
 import { Button } from '../../form-elements/Button'
 import { StyledDosageInput, StyledPrescriptionModal, StyledSuggestionItem } from './styles'
 import { GlobalStyles } from '../../../styles'
+import { Controller, useForm } from 'react-hook-form'
 
 interface Props {
   medicationToPrescribe?: MedicationType
@@ -31,69 +32,78 @@ interface Props {
   modalMood: 'create' | 'modify'
 }
 
+type PrescriptionFormType = {
+  medicationTitle: string
+  dosage: string
+  duration: number
+  durationTimeUnit: string
+  treatmentStartDate: string
+  executableUntil: string
+  prescriptionsNumber: number
+  periodicityTimeUnit: string
+  periodicityDaysNumber: number
+  substitutionAllowed: boolean
+  showExtraFields: boolean
+  recipeInstructionForPatient?: string
+  instructionsForReimbursement?: string
+  prescriberVisibility?: string
+  pharmacistVisibility?: string
+}
+
 export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
   // State for all form fields and logic
-  const [dosage, setDosage] = useState<string>(prescriptionToModify?.medication?.instructionForPatient ?? '')
-  const [duration, setDuration] = useState<number>(prescriptionToModify?.medication?.duration?.value ?? 1)
-  const [durationTimeUnit, setDurationTimeUnit] = useState<string>(prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value)
-  const [treatmentStartDate, setTreatmentStartDate] = useState<string>(() => {
-    if (prescriptionToModify?.medication?.beginMoment) {
-      // Format as YYYY-MM-DD
-      const dateNumber = prescriptionToModify.medication.beginMoment
-      const year = Math.floor(dateNumber / 10000)
-      const month = Math.floor((dateNumber % 10000) / 100)
-        .toString()
-        .padStart(2, '0')
-      const day = (dateNumber % 100).toString().padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
-    return new Date().toISOString().split('T')[0]
-  })
-  const [executableUntil, setExecutableUntil] = useState<string>(() => {
-    if (prescriptionToModify?.medication?.endMoment) {
-      const dateNumber = prescriptionToModify.medication.endMoment
-      const year = Math.floor(dateNumber / 10000)
-      const month = Math.floor((dateNumber % 10000) / 100)
-        .toString()
-        .padStart(2, '0')
-      const day = (dateNumber % 100).toString().padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
-    const startDay = new Date()
-    const nextYear = new Date(startDay)
-    nextYear.setFullYear(startDay.getFullYear() + 1)
-    return nextYear.toISOString().split('T')[0]
-  })
-  const [prescriptionsNumber, setPrescriptionsNumber] = useState<number>(1)
-  const [periodicityTimeUnit, setPeriodicityTimeUnit] = useState<string>(getPeriodicityTimeUnits()[0].value)
-  const [periodicityDaysNumber, setPeriodicityDaysNumber] = useState<number>(1)
-  const [substitutionAllowed, setSubstitutionAllowed] = useState<boolean>(prescriptionToModify?.medication?.substitutionAllowed ?? false)
-  const [showExtraFields, setShowExtraFields] = useState(false)
-  const [recipeInstructionForPatient, setRecipeInstructionForPatient] = useState<string | undefined>(prescriptionToModify?.medication?.recipeInstructionForPatient ?? undefined)
-  const [instructionsForReimbursement, setInstructionsForReimbursement] = useState<string | undefined>(prescriptionToModify?.medication?.instructionsForReimbursement ?? undefined)
-  const [practitionerVisibility, setPractitionerVisibility] = useState<string>(prescriptionToModify?.prescriberVisibility ?? getPractitionerVisibilityOptions()[0]?.value)
-  const [pharmacistVisibility, setPharmacistVisibility] = useState<string>(prescriptionToModify?.pharmacistVisibility ?? getPharmacistVisibilityOptions()[0]?.value)
-  const [errors, setErrors] = useState<{ [inputName: string]: { validationError?: string } }>({})
+
   const [posologySuggestions, setPosologySuggestions] = useState<string[]>([])
   const [focusedDosageIndex, setFocusedDosageIndex] = useState(-1)
-  const resultRefs = useRef<(HTMLLIElement | null)[]>([])
   const [disableHover, setDisableHover] = useState(false)
   const [dosageFromSuggestion, setDosageFromSuggestion] = useState<string>('')
 
-  // Placeholder: medicationTitle logic
-  const medicationTitle = medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? ''
-
-  // Error messages
-  const errorMessages = {
-    isRequired: 'Ce champ est obligatoire.',
+  const resultRefs = useRef<(HTMLLIElement | null)[]>([])
+  const defaultValues = {
+    medicationTitle: medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? '',
+    dosage: prescriptionToModify?.medication?.instructionForPatient ?? '',
+    duration: prescriptionToModify?.medication?.duration?.value ?? 1,
+    durationTimeUnit: prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value,
+    treatmentStartDate: getTreatmentStartDate(prescriptionToModify),
+    executableUntil: getExecutableUntilDate(prescriptionToModify),
+    prescriptionsNumber: 1,
+    substitutionAllowed: false,
+    showExtraFields: false,
+    periodicityTimeUnit: getPeriodicityTimeUnits()[0].value,
+    periodicityDaysNumber: 1,
+    recipeInstructionForPatient: prescriptionToModify?.medication?.recipeInstructionForPatient ?? undefined,
+    instructionsForReimbursement: prescriptionToModify?.medication?.instructionsForReimbursement ?? undefined,
+    prescriberVisibility: prescriptionToModify?.prescriberVisibility ?? getPractitionerVisibilityOptions()[0]?.value,
+    pharmacistVisibility: prescriptionToModify?.pharmacistVisibility ?? getPharmacistVisibilityOptions()[0]?.value,
   }
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors: prescriptionFormErrors },
+  } = useForm<PrescriptionFormType>({ defaultValues })
+
+  const dosage = watch('dosage')
+  const prescriptionsNumber = watch('prescriptionsNumber')
+  const periodicityTimeUnit = watch('periodicityTimeUnit')
+  const showExtraFields = watch('showExtraFields')
+  const recipeInstructionForPatient = watch('recipeInstructionForPatient')
+  const instructionsForReimbursement = watch('instructionsForReimbursement')
+  const prescriberVisibility = watch('prescriberVisibility')
+  const pharmacistVisibility = watch('pharmacistVisibility')
 
   const language: keyof SamText = cardinalLanguage.getLanguage()
 
   const { completePosology: completeDosage } = makeParser(language)
   const dosageRef = useRef(dosage)
   useEffect(() => {
-    dosageRef.current = dosage
+    if (dosage !== undefined) {
+      dosageRef.current = dosage
+    }
   }, [dosage])
 
   useEffect(() => {
@@ -105,132 +115,88 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
     }, 100)
   }, [dosage])
 
-  // Validation logic
-  const validateForm = (data: { [inputName: string]: any }) => {
-    const setError = (inputName: string, isValid: boolean) => {
-      setErrors((prev) => ({
-        ...prev,
-        [inputName]: {
-          validationError: !isValid ? errorMessages.isRequired : undefined,
-        },
-      }))
-    }
-    const isRequiredFieldValid = (value: string | number) => value != null && value !== ''
-    const inputsToValidate = [
-      'dosage',
-      'duration',
-      'durationTimeUnit',
-      'treatmentStartDate',
-      'executableUntil',
-      'prescriptionsNumber',
-      'substitutionAllowed',
-      prescriptionsNumber && prescriptionsNumber > 1 ? 'periodicityTimeUnit' : null,
-      periodicityTimeUnit && periodicityTimeUnit === '1' ? 'periodicityDaysNumber' : null,
-    ].filter((x): x is string => !!x)
-    inputsToValidate.forEach((input) => setError(input, isRequiredFieldValid(data[input])))
+  const handleModalClose = () => {
+    onClose()
+    reset()
   }
 
-  const isFormValid = () => {
-    return !Object.keys(errors).some((inputName) => errors[inputName].validationError)
-  }
-
-  // Submit logic
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const data = {
-      dosage,
-      duration,
-      durationTimeUnit,
-      treatmentStartDate,
-      executableUntil,
-      prescriptionsNumber,
-      periodicityTimeUnit,
-      periodicityDaysNumber,
-      substitutionAllowed,
-      recipeInstructionForPatient,
-      instructionsForReimbursement,
-      prescriberVisibility: practitionerVisibility,
-      pharmacistVisibility: pharmacistVisibility,
-    }
-    validateForm(data)
-    if (isFormValid()) {
-      const getDurationInDays = (timeUnit: string, value: number) => {
-        if (timeUnit === 'jour') {
-          return value
-        } else if (timeUnit === 'semaine') {
-          return value * 7
-        }
+  const handleFormSubmit = (data: PrescriptionFormType) => {
+    const getDurationInDays = (timeUnit: string, value: number) => {
+      if (timeUnit === 'jour') {
+        return value
+      } else if (timeUnit === 'semaine') {
+        return value * 7
       }
-      const prescribedMedications = prescriptionToModify
-        ? [
-            {
-              ...prescriptionToModify,
-              medication: new Medication({
-                ...prescriptionToModify.medication,
+    }
+    const prescribedMedications = prescriptionToModify
+      ? [
+          {
+            ...prescriptionToModify,
+            medication: new Medication({
+              ...prescriptionToModify.medication,
 
-                duration: new Duration({
-                  unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                  value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
-                }),
-                instructionForPatient: data.dosage,
-                recipeInstructionForPatient: data.recipeInstructionForPatient,
-                instructionsForReimbursement: data.instructionsForReimbursement,
-                substitutionAllowed: data.substitutionAllowed,
+              duration: new Duration({
+                unit: createFhcCode('CD-TIMEUNIT', 'D'),
+                value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
               }),
-              prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
-              pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
-            },
-          ]
-        : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
-            (idx): PrescribedMedicationType => ({
-              uuid: uuid(),
-              medication: new Medication({
-                ...(medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired
+              instructionForPatient: data.dosage,
+              recipeInstructionForPatient: data.recipeInstructionForPatient,
+              instructionsForReimbursement: data.instructionsForReimbursement,
+              substitutionAllowed: data.substitutionAllowed,
+            }),
+            prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
+            pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
+          },
+        ]
+      : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
+          (idx): PrescribedMedicationType => ({
+            uuid: uuid(),
+            medication: new Medication({
+              ...(medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired
+                ? {
+                    medicinalProduct: new Medicinalproduct({
+                      samId: medicationToPrescribe.dmppProductId,
+                      intendedcds: [createFhcCode('CD-DRUG-CNK', medicationToPrescribe.cnk)],
+                      intendedname: medicationToPrescribe.intendedName,
+                    }),
+                  }
+                : medicationToPrescribe?.vmpGroupId
                   ? {
-                      medicinalProduct: new Medicinalproduct({
-                        samId: medicationToPrescribe.dmppProductId,
-                        intendedcds: [createFhcCode('CD-DRUG-CNK', medicationToPrescribe.cnk)],
-                        intendedname: medicationToPrescribe.intendedName,
+                      substanceProduct: new Substanceproduct({
+                        samId: medicationToPrescribe.vmpGroupId,
+                        intendedcds: [createFhcCode('CD_VMPGROUP', medicationToPrescribe.vmpGroupId)],
+                        intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title,
                       }),
                     }
-                  : medicationToPrescribe?.vmpGroupId
-                    ? {
-                        substanceProduct: new Substanceproduct({
-                          samId: medicationToPrescribe.vmpGroupId,
-                          intendedcds: [createFhcCode('CD_VMPGROUP', medicationToPrescribe.vmpGroupId)],
-                          intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title,
-                        }),
-                      }
-                    : {
-                        compoundPrescription: medicationToPrescribe.title,
-                      }),
-                beginMoment: offsetDate(
-                  parseInt((data.treatmentStartDate as string).replace(/-/g, '')),
-                  data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
-                ),
-                endMoment: offsetDate(
-                  parseInt((data.executableUntil as string).replace(/-/g, '')),
-                  data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
-                ),
+                  : {
+                      compoundPrescription: medicationToPrescribe.title,
+                    }),
+              beginMoment: offsetDate(
+                parseInt((data.treatmentStartDate as string).replace(/-/g, '')),
+                data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
+              ),
+              endMoment: offsetDate(
+                parseInt((data.executableUntil as string).replace(/-/g, '')),
+                data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
+              ),
 
-                duration: new Duration({
-                  unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                  value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
-                }),
-
-                instructionForPatient: data.dosage,
-                recipeInstructionForPatient: data.recipeInstructionForPatient,
-                instructionsForReimbursement: data.instructionsForReimbursement,
-                substitutionAllowed: data.substitutionAllowed,
+              duration: new Duration({
+                unit: createFhcCode('CD-TIMEUNIT', 'D'),
+                value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
               }),
-              prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
-              pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
-            }),
-          )
 
-      onSubmit(prescribedMedications)
-      onClose()
-    }
+              instructionForPatient: data.dosage,
+              recipeInstructionForPatient: data.recipeInstructionForPatient,
+              instructionsForReimbursement: data.instructionsForReimbursement,
+              substitutionAllowed: data.substitutionAllowed,
+            }),
+            prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
+            pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
+          }),
+        )
+
+    onSubmit(prescribedMedications)
+    handleModalClose()
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -276,7 +242,11 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
   const validateSuggestion = (suggestion: string) => {
     if (suggestion) {
       const common = findCommonSequence(dosage ?? '', suggestion)
-      setDosage((dosageRef.current + (common.length ? suggestion.slice(common.length) : ' ' + suggestion)).replace(/ {2,}/g, ' ').replace(/\/ /g, '/'))
+      setValue('dosage', (dosageRef.current + (common.length ? suggestion.slice(common.length) : ' ' + suggestion)).replace(/ {2,}/g, ' ').replace(/\/ /g, '/'), {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      })
       setDosageFromSuggestion(dosageRef.current)
       setPosologySuggestions([])
       setFocusedDosageIndex(1)
@@ -288,10 +258,10 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
       <GlobalStyles />
       <StyledPrescriptionModal>
         <div className="content">
-          <form id="prescriptionForm" className="addMedicationForm" onSubmit={handleFormSubmit} autoComplete="off">
+          <form id="prescriptionForm" className="addMedicationForm" onSubmit={handleSubmit(handleFormSubmit)} autoComplete="off">
             <div className="addMedicationForm__header">
               <h3>{modalMood === 'create' ? t('prescription.createTitle') : t('prescription.modifyTitle')}</h3>
-              <button className="addMedicationForm__header__closeIcn" onClick={onClose} type="reset">
+              <button className="addMedicationForm__header__closeIcn" onClick={handleModalClose} type="reset">
                 <CloseIcn />
               </button>
             </div>
@@ -303,16 +273,26 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
               aria-activedescendant={focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : undefined}
             >
               <div className="addMedicationForm__body__content">
-                <TextInput label={t('prescription.form.medicationTitle')} value={medicationTitle} required disabled id="drugName" />
+                <TextInput
+                  label={t('prescription.form.medicationTitle')}
+                  required
+                  disabled
+                  id="medicationTitle"
+                  {...register('medicationTitle', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['medicationTitle']?.message}
+                />
                 <StyledDosageInput>
                   <TextInput
                     label={t('prescription.form.dosage')}
                     id="dosage"
-                    value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
                     required
                     autoFocus
-                    errorMessage={errors.dosage?.validationError}
+                    {...register('dosage', {
+                      required: t('prescription.form.fieldRequired'),
+                    })}
+                    errorMessage={prescriptionFormErrors['dosage']?.message}
                   />
                   {posologySuggestions.length !== 0 && (
                     <ul className="suggestionsDropdown" onMouseMove={handleMouseMove}>
@@ -337,18 +317,26 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     id="duration"
                     type="number"
                     min={1}
-                    value={duration}
-                    onChange={(e) => setDuration(Number(e.target.value))}
                     required
-                    errorMessage={errors.duration?.validationError}
+                    {...register('duration', {
+                      required: t('prescription.form.fieldRequired'),
+                    })}
+                    errorMessage={prescriptionFormErrors['duration']?.message}
                   />
-                  <SelectInput
-                    label={t('prescription.form.durationTimeUnit')}
-                    id="durationTimeUnit"
-                    required
-                    options={getDurationTimeUnits()}
-                    value={durationTimeUnit}
-                    onChange={setDurationTimeUnit}
+                  <Controller
+                    name="durationTimeUnit"
+                    control={control}
+                    rules={{ required: t('prescription.form.fieldRequired') }}
+                    render={({ field }) => (
+                      <SelectInput
+                        {...field}
+                        label={t('prescription.form.durationTimeUnit')}
+                        id="durationTimeUnit"
+                        required
+                        options={getDurationTimeUnits()}
+                        errorMessage={prescriptionFormErrors['durationTimeUnit']?.message}
+                      />
+                    )}
                   />
                 </div>
                 <div className="addMedicationForm__body__content__inputsGroup">
@@ -356,19 +344,21 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     label={t('prescription.form.treatmentStartDate')}
                     id="treatmentStartDate"
                     type="date"
-                    value={treatmentStartDate}
-                    onChange={(e) => setTreatmentStartDate(e.target.value)}
                     required
-                    errorMessage={errors.treatmentStartDate?.validationError}
+                    {...register('treatmentStartDate', {
+                      required: t('prescription.form.fieldRequired'),
+                    })}
+                    errorMessage={prescriptionFormErrors['treatmentStartDate']?.message}
                   />
                   <TextInput
                     label={t('prescription.form.executableUntil')}
                     id="executableUntil"
                     type="date"
-                    value={executableUntil}
-                    onChange={(e) => setExecutableUntil(e.target.value)}
                     required
-                    errorMessage={errors.executableUntil?.validationError}
+                    {...register('executableUntil', {
+                      required: t('prescription.form.fieldRequired'),
+                    })}
+                    errorMessage={prescriptionFormErrors['executableUntil']?.message}
                   />
                 </div>
                 {!prescriptionToModify && (
@@ -379,19 +369,27 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                       type="number"
                       min={1}
                       max={12}
-                      value={prescriptionsNumber}
-                      onChange={(e) => setPrescriptionsNumber(Number(e.target.value))}
                       required
-                      errorMessage={errors.prescriptionsNumber?.validationError}
+                      {...register('prescriptionsNumber', {
+                        required: t('prescription.form.fieldRequired'),
+                      })}
+                      errorMessage={prescriptionFormErrors['prescriptionsNumber']?.message}
                     />
                     {prescriptionsNumber && prescriptionsNumber > 1 && (
-                      <SelectInput
-                        label={t('prescription.form.periodicityTimeUnit')}
-                        id="periodicityTimeUnit"
-                        required
-                        options={getPeriodicityTimeUnits()}
-                        value={periodicityTimeUnit}
-                        onChange={setPeriodicityTimeUnit}
+                      <Controller
+                        name="periodicityTimeUnit"
+                        control={control}
+                        rules={{ required: t('prescription.form.fieldRequired') }}
+                        render={({ field }) => (
+                          <SelectInput
+                            {...field}
+                            label={t('prescription.form.periodicityTimeUnit')}
+                            id="periodicityTimeUnit"
+                            required
+                            options={getPeriodicityTimeUnits()}
+                            errorMessage={prescriptionFormErrors['periodicityTimeUnit']?.message}
+                          />
+                        )}
                       />
                     )}
                     {periodicityTimeUnit === '1' && (
@@ -400,31 +398,42 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                         id="periodicityDaysNumber"
                         type="number"
                         min={1}
-                        value={periodicityDaysNumber}
-                        onChange={(e) => setPeriodicityDaysNumber(Number(e.target.value))}
                         required
-                        errorMessage={errors.periodicityDaysNumber?.validationError}
+                        {...register('periodicityDaysNumber', {
+                          required: t('prescription.form.fieldRequired'),
+                        })}
+                        errorMessage={prescriptionFormErrors['periodicityDaysNumber']?.message}
                       />
                     )}
                   </div>
                 )}
                 <div className="addMedicationForm__body__content__radioBtns">
-                  <RadioInput
+                  <Controller
                     name="substitutionAllowed"
-                    // value={substitutionAllowed}
-                    label={t('prescription.form.substitutionAllowed')}
-                    options={[
-                      { label: 'Non', value: false, id: 'substitutionIsNotAllowed' },
-                      { label: 'Oui', value: true, id: 'substitutionIsAllowed' },
-                    ]}
-                    required
-                    errorMessage={errors.substitutionAllowed?.validationError}
-                    onChange={setSubstitutionAllowed}
+                    control={control}
+                    render={({ field }) => (
+                      <RadioInput
+                        {...field}
+                        value={field.value}
+                        onChange={(val) => field.onChange(val)}
+                        label={t('prescription.form.substitutionAllowed')}
+                        options={[
+                          { label: 'Non', value: false, id: 'substitutionIsNotAllowed' },
+                          { label: 'Oui', value: true, id: 'substitutionIsAllowed' },
+                        ]}
+                        required
+                        errorMessage={prescriptionFormErrors['substitutionAllowed']?.message}
+                      />
+                    )}
                   />
                 </div>
               </div>
 
-              <ToggleSwitch id="showExtraFields" value={t('prescription.form.toggleExtraFields')} checked={showExtraFields} onChange={setShowExtraFields} />
+              <Controller
+                name="showExtraFields"
+                control={control}
+                render={({ field }) => <ToggleSwitch {...field} id="showExtraFields" value={t('prescription.form.toggleExtraFields')} />}
+              />
 
               {!showExtraFields ? (
                 <div className="addMedicationForm__body__extraFieldsPreview">
@@ -443,7 +452,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                   <p>
                     <span>{t('prescription.form.prescriberVisibility')} :</span>{' '}
                     <i>
-                      <span>{getPractitionerVisibilityOptions().find((o) => o.value === practitionerVisibility)?.label}</span>
+                      <span>{getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label}</span>
                     </i>
                   </p>
                   <p>
@@ -455,39 +464,35 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                 </div>
               ) : (
                 <div className="addMedicationForm__body__content">
-                  <TextareaInput
-                    label={t('prescription.form.patientInstructions')}
-                    id="recipeInstructionForPatient"
-                    value={recipeInstructionForPatient}
-                    onChange={setRecipeInstructionForPatient}
+                  <TextareaInput label={t('prescription.form.patientInstructions')} id="recipeInstructionForPatient" {...register('recipeInstructionForPatient')} />
+                  <Controller
+                    name="instructionsForReimbursement"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectInput {...field} label={t('prescription.form.reimbursementInstructions')} id="instructionsForReimbursement" options={getReimbursementOptions()} />
+                    )}
                   />
-                  <SelectInput
-                    label={t('prescription.form.reimbursementInstructions')}
-                    id="instructionsForReimbursement"
-                    value={instructionsForReimbursement}
-                    onChange={setInstructionsForReimbursement}
-                    options={getReimbursementOptions()}
+                  <Controller
+                    name="prescriberVisibility"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectInput {...field} label={t('prescription.form.prescriberVisibility')} id="prescriberVisibility" options={getPractitionerVisibilityOptions()} />
+                    )}
                   />
-                  <SelectInput
-                    label={t('prescription.form.prescriberVisibility')}
-                    id="prescriberVisibility"
-                    value={practitionerVisibility}
-                    onChange={setPractitionerVisibility}
-                    options={getPractitionerVisibilityOptions()}
-                  />
-                  <SelectInput
-                    label={t('prescription.form.pharmacistVisibility')}
-                    id="pharmacyVisibility"
-                    value={pharmacistVisibility}
-                    onChange={setPharmacistVisibility}
-                    options={getPharmacistVisibilityOptions()}
+
+                  <Controller
+                    name="pharmacistVisibility"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectInput {...field} label={t('prescription.form.pharmacistVisibility')} id="pharmacistVisibility" options={getPharmacistVisibilityOptions()} />
+                    )}
                   />
                 </div>
               )}
             </div>
 
             <div className="addMedicationForm__footer">
-              <Button title={t('prescription.form.cancel')} type="reset" view={'outlined'} onClick={onClose} />
+              <Button title={t('prescription.form.cancel')} type="reset" view={'outlined'} onClick={handleModalClose} />
               <Button title={t('prescription.form.submit')} type="submit" view={'primary'} />
             </div>
           </form>

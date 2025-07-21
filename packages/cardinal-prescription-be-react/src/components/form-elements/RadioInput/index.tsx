@@ -1,5 +1,4 @@
-// index.tsx
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { StyledRadioButton, StyledRadioButtonLabel, StyledRadioButtonToggle, StyledRadioButtonToggleStuffing, StyledRadioGroupLabel, StyledRadioInput } from './styles'
 
 export interface RadioOption {
@@ -14,11 +13,11 @@ interface RadioInputProps {
   options: RadioOption[]
   required?: boolean
   errorMessage?: string
+  value?: boolean
   onChange?: (value: boolean) => void
 }
 
-export const RadioInput: React.FC<RadioInputProps> = ({ label, name, options, required, errorMessage }) => {
-  const [value, setValue] = React.useState(false)
+export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
   return (
     <StyledRadioInput>
       <StyledRadioGroupLabel $required={required} $error={!!errorMessage}>
@@ -35,7 +34,8 @@ export const RadioInput: React.FC<RadioInputProps> = ({ label, name, options, re
               checked={value === option.value}
               value={String(option.value)}
               required={required}
-              onChange={() => setValue(option.value)}
+              onChange={() => onChange?.(option.value)}
+              ref={ref}
             />
             <StyledRadioButtonToggle $error={!!errorMessage}>
               <StyledRadioButtonToggleStuffing />
@@ -47,4 +47,6 @@ export const RadioInput: React.FC<RadioInputProps> = ({ label, name, options, re
       {!!errorMessage && <p className="error">{errorMessage}</p>}
     </StyledRadioInput>
   )
-}
+})
+
+RadioInput.displayName = 'RadioInput'

@@ -172,13 +172,13 @@ export const App = () => {
     setShowMedicationPrescriptionModal(false)
   }
   const onSubmitCreatePrescription = (newPrescriptions: PrescribedMedicationType[]) => {
+    console.log(newPrescriptions)
     setPrescriptions((prev) => [...prev, ...newPrescriptions])
     onClosePrescriptionModal()
   }
 
   const onSubmitModifyPrescription = (prescriptionsToModify: PrescribedMedicationType[]) => {
     setPrescriptions((prev) => prev?.map((item) => (item.uuid === prescriptionsToModify[0].uuid ? prescriptionsToModify[0] : item)))
-
     onClosePrescriptionModal()
   }
 
