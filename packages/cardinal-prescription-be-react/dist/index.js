@@ -5931,8 +5931,9 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
       newdiv.style.cssText = window.getComputedStyle(div).cssText;
       newdiv.id = "new" + div.id;
       const hideFrame = document.createElement("iframe");
-      hideFrame.onload = setPrint;
       hideFrame.style.display = "none";
+      hideFrame.onload = setPrint;
+      hideFrame.src = "about:blank";
       document.body.appendChild(hideFrame);
     }
   };

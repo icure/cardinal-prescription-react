@@ -67,17 +67,17 @@ const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
 export const App = () => {
   // Service instance refs
   const [certificateUploaded, setCertificateUploaded] = useState(false)
-  const [certificateValid, setCertificateValid] = useState(false)
+  const [isCertificateValid, setIsCertificateValid] = useState(false)
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
   const [cardinalSdkInstance, setCardinalSdkInstance] = useState<SamV2Api | undefined>(undefined)
-  const [showMedicationPrescriptionModal, setShowMedicationPrescriptionModal] = useState(false)
+  const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
   const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
   const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
-  const [showPrintModal, setShowPrintModal] = useState(false)
+  const [isPrescriptionPrintModalOpen, setPrescriptionPrintModalOpen] = useState(false)
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -114,11 +114,11 @@ export const App = () => {
     try {
       const res = await validateDecryptedCertificate(hcp, passphrase)
 
-      setCertificateValid(res.status)
+      setIsCertificateValid(res.status)
       setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
       setCertificateUploaded(!res.error)
     } catch (error) {
-      setCertificateValid(false)
+      setIsCertificateValid(false)
       setErrorWhileVerifyingCertificate('Unexpected error')
       setCertificateUploaded(false)
 
@@ -131,16 +131,16 @@ export const App = () => {
     if (certificateUploaded && passphrase) {
       validateCertificate(passphrase).catch(console.error)
     } else {
-      setCertificateValid(false)
+      setIsCertificateValid(false)
       setErrorWhileVerifyingCertificate(undefined)
     }
   }, [passphrase, certificateUploaded])
 
-  // We do this certificate is uploaded, but the passphrase is not set
+  // We do this if the certificate is uploaded, but the passphrase is not set
   const onDecryptCertificate = (passphrase: string) => {
     setPassphrase(passphrase)
   }
-  // We do this when no certificate is uploaded
+  // We do this if no certificate is uploaded
   const onUploadCertificate = async (certificateData: ArrayBuffer, passphrase: string) => {
     if (!hcp.ssin) return
 
@@ -159,12 +159,12 @@ export const App = () => {
     await deleteCertificate(hcp.ssin)
     setPassphrase(undefined)
     setCertificateUploaded(false)
-    setCertificateValid(false)
+    setIsCertificateValid(false)
     setErrorWhileVerifyingCertificate(undefined)
   }
 
   const onCreatePrescription = (medication: MedicationType) => {
-    setShowMedicationPrescriptionModal(true)
+    setPrescriptionModalOpen(true)
     setPrescriptionModalMode('create')
     setMedicationToPrescribe(medication)
   }
@@ -172,7 +172,7 @@ export const App = () => {
     setPrescriptionModalMode(null)
     setMedicationToPrescribe(undefined)
     setPrescriptionToModify(undefined)
-    setShowMedicationPrescriptionModal(false)
+    setPrescriptionModalOpen(false)
   }
   const onSubmitCreatePrescription = (newPrescriptions: PrescribedMedicationType[]) => {
     console.log(newPrescriptions)
@@ -184,14 +184,14 @@ export const App = () => {
     onClosePrescriptionModal()
   }
   const onModifyPrescription = (prescription: PrescribedMedicationType) => {
-    setShowMedicationPrescriptionModal(true)
+    setPrescriptionModalOpen(true)
     setPrescriptionModalMode('modify')
     setPrescriptionToModify(prescription)
   }
   const onDeletePrescription = (prescription: PrescribedMedicationType) => {
     setPrescriptions((prev) => prev?.filter((item) => item.uuid !== prescription.uuid))
   }
-  const onClosePrescriptionPrintModal = () => setShowPrintModal(false)
+  const onClosePrescriptionPrintModal = () => setPrescriptionPrintModalOpen(false)
   const handleSendPrescriptions = async () => {
     await Promise.all(
       prescriptions
@@ -227,7 +227,7 @@ export const App = () => {
   }
   const handlePrintPrescriptions = async () => {
     await handleSendPrescriptions()
-    setShowPrintModal(true)
+    setPrescriptionPrintModalOpen(true)
   }
 
   return (
@@ -236,7 +236,7 @@ export const App = () => {
       <div className="dividerApp"></div>
       <div className="element">
         <PractitionerCertificate
-          certificateValid={certificateValid}
+          certificateValid={isCertificateValid}
           certificateUploaded={certificateUploaded}
           errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
           onResetCertificate={onResetCertificate}
@@ -251,14 +251,8 @@ export const App = () => {
       </p>
       <div className="dividerApp"></div>
       <div className="element">
-        {cardinalSdkInstance && certificateValid && (
-          <MedicationSearch
-            sdk={cardinalSdkInstance}
-            deliveryEnvironment="P"
-            short={true}
-            onAddPrescription={onCreatePrescription}
-            disableInputEventsTracking={showMedicationPrescriptionModal}
-          />
+        {cardinalSdkInstance && isCertificateValid && (
+          <MedicationSearch sdk={cardinalSdkInstance} deliveryEnvironment="P" onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
         )}
       </div>
       {prescriptions.length !== 0 && (
@@ -287,7 +281,9 @@ export const App = () => {
       {prescriptionModalMode === 'modify' && (
         <PrescriptionModal onClose={onClosePrescriptionModal} onSubmit={onSubmitModifyPrescription} modalMood={prescriptionModalMode} prescriptionToModify={prescriptionToModify} />
       )}
-      {showPrintModal && <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />}
+      {isPrescriptionPrintModalOpen && (
+        <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />
+      )}
     </div>
   )
 }

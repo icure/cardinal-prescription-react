@@ -24,6 +24,7 @@ export const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps> = ({ 
       newdiv.style.cssText = window.getComputedStyle(div).cssText
       newdiv.id = 'new' + div.id
       const hideFrame = document.createElement('iframe')
+      hideFrame.style.display = 'none'
 
       function setPrint() {
         const closePrint = () => {
@@ -42,7 +43,7 @@ export const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps> = ({ 
       }
 
       hideFrame.onload = setPrint
-      hideFrame.style.display = 'none'
+      hideFrame.src = 'about:blank'
       document.body.appendChild(hideFrame)
     }
   }
