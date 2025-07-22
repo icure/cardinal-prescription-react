@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, RefObject } from 'react'
-import './index.css'
+import './index.scss'
 
 type Orientation = 'tr' | 'br' | 'tl' | 'bl'
 

@@ -10,6 +10,7 @@ export function SpinnerIcn({ pathFill = '#000000', size = 12 }: { pathFill?: str
         </circle>
         <g></g>
       </g>
+      2
     </svg>
   )
 }

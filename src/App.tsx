@@ -161,7 +161,7 @@ const App: () => React.JSX.Element = () => {
   }
 
   return (
-    <main>
+    <main className="home">
       {!uiReady ? (
         <p>Loading...</p>
       ) : (
@@ -186,9 +186,9 @@ const App: () => React.JSX.Element = () => {
               />
             )}
           </div>
-          <div className="divider"></div>
+          <div className="home__divider"></div>
           <p>Sam version: {samVersion}</p>
-          <div className="divider"></div>
+          <div className="home__divider"></div>
           <PrescribeMedicationsSearch
             sdk={sdk}
             deliveryEnvironment="P"
@@ -198,7 +198,7 @@ const App: () => React.JSX.Element = () => {
           />
           {medicationToPrescribe && showMedicationPrescriptionModal && (
             <>
-              <div className="divider"></div>
+              <div className="home__divider"></div>
               <MedicationPrescriptionModal
                 modalTitle="Créer la prescription"
                 medicationToPrescribe={medicationToPrescribe}
@@ -215,7 +215,7 @@ const App: () => React.JSX.Element = () => {
           )}
           {prescribedMedicationToModify && showMedicationPrescriptionModal && (
             <>
-              <div className="divider"></div>
+              <div className="home__divider"></div>
               <MedicationPrescriptionModal
                 modalTitle="Modifier la prescription"
                 prescribedMedication={prescribedMedicationToModify}
@@ -232,7 +232,7 @@ const App: () => React.JSX.Element = () => {
           )}
           {prescribedMedications.length !== 0 && (
             <>
-              <div className="divider"></div>
+              <div className="home__divider"></div>
               <Prescriptions
                 handleDeletePrescription={handleDeletePrescription}
                 handleModifyPrescription={handleModifyPrescription}

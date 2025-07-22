@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import './index.css'
+import './index.scss'
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
@@ -19,7 +19,7 @@ const TextInput: React.FC<Props> = ({ label, id, required, errorMessage, autoFoc
   }, [autoFocus])
 
   return (
-    <div className="inputWrapper">
+    <div className="textInput">
       <label htmlFor={id} className={required ? 'required' : ''}>
         <span>*</span>
         {label}
@@ -33,7 +33,7 @@ const TextInput: React.FC<Props> = ({ label, id, required, errorMessage, autoFoc
         {...rest}
         className={`${rest.disabled ? 'disabled' : ''} ${errorMessage ? 'errorMessage' : ''}`}
       />
-      {errorMessage && <p className="inputWrapper__error">{errorMessage}</p>}
+      {errorMessage && <p className="textInput__error">{errorMessage}</p>}
     </div>
   )
 }

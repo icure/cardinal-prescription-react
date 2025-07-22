@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { openCertificatesDatabase, uploadAndEncrypt } from '../../../services/fhc'
 import Button from '../../form-elements/Button'
 import TextInput from '../../form-elements/TextInput'
-import './index.css'
+import './index.scss'
 
 interface CertificateUploadProps {
   handleSave: (id: string, passphrase: string) => void

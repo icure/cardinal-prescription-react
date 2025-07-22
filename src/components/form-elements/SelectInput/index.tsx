@@ -1,5 +1,5 @@
 import React from 'react'
-import './index.css'
+import './index.scss'
 
 export interface SelectOption {
   value: string | null
@@ -14,9 +14,10 @@ interface SelectInputProps {
   options: SelectOption[]
   value?: string
   onChange: (value: string) => void
+  errorMessage?: string
 }
 
-const SelectInput: React.FC<SelectInputProps> = ({ label, id, required, disabled, options, value, onChange }) => (
+const SelectInput: React.FC<SelectInputProps> = ({ label, id, required, disabled, options, value, onChange, errorMessage }) => (
   <div className="selectInput">
     <label htmlFor={id} className={required ? 'required' : ''}>
       <span>*</span>
@@ -29,6 +30,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, id, required, disabled
         </option>
       ))}
     </select>
+    {!!errorMessage && <p className="selectInput__error">{errorMessage}</p>}
   </div>
 )
 

@@ -1,32 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import JsBarcode from 'jsbarcode'
-import './index.css'
-
-interface Medication {
-  beginMoment?: number
-  endMoment?: number
-}
-
-interface PrescribedMedicationType {
-  rid?: string
-  medication: Medication
-}
-
-interface Prescriber {
-  lastName: string
-  firstName: string
-  nihii: string
-}
-
-interface Patient {
-  lastName: string
-  firstName: string
-  ssin: string
-}
+import { PrescribedMedicationType } from '../../../types'
+import { dateDecode } from '../../../utils/date-helpers'
+import { HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
+import './index.scss'
 
 interface Props {
   prescribedMedications: PrescribedMedicationType[]
-  prescriber: Prescriber
+  prescriber: HealthcareParty
   patient: Patient
 }
 
@@ -37,18 +18,7 @@ function chunk<K>(arr: K[], chunkSize = 1, cache: K[][] = []) {
   return cache
 }
 
-function dateDecode(ts?: number): Date | undefined {
-  if (!ts) return undefined
-  // Example: 20230601 -> 2023-06-01
-  const str = ts.toString()
-  if (str.length !== 8) return undefined
-  const year = +str.slice(0, 4)
-  const month = +str.slice(4, 6) - 1
-  const day = +str.slice(6, 8)
-  return new Date(year, month, day)
-}
-
-const PrescriptionsPrint: React.FC<Props> = ({ prescribedMedications, prescriber, patient }) => {
+export const PrescriptionsDocumentToPrint: React.FC<Props> = ({ prescribedMedications, prescriber, patient }) => {
   const chunks = chunk(prescribedMedications, 4)
   const ridElements = useRef<(SVGSVGElement | null)[]>([])
 
@@ -66,8 +36,12 @@ const PrescriptionsPrint: React.FC<Props> = ({ prescribedMedications, prescriber
     })
   }, [prescribedMedications])
 
+  const formatDate = (date: number | undefined): string | 0 => {
+    return (date && dateDecode(date)?.toLocaleDateString()) ?? '-'
+  }
+
   return (
-    <>
+    <div className="prescriptionsHolder">
       {prescribedMedications?.length
         ? chunks.map((chunk, chunkIndex) => (
             <div className="prescription" key={chunkIndex}>
@@ -75,7 +49,7 @@ const PrescriptionsPrint: React.FC<Props> = ({ prescribedMedications, prescriber
                 <h1>PREUVE DE PRESCRIPTION ELECTRONIQUE</h1>
                 <p>Veuillez présenter ce document à votre pharmacien pour scanner le code-barres et vous délivrer les médicaments prescrits.</p>
               </div>
-
+              <div className="divider"></div>
               <div className="options">
                 <p>
                   <strong>De quelles options disposez-vous pour vous rendre à la pharmacie si vous avez perdu ce document ?</strong>
@@ -88,99 +62,43 @@ const PrescriptionsPrint: React.FC<Props> = ({ prescribedMedications, prescriber
                   </li>
                 </ol>
               </div>
+              <div className="divider"></div>
 
               <div className="prescription-section">
-                <p>
-                  <strong>Prescripteur :</strong> {prescriber.lastName} {prescriber.firstName} {prescriber.nihii}
-                  &nbsp;&nbsp;&nbsp;
-                  <strong>Bénéficiaire :</strong> {patient.lastName} {patient.firstName} {patient.ssin}
-                </p>
-
-                <h3>Contenu de la prescription électronique</h3>
-
-                <div className="prescription-item">
-                  <div>
-                    <p>
-                      <strong>Produit 1</strong>
-                    </p>
-                    <p>Date :{(chunk[0]?.medication.beginMoment && dateDecode(chunk[0].medication.beginMoment)?.toLocaleDateString()) || '-'}</p>
-                    <p>Date de fin pour l&apos;exécution :{chunk[0]?.medication.endMoment ? chunk[0]?.medication.endMoment : '-'}</p>
-                  </div>
-                  <div>
-                    <div className="right">
-                      <strong>RID 1</strong>
-                    </div>
-                    <div className="barcode right">
-                      <svg ref={(el) => (ridElements.current[chunkIndex * 4] = el)} />
-                    </div>
-                  </div>
+                <div className="prescription-section__persons">
+                  <p>
+                    <strong>Prescripteur :</strong> {prescriber.lastName} {prescriber.firstName} {prescriber.nihii}
+                  </p>
+                  <p>
+                    <strong>Bénéficiaire :</strong> {patient.lastName} {patient.firstName} {patient.ssin}
+                  </p>
                 </div>
-
-                {chunk[1] && (
-                  <div className="prescription-item">
-                    <div>
-                      <div>
-                        <strong>RID 2</strong>
-                      </div>
+                <h3>Contenu de la prescription électronique</h3>
+                {chunk.map((prescription, prescriptionIndex) => (
+                  <div className="prescription-item" key={prescriptionIndex}>
+                    <div className="prescription-item__block">
+                      <p>
+                        Produit :<strong>{prescription.medication.medicinalProduct?.intendedname}</strong>
+                      </p>
+                      <p>Posologie :{prescription.medication.instructionForPatient}</p>
+                      <p>Date de début :{formatDate(prescription.medication.beginMoment)}</p>
+                      <p>
+                        Date de fin pour l`exécution
+                        {prescription.medication.endMoment ? formatDate(prescription.medication.endMoment) : '-'}
+                      </p>
+                    </div>
+                    <div className="prescription-item__block prescription-item__block--right">
+                      <strong className="ridTitle">RID {prescriptionIndex + 1}</strong>
                       <div className="barcode">
-                        <svg ref={(el) => (ridElements.current[chunkIndex * 4 + 1] = el)} />
-                      </div>
-                    </div>
-                    <div>
-                      <p>
-                        <strong>Produit 2</strong>
-                      </p>
-                      <p>Date :{(chunk[1]?.medication.beginMoment && dateDecode(chunk[1].medication.beginMoment)?.toLocaleDateString()) || '-'}</p>
-                      <p>Date de fin pour l&apos;exécution :{chunk[1]?.medication.endMoment ? chunk[1]?.medication.endMoment : '-'}</p>
-                    </div>
-                  </div>
-                )}
-
-                {chunk[2] && (
-                  <div className="prescription-item">
-                    <div>
-                      <p>
-                        <strong>Produit 3</strong>
-                      </p>
-                      <p>Date :{(chunk[2]?.medication.beginMoment && dateDecode(chunk[2].medication.beginMoment)?.toLocaleDateString()) || '-'}</p>
-                      <p>Date de fin pour l&apos;exécution :{chunk[2]?.medication.endMoment ? chunk[2]?.medication.endMoment : '-'}</p>
-                    </div>
-                    <div>
-                      <div className="right">
-                        <strong>RID 3</strong>
-                      </div>
-                      <div className="barcode right">
-                        <svg ref={(el) => (ridElements.current[chunkIndex * 4 + 2] = el)} />
+                        <svg ref={(el) => (ridElements.current[chunkIndex * 4] = el)} />
                       </div>
                     </div>
                   </div>
-                )}
-
-                {chunk[3] && (
-                  <div className="prescription-item">
-                    <div>
-                      <div>
-                        <strong>RID 4</strong>
-                      </div>
-                      <div className="barcode">
-                        <svg ref={(el) => (ridElements.current[chunkIndex * 4 + 3] = el)} />
-                      </div>
-                    </div>
-                    <div>
-                      <p>
-                        <strong>Produit 4</strong>
-                      </p>
-                      <p>Date :{(chunk[3]?.medication.beginMoment && dateDecode(chunk[3].medication.beginMoment)?.toLocaleDateString()) || '-'}</p>
-                      <p>Date de fin pour l&apos;exécution :{chunk[3]?.medication.endMoment ? chunk[3]?.medication.endMoment : '-'}</p>
-                    </div>
-                  </div>
-                )}
+                ))}
               </div>
             </div>
           ))
         : null}
-    </>
+    </div>
   )
 }
-
-export default PrescriptionsPrint

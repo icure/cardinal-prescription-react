@@ -1,8 +1,9 @@
 import React from 'react'
 import Button from '../../form-elements/Button'
-import PrescriptionsPrint from '../PrescriptionDocumentToPrint'
 
-import './index.css'
+import './index.scss'
+import { PrescriptionsDocumentToPrint } from '../PrescriptionDocumentToPrint'
+import { CloseIcn } from '../../common/Icons/Icons'
 
 interface PrintPrescriptionModalProps {
   closeModal: () => void
@@ -41,17 +42,39 @@ const PrintPrescriptionModal: React.FC<PrintPrescriptionModalProps> = ({ closeMo
   }
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="close-button" onClick={closeModal}>
-          &times;
-        </button>
-        <h2>Imprimer la prescription</h2>
-        <div id="print-container">
-          <PrescriptionsPrint prescribedMedications={prescribedMedications} prescriber={prescriber} patient={patient} />
-        </div>
-        <div className="buttons">
-          <Button title="Imprimer" handleClick={print} view="primary" type="button" />
+    // <div className="printPrescriptionModal" onClick={closeModal}>
+    //   <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    //     <button className="close-button" onClick={closeModal}>
+    //       &times;
+    //     </button>
+    //     <h2>Imprimer la prescription</h2>
+    //     <div id="print-container">
+    //       <PrescriptionsDocumentToPrint prescribedMedications={prescribedMedications} prescriber={prescriber} patient={patient} />
+    //     </div>
+    //     <div className="buttons">
+    //       <Button title="Imprimer" handleClick={print} view="primary" type="button" />
+    //     </div>
+    //   </div>
+    // </div>
+    <div className="printPrescriptionModal">
+      <div className="printPrescriptionModal__contentWrap">
+        <div className="printPrescriptionModal__content">
+          <div className="printPrescriptionModal__content__header">
+            <h3>Imprimer la prescription</h3>
+
+            <button className="printPrescriptionModal__content__header__closeIcn" onClick={closeModal} type="reset">
+              <CloseIcn />
+            </button>
+          </div>
+          <div className="printPrescriptionModal__content__body">
+            <div id="print-container">
+              <PrescriptionsDocumentToPrint prescribedMedications={prescribedMedications} prescriber={prescriber} patient={patient} />
+            </div>
+          </div>
+          <div className="printPrescriptionModal__content__footer">
+            <Button title="Cancel" type="reset" view={'outlined'} handleClick={closeModal} />
+            <Button title="Print" type="submit" view={'primary'} handleClick={print} />
+          </div>
         </div>
       </div>
     </div>

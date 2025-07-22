@@ -17,15 +17,15 @@ interface RadioInputProps {
   onChange: (value: boolean) => void
 }
 
-const Index: React.FC<RadioInputProps> = ({ label, name, value, options, required, errorMessage, onChange }) => (
+const RadioInput: React.FC<RadioInputProps> = ({ label, name, value, options, required, errorMessage, onChange }) => (
   <div className="radioBtnsGroup">
-    <p className={`radioBtnsGroup__label${required ? ' required' : ''}`}>
+    <p className={`radioBtnsGroup__label ${required ? ' required' : ''} ${errorMessage ? ' error' : ''}`}>
       <span>*</span>
       {label}
     </p>
     <div className="radioBtnsGroup__buttons">
       {options.map((option) => (
-        <label key={option.id} htmlFor={option.id} className="radioButton">
+        <label key={option.id} htmlFor={option.id} className={`radioButton ${errorMessage ? ' error' : ''}`}>
           <input
             id={option.id}
             name={name}
@@ -35,10 +35,10 @@ const Index: React.FC<RadioInputProps> = ({ label, name, value, options, require
             required={required}
             onChange={() => onChange(option.value)}
           />
-          <span className="radioButton__toggle">
+          <span className={`radioButton__toggle ${errorMessage ? ' error' : ''}`}>
             <span className="radioButton__toggle__inside" />
           </span>
-          <span className="radioButton__label">{option.label}</span>
+          <span className={`radioButton__label  ${errorMessage ? ' error' : ''}`}>{option.label}</span>
         </label>
       ))}
     </div>
@@ -46,4 +46,4 @@ const Index: React.FC<RadioInputProps> = ({ label, name, value, options, require
   </div>
 )
 
-export default Index
+export default RadioInput

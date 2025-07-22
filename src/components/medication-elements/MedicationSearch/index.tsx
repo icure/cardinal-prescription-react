@@ -4,7 +4,7 @@ import MedicationCard from '../MedicationCard'
 import InfiniteScroll from '../../common/InfiniteScroll'
 import { SearchIcn } from '../../common/Icons/Icons'
 
-import './index.css'
+import './index.scss'
 import { Amp, AmpStatus, DmppCodeType, Nmp, PaginatedListIterator, VmpGroup } from '@icure/cardinal-be-sam-sdk'
 import { mergeSortedPartialArraysN } from '../../../helpers'
 import { MedicationType } from '../../../types'
@@ -35,7 +35,7 @@ const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnviro
   const [productsPage, setProductsPage] = useState<MedicationType[]>([])
   const [focusedMedicationIndex, setFocusedMedicationIndex] = useState(-1)
   const [disableHover, setDisableHover] = useState(false)
-  const resultRefs = useRef<(HTMLLIElement | null)[]>([])
+  const resultRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     setFocusedMedicationIndex(0)
@@ -266,17 +266,16 @@ const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnviro
     if (!disableInputEventsTracking) setDisableHover(false)
   }
 
+  const showSearchError = () => {
+    const value = searchQuery?.trim()
+    return !!value && value.length < 3
+  }
+
   return (
-    <div
-      className="prescribeMedications"
-      role="listbox"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      aria-activedescendant={focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : undefined}
-    >
-      <div className={`prescribeMedications__search${dropdownDisplayed ? ' dropdownDisplayed' : ''}`}>
-        <p className="prescribeMedications__search__label">Trouver un médicament:</p>
-        <label htmlFor="searchMedications" className="prescribeMedications__search__inputWrap">
+    <div className="medicationSearch" onKeyDown={handleKeyDown} aria-activedescendant={focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : undefined}>
+      <div className={`medicationSearch__input${dropdownDisplayed ? ' dropdownDisplayed' : ''}`}>
+        <p>Trouver un médicament:</p>
+        <label htmlFor="searchMedications">
           <input
             id="searchMedications"
             type="text"
@@ -288,11 +287,17 @@ const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnviro
           />
           {SearchIcn({})}
         </label>
+        {showSearchError() && <p className="error">Enter at least 3 letters of the medication name</p>}
       </div>
+
       {pages.length !== 0 && dropdownDisplayed && (
-        <ul className="prescribeMedications__dropdown" onMouseMove={handleMouseMove}>
+        <div className="medicationSearchDropdown" onMouseMove={handleMouseMove}>
           {pages.map((medication, index) => (
-            <li key={index} ref={(el) => (resultRefs.current[index] = el)} className={`${disableHover ? 'disableHover' : ''} ${focusedMedicationIndex === index ? 'focused' : ''}`}>
+            <div
+              key={index}
+              ref={(el) => (resultRefs.current[index] = el)}
+              className={`medicationSearchDropdown__cardWrap ${disableHover ? 'disableHover' : ''} ${focusedMedicationIndex === index ? 'focused' : ''}`}
+            >
               <MedicationCard
                 medication={medication}
                 handleAddPrescription={handleAddPrescription}
@@ -301,10 +306,10 @@ const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnviro
                 disableHover={disableHover}
                 short={short}
               />
-            </li>
+            </div>
           ))}
           <InfiniteScroll threshold={50} loadMore={() => loadMore({ medicationsPage, moleculesPage, productsPage }).then((results) => setPages([...pages, ...results]))} />
-        </ul>
+        </div>
       )}
     </div>
   )

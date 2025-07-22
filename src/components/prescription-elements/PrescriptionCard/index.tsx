@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './index.css'
+import './index.scss'
 import { PrescribedMedicationType } from '../../../types'
 import { DeleteIcn, EditIcn } from '../../common/Icons/Icons'
 
@@ -20,7 +20,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescribedMedicatio
   const [deleteIcnColor, setDeleteIcnColor] = useState(colors.gray)
 
   return (
-    <div className={`prescriptionRow${prescribedMedication.rid ? ' prescribed' : ''}`}>
+    <div className={`prescriptionCard ${prescribedMedication.rid ? ' prescribed' : ''}`}>
       <div className="header">
         <div className="header__prescription">
           <div className="header__prescription__content">
@@ -35,10 +35,11 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescribedMedicatio
           </div>
         </div>
       </div>
+
       {!prescribedMedication.rid ? (
         <div className="actions">
           <button
-            className="actions__btn"
+            className="actions__btn actions__btn--edit"
             onClick={() => handleModifyPrescription(prescribedMedication)}
             onMouseEnter={() => setEditIcnColor(colors.blue)}
             onMouseLeave={() => setEditIcnColor(colors.gray)}
@@ -46,7 +47,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescribedMedicatio
             <EditIcn pathFill={editIcnColor} />
           </button>
           <button
-            className="actions__btn"
+            className="actions__btn actions__btn--delete"
             onClick={() => handleDeletePrescription(prescribedMedication)}
             onMouseEnter={() => setDeleteIcnColor(colors.red)}
             onMouseLeave={() => setDeleteIcnColor(colors.gray)}

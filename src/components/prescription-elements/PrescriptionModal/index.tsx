@@ -4,11 +4,11 @@ import { CloseIcn } from '../../common/Icons/Icons'
 import ToggleSwitch from '../../form-elements/ToggleSwitch'
 import SelectInput from '../../form-elements/SelectInput'
 import TextareaInput from '../../form-elements/TextareaInput'
-import { completePosology } from '@icure/medication-sdk'
+import { makeParser } from '@icure/medication-sdk'
 
 import { v4 as uuid } from 'uuid'
 
-import './index.css'
+import './index.scss'
 import { Duration, Medication, Medicinalproduct, Substanceproduct } from '@icure/be-fhc-lite-api'
 import { createFhcFromCode } from '../../../services/fhc'
 import { offsetDate } from '../../../services/fhc'
@@ -82,7 +82,7 @@ const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescribedM
   const errorMessages = {
     isRequired: 'Ce champ est obligatoire.',
   }
-
+  const { completePosology: completeDosage } = makeParser('fr')
   const dosageRef = useRef(dosage)
   useEffect(() => {
     dosageRef.current = dosage
@@ -92,7 +92,7 @@ const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescribedM
     const dosageWhenCalled = dosage
     setTimeout(() => {
       if (dosageWhenCalled && dosageWhenCalled === dosageRef.current && dosageWhenCalled != dosageFromSuggestion) {
-        setPosologySuggestions(completePosology(dosageWhenCalled))
+        setPosologySuggestions(completeDosage(dosageWhenCalled))
       }
     }, 100)
   }, [dosage])
@@ -293,122 +293,122 @@ const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescribedM
             aria-activedescendant={focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : undefined}
           >
             <div className="addMedicationForm__body__content">
-              <div className="addMedicationForm__body__content__inputs">
-                <TextInput label="Nom du médicament" value={medicationTitle} required disabled id="drugName" />
-                <div className="dosageInput">
+              <TextInput label="Nom du médicament" value={medicationTitle} required disabled id="drugName" />
+              <div className="dosageInput">
+                <TextInput
+                  label="Posologie"
+                  id="dosage"
+                  value={dosage}
+                  onChange={(e) => setDosage(e.target.value)}
+                  required
+                  autoFocus
+                  errorMessage={errors.dosage?.validationError}
+                />
+                {posologySuggestions.length !== 0 && (
+                  <ul className="dosageInput__dropdown" onMouseMove={handleMouseMove}>
+                    {posologySuggestions.map((posology, index) => (
+                      <li key={index} id={`posology-${index}`} className={`${disableHover ? 'disableHover' : ''} ${focusedDosageIndex === index ? 'focused' : ''}`}>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            validateSuggestion(posology)
+                          }}
+                        >
+                          {posology}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="addMedicationForm__body__content__inputsGroup">
+                <TextInput
+                  label="Durée (nombre d’unités)"
+                  id="duration"
+                  type="number"
+                  min={1}
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  required
+                  errorMessage={errors.duration?.validationError}
+                />
+                <SelectInput label="Unité de temps" id="durationTimeUnit" required options={durationTimeUnits} value={durationTimeUnit} onChange={setDurationTimeUnit} />
+              </div>
+              <div className="addMedicationForm__body__content__inputsGroup">
+                <TextInput
+                  label="Date début du traitement"
+                  id="treatmentStartDate"
+                  type="date"
+                  value={treatmentStartDate}
+                  onChange={(e) => setTreatmentStartDate(e.target.value)}
+                  required
+                  errorMessage={errors.treatmentStartDate?.validationError}
+                />
+                <TextInput
+                  label="Exécutable jusqu`au"
+                  id="executableUntil"
+                  type="date"
+                  value={executableUntil}
+                  onChange={(e) => setExecutableUntil(e.target.value)}
+                  required
+                  errorMessage={errors.executableUntil?.validationError}
+                />
+              </div>
+              {!prescribedMedication && (
+                <div className="addMedicationForm__body__content__inputsGroup">
                   <TextInput
-                    label="Posologie"
-                    id="dosage"
-                    value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
-                    required
-                    autoFocus
-                    errorMessage={errors.dosage?.validationError}
-                  />
-                  {posologySuggestions.length !== 0 && (
-                    <ul className="dosageInput__dropdown" onMouseMove={handleMouseMove}>
-                      {posologySuggestions.map((posology, index) => (
-                        <li key={index} id={`posology-${index}`} className={`${disableHover ? 'disableHover' : ''} ${focusedDosageIndex === index ? 'focused' : ''}`}>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              validateSuggestion(posology)
-                            }}
-                          >
-                            {posology}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <div className="addMedicationForm__body__content__inputs__group">
-                  <TextInput
-                    label="Durée (nombre d’unités)"
-                    id="duration"
+                    label="Nombre de prescriptions"
+                    id="prescriptionsNumber"
                     type="number"
                     min={1}
-                    value={duration}
-                    onChange={(e) => setDuration(Number(e.target.value))}
+                    max={12}
+                    value={prescriptionsNumber}
+                    onChange={(e) => setPrescriptionsNumber(Number(e.target.value))}
                     required
-                    errorMessage={errors.duration?.validationError}
+                    errorMessage={errors.prescriptionsNumber?.validationError}
                   />
-                  <SelectInput label="Unité de temps" id="durationTimeUnit" required options={durationTimeUnits} value={durationTimeUnit} onChange={setDurationTimeUnit} />
-                </div>
-                <div className="addMedicationForm__body__content__inputs__group">
-                  <TextInput
-                    label="Date début du traitement"
-                    id="treatmentStartDate"
-                    type="date"
-                    value={treatmentStartDate}
-                    onChange={(e) => setTreatmentStartDate(e.target.value)}
-                    required
-                    errorMessage={errors.treatmentStartDate?.validationError}
-                  />
-                  <TextInput
-                    label="Exécutable jusqu`au"
-                    id="executableUntil"
-                    type="date"
-                    value={executableUntil}
-                    onChange={(e) => setExecutableUntil(e.target.value)}
-                    required
-                    errorMessage={errors.executableUntil?.validationError}
-                  />
-                </div>
-                {!prescribedMedication && (
-                  <div className="addMedicationForm__body__content__inputs__group">
+                  {prescriptionsNumber && prescriptionsNumber > 1 && (
+                    <SelectInput
+                      label="Périodicité"
+                      id="periodicityTimeUnit"
+                      required
+                      options={periodicityTimeUnits}
+                      value={periodicityTimeUnit}
+                      onChange={setPeriodicityTimeUnit}
+                    />
+                  )}
+                  {periodicityTimeUnit === '1' && (
                     <TextInput
-                      label="Nombre de prescriptions"
-                      id="prescriptionsNumber"
+                      label="Nombre de jours"
+                      id="periodicityDaysNumber"
                       type="number"
                       min={1}
-                      max={12}
-                      value={prescriptionsNumber}
-                      onChange={(e) => setPrescriptionsNumber(Number(e.target.value))}
+                      value={periodicityDaysNumber}
+                      onChange={(e) => setPeriodicityDaysNumber(Number(e.target.value))}
                       required
-                      errorMessage={errors.prescriptionsNumber?.validationError}
+                      errorMessage={errors.periodicityDaysNumber?.validationError}
                     />
-                    {prescriptionsNumber && prescriptionsNumber > 1 && (
-                      <SelectInput
-                        label="Périodicité"
-                        id="periodicityTimeUnit"
-                        required
-                        options={periodicityTimeUnits}
-                        value={periodicityTimeUnit}
-                        onChange={setPeriodicityTimeUnit}
-                      />
-                    )}
-                    {periodicityTimeUnit === '1' && (
-                      <TextInput
-                        label="Nombre de jours"
-                        id="periodicityDaysNumber"
-                        type="number"
-                        min={1}
-                        value={periodicityDaysNumber}
-                        onChange={(e) => setPeriodicityDaysNumber(Number(e.target.value))}
-                        required
-                        errorMessage={errors.periodicityDaysNumber?.validationError}
-                      />
-                    )}
-                  </div>
-                )}
-                <div className="addMedicationForm__body__content__inputs__radioBtns">
-                  <RadioInput
-                    name="substitutionAllowed"
-                    value={substitutionAllowed}
-                    label="Substitution autorisée"
-                    options={[
-                      { label: 'Non', value: false, id: 'substitutionIsNotAllowed' },
-                      { label: 'Oui', value: true, id: 'substitutionIsAllowed' },
-                    ]}
-                    required
-                    errorMessage={errors.substitutionAllowed?.validationError}
-                    onChange={setSubstitutionAllowed}
-                  />
+                  )}
                 </div>
+              )}
+              <div className="addMedicationForm__body__content__radioBtns">
+                <RadioInput
+                  name="substitutionAllowed"
+                  value={substitutionAllowed}
+                  label="Substitution autorisée"
+                  options={[
+                    { label: 'Non', value: false, id: 'substitutionIsNotAllowed' },
+                    { label: 'Oui', value: true, id: 'substitutionIsAllowed' },
+                  ]}
+                  required
+                  errorMessage={errors.substitutionAllowed?.validationError}
+                  onChange={setSubstitutionAllowed}
+                />
               </div>
             </div>
+
             <ToggleSwitch id="showExtraFields" value="Afficher plus" checked={showExtraFields} onChange={setShowExtraFields} />
+
             {!showExtraFields ? (
               <div className="addMedicationForm__body__extraFieldsPreview">
                 <p>
@@ -438,38 +438,37 @@ const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescribedM
               </div>
             ) : (
               <div className="addMedicationForm__body__content">
-                <div className="addMedicationForm__body__content__inputs">
-                  <TextareaInput
-                    label="Instructions pour le patient"
-                    id="recipeInstructionForPatient"
-                    value={recipeInstructionForPatient}
-                    onChange={setRecipeInstructionForPatient}
-                  />
-                  <SelectInput
-                    label="Instructions remboursement"
-                    id="instructionsForReimbursement"
-                    value={instructionsForReimbursement}
-                    onChange={setInstructionsForReimbursement}
-                    options={reimbursementOptions}
-                  />
-                  <SelectInput
-                    label="Visibilité prescripteur"
-                    id="prescriberVisibility"
-                    value={practitionerVisibility}
-                    onChange={setPractitionerVisibility}
-                    options={practitionerVisibilityOptions}
-                  />
-                  <SelectInput
-                    label="Visibilité officine"
-                    id="pharmacyVisibility"
-                    value={pharmacistVisibility}
-                    onChange={setPharmacistVisibility}
-                    options={pharmacistVisibilityOptions}
-                  />
-                </div>
+                <TextareaInput
+                  label="Instructions pour le patient"
+                  id="recipeInstructionForPatient"
+                  value={recipeInstructionForPatient}
+                  onChange={setRecipeInstructionForPatient}
+                />
+                <SelectInput
+                  label="Instructions remboursement"
+                  id="instructionsForReimbursement"
+                  value={instructionsForReimbursement}
+                  onChange={setInstructionsForReimbursement}
+                  options={reimbursementOptions}
+                />
+                <SelectInput
+                  label="Visibilité prescripteur"
+                  id="prescriberVisibility"
+                  value={practitionerVisibility}
+                  onChange={setPractitionerVisibility}
+                  options={practitionerVisibilityOptions}
+                />
+                <SelectInput
+                  label="Visibilité officine"
+                  id="pharmacyVisibility"
+                  value={pharmacistVisibility}
+                  onChange={setPharmacistVisibility}
+                  options={pharmacistVisibilityOptions}
+                />
               </div>
             )}
           </div>
+
           <div className="addMedicationForm__footer">
             <Button title="Cancel" type="reset" view={'outlined'} onClick={handleClose} />
             <Button title="Save" type="submit" view={'primary'}>

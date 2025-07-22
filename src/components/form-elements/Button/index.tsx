@@ -1,11 +1,11 @@
 import React from 'react'
 import { SpinnerIcn } from '../../common/Icons/Icons'
 
-import './index.css'
+import './index.scss'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   title: string
-  view?: 'primary' | 'busy' | 'outlined'
+  view?: 'primary' | 'withSpinner' | 'outlined'
   type: 'button' | 'reset' | 'submit'
   form?: string
   disabled?: boolean
@@ -13,8 +13,8 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button: React.FC<Props> = ({ title, view, handleClick, type = 'button', ...rest }) => (
-  <button className={`Button ${view}`} onClick={handleClick} type={type} {...rest}>
-    {view === 'busy' ? SpinnerIcn({}) : title}
+  <button className={view} onClick={handleClick} type={type} {...rest}>
+    {view === 'withSpinner' ? SpinnerIcn({}) : title}
   </button>
 )
 

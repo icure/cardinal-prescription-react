@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import './index.css'
+import './index.scss'
 import Tooltip from '../../common/Tooltip'
 import {
   BlackTriangleIcn,

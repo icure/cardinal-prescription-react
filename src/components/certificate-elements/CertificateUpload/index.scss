@@ -1,0 +1,14 @@
+@use '../../../style/index' as global;
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 50%;
+  min-width: 700px;
+
+  @include global.media-breakpoint-down(global.$m) {
+    width: 100%;
+    min-width: 100%;
+  }
+}
