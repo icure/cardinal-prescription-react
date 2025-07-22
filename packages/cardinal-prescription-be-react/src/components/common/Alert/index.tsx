@@ -10,7 +10,7 @@ interface AlertProps {
 
 export const Alert: FC<AlertProps> = ({ status, title, description }) => {
   return (
-    <StyledAlert $success={status === 'success'} $error={status === 'error'}>
+    <StyledAlert className="StyledAlert" $success={status === 'success'} $error={status === 'error'}>
       <div className="heading">
         {status === 'success' && <StatusSuccessIcn />}
         {status === 'error' && <StatusErrorIcn />}

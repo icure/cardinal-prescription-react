@@ -18,7 +18,7 @@ export const Extension: FC<Props> = ({ medication }) => {
   const medicationReimbursement = medication.reimbursements
 
   return (
-    <StyledExtension>
+    <StyledExtension className="StyledExtension">
       {medication.vmp && (
         <div className="vmp">
           {medication.vmp.name?.fr && (

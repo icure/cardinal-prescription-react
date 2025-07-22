@@ -36,6 +36,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, contentSnippet, iconS
 
   return (
     <StyleTooltip
+      className="StyleTooltip"
       ref={tooltipRef}
       $tooltipOrientation={tooltipOrientation}
       $active={active}

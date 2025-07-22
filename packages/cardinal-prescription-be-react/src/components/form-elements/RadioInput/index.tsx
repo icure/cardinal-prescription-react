@@ -19,14 +19,14 @@ interface RadioInputProps {
 
 export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
   return (
-    <StyledRadioInput>
-      <StyledRadioGroupLabel $required={required} $error={!!errorMessage}>
+    <StyledRadioInput className="StyledRadioInput">
+      <StyledRadioGroupLabel className="StyledRadioGroupLabel" $required={required} $error={!!errorMessage}>
         <span>*</span>
         {label}
       </StyledRadioGroupLabel>
       <div className="radioBtnsGroup">
         {options.map((option) => (
-          <StyledRadioButton key={option.id} htmlFor={option.id} $error={!!errorMessage}>
+          <StyledRadioButton className="StyledRadioButton" key={option.id} htmlFor={option.id} $error={!!errorMessage}>
             <input
               id={option.id}
               name={name}
@@ -37,8 +37,8 @@ export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(({ label
               onChange={() => onChange?.(option.value)}
               ref={ref}
             />
-            <StyledRadioButtonToggle $error={!!errorMessage}>
-              <StyledRadioButtonToggleStuffing />
+            <StyledRadioButtonToggle className="StyledRadioButtonToggle" $error={!!errorMessage}>
+              <StyledRadioButtonToggleStuffing className="StyledRadioButtonToggleStuffing" />
             </StyledRadioButtonToggle>
             <StyledRadioButtonLabel $error={!!errorMessage}>{option.label}</StyledRadioButtonLabel>
           </StyledRadioButton>

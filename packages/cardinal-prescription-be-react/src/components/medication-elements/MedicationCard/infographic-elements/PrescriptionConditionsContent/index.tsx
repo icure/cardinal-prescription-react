@@ -9,7 +9,7 @@ interface Props {
 
 export const PrescriptionConditionsContent: FC<Props> = ({ deliveryModusSpecificationCode, deliveryModusSpecification }) => {
   return deliveryModusSpecificationCode ? (
-    <StyledPrescriptionConditions>
+    <StyledPrescriptionConditions className="StyledPrescriptionConditions">
       <h6>{t('medication.prescription.title')}</h6>
       <div className="content">
         <div>
@@ -26,7 +26,7 @@ export const PrescriptionConditionsContent: FC<Props> = ({ deliveryModusSpecific
       </div>
     </StyledPrescriptionConditions>
   ) : (
-    <StyledPrescriptionConditionsNotApplicable>
+    <StyledPrescriptionConditionsNotApplicable className="StyledPrescriptionConditionsNotApplicable">
       <h6>{t('medication.prescription.title')}</h6>
       <div className="content">
         <div>

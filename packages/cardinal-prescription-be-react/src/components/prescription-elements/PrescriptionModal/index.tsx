@@ -8,7 +8,7 @@ import { getExecutableUntilDate, getTreatmentStartDate, offsetDate } from '../..
 import { findCommonSequence } from '../../../utils/dosage-helpers'
 import { cardinalLanguage, t } from '../../../services/i18n'
 import { SamText } from '@icure/cardinal-be-sam-sdk'
-import { getDurationTimeUnits, getPeriodicityTimeUnits } from '../../../utils/prescription-duration-helpers'
+import { durationTimeUnitsEnum, getDurationFromDays, getDurationInDays, getDurationTimeUnits, getPeriodicityTimeUnits } from '../../../utils/prescription-duration-helpers'
 import { getPharmacistVisibilityOptions, getPractitionerVisibilityOptions } from '../../../utils/visibility-helpers'
 import { CloseIcn } from '../../common/Icons'
 import { TextInput } from '../../form-elements/TextInput'
@@ -21,6 +21,7 @@ import { Button } from '../../form-elements/Button'
 import { StyledDosageInput, StyledPrescriptionModal, StyledSuggestionItem } from './styles'
 import { GlobalStyles } from '../../../styles'
 import { Controller, useForm } from 'react-hook-form'
+import { trim } from '../../../utils/string-helpers'
 
 interface Props {
   medicationToPrescribe?: MedicationType
@@ -59,15 +60,22 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
   const [dosageFromSuggestion, setDosageFromSuggestion] = useState<string>('')
 
   const resultRefs = useRef<(HTMLLIElement | null)[]>([])
+
   const defaultValues = {
-    medicationTitle: medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? '',
+    medicationTitle: trim(
+      medicationToPrescribe?.title ??
+        prescriptionToModify?.medication?.medicinalProduct?.intendedname ??
+        prescriptionToModify?.medication?.substanceProduct?.intendedname ??
+        prescriptionToModify?.medication?.compoundPrescription ??
+        '',
+    ),
     dosage: prescriptionToModify?.medication?.instructionForPatient ?? '',
-    duration: prescriptionToModify?.medication?.duration?.value ?? 1,
-    durationTimeUnit: prescriptionToModify?.medication?.duration?.unit?.code ?? getDurationTimeUnits()[0].value,
+    duration: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).duration,
+    durationTimeUnit: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).durationTimeUnit,
     treatmentStartDate: getTreatmentStartDate(prescriptionToModify),
     executableUntil: getExecutableUntilDate(prescriptionToModify),
     prescriptionsNumber: 1,
-    substitutionAllowed: false,
+    substitutionAllowed: prescriptionToModify?.medication?.substitutionAllowed ?? false,
     showExtraFields: false,
     periodicityTimeUnit: getPeriodicityTimeUnits()[0].value,
     periodicityDaysNumber: 1,
@@ -121,34 +129,49 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
   }
 
   const handleFormSubmit = (data: PrescriptionFormType) => {
-    const getDurationInDays = (timeUnit: string, value: number) => {
-      if (timeUnit === 'jour') {
-        return value
-      } else if (timeUnit === 'semaine') {
-        return value * 7
-      }
-    }
+    const {
+      dosage,
+      duration,
+      durationTimeUnit,
+      treatmentStartDate,
+      executableUntil,
+      prescriptionsNumber,
+      periodicityTimeUnit,
+      periodicityDaysNumber,
+      substitutionAllowed,
+      recipeInstructionForPatient,
+      instructionsForReimbursement,
+      prescriberVisibility,
+      pharmacistVisibility,
+    } = data
     const prescribedMedications = prescriptionToModify
       ? [
           {
             ...prescriptionToModify,
             medication: new Medication({
               ...prescriptionToModify.medication,
-
+              beginMoment: offsetDate(
+                parseInt((treatmentStartDate as string)?.replace(/-/g, '')),
+                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) : 0,
+              ),
+              endMoment: offsetDate(
+                parseInt((executableUntil as string)?.replace(/-/g, '')),
+                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) : 0,
+              ),
               duration: new Duration({
                 unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
+                value: getDurationInDays(durationTimeUnit as durationTimeUnitsEnum, duration as number),
               }),
-              instructionForPatient: data.dosage,
-              recipeInstructionForPatient: data.recipeInstructionForPatient,
-              instructionsForReimbursement: data.instructionsForReimbursement,
-              substitutionAllowed: data.substitutionAllowed,
+              instructionForPatient: dosage,
+              recipeInstructionForPatient: recipeInstructionForPatient,
+              instructionsForReimbursement: instructionsForReimbursement,
+              substitutionAllowed: substitutionAllowed,
             }),
-            prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
-            pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
+            prescriberVisibility: prescriberVisibility as PractitionerVisibilityType,
+            pharmacistVisibility: pharmacistVisibility as PharmacistVisibilityType,
           },
         ]
-      : Array.from({ length: data.prescriptionsNumber ?? 1 }, (_, i) => i).map(
+      : Array.from({ length: prescriptionsNumber ?? 1 }, (_, i) => i).map(
           (idx): PrescribedMedicationType => ({
             uuid: uuid(),
             medication: new Medication({
@@ -157,7 +180,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     medicinalProduct: new Medicinalproduct({
                       samId: medicationToPrescribe.dmppProductId,
                       intendedcds: [createFhcCode('CD-DRUG-CNK', medicationToPrescribe.cnk)],
-                      intendedname: medicationToPrescribe.intendedName,
+                      intendedname: trim(medicationToPrescribe.intendedName),
                     }),
                   }
                 : medicationToPrescribe?.vmpGroupId
@@ -165,33 +188,33 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                       substanceProduct: new Substanceproduct({
                         samId: medicationToPrescribe.vmpGroupId,
                         intendedcds: [createFhcCode('CD_VMPGROUP', medicationToPrescribe.vmpGroupId)],
-                        intendedname: medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title,
+                        intendedname: trim(medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title),
                       }),
                     }
                   : {
-                      compoundPrescription: medicationToPrescribe.title,
+                      compoundPrescription: trim(medicationToPrescribe.title),
                     }),
               beginMoment: offsetDate(
-                parseInt((data.treatmentStartDate as string).replace(/-/g, '')),
-                data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
+                parseInt((treatmentStartDate as string)?.replace(/-/g, '')),
+                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) * idx : 0,
               ),
               endMoment: offsetDate(
-                parseInt((data.executableUntil as string).replace(/-/g, '')),
-                data.periodicityTimeUnit ? parseInt(data.periodicityTimeUnit) * (data.periodicityDaysNumber ?? 1) * idx : 0,
+                parseInt((executableUntil as string)?.replace(/-/g, '')),
+                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) * idx : 0,
               ),
 
               duration: new Duration({
                 unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                value: getDurationInDays(data.durationTimeUnit as string, data.duration as number),
+                value: getDurationInDays(durationTimeUnit as durationTimeUnitsEnum, duration as number),
               }),
 
-              instructionForPatient: data.dosage,
-              recipeInstructionForPatient: data.recipeInstructionForPatient,
-              instructionsForReimbursement: data.instructionsForReimbursement,
-              substitutionAllowed: data.substitutionAllowed,
+              instructionForPatient: dosage,
+              recipeInstructionForPatient: recipeInstructionForPatient,
+              instructionsForReimbursement: instructionsForReimbursement,
+              substitutionAllowed: substitutionAllowed,
             }),
-            prescriberVisibility: data.prescriberVisibility as PractitionerVisibilityType,
-            pharmacistVisibility: data.pharmacistVisibility as PharmacistVisibilityType,
+            prescriberVisibility: prescriberVisibility as PractitionerVisibilityType,
+            pharmacistVisibility: pharmacistVisibility as PharmacistVisibilityType,
           }),
         )
 
@@ -225,7 +248,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
         setFocusedDosageIndex(-1)
       }
     } else if (event.key === 'Enter') {
-      handleFormSubmit(event as any)
+      handleSubmit(handleFormSubmit)
     }
   }
 
@@ -242,7 +265,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
   const validateSuggestion = (suggestion: string) => {
     if (suggestion) {
       const common = findCommonSequence(dosage ?? '', suggestion)
-      setValue('dosage', (dosageRef.current + (common.length ? suggestion.slice(common.length) : ' ' + suggestion)).replace(/ {2,}/g, ' ').replace(/\/ /g, '/'), {
+      setValue('dosage', (dosageRef.current + (common.length ? suggestion.slice(common.length) : ' ' + suggestion))?.replace(/ {2,}/g, ' ')?.replace(/\/ /g, '/'), {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
@@ -256,7 +279,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
   return (
     <>
       <GlobalStyles />
-      <StyledPrescriptionModal>
+      <StyledPrescriptionModal className="StyledPrescriptionModal">
         <div className="content">
           <form id="prescriptionForm" className="addMedicationForm" onSubmit={handleSubmit(handleFormSubmit)} autoComplete="off">
             <div className="addMedicationForm__header">
@@ -283,7 +306,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                   })}
                   errorMessage={prescriptionFormErrors['medicationTitle']?.message}
                 />
-                <StyledDosageInput>
+                <StyledDosageInput className="StyledDosageInput">
                   <TextInput
                     label={t('prescription.form.dosage')}
                     id="dosage"
@@ -297,7 +320,13 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                   {posologySuggestions.length !== 0 && (
                     <ul className="suggestionsDropdown" onMouseMove={handleMouseMove}>
                       {posologySuggestions.map((posology, index) => (
-                        <StyledSuggestionItem key={index} id={`posology-${index}`} $disableHover={disableHover} $focused={focusedDosageIndex === index}>
+                        <StyledSuggestionItem
+                          key={index}
+                          id={`posology-${index}`}
+                          $disableHover={disableHover}
+                          $focused={focusedDosageIndex === index}
+                          className="StyledSuggestionItem"
+                        >
                           <button
                             onClick={(e) => {
                               e.preventDefault()
@@ -469,7 +498,18 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     name="instructionsForReimbursement"
                     control={control}
                     render={({ field }) => (
-                      <SelectInput {...field} label={t('prescription.form.reimbursementInstructions')} id="instructionsForReimbursement" options={getReimbursementOptions()} />
+                      <SelectInput
+                        {...field}
+                        label={t('prescription.form.reimbursementInstructions')}
+                        id="instructionsForReimbursement"
+                        options={getReimbursementOptions()}
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          // Convert empty string back to null before updating RHF state
+                          const val = e.target.value === '' ? null : e.target.value
+                          field.onChange(val)
+                        }}
+                      />
                     )}
                   />
                   <Controller
@@ -484,7 +524,18 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     name="pharmacistVisibility"
                     control={control}
                     render={({ field }) => (
-                      <SelectInput {...field} label={t('prescription.form.pharmacistVisibility')} id="pharmacistVisibility" options={getPharmacistVisibilityOptions()} />
+                      <SelectInput
+                        {...field}
+                        label={t('prescription.form.pharmacistVisibility')}
+                        id="pharmacistVisibility"
+                        options={getPharmacistVisibilityOptions()}
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          // Convert empty string back to null before updating RHF state
+                          const val = e.target.value === '' ? null : e.target.value
+                          field.onChange(val)
+                        }}
+                      />
                     )}
                   />
                 </div>

@@ -11,7 +11,7 @@ interface ToggleSwitchProps {
 
 export const ToggleSwitch = forwardRef<HTMLInputElement, ToggleSwitchProps>(({ id, value, label, onChange, checked }, ref) => {
   return (
-    <StyledSwitch>
+    <StyledSwitch className="StyledSwitch">
       {label && <p className="toggleSwitchLabel">{label}</p>}
       <div className="toggleWrapper">
         <label htmlFor={id} className="toggle">

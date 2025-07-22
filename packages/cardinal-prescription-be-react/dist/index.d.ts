@@ -157,7 +157,7 @@ declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 interface MedicationSearchProps {
     sdk: SamV2Api;
     deliveryEnvironment: string;
-    handleAddPrescription: (medication: MedicationType) => void;
+    onAddPrescription: (medication: MedicationType) => void;
     disableInputEventsTracking: boolean;
     short?: boolean;
 }
@@ -172,4 +172,21 @@ interface Props {
 }
 declare const PrescriptionModal: React.FC<Props>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+interface PrescriptionListProps {
+    handleModifyPrescription: (medication: PrescribedMedicationType) => void;
+    handleDeletePrescription: (medication: PrescribedMedicationType) => void;
+    handleSendPrescriptions: () => Promise<void>;
+    handlePrintPrescriptions: () => Promise<void>;
+    prescribedMedications: PrescribedMedicationType[];
+}
+declare const PrescriptionList: React.FC<PrescriptionListProps>;
+
+interface PrintPrescriptionModalProps {
+    closeModal: () => void;
+    prescribedMedications: PrescribedMedicationType[];
+    prescriber: HealthcareParty;
+    patient: Patient;
+}
+declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
+
+export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

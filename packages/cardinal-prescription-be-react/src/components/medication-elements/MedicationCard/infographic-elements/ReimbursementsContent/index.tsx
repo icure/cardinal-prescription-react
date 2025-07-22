@@ -12,7 +12,7 @@ export const ReimbursementsContent: FC<Props> = ({ reimbursement }) => {
   const computeFeeAmount = (fee: string): string => Math.round(+fee * 100) / 100 + '€'
 
   return reimbursement ? (
-    <StyledReimbursement>
+    <StyledReimbursement className="StyledReimbursement">
       <h6> {t('medication.reimbursement.title')}</h6>
       <div className="content">
         {reimbursement.reimbursementCriterion?.category && (
@@ -34,7 +34,8 @@ export const ReimbursementsContent: FC<Props> = ({ reimbursement }) => {
               <div key={index}>
                 {el.regimeType === 1 && (
                   <span>
-                    {t('medication.reimbursement.copay')} <strong>{t('medication.reimbursement.copayPreferential')}</strong>
+                    {t('medication.reimbursement.copay')}
+                    <strong>{t('medication.reimbursement.copayPreferential')}</strong>
                   </span>
                 )}
 

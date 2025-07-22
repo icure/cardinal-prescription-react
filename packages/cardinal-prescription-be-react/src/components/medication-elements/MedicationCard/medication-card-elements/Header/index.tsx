@@ -49,28 +49,28 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
   }
 
   const ReimbursementIcn = () => (
-    <StyledTextToIcon $color={'green'}>
+    <StyledTextToIcon className="StyledTextToIcon" $color={'green'}>
       <p>{medicationReimbursement.reimbursementCriterion?.category}</p>
     </StyledTextToIcon>
   )
   const DeliveryConditionsIcn = () => (
-    <StyledTextToIcon $color={'orange'}>
+    <StyledTextToIcon className="StyledTextToIcon" $color={'orange'}>
       <p>{medication.deliveryModusCode}</p>
     </StyledTextToIcon>
   )
   const PrescriptionConditionsIcn = () => (
-    <StyledTextToIcon $color={'red'}>
+    <StyledTextToIcon className="StyledTextToIcon" $color={'red'}>
       <p>{medication.deliveryModusSpecificationCode}</p>
     </StyledTextToIcon>
   )
   const NonApplicableIcn = ({ text, colorGrey }: { text: string; colorGrey?: boolean }) => (
-    <StyledTextToIcon $color={colorGrey ? 'grey' : 'green'}>
+    <StyledTextToIcon className="StyledTextToIcon" $color={colorGrey ? 'grey' : 'green'}>
       <p>{text}</p>
     </StyledTextToIcon>
   )
 
   return (
-    <StyledHeader ref={medicationCardRef}>
+    <StyledHeader className="StyledHeader" ref={medicationCardRef}>
       <div
         className="medication"
         onClick={handleAddPrescription}
@@ -208,6 +208,7 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
       </div>
 
       <StyledExpandButton
+        className="StyledExpandButton"
         $isExpanded={isMedicationCardExpanded}
         onClick={(e) => {
           e.stopPropagation()

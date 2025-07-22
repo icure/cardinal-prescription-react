@@ -10,7 +10,7 @@ interface Props {
 
 export const SupplyProblemsContent: FC<Props> = ({ medicationSupplyProblem }) => {
   return (
-    <StyledSupplyProblems>
+    <StyledSupplyProblems className="StyledSupplyProblems">
       <h6>{t('medication.supply.issueTitle')}</h6>
       <div className="content">
         {medicationSupplyProblem.from && (

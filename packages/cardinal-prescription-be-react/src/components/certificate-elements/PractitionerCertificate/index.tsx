@@ -25,7 +25,7 @@ export const PractitionerCertificate: React.FC<PractitionerCertificate> = ({
   return (
     <>
       <GlobalStyles />
-      <StyledPractitionerCertificate>
+      <StyledPractitionerCertificate className="StyledPractitionerCertificate">
         {certificateValid && certificateUploaded && (
           <Alert status="success" title={t('practitioner.certificateFeedback.successTitle')} description={t('practitioner.certificateFeedback.successDescription')} />
         )}

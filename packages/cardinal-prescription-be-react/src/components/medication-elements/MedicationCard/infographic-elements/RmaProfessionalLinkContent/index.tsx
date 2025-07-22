@@ -9,7 +9,7 @@ interface Props {
 
 export const RmaProfessionalLinkContent: FC<Props> = ({ rmaProfessionalLink, rmakeyMessages }) => {
   return (
-    <StyledRmaLink>
+    <StyledRmaLink className="StyledRmaLink">
       <div className="content">
         {!!rmakeyMessages && <p>{rmakeyMessages}</p>}
         <a href={rmaProfessionalLink}>{t('medication.links.rma')}</a>

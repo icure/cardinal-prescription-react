@@ -8,15 +8,16 @@ import {
   MedicationType,
   PractitionerCertificate,
   PrescribedMedicationType,
+  PrescriptionList,
   PrescriptionModal,
+  PrescriptionPrintModal,
+  sendRecipe,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
 } from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
-import { CARDINAL_PRESCRIPTION_LANGUAGE } from './services/constants'
-import { createPortal } from 'react-dom'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -61,6 +62,7 @@ const practitionerCredentials = {
   password: '5aa9d0f0-2fab-4f9f-9f6a-5d8244280873',
 }
 const ICURE_URL = 'https://nightly.icure.cloud'
+const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
 
 export const App = () => {
   // Service instance refs
@@ -75,6 +77,7 @@ export const App = () => {
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
   const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
   const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
+  const [showPrintModal, setShowPrintModal] = useState(false)
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -176,74 +179,115 @@ export const App = () => {
     setPrescriptions((prev) => [...prev, ...newPrescriptions])
     onClosePrescriptionModal()
   }
-
   const onSubmitModifyPrescription = (prescriptionsToModify: PrescribedMedicationType[]) => {
     setPrescriptions((prev) => prev?.map((item) => (item.uuid === prescriptionsToModify[0].uuid ? prescriptionsToModify[0] : item)))
     onClosePrescriptionModal()
   }
-
   const onModifyPrescription = (prescription: PrescribedMedicationType) => {
     setShowMedicationPrescriptionModal(true)
     setPrescriptionModalMode('modify')
     setPrescriptionToModify(prescription)
   }
-
   const onDeletePrescription = (prescription: PrescribedMedicationType) => {
     setPrescriptions((prev) => prev?.filter((item) => item.uuid !== prescription.uuid))
   }
+  const onClosePrescriptionPrintModal = () => setShowPrintModal(false)
+  const handleSendPrescriptions = async () => {
+    await Promise.all(
+      prescriptions
+        .filter((m) => !m.rid)
+        .map(async (med) => {
+          try {
+            if (!!samVersion?.version && !!passphrase) {
+              const res = await sendRecipe(
+                {
+                  vendor,
+                  samPackage,
+                },
+                samVersion.version,
+                hcp,
+                patient,
+                med,
+                passphrase,
+              )
+              setPrescriptions((prev) =>
+                prev.map((item) =>
+                  item.uuid === med.uuid
+                    ? {
+                        ...item,
+                        rid: res[0]?.rid,
+                      }
+                    : item,
+                ),
+              )
+            }
+          } catch (e) {}
+        }),
+    )
+  }
+  const handlePrintPrescriptions = async () => {
+    await handleSendPrescriptions()
+    setShowPrintModal(true)
+  }
+
   return (
-    <>
-      <div className="App">
-        <h1>Hello from the Demo App</h1>
-        <div className="divider"></div>
-        <div className="element">
-          <PractitionerCertificate
-            certificateValid={certificateValid}
-            certificateUploaded={certificateUploaded}
-            errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
-            onResetCertificate={onResetCertificate}
-            onUploadCertificate={onUploadCertificate}
-            onDecryptCertificate={onDecryptCertificate}
-          />
-        </div>
-        <div className="divider"></div>
-        <p>
-          SamVersion:
-          <strong>{samVersion?.version}</strong>
-        </p>
-        <div className="divider"></div>
-        <div className="element">
-          {cardinalSdkInstance && certificateValid && (
-            <MedicationSearch
-              sdk={cardinalSdkInstance}
-              deliveryEnvironment="P"
-              short={true}
-              handleAddPrescription={onCreatePrescription}
-              disableInputEventsTracking={showMedicationPrescriptionModal}
-            />
-          )}
-        </div>
+    <div className="App">
+      <h1>Hello from the Demo App</h1>
+      <div className="dividerApp"></div>
+      <div className="element">
+        <PractitionerCertificate
+          certificateValid={certificateValid}
+          certificateUploaded={certificateUploaded}
+          errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
+          onResetCertificate={onResetCertificate}
+          onUploadCertificate={onUploadCertificate}
+          onDecryptCertificate={onDecryptCertificate}
+        />
       </div>
-      {prescriptionModalMode === 'create' &&
-        createPortal(
-          <PrescriptionModal
-            onClose={onClosePrescriptionModal}
-            onSubmit={onSubmitCreatePrescription}
-            modalMood={prescriptionModalMode}
-            medicationToPrescribe={medicationToPrescribe}
-          />,
-          document.body,
+      <div className="dividerApp"></div>
+      <p>
+        SamVersion:
+        <strong>{samVersion?.version}</strong>
+      </p>
+      <div className="dividerApp"></div>
+      <div className="element">
+        {cardinalSdkInstance && certificateValid && (
+          <MedicationSearch
+            sdk={cardinalSdkInstance}
+            deliveryEnvironment="P"
+            short={true}
+            onAddPrescription={onCreatePrescription}
+            disableInputEventsTracking={showMedicationPrescriptionModal}
+          />
         )}
-      {prescriptionModalMode === 'modify' &&
-        createPortal(
-          <PrescriptionModal
-            onClose={onClosePrescriptionModal}
-            onSubmit={onSubmitModifyPrescription}
-            modalMood={prescriptionModalMode}
-            prescriptionToModify={prescriptionToModify}
-          />,
-          document.body,
-        )}
-    </>
+      </div>
+      {prescriptions.length !== 0 && (
+        <>
+          <div className="home__dividerApp"></div>
+          <div className="element">
+            <PrescriptionList
+              handleDeletePrescription={onDeletePrescription}
+              handleModifyPrescription={onModifyPrescription}
+              prescribedMedications={prescriptions}
+              handleSendPrescriptions={handleSendPrescriptions}
+              handlePrintPrescriptions={handlePrintPrescriptions}
+            />
+          </div>
+        </>
+      )}
+
+      {prescriptionModalMode === 'create' && (
+        <PrescriptionModal
+          onClose={onClosePrescriptionModal}
+          onSubmit={onSubmitCreatePrescription}
+          modalMood={prescriptionModalMode}
+          medicationToPrescribe={medicationToPrescribe}
+        />
+      )}
+      {prescriptionModalMode === 'modify' && (
+        <PrescriptionModal onClose={onClosePrescriptionModal} onSubmit={onSubmitModifyPrescription} modalMood={prescriptionModalMode} prescriptionToModify={prescriptionToModify} />
+      )}
+      {showPrintModal && <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />}
+    </div>
   )
 }

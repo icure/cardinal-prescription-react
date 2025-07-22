@@ -10,7 +10,7 @@ interface Props {
 
 export const StartOfCommercialisationContent: FC<Props> = ({ medicationCommercialization }) => {
   return (
-    <StyledStartCommercialization>
+    <StyledStartCommercialization className="StyledStartCommercialization">
       <h6>{t('medication.commercialization.start')}</h6>
       <div className="content">
         {medicationCommercialization.from && (

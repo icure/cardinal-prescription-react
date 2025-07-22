@@ -17,7 +17,7 @@ export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, hand
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
-    <StyledMedicationCard $focused={focused} $isExpanded={isExpanded} $disableHover={disableHover} id={id}>
+    <StyledMedicationCard className="StyledMedicationCard" $focused={focused} $isExpanded={isExpanded} $disableHover={disableHover} id={id}>
       {/*TODO: the medication must be past to the handleAddPrescription function on upper level*/}
       <Header
         handleAddPrescription={() => handleAddPrescription(medication)}

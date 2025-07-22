@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components'
-import { colors } from '../../../styles'
+import { colors, colorsRgb } from '../../../styles'
 import { StyledHeader } from './medication-card-elements/Header/styles'
 
 export const activeMedicationCard = css`
   border-color: ${colors.blue[500]};
-  box-shadow: 0 0 0 2px rgba(${colors.blue[500]}, 0.3);
+  box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
 `
 
 export const StyledMedicationCard = styled.div<{ $focused: boolean; $isExpanded: boolean; $disableHover: boolean }>`

@@ -22,12 +22,13 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, min, type
   }, [autoFocus])
 
   return (
-    <StyledTextInput>
-      <StyledTextInputLabel htmlFor={id} $required={required} $error={!!errorMessage}>
+    <StyledTextInput className="StyledTextInput">
+      <StyledTextInputLabel className="StyledTextInputLabel" htmlFor={id} $required={required} $error={!!errorMessage}>
         <span>*</span>
         {label}
       </StyledTextInputLabel>
       <StyledInput
+        className="StyledInput"
         id={id}
         name={id}
         ref={(node) => {

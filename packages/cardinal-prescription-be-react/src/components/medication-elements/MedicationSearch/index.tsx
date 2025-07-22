@@ -15,12 +15,12 @@ import { GlobalStyles } from '../../../styles'
 interface MedicationSearchProps {
   sdk: SamV2Api
   deliveryEnvironment: string
-  handleAddPrescription: (medication: MedicationType) => void
+  onAddPrescription: (medication: MedicationType) => void
   disableInputEventsTracking: boolean
   short?: boolean
 }
 
-export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnvironment, handleAddPrescription, disableInputEventsTracking, short = false }) => {
+export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   const searchQueryRef = useRef(searchQuery) // Create a ref to store the state
@@ -180,7 +180,8 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
     } else if (event.key === 'Enter' && focusedMedicationIndex >= 0) {
       event.preventDefault()
       setDisableHover(false)
-      handleAddPrescription(pages[focusedMedicationIndex])
+      onAddPrescription(pages[focusedMedicationIndex])
+      setSearchQuery('')
     }
   }
 
@@ -199,15 +200,23 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
     return !!value && value.length < 3
   }
 
+  const handleAddPrescription = (medication: MedicationType) => {
+    onAddPrescription(medication)
+    setSearchQuery('')
+  }
+
   return (
     <>
       <GlobalStyles />
-      <StyledMedicationSearch onKeyDown={handleKeyDown} aria-activedescendant={focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : undefined}>
-        <StyledMedicationSearchInput $dropdownDisplayed={dropdownDisplayed} $error={showSearchError()}>
+      <StyledMedicationSearch
+        className="StyledMedicationSearch"
+        onKeyDown={handleKeyDown}
+        aria-activedescendant={focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : undefined}
+      >
+        <StyledMedicationSearchInput className="StyledMedicationSearchInput" $dropdownDisplayed={dropdownDisplayed} $error={showSearchError()}>
           <p>{t('medication.search.label')}:</p>
-          <StyledLabel $error={showSearchError()} htmlFor="searchMedications">
+          <StyledLabel className="StyledLabel" $error={showSearchError()} htmlFor="searchMedications">
             <input
-              // $error={showSearchError()}
               id="searchMedications"
               type="text"
               placeholder={t('medication.search.label')}
