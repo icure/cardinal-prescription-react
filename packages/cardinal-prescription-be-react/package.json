@@ -1,6 +1,6 @@
 {
   "name": "@icure/cardinal-prescription-be-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "iCure Belgium",
   "description": "This is a Belgian-specific React application for healthcare professionals to manage electronic prescriptions with SAM. Created by iCure.",
   "main": "dist/index.js",
@@ -28,5 +28,35 @@
     "jsbarcode": "^3.12.1",
     "react-hook-form": "^7.60.0",
     "uuid": "^11.0.5"
-  }
+  },
+  "keywords": [
+    "react",
+    "react-library",
+    "healthcare",
+    "ehealth",
+    "health-tech",
+    "icure",
+    "cardinal",
+    "cardinal-prescription",
+    "cardinal-prescription-be",
+    "cardinal-prescription-be-react",
+    "fhc",
+    "cardinal-fhc",
+    "free-health-connector",
+    "cardinal-free-health-connector",
+    "cardinal-be-sam-sdk",
+    "cardinal-fhc",
+    "be-fhc-lite-api",
+    "sam-belgium",
+    "sam",
+    "recip-e",
+    "prescription",
+    "electronic-prescription",
+    "medication-search",
+    "posology",
+    "hcp-certificate",
+    "belgium",
+    "belgian-healthcare",
+    "medical-app"
+  ]
 }

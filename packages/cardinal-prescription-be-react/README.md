@@ -4,17 +4,17 @@ This is a **Belgian-specific** React library for healthcare professionals to **m
 It integrates iCure's APIs —  `@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk`, and `@icure/medication-sdk` — to
 streamline:
 
-- 🔐 Practitioner certificate management
-- 🔍 Medication search
-- 📝 Electronic prescription creation & editing
-- 🧾 Prescription overview & sending
-- 🖨 Printing of prescriptions
+- Practitioner certificate management
+- Medication search
+- Electronic prescription creation & editing
+- Prescription overview & sending
+- Printing of prescriptions
 
-> 💡**Note:**
-> This library is designed for integration with [Belgium’s SAM platform](https://www.samportal.be/nl/sam/documentation)
-> and can easily be embedded into other medical software projects as a drop-in feature for prescription management.
+**This component is designed for integration with**
+**[Belgium’s SAM platform](https://www.samportal.be/nl/sam/documentation)**
+and can easily be embedded into other medical software projects as a drop-in feature for prescription management.
 
-## 📚Table of Contents
+## Table of Contents
 
 - [About iCure and Cardinal](#about-icure-and-cardinal)
 - [Features](#features)
@@ -27,7 +27,7 @@ streamline:
 - [Medications of Interest for Tests](#medications-of-interest-for-tests)
 - [Example Demo Application](#example-demo-application)
 
-## 🏢About iCure and Cardinal
+## About iCure and Cardinal
 
 ![iCure logo](https://raw.githubusercontent.com/icure/cardinal-prescription-angular/main/public/assets/icure.svg)
 
@@ -44,19 +44,19 @@ public API to access its SAM and Free Health Connector (FHC) features.*
 The Cardinal Free Health Connector (FHC) is iCure’s open-source implementation of Belgium’s eHealth infrastructure. It
 enables secure, standards-based connections to government and regional healthcare systems
 
-## ✨Features
+## Features
 
-- 🇧🇪 Designed specifically for Belgian healthcare professionals
-- 🔐 Practitioner certificate upload & verification
-- 🔍 Medication search powered by iCure's SAM SDK
-- 📝 Create, edit, list, send, and print prescriptions
-- 🧠 Structured and unstructured posology support
-- 📜 Interacts with Recip-e to send prescriptions
-- 🧩 Ready to integrate into medical apps
-- 💾 Secure certificate storage in browser
-- 🌍 Fully internationalized (French, Dutch, German, English)
+- Designed specifically for Belgian healthcare professionals
+- Practitioner certificate upload & verification
+- Medication search powered by iCure's SAM SDK
+- Create, edit, list, send, and print prescriptions
+- Structured and unstructured posology support
+- Interacts with Recip-e to send prescriptions
+- Ready to integrate into medical apps
+- Secure certificate storage in browser
+- Fully internationalized (French, Dutch, German, English)
 
-## 🧰Technologies
+## Technologies
 
 - **React 18+**
 - **iCure SDKs** (`@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk`, `@icure/medication-sdk`)
@@ -66,7 +66,7 @@ enables secure, standards-based connections to government and regional healthcar
 - **UUID** for unique identifiers
 - **jsBarcode** for barcode generation
 
-## 🛠Prerequisites
+## Prerequisites
 
 Before starting, make sure you have:
 
@@ -78,7 +78,7 @@ Before starting, make sure you have:
     - [Generate the authentication token for the HCP](https://docs.icure.com/cockpit/how-to/how-to-manage-hcp#generating-an-authentication-token)
 - **Patient** and **healthcare professional** information to populate prescriptions
 
-## 🚀Getting Started
+## Getting Started
 
 ### 1. Install the library
 
@@ -96,45 +96,43 @@ npm install @icure/cardinal-prescription-be-react
 
 Your project should use React 18+ and styled-components 6+.
 
-## 🧩Available Components and How to Use Them
+## Available Components and How to Use Them
 
 Below are usage examples as seen in the latest demo app:
 
-### 🧾`<PractitionerCertificate />`
+### `<PractitionerCertificate />`
 
 Handles practitioner certificate upload, decryption, and validation.
 
-```jsx
+```html
 import { PractitionerCertificate } from '@icure/cardinal-prescription-be-react'
 
-<
-PractitionerCertificate
-certificateValid = { isCertificateValid }
-certificateUploaded = { isCertificateUploaded }
-errorWhileVerifyingCertificate = { errorWhileVerifyingCertificate }
-onResetCertificate = { onResetCertificate }
-onUploadCertificate = { onUploadCertificate }
-onDecryptCertificate = { onDecryptCertificate }
+<PractitionerCertificate
+  certificateValid={ isCertificateValid }
+  certificateUploaded={ isCertificateUploaded }
+  errorWhileVerifyingCertificate={ errorWhileVerifyingCertificate }
+  onResetCertificate={ onResetCertificate }
+  onUploadCertificate={ onUploadCertificate }
+  onDecryptCertificate={ onDecryptCertificate }
 />
 ```
 
-### 💊`<MedicationSearch />`
+### `<MedicationSearch />`
 
 Medication search interface using SAM. Triggers an event when a medication is selected for prescription.
 
-```jsx
+```html
 import { MedicationSearch } from '@icure/cardinal-prescription-be-react'
 
-<
-MedicationSearch
-sdk = { cardinalSdkInstance }
-deliveryEnvironment = "P"
-onAddPrescription = { onCreatePrescription }
-disableInputEventsTracking = { isPrescriptionModalOpen }
+<MedicationSearch
+  sdk={ cardinalSdkInstance }
+  deliveryEnvironment="P"
+  onAddPrescription={ onCreatePrescription }
+  disableInputEventsTracking={ isPrescriptionModalOpen }
 />
 ```
 
-### 📋`<PrescriptionList />`
+### `<PrescriptionList />`
 
 Lists created prescriptions and exposes actions to send, modify, print, or delete them.
 
@@ -150,7 +148,7 @@ import { PrescriptionList } from '@icure/cardinal-prescription-be-react'
 />
 ```
 
-### 📝`<PrescriptionModal />`
+### `<PrescriptionModal />`
 
 Modal for creating or modifying prescriptions.
 
@@ -178,7 +176,7 @@ Modal for creating or modifying prescriptions.
 />
 ```
 
-### 🖨`<PrescriptionPrintModal />`
+### `<PrescriptionPrintModal />`
 
 Printable PDF view of prescriptions.
 
@@ -194,13 +192,13 @@ import { HealthcareParty, Patient } from '@icure/be-fhc-lite-api' // types for p
 />
 ```
 
-## 🧠Available APIs
+## Available APIs
 
 Alongside React components, the library exports key APIs for working directly with CardinalSDK and Free Health
 Connector (FHC) for authentication,
 and utility logic.
 
-### 🌐Set the active language
+### Set the active language
 
 Set the library’s language (for UI and errors):
 
@@ -212,9 +210,9 @@ cardinalLanguage.setLanguage('fr')
 const currentLang = cardinalLanguage.getCurrentLanguage()
 ```
 
-### 🗝️Certificate management
+### Certificate management
 
-#### 🔍Load and decrypt practitioner certificate information from browser storage:
+#### Load and decrypt practitioner certificate information from browser storage:
 
 ```html
 import { loadCertificateInformation } from '@icure/cardinal-prescription-be-react'
@@ -225,7 +223,7 @@ setCertificateUploaded(!!res)
 }
 ```
 
-#### ⬆️Upload and encrypt a new certificate:
+#### Upload and encrypt a new certificate:
 
 ```html
 import { uploadAndEncryptCertificate } from '@icure/cardinal-prescription-be-react'
@@ -233,7 +231,7 @@ import { uploadAndEncryptCertificate } from '@icure/cardinal-prescription-be-rea
 await uploadAndEncryptCertificate(hcpSsin, passphrase, certificateArrayBuffer)
 ```
 
-#### 🗑️Delete a stored certificate:
+#### Delete a stored certificate:
 
 ```html
 import { deleteCertificate } from '@icure/cardinal-prescription-be-react'
@@ -241,7 +239,7 @@ import { deleteCertificate } from '@icure/cardinal-prescription-be-react'
 await deleteCertificate(hcpSsin)
 ```
 
-#### ✅ Validate a decrypted certificate:
+#### Validate a decrypted certificate:
 
 ```html
 import { validateDecryptedCertificate } from '@icure/cardinal-prescription-be-react'
@@ -254,9 +252,9 @@ if (validation.status) {
 }
 ```
 
-### 📝Prescription APIs
+### Prescription APIs
 
-#### 📤Send a prescription (“Recip-e”):
+#### Send a prescription (“Recip-e”):
 
 ```html
 import { sendRecipe } from '@icure/cardinal-prescription-be-react'
@@ -275,9 +273,9 @@ passphrase                // Certificate passphrase
 // result[0]?.rid contains the prescription RID if successful
 ```
 
-### 🔄Work with SAM SDK
+### Work with SAM SDK
 
-#### ℹ️Fetch the current SAM version:
+#### Fetch the current SAM version:
 
 ```html
 import { fetchSamVersion } from '@icure/cardinal-prescription-be-react'
@@ -286,7 +284,7 @@ const samVersion = await fetchSamVersion(samSdkInstance)
 // samSdkInstance is an instance of CardinalBeSamApi.sam (see demo)
 ```
 
-## 📜SAM and Recip-e requirements
+## SAM and Recip-e requirements
 
 When the prescriber selects a medication, this application integrates with the SAMv2 database to provide all up-to-date
 metadata. This includes:
@@ -305,33 +303,33 @@ metadata. This includes:
 
 More information is available on the [SAM portal](https://www.samportal.be/nl/sam/documentation).
 
-## 🧪Medications of interest for tests
+## Medications of interest for tests
 
-#### 🚨Commercialization & supply problems
+#### Commercialization & supply problems
 
 * `Polydexa 10 mg/ml`
 * `Crestor`
 * `Cisplatine Teva 1 mg/ml inf. sol. (conc.) i.v. vial 50 ml`
 
-#### 📅Future commercialization
+#### Future commercialization
 
 * `Kaftrio` (black triangle)
 * `Increlex` (black/orange triangle)
 
-#### 🧬Doping status
+#### Doping status
 
 * `Ultiva`
 * `Rapifen`
 
-#### ⚠️Black triangle (additional monitoring), RMA
+#### Black triangle (additional monitoring), RMA
 
 * `Increlex`
 
-> 💡**Note:**
+> **Note:**
 > This module is built for integration with [Belgium’s SAM platform](https://www.samportal.be/nl/sam/documentation), is
 > modular, and can be easily adapted for use in other medical solutions.
 
-## 📦Example: Demo Application
+## Example: Demo Application
 
 To see the full working version, you can clone the GitHub repository and run the included demo app.
 
