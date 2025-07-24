@@ -1,7 +1,7 @@
 import { t } from '../../../../../services/i18n'
 import { formatTimestamp } from '../../../../../utils/date-helpers'
 import React, { FC } from 'react'
-import { Commercialization } from '@icure/cardinal-be-sam-sdk'
+import { Commercialization } from '@icure/api'
 import { StyledStartCommercialization } from './styles'
 
 interface Props {

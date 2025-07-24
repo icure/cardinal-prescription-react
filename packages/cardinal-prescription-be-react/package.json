@@ -22,8 +22,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@icure/api": "^8.4.6",
     "@icure/be-fhc-lite-api": "^0.6.4",
-    "@icure/cardinal-be-sam-sdk": "^0.0.1",
     "@icure/medication-sdk": "^0.0.8",
     "jsbarcode": "^3.12.1",
     "react-hook-form": "^7.60.0",

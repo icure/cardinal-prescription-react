@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { SupplyProblem } from '@icure/cardinal-be-sam-sdk'
+import { SupplyProblem } from '@icure/api'
 import { formatTimestamp } from '../../../../../utils/date-helpers'
 import { getSamTextTranslation, t } from '../../../../../services/i18n'
 import { StyledSupplyProblems } from './styles'

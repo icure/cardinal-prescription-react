@@ -1,21 +1,41 @@
-import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement, StandardDosage } from '@icure/cardinal-be-sam-sdk';
+import { SamText, IccBesamv2Api, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/api';
 import { Medication, Duration, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
+import { StandardDosage } from '@icure/api/icc-api/model/StandardDosage';
 import React from 'react';
 
+type SamLanguage = keyof SamText;
 declare class CardinalLanguage {
     private language;
-    setLanguage(language: keyof SamText): void;
-    getLanguage(): keyof SamText;
+    setLanguage(language: SamLanguage): void;
+    getLanguage(): SamLanguage;
 }
 declare const cardinalLanguage: CardinalLanguage;
 declare const t: (key: string) => string;
 declare const getSamTextTranslation: (samText?: SamText) => string | undefined;
 
-declare const findMedicationsByLabel: (sdk: SamV2Api, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
+interface PaginatedList<K, T> {
+    pageSize?: number;
+    totalSize?: number;
+    rows?: Array<T>;
+    nextKeyPair?: {
+        startKey?: K;
+        startKeyDocId?: string;
+    };
+}
+declare class PaginatedListIterator<K, T> {
+    private loader;
+    private limit;
+    private hasNextPage;
+    private currentList;
+    constructor(loader: (limit: number, startKey?: K, startDocumentId?: string) => Promise<PaginatedList<K, T>>);
+    hasNext(): Promise<boolean>;
+    next(limit: number): Promise<Array<T>>;
+}
+declare const findMedicationsByLabel: (sdk: IccBesamv2Api, query: string) => Promise<[PaginatedListIterator<string, Amp>, PaginatedListIterator<string, VmpGroup>, PaginatedListIterator<string, Nmp>]>;
 /**
  * Fetch the current version information for the SAM database.
  */
-declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
+declare const fetchSamVersion: (sdk: IccBesamv2Api) => Promise<SamVersion | undefined>;
 
 type MedicationType = {
     ampId?: string;
@@ -155,7 +175,7 @@ interface PractitionerCertificate {
 declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
 interface MedicationSearchProps {
-    sdk: SamV2Api;
+    sdk: IccBesamv2Api;
     deliveryEnvironment: string;
     onAddPrescription: (medication: MedicationType) => void;
     disableInputEventsTracking: boolean;
@@ -189,4 +209,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, PaginatedListIterator, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

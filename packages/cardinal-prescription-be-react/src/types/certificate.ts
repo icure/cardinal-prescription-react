@@ -1,4 +1,4 @@
-import { SamText } from '@icure/cardinal-be-sam-sdk'
+import { SamText } from '@icure/api'
 
 export interface CertificateValidationResultType {
   keystoreUuid?: string

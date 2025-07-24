@@ -1,9 +1,8 @@
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { findMedicationsByLabel } from '../../../services/cardinal-sam'
+import { findMedicationsByLabel, PaginatedListIterator } from '../../../services/cardinal-sam'
 import { MedicationCard } from '../MedicationCard'
 import { InfiniteScroll } from '../../common/InfiniteScroll'
 
-import { Amp, Nmp, PaginatedListIterator, SamV2Api, VmpGroup } from '@icure/cardinal-be-sam-sdk'
 import { MedicationType } from '../../../types'
 import { SearchIcn } from '../../common/Icons'
 import { mergeSortedPartialArraysN } from '../../../utils/loader-helpers'
@@ -11,9 +10,10 @@ import { ampToMedicationTypes, nmpToMedicationTypes, vmpGroupToMedicationTypes }
 import { StyledLabel, StyledMedicationSearch, StyledMedicationSearchDropdown, StyledMedicationSearchInput } from './styles'
 import { t } from '../../../services/i18n'
 import { GlobalStyles } from '../../../styles'
+import { Amp, IccBesamv2Api, Nmp, VmpGroup } from '@icure/api'
 
 interface MedicationSearchProps {
-  sdk: SamV2Api
+  sdk: IccBesamv2Api
   deliveryEnvironment: string
   onAddPrescription: (medication: MedicationType) => void
   disableInputEventsTracking: boolean
@@ -30,9 +30,9 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
 
   const [dropdownDisplayed, setDropdownDisplayed] = useState(false)
   const [pages, setPages] = useState<MedicationType[]>([])
-  const [medications, setMedications] = useState<PaginatedListIterator<Amp>>()
-  const [molecules, setMolecules] = useState<PaginatedListIterator<VmpGroup>>()
-  const [products, setProducts] = useState<PaginatedListIterator<Nmp>>()
+  const [medications, setMedications] = useState<PaginatedListIterator<string, Amp>>()
+  const [molecules, setMolecules] = useState<PaginatedListIterator<string, VmpGroup>>()
+  const [products, setProducts] = useState<PaginatedListIterator<string, Nmp>>()
   const [medicationsPage, setMedicationsPage] = useState<MedicationType[]>([])
   const [moleculesPage, setMoleculesPage] = useState<MedicationType[]>([])
   const [productsPage, setProductsPage] = useState<MedicationType[]>([])
@@ -92,19 +92,19 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
   }, [searchQuery, searchQueryRef, sdk])
 
   // Implementations based on Svelte logic:
-  async function loadMedicationsPage(medications: PaginatedListIterator<Amp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
+  async function loadMedicationsPage(medications: PaginatedListIterator<string, Amp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
     const page: MedicationType[] = (!(await medications.hasNext()) ? [] : await medications.next(min)).flatMap((amp: Amp) => ampToMedicationTypes(amp, deliveryEnvironment))
     return (!(await medications.hasNext()) ? [] : await medications.next(min)).length < min || page.length + acc.length >= min
       ? [...acc, ...page]
       : await loadMedicationsPage(medications, min, [...acc, ...page])
   }
 
-  async function loadMoleculesPage(molecules: PaginatedListIterator<VmpGroup>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
+  async function loadMoleculesPage(molecules: PaginatedListIterator<string, VmpGroup>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
     const page = (!(await molecules.hasNext()) ? [] : await molecules.next(min)).flatMap((vmp: VmpGroup) => vmpGroupToMedicationTypes(vmp))
     return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page])
   }
 
-  async function loadNonMedicinalPage(products: PaginatedListIterator<Nmp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
+  async function loadNonMedicinalPage(products: PaginatedListIterator<string, Nmp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
     const page = (!(await products.hasNext()) ? [] : await products.next(min)).flatMap((nmp: Nmp) => nmpToMedicationTypes(nmp))
     return (!(await products.hasNext()) ? [] : await products.next(min)).length < min || page.length + acc.length >= min
       ? [...acc, ...page]

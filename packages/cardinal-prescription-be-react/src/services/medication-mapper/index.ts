@@ -1,4 +1,4 @@
-import { Amp, AmpStatus, DmppCodeType, Nmp, VmpGroup } from '@icure/cardinal-be-sam-sdk'
+import { Amp, Ampp, Dmpp, Nmp, VmpGroup } from '@icure/api'
 import { MedicationType } from '../../types'
 import { getSamTextTranslation } from '../i18n'
 import { capitalize } from '../../utils/string-helpers'
@@ -44,7 +44,7 @@ export const ampToMedicationTypes = (amp: Amp, deliveryEnvironment: string): Med
             ampp.from &&
             ampp.from < now &&
             (!ampp.to || ampp.to > now) &&
-            ampp.status == AmpStatus.Authorized &&
+            ampp.status == Ampp.StatusEnum.AUTHORIZED &&
             ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)) &&
             ampp.dmpps?.some((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment)
           )
@@ -52,7 +52,7 @@ export const ampToMedicationTypes = (amp: Amp, deliveryEnvironment: string): Med
         .map((ampp) => {
           const dmpp = ampp.dmpps?.find(
             (dmpp) =>
-              dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp.codeType == DmppCodeType.Cnk,
+              dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp.codeType == Dmpp.CodeTypeEnum.CNK,
           )
 
           return {

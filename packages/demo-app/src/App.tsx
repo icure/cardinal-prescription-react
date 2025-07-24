@@ -17,7 +17,7 @@ import {
 } from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
-import { CardinalBeSamApi, CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
+import { IccBesamv2Api, SamVersion, EnsembleAuthenticationProvider, NoAuthenticationProvider, IccAuthApi } from '@icure/api'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -61,7 +61,7 @@ const practitionerCredentials = {
   username: 'larisa.shashuk+medicationsTest@gmail.com',
   password: '5aa9d0f0-2fab-4f9f-9f6a-5d8244280873',
 }
-const ICURE_URL = 'https://nightly.icure.cloud'
+const ICURE_URL = 'https://api.icure.cloud'
 const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
 
 export const App = () => {
@@ -71,7 +71,7 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalSdkInstance, setCardinalSdkInstance] = useState<SamV2Api | undefined>(undefined)
+  const [cardinalSdkInstance, setCardinalSdkInstance] = useState<IccBesamv2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
@@ -86,13 +86,13 @@ export const App = () => {
     const initializeAll = async () => {
       try {
         // Initialize Cardinal SDK (SAM)
-        const cardinalBeSamAInstance: CardinalBeSamApi = await CardinalBeSamSdk.initialize(
-          undefined,
+        const cardinalBeSamAInstance: IccBesamv2Api = new IccBesamv2Api(
           ICURE_URL,
-          new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
+          {},
+          new EnsembleAuthenticationProvider(new IccAuthApi(ICURE_URL, {}, new NoAuthenticationProvider()), practitionerCredentials.username, practitionerCredentials.password),
         )
-        setCardinalSdkInstance(cardinalBeSamAInstance.sam)
-        setSamVersion(await fetchSamVersion(cardinalBeSamAInstance.sam))
+        setCardinalSdkInstance(cardinalBeSamAInstance)
+        setSamVersion(await fetchSamVersion(cardinalBeSamAInstance))
 
         try {
           if (hcp.ssin) {

@@ -1,7 +1,7 @@
 # Cardinal Prescription React Component 🇧🇪
 
 This is a **Belgian-specific** React library for healthcare professionals to **manage electronic prescriptions**.  
-It integrates iCure's APIs —  `@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk`, and `@icure/medication-sdk` — to
+It integrates iCure's APIs —  `@icure/be-fhc-lite-api`, `@icure/api`, and `@icure/medication-sdk` — to
 streamline:
 
 - 🔐 Practitioner certificate management
@@ -59,7 +59,7 @@ enables secure, standards-based connections to government and regional healthcar
 ## 🧰Technologies
 
 - **React 18+**
-- **iCure SDKs** (`@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk`, `@icure/medication-sdk`)
+- **iCure SDKs** (`@icure/be-fhc-lite-api`, `@icure/api`, `@icure/medication-sdk`)
 - **TypeScript**
 - **React Hook Form** for forms
 - **Styled-components** for UI styling
