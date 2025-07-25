@@ -1,4 +1,3 @@
-export const FHC_URL = 'https://fhcacc.icure.cloud'
 export const DEFAULT_APP_LANGULAGE = 'fr'
 export const CERTIFICATE_IDB_CONFIG = {
   DB_NAME: 'certificate-store',

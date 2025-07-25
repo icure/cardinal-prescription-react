@@ -147,9 +147,9 @@ interface FhcServiceConfig {
     samPackage: SamPackageType;
 }
 declare const createFhcCode: (type: string, code: string, version?: string) => Code;
-declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string) => Promise<Prescription[]>;
-declare const verifyCertificateWithSts: (keystore: ArrayBuffer, prescriber: HealthcareParty, passphrase: string) => Promise<CertificateValidationResultType>;
-declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string) => Promise<CertificateValidationResultType>;
+declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string, fhc_url: string) => Promise<Prescription[]>;
+declare const verifyCertificateWithSts: (keystore: ArrayBuffer, prescriber: HealthcareParty, passphrase: string, fhc_url: string) => Promise<CertificateValidationResultType>;
+declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string, fhc_url: string) => Promise<CertificateValidationResultType>;
 
 declare class IndexedDbServiceStore<T> {
     private readonly db;

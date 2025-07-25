@@ -62,6 +62,7 @@ const practitionerCredentials = {
   password: '5aa9d0f0-2fab-4f9f-9f6a-5d8244280873',
 }
 const ICURE_URL = 'https://api.icure.cloud'
+const FHC_URL = 'https://fhcacc.icure.cloud'
 const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
 
 export const App = () => {
@@ -71,7 +72,7 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalSdkInstance, setCardinalSdkInstance] = useState<IccBesamv2Api | undefined>(undefined)
+  const [cardinalSdkInstance, setcardinalSdkInstance] = useState<IccBesamv2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
@@ -91,7 +92,7 @@ export const App = () => {
           {},
           new EnsembleAuthenticationProvider(new IccAuthApi(ICURE_URL, {}, new NoAuthenticationProvider()), practitionerCredentials.username, practitionerCredentials.password),
         )
-        setCardinalSdkInstance(cardinalBeSamAInstance)
+        setcardinalSdkInstance(cardinalBeSamAInstance)
         setSamVersion(await fetchSamVersion(cardinalBeSamAInstance))
 
         try {
@@ -112,7 +113,7 @@ export const App = () => {
 
   const validateCertificate = async (passphrase: string) => {
     try {
-      const res = await validateDecryptedCertificate(hcp, passphrase)
+      const res = await validateDecryptedCertificate(hcp, passphrase, FHC_URL)
 
       setIsCertificateValid(res.status)
       setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
@@ -209,6 +210,7 @@ export const App = () => {
                 patient,
                 med,
                 passphrase,
+                FHC_URL,
               )
               setPrescriptions((prev) =>
                 prev.map((item) =>

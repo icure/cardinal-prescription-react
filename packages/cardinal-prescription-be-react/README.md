@@ -77,6 +77,29 @@ Before starting, make sure you have:
     - [Create a HCP in Cockpit](https://docs.icure.com/cockpit/how-to/how-to-manage-hcp#creating-an-hcp)
     - [Generate the authentication token for the HCP](https://docs.icure.com/cockpit/how-to/how-to-manage-hcp#generating-an-authentication-token)
 - **Patient** and **healthcare professional** information to populate prescriptions
+- A valid **Free Health Connector URL**, which depends on the certificate you use: for the acceptance certificate, use `https://fhcacc.icure.cloud`, and for the production certificate, use `https://fhcprd.icure.cloud`. 
+- A valid **iCure URL** that will be used for SAM. You should use: `https://api.icure.cloud`.
+- **Vendor** and **SamPackage**
+
+```html
+const practitionerCredentials = {
+username: 'xxx@xxx.com',
+password: 'xxxxxxxxxxx',
+}
+const ICURE_URL = 'https://api.icure.cloud'
+const FHC_URL = 'https://fhcacc.icure.cloud'
+const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
+
+const vendor = {
+vendorName: 'vendorName',
+vendorEmail: 'support@test.be',
+vendorPhone: '+3200000000',
+}
+const samPackage = {
+packageName: 'test[test/1.0]-freehealth-connector',
+packageVersion: '1.0]-freehealth-connector',
+}
+```
 
 ## Getting Started
 
@@ -124,11 +147,11 @@ Medication search interface using SAM. Triggers an event when a medication is se
 ```html
 import { MedicationSearch } from '@icure/cardinal-prescription-be-react'
 
-<MedicationSearch
-  sdk={ cardinalSdkInstance }
-  deliveryEnvironment="P"
-  onAddPrescription={ onCreatePrescription }
-  disableInputEventsTracking={ isPrescriptionModalOpen }
+<MedicationSearch 
+  sdk={cardinalBeSamAInstance} 
+  deliveryEnvironment="P" 
+  onAddPrescription={onCreatePrescription} 
+  disableInputEventsTracking={isPrescriptionModalOpen} 
 />
 ```
 
@@ -244,7 +267,7 @@ await deleteCertificate(hcpSsin)
 ```html
 import { validateDecryptedCertificate } from '@icure/cardinal-prescription-be-react'
 
-const validation = await validateDecryptedCertificate(hcp, passphrase)
+const validation = await validateDecryptedCertificate(hcp, passphrase, FHC_URL)
 if (validation.status) {
 // Certificate is valid
 } else {
@@ -269,6 +292,7 @@ hcp,                      // Healthcare professional object
 patient,                  // Patient object
 prescribedMedication,     // Medication details
 passphrase                // Certificate passphrase
+FHC_URL                   // Free health connector url
 )
 // result[0]?.rid contains the prescription RID if successful
 ```
@@ -280,8 +304,8 @@ passphrase                // Certificate passphrase
 ```html
 import { fetchSamVersion } from '@icure/cardinal-prescription-be-react'
 
-const samVersion = await fetchSamVersion(samSdkInstance)
-// samSdkInstance is an instance of CardinalBeSamApi.sam (see demo)
+const samVersion = await fetchSamVersion(cardinalBeSamAInstance)
+// cardinalBeSamAInstance is an instance of CardinalBeSamApi.sam (see demo)
 ```
 
 ## SAM and Recip-e requirements

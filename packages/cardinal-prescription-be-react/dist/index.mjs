@@ -955,7 +955,6 @@ var appTranslations = {
 };
 
 // src/services/constants.ts
-var FHC_URL = "https://fhcacc.icure.cloud";
 var DEFAULT_APP_LANGULAGE = "fr";
 var CERTIFICATE_IDB_CONFIG = {
   DB_NAME: "certificate-store",
@@ -1302,13 +1301,13 @@ var createFhcCode = (type, code, version = "1.0") => new FhcCode({
   code,
   version
 });
-var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase) => {
+var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase, fhc_url) => {
   const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication);
   if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
   const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
   if (!keystore) throw new Error("Cannot obtain keystore");
-  const recipe = new fhcRecipeApi(FHC_URL, []);
-  const { keystoreUuid, stsTokenId } = await verifyCertificateWithSts(keystore, prescriber, passphrase);
+  const recipe = new fhcRecipeApi(fhc_url, []);
+  const { keystoreUuid, stsTokenId } = await verifyCertificateWithSts(keystore, prescriber, passphrase, fhc_url);
   return Promise.all(
     prescription.medications?.map(
       (m) => recipe.createPrescriptionV4UsingPOST(
@@ -1326,7 +1325,7 @@ var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedic
     ) ?? []
   );
 };
-var verifyCertificateWithSts = async (keystore, prescriber, passphrase) => {
+var verifyCertificateWithSts = async (keystore, prescriber, passphrase, fhc_url) => {
   if (!prescriber?.ssin || !prescriber?.nihii) {
     return {
       status: false,
@@ -1340,7 +1339,7 @@ var verifyCertificateWithSts = async (keystore, prescriber, passphrase) => {
   }
   try {
     const { STORE_KEY, TOKEN_KEY } = getTokenStorageKeys(prescriber);
-    const sts = new fhcStsApi(FHC_URL, []);
+    const sts = new fhcStsApi(fhc_url, []);
     const { uuid: uuid2 } = await sts.uploadKeystoreUsingPOST(keystore);
     if (!uuid2) throw new Error("Cannot obtain keystore uuid");
     await tokenStore.put(STORE_KEY, uuid2);
@@ -1359,7 +1358,7 @@ var verifyCertificateWithSts = async (keystore, prescriber, passphrase) => {
     };
   }
 };
-var validateDecryptedCertificate = async (hcp, passphrase) => {
+var validateDecryptedCertificate = async (hcp, passphrase, fhc_url) => {
   try {
     const keystore = await loadAndDecryptCertificate(hcp.ssin, passphrase);
     if (!keystore) {
@@ -1373,7 +1372,7 @@ var validateDecryptedCertificate = async (hcp, passphrase) => {
         }
       };
     }
-    return await verifyCertificateWithSts(keystore, hcp, passphrase);
+    return await verifyCertificateWithSts(keystore, hcp, passphrase, fhc_url);
   } catch {
     return { status: false };
   }
