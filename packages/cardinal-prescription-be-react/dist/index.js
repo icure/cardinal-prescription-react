@@ -5501,7 +5501,7 @@ var PrescriptionList = ({
   handleSendPrescriptions,
   handlePrintPrescriptions,
   prescribedMedications,
-  showSectionsTitles = true
+  hideSectionsTitles
 }) => {
   const [printing, setPrinting] = (0, import_react12.useState)(false);
   const [sending, setSending] = (0, import_react12.useState)(false);
@@ -5526,7 +5526,7 @@ var PrescriptionList = ({
     /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(GlobalStyles, {}),
     /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
       sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        showSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
         /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
           PrescriptionCard,
           {
@@ -5548,7 +5548,7 @@ var PrescriptionList = ({
         ) })
       ] }),
       pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        showSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
+        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),

@@ -13,7 +13,7 @@ interface PrescriptionListProps {
   prescribedMedications: PrescribedMedicationType[]
   handleSendPrescriptions?: () => Promise<void>
   handlePrintPrescriptions?: () => Promise<void>
-  showSectionsTitles?: boolean
+  hideSectionsTitles?: boolean
 }
 
 export const PrescriptionList: React.FC<PrescriptionListProps> = ({
@@ -22,7 +22,7 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
   handleSendPrescriptions,
   handlePrintPrescriptions,
   prescribedMedications,
-  showSectionsTitles = true,
+  hideSectionsTitles,
 }) => {
   const [printing, setPrinting] = useState(false)
   const [sending, setSending] = useState(false)
@@ -55,7 +55,7 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
       <StyledPrescriptionList className="StyledPrescriptionList">
         {sentPrescriptions().length !== 0 && (
           <div className="cardinal-prescriptions">
-            {showSectionsTitles && <p className="cardinal-prescriptions__title">{t('prescription.list.sentTitle')}</p>}
+            {!hideSectionsTitles && <p className="cardinal-prescriptions__title">{t('prescription.list.sentTitle')}</p>}
             <div className="cardinal-prescriptions__rows">
               {sentPrescriptions().map((medication, idx) => (
                 <PrescriptionCard
@@ -81,7 +81,7 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
         )}
         {pendingPrescriptions().length !== 0 && (
           <div className="cardinal-prescriptions">
-            {showSectionsTitles && <p className="cardinal-prescriptions__title"> {t('prescription.list.pendingTitle')}</p>}
+            {!hideSectionsTitles && <p className="cardinal-prescriptions__title"> {t('prescription.list.pendingTitle')}</p>}
             <div className="cardinal-prescriptions__rows">
               {pendingPrescriptions().map((medication, idx) => (
                 <PrescriptionCard

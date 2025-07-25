@@ -5447,7 +5447,7 @@ var PrescriptionList = ({
   handleSendPrescriptions,
   handlePrintPrescriptions,
   prescribedMedications,
-  showSectionsTitles = true
+  hideSectionsTitles
 }) => {
   const [printing, setPrinting] = useState5(false);
   const [sending, setSending] = useState5(false);
@@ -5472,7 +5472,7 @@ var PrescriptionList = ({
     /* @__PURE__ */ jsx26(GlobalStyles, {}),
     /* @__PURE__ */ jsxs24(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
       sentPrescriptions().length !== 0 && /* @__PURE__ */ jsxs24("div", { className: "cardinal-prescriptions", children: [
-        showSectionsTitles && /* @__PURE__ */ jsx26("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        !hideSectionsTitles && /* @__PURE__ */ jsx26("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
         /* @__PURE__ */ jsx26("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx26(
           PrescriptionCard,
           {
@@ -5494,7 +5494,7 @@ var PrescriptionList = ({
         ) })
       ] }),
       pendingPrescriptions().length !== 0 && /* @__PURE__ */ jsxs24("div", { className: "cardinal-prescriptions", children: [
-        showSectionsTitles && /* @__PURE__ */ jsxs24("p", { className: "cardinal-prescriptions__title", children: [
+        !hideSectionsTitles && /* @__PURE__ */ jsxs24("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),
