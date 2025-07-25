@@ -10,9 +10,10 @@ import { StyledPrescriptionList } from './styles'
 interface PrescriptionListProps {
   handleModifyPrescription: (medication: PrescribedMedicationType) => void
   handleDeletePrescription: (medication: PrescribedMedicationType) => void
+  prescribedMedications: PrescribedMedicationType[]
   handleSendPrescriptions?: () => Promise<void>
   handlePrintPrescriptions?: () => Promise<void>
-  prescribedMedications: PrescribedMedicationType[]
+  showSectionsTitles?: boolean
 }
 
 export const PrescriptionList: React.FC<PrescriptionListProps> = ({
@@ -21,6 +22,7 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
   handleSendPrescriptions,
   handlePrintPrescriptions,
   prescribedMedications,
+  showSectionsTitles = true,
 }) => {
   const [printing, setPrinting] = useState(false)
   const [sending, setSending] = useState(false)
@@ -52,9 +54,9 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
       <GlobalStyles />
       <StyledPrescriptionList className="StyledPrescriptionList">
         {sentPrescriptions().length !== 0 && (
-          <div className="prescriptions">
-            <p className="prescriptions__title">{t('prescription.list.sentTitle')}</p>
-            <div className="prescriptions__rows">
+          <div className="cardinal-prescriptions">
+            {showSectionsTitles && <p className="cardinal-prescriptions__title">{t('prescription.list.sentTitle')}</p>}
+            <div className="cardinal-prescriptions__rows">
               {sentPrescriptions().map((medication, idx) => (
                 <PrescriptionCard
                   key={medication.uuid || idx}
@@ -64,21 +66,23 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
                 />
               ))}
             </div>
-            <div className="prescriptions__footer">
-              <Button
-                disabled={sending}
-                title={t('prescription.list.print')}
-                handleClick={() => spinPrint(handlePrintPrescriptions)}
-                view={printing && !sending ? 'withSpinner' : 'outlined'}
-                type="button"
-              />
-            </div>
+            {handlePrintPrescriptions && (
+              <div className="cardinal-prescriptions__footer">
+                <Button
+                  disabled={sending}
+                  title={t('prescription.list.print')}
+                  handleClick={() => spinPrint(handlePrintPrescriptions)}
+                  view={printing && !sending ? 'withSpinner' : 'outlined'}
+                  type="button"
+                />
+              </div>
+            )}
           </div>
         )}
         {pendingPrescriptions().length !== 0 && (
-          <div className="prescriptions">
-            <p className="prescriptions__title"> {t('prescription.list.pendingTitle')}</p>
-            <div className="prescriptions__rows">
+          <div className="cardinal-prescriptions">
+            {showSectionsTitles && <p className="cardinal-prescriptions__title"> {t('prescription.list.pendingTitle')}</p>}
+            <div className="cardinal-prescriptions__rows">
               {pendingPrescriptions().map((medication, idx) => (
                 <PrescriptionCard
                   key={medication.uuid || idx}
@@ -88,27 +92,29 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
                 />
               ))}
             </div>
-            <div className="prescriptions__footer">
-              {handlePrintPrescriptions && (
-                <Button
-                  disabled={sending}
-                  title={t('prescription.list.sendAndPrint')}
-                  handleClick={() => spinPrint(handlePrintPrescriptions)}
-                  view={printing ? 'withSpinner' : 'outlined'}
-                  type="submit"
-                  form="prescriptionForm"
-                />
-              )}
-              {handleSendPrescriptions && (
-                <Button
-                  disabled={printing}
-                  title={t('prescription.list.send')}
-                  view={sending && !printing ? 'withSpinner' : 'primary'}
-                  type="submit"
-                  handleClick={() => spinSend(handleSendPrescriptions)}
-                />
-              )}
-            </div>
+            {(handlePrintPrescriptions || handleSendPrescriptions) && (
+              <div className="cardinal-prescriptions__footer">
+                {handlePrintPrescriptions && (
+                  <Button
+                    disabled={sending}
+                    title={t('prescription.list.sendAndPrint')}
+                    handleClick={() => spinPrint(handlePrintPrescriptions)}
+                    view={printing ? 'withSpinner' : 'outlined'}
+                    type="submit"
+                    form="prescriptionForm"
+                  />
+                )}
+                {handleSendPrescriptions && (
+                  <Button
+                    disabled={printing}
+                    title={t('prescription.list.send')}
+                    view={sending && !printing ? 'withSpinner' : 'primary'}
+                    type="submit"
+                    handleClick={() => spinSend(handleSendPrescriptions)}
+                  />
+                )}
+              </div>
+            )}
           </div>
         )}
       </StyledPrescriptionList>

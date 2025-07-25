@@ -195,9 +195,10 @@ declare const PrescriptionModal: React.FC<Props>;
 interface PrescriptionListProps {
     handleModifyPrescription: (medication: PrescribedMedicationType) => void;
     handleDeletePrescription: (medication: PrescribedMedicationType) => void;
-    handleSendPrescriptions: () => Promise<void>;
-    handlePrintPrescriptions: () => Promise<void>;
+    handleSendPrescriptions?: () => Promise<void>;
+    handlePrintPrescriptions?: () => Promise<void>;
     prescribedMedications: PrescribedMedicationType[];
+    showSectionsTitles?: boolean;
 }
 declare const PrescriptionList: React.FC<PrescriptionListProps>;
 

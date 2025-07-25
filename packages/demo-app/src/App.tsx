@@ -265,6 +265,7 @@ export const App = () => {
               prescribedMedications={prescriptions}
               handleSendPrescriptions={handleSendPrescriptions}
               handlePrintPrescriptions={handlePrintPrescriptions}
+              showSectionsTitles={false}
             />
           </div>
         </>

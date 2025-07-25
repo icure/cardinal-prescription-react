@@ -1276,8 +1276,6 @@ var convertYyyyMmDdNumberToIsoDate = (dateNumber) => {
   return `${year}-${month}-${day}`;
 };
 var getTreatmentStartDate = (prescribedMedication) => {
-  console.log("prescribedMedication?.medication.beginMoment");
-  console.log(prescribedMedication?.medication.beginMoment);
   if (prescribedMedication?.medication.beginMoment) {
     return convertYyyyMmDdNumberToIsoDate(prescribedMedication?.medication.beginMoment);
   } else {
@@ -1285,8 +1283,6 @@ var getTreatmentStartDate = (prescribedMedication) => {
   }
 };
 var getExecutableUntilDate = (prescribedMedication) => {
-  console.log("prescribedMedication?.medication.endMoment");
-  console.log(prescribedMedication?.medication.endMoment);
   if (prescribedMedication?.medication.endMoment) {
     return convertYyyyMmDdNumberToIsoDate(prescribedMedication.medication.endMoment);
   } else {
@@ -2359,7 +2355,7 @@ var StyledCertificateForm = import_styled_components7.default.form`
     line-height: normal;
   }
 
-  .inputs {
+  .StyledCertificateUpload__inputs {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -2393,7 +2389,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(StyledCertificateUpload, { className: "StyledCertificateUpload", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(StyledCertificateForm, { className: "StyledCertificateForm", onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "inputs", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "StyledCertificateUpload__inputs", children: [
         !certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
           TextInput,
           {
@@ -4546,9 +4542,9 @@ var StyledPrescriptionModal = import_styled_components25.default.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
   display: flex;
   background-color: rgba(${colorsRgb.blue[800]}, 0.3);
+  z-index: 1020;
 
   .content {
     width: 900px;
@@ -5342,7 +5338,7 @@ var StyledPrescriptionCard = import_styled_components26.default.div`
       }
     `};
 
-  .header {
+  .prescriptionCardHeader {
     width: 83%;
     display: flex;
     justify-content: space-between;
@@ -5437,8 +5433,8 @@ var StyledPrescriptionCard = import_styled_components26.default.div`
 var import_jsx_runtime25 = require("react/jsx-runtime");
 var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
   return /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "header", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "header__prescription", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)("div", { className: "header__prescription__content", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "header__prescription__content__title", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)("div", { className: "prescriptionCardHeader__prescription__content", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
       /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("p", { children: prescribedMedication.medication.instructionForPatient })
     ] }) }) }),
     !prescribedMedication.rid ? /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)("div", { className: "actions", children: [
@@ -5455,12 +5451,10 @@ var StyledPrescriptionList = import_styled_components27.default.div`
   flex-direction: column;
   gap: 24px;
 
-  .prescriptions {
+  .cardinal-prescriptions {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 50%;
-    min-width: 700px;
 
     ${responsiveMediaQueries.down(displayResolution.m)`
       width: 100%;
@@ -5506,7 +5500,8 @@ var PrescriptionList = ({
   handleDeletePrescription,
   handleSendPrescriptions,
   handlePrintPrescriptions,
-  prescribedMedications
+  prescribedMedications,
+  showSectionsTitles = true
 }) => {
   const [printing, setPrinting] = (0, import_react12.useState)(false);
   const [sending, setSending] = (0, import_react12.useState)(false);
@@ -5530,9 +5525,9 @@ var PrescriptionList = ({
   return /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(import_jsx_runtime26.Fragment, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(GlobalStyles, {}),
     /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
-      sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "prescriptions", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("p", { className: "prescriptions__title", children: t("prescription.list.sentTitle") }),
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+      sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "cardinal-prescriptions", children: [
+        showSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -5541,7 +5536,7 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+        handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
           Button,
           {
             disabled: sending,
@@ -5552,12 +5547,12 @@ var PrescriptionList = ({
           }
         ) })
       ] }),
-      pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "prescriptions", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("p", { className: "prescriptions__title", children: [
+      pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "cardinal-prescriptions", children: [
+        showSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -5566,8 +5561,8 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "prescriptions__footer", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: "cardinal-prescriptions__footer", children: [
+          handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
             Button,
             {
               disabled: sending,
@@ -5578,7 +5573,7 @@ var PrescriptionList = ({
               form: "prescriptionForm"
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+          handleSendPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
             Button,
             {
               disabled: printing,
@@ -5612,7 +5607,7 @@ var StyledPrescriptionDocument = import_styled_components28.default.div`
   flex-direction: column;
   gap: 24px;
 
-  .prescription {
+  .prescription-document {
     border: 1px solid ${colors.grey[300]};
     border-radius: 8px;
     background-color: white;
@@ -5622,30 +5617,30 @@ var StyledPrescriptionDocument = import_styled_components28.default.div`
     display: flex;
     flex-direction: column;
     gap: 24px;
-  }
 
-  .divider {
-    border-top: 1px solid ${colors.grey[300]};
-  }
-
-  .header {
-    text-align: center;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    h1 {
-      margin: 0;
-      font-size: 18px;
-      padding-bottom: 4px;
+    &__divider {
+      border-top: 1px solid ${colors.grey[300]};
     }
-  }
 
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    &__header {
+      text-align: center;
+
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        padding-bottom: 4px;
+      }
+    }
+
+    &__options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 
   .prescription-section {
@@ -5729,20 +5724,20 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
   const formatDate = (date) => {
     return (date && dateDecode(date)?.toLocaleDateString()) ?? "-";
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "header", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription-document", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription-document__header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("h1", { children: t("prescription.pdf.title") }),
       /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { children: t("prescription.pdf.instructions") })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "options", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription-document__options", children: [
       /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("h5", { children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("strong", { children: t("prescription.pdf.options.title") }) }),
       /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("ol", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("li", { children: t("prescription.pdf.options.option1") }),
         /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("li", { children: t("prescription.pdf.options.option2") })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "prescription-document__divider" }),
     /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription-section", children: [
       /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "prescription-section__persons", children: [
         /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("p", { children: [
@@ -5815,7 +5810,7 @@ var StyledPrescriptionPrintModal = import_styled_components29.default.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 1020;
   display: flex;
   background: rgba(${colorsRgb.blue[800]}, 0.3);
 

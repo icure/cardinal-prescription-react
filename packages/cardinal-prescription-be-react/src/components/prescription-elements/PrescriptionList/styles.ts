@@ -6,7 +6,7 @@ export const StyledPrescriptionList = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  .prescriptions {
+  .cardinal-prescriptions {
     display: flex;
     flex-direction: column;
     gap: 4px;
