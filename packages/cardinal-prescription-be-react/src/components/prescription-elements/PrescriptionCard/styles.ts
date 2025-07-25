@@ -50,7 +50,7 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
       }
     `};
 
-  .header {
+  .prescriptionCardHeader {
     width: 83%;
     display: flex;
     justify-content: space-between;

@@ -10,8 +10,8 @@ import { StyledPrescriptionList } from './styles'
 interface PrescriptionListProps {
   handleModifyPrescription: (medication: PrescribedMedicationType) => void
   handleDeletePrescription: (medication: PrescribedMedicationType) => void
-  handleSendPrescriptions: () => Promise<void>
-  handlePrintPrescriptions: () => Promise<void>
+  handleSendPrescriptions?: () => Promise<void>
+  handlePrintPrescriptions?: () => Promise<void>
   prescribedMedications: PrescribedMedicationType[]
 }
 
@@ -89,21 +89,25 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
               ))}
             </div>
             <div className="prescriptions__footer">
-              <Button
-                disabled={sending}
-                title={t('prescription.list.sendAndPrint')}
-                handleClick={() => spinPrint(handlePrintPrescriptions)}
-                view={printing ? 'withSpinner' : 'outlined'}
-                type="submit"
-                form="prescriptionForm"
-              />
-              <Button
-                disabled={printing}
-                title={t('prescription.list.send')}
-                view={sending && !printing ? 'withSpinner' : 'primary'}
-                type="submit"
-                handleClick={() => spinSend(handleSendPrescriptions)}
-              />
+              {handlePrintPrescriptions && (
+                <Button
+                  disabled={sending}
+                  title={t('prescription.list.sendAndPrint')}
+                  handleClick={() => spinPrint(handlePrintPrescriptions)}
+                  view={printing ? 'withSpinner' : 'outlined'}
+                  type="submit"
+                  form="prescriptionForm"
+                />
+              )}
+              {handleSendPrescriptions && (
+                <Button
+                  disabled={printing}
+                  title={t('prescription.list.send')}
+                  view={sending && !printing ? 'withSpinner' : 'primary'}
+                  type="submit"
+                  handleClick={() => spinSend(handleSendPrescriptions)}
+                />
+              )}
             </div>
           </div>
         )}

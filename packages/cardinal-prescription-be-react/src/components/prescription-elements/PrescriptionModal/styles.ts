@@ -7,9 +7,9 @@ export const StyledPrescriptionModal = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
   display: flex;
   background-color: rgba(${colorsRgb.blue[800]}, 0.3);
+  z-index: 1020;
 
   .content {
     width: 900px;

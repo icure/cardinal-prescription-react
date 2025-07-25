@@ -46,13 +46,13 @@ export const PrescriptionDocumentToPrint: React.FC<Props> = ({ prescribedMedicat
     <StyledPrescriptionDocument className="StyledPrescriptionDocument">
       {prescribedMedications?.length
         ? chunks.map((chunk, chunkIndex) => (
-            <div className="prescription" key={chunkIndex}>
-              <div className="header">
+            <div className="prescription-document" key={chunkIndex}>
+              <div className="prescription-document__header">
                 <h1>{t('prescription.pdf.title')}</h1>
                 <p>{t('prescription.pdf.instructions')}</p>
               </div>
-              <div className="divider"></div>
-              <div className="options">
+              <div className="prescription-document__divider"></div>
+              <div className="prescription-document__options">
                 <h5>
                   <strong>{t('prescription.pdf.options.title')}</strong>
                 </h5>
@@ -61,7 +61,7 @@ export const PrescriptionDocumentToPrint: React.FC<Props> = ({ prescribedMedicat
                   <li>{t('prescription.pdf.options.option2')}</li>
                 </ol>
               </div>
-              <div className="divider"></div>
+              <div className="prescription-document__divider"></div>
 
               <div className="prescription-section">
                 <div className="prescription-section__persons">

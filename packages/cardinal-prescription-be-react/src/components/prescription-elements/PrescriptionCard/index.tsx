@@ -12,10 +12,10 @@ interface PrescriptionCardProps {
 export const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
   return (
     <StyledPrescriptionCard className="StyledPrescriptionCard" $prescribed={!!prescribedMedication.rid}>
-      <div className="header">
-        <div className="header__prescription">
-          <div className="header__prescription__content">
-            <div className="header__prescription__content__title">
+      <div className="prescriptionCardHeader">
+        <div className="prescriptionCardHeader__prescription">
+          <div className="prescriptionCardHeader__prescription__content">
+            <div className="prescriptionCardHeader__prescription__content__title">
               <h3>
                 {prescribedMedication.medication.medicinalProduct?.intendedname ??
                   prescribedMedication.medication.substanceProduct?.intendedname ??

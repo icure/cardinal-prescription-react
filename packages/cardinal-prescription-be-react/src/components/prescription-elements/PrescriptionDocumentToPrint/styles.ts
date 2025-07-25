@@ -13,7 +13,7 @@ export const StyledPrescriptionDocument = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  .prescription {
+  .prescription-document {
     border: 1px solid ${colors.grey[300]};
     border-radius: 8px;
     background-color: white;
@@ -23,30 +23,30 @@ export const StyledPrescriptionDocument = styled.div`
     display: flex;
     flex-direction: column;
     gap: 24px;
-  }
 
-  .divider {
-    border-top: 1px solid ${colors.grey[300]};
-  }
-
-  .header {
-    text-align: center;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    h1 {
-      margin: 0;
-      font-size: 18px;
-      padding-bottom: 4px;
+    &__divider {
+      border-top: 1px solid ${colors.grey[300]};
     }
-  }
 
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    &__header {
+      text-align: center;
+
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        padding-bottom: 4px;
+      }
+    }
+
+    &__options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 
   .prescription-section {

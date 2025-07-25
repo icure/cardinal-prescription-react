@@ -33,7 +33,7 @@ export const StyledCertificateForm = styled.form`
     line-height: normal;
   }
 
-  .inputs {
+  .StyledCertificateUpload__inputs {
     width: 100%;
     display: flex;
     flex-direction: column;

@@ -45,7 +45,7 @@ export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUpload
       <StyledCertificateForm className="StyledCertificateForm" onSubmit={handleSubmit(handleFormSubmit)} id="uploadCertificateForm">
         <h3>{!certificateAlreadyUploaded ? t('practitioner.certificateUpload.titleUpload') : t('practitioner.certificateUpload.titlePassword')}</h3>
 
-        <div className="inputs">
+        <div className="StyledCertificateUpload__inputs">
           {!certificateAlreadyUploaded && (
             <TextInput
               label={t('practitioner.certificateUpload.fileLabel')}

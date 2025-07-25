@@ -10,8 +10,6 @@ export const convertYyyyMmDdNumberToIsoDate = (dateNumber: number): string => {
 }
 
 export const getTreatmentStartDate = (prescribedMedication?: PrescribedMedicationType): string => {
-  console.log('prescribedMedication?.medication.beginMoment')
-  console.log(prescribedMedication?.medication.beginMoment)
   if (prescribedMedication?.medication.beginMoment) {
     return convertYyyyMmDdNumberToIsoDate(prescribedMedication?.medication.beginMoment)
   } else {
@@ -20,9 +18,6 @@ export const getTreatmentStartDate = (prescribedMedication?: PrescribedMedicatio
 }
 
 export const getExecutableUntilDate = (prescribedMedication?: PrescribedMedicationType): string => {
-  console.log('prescribedMedication?.medication.endMoment')
-  console.log(prescribedMedication?.medication.endMoment)
-
   if (prescribedMedication?.medication.endMoment) {
     return convertYyyyMmDdNumberToIsoDate(prescribedMedication.medication.endMoment)
   } else {

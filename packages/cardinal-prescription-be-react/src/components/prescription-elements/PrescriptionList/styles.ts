@@ -10,8 +10,6 @@ export const StyledPrescriptionList = styled.div`
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 50%;
-    min-width: 700px;
 
     ${responsiveMediaQueries.down(displayResolution.m)`
       width: 100%;
