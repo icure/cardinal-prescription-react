@@ -221,6 +221,40 @@ Alongside React components, the library exports key APIs for working directly wi
 Connector (FHC) for authentication,
 and utility logic.
 
+### Work with SAM SDK
+
+### CardinalBeSam initialization
+
+#### Initialize the CardinalBeSam SDK by creating an instance that will be passed to other services.
+
+```html
+import { IccBesamv2Api, SamVersion, EnsembleAuthenticationProvider, NoAuthenticationProvider, IccAuthApi } from '@icure/api'
+
+const cardinalBeSamInstance: IccBesamv2Api = new IccBesamv2Api(
+  ICURE_URL,
+  {},
+  new EnsembleAuthenticationProvider(
+    new IccAuthApi(
+      ICURE_URL, 
+      {}, 
+      new NoAuthenticationProvider()
+    ), 
+    practitionerCredentials.username, 
+    practitionerCredentials.password
+  ),
+)
+setCardinalBeSamInstance(cardinalBeSamInstance)
+```
+
+#### Fetch the current SAM version:
+
+```html
+import { fetchSamVersion } from '@icure/cardinal-prescription-be-react'
+
+const samVersion = await fetchSamVersion(cardinalBeSamAInstance)
+// cardinalBeSamAInstance is an instance of CardinalBeSamApi.sam (see demo)
+```
+
 ### Set the active language
 
 Set the library’s language (for UI and errors):
@@ -297,17 +331,6 @@ FHC_URL                   // Free health connector url
 // result[0]?.rid contains the prescription RID if successful
 ```
 
-### Work with SAM SDK
-
-#### Fetch the current SAM version:
-
-```html
-import { fetchSamVersion } from '@icure/cardinal-prescription-be-react'
-
-const samVersion = await fetchSamVersion(cardinalBeSamAInstance)
-// cardinalBeSamAInstance is an instance of CardinalBeSamApi.sam (see demo)
-```
-
 ## SAM and Recip-e requirements
 
 When the prescriber selects a medication, this application integrates with the SAMv2 database to provide all up-to-date
@@ -358,10 +381,7 @@ More information is available on the [SAM portal](https://www.samportal.be/nl/sa
 To see the full working version, you can clone the GitHub repository and run the included demo app.
 
 ```bash
-git clone https://github.com/icure/cardinal-prescription-react
-cd cardinal-prescription-react
-yarn install
-yarn start
+https://github.com/icure/cardinal-prescription-react/tree/main/packages/demo-app
 ```
 
 > Make sure to set up your .env variables or hardcode your credentials and HCP/Patient data for testing.
