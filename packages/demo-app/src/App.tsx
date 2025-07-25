@@ -72,7 +72,7 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalSdkInstance, setcardinalSdkInstance] = useState<IccBesamv2Api | undefined>(undefined)
+  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<IccBesamv2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
@@ -86,14 +86,14 @@ export const App = () => {
   useEffect(() => {
     const initializeAll = async () => {
       try {
-        // Initialize Cardinal SDK (SAM)
-        const cardinalBeSamAInstance: IccBesamv2Api = new IccBesamv2Api(
+        // Initialize Cardinal Be Sam (SAM)
+        const cardinalBeSamInstance: IccBesamv2Api = new IccBesamv2Api(
           ICURE_URL,
           {},
           new EnsembleAuthenticationProvider(new IccAuthApi(ICURE_URL, {}, new NoAuthenticationProvider()), practitionerCredentials.username, practitionerCredentials.password),
         )
-        setcardinalSdkInstance(cardinalBeSamAInstance)
-        setSamVersion(await fetchSamVersion(cardinalBeSamAInstance))
+        setCardinalBeSamInstance(cardinalBeSamInstance)
+        setSamVersion(await fetchSamVersion(cardinalBeSamInstance))
 
         try {
           if (hcp.ssin) {
@@ -253,8 +253,8 @@ export const App = () => {
       </p>
       <div className="dividerApp"></div>
       <div className="element">
-        {cardinalSdkInstance && isCertificateValid && (
-          <MedicationSearch sdk={cardinalSdkInstance} deliveryEnvironment="P" onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
+        {cardinalBeSamInstance && isCertificateValid && (
+          <MedicationSearch sdk={cardinalBeSamInstance} deliveryEnvironment="P" onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
         )}
       </div>
       {prescriptions.length !== 0 && (
