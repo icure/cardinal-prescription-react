@@ -156,6 +156,12 @@ declare class IndexedDbServiceStore<T> {
  */
 declare const createIndexedDbTokenStore: () => TokenStore;
 
+interface StandardDosageContext {
+    ageInYears?: number;
+    weightInKg?: number;
+    renalFunctionMlPerMin?: number;
+}
+
 interface PractitionerCertificate {
     certificateValid: boolean;
     certificateUploaded: boolean;
@@ -174,12 +180,6 @@ interface MedicationSearchProps {
     short?: boolean;
 }
 declare const MedicationSearch: React.FC<MedicationSearchProps>;
-
-interface StandardDosageContext {
-    ageInYears?: number;
-    weightInKg?: number;
-    renalFunctionMlPerMin?: number;
-}
 
 interface Props {
     sdk: SamV2Api;
@@ -211,4 +211,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

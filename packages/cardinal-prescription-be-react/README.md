@@ -325,3 +325,46 @@ https://github.com/icure/cardinal-prescription-react/tree/main/packages/demo-app
 ```
 
 > Make sure to set up your .env variables or hardcode your credentials and HCP/Patient data for testing.
+
+## 📦 Module format & requirements
+
+This library ships ESM and CJS builds and depends on `@icure/cardinal-be-sam-sdk`,
+which is **ESM-only**. Any modern bundler (Vite, webpack 5, Next.js, CRA) and
+Node ≥ 20.19 / 22.12 (which support `require(esm)`) work out of the box. Peer
+requirements: React 18+ and styled-components 6+.
+
+## 🆕 0.1.0 — breaking changes & new features
+
+### New features (parity with the Angular library)
+
+- **Grouped medication search** — results are grouped by product (AMP) with
+  nested packaging cards, powered by a lazy, k-way-merged medication loader.
+- **Cheap alternatives** — when a non-cheap medication is picked, cheaper
+  substitutes are offered in the prescription modal and can be swapped in.
+- **Standard dosages** — SAM standard dosages for the medication's VMP group,
+  filtered by a patient context (`standardDosageContext`), suggested in the modal.
+- **Structured posology** — free-text dosage is parsed into FHC `regimen`
+  (`RegimenItem[]`) in addition to `instructionForPatient`.
+- **STS token caching** — the keystore uuid is cached in a `TokenStore` and
+  reused instead of being re-uploaded on every send.
+
+### Breaking changes
+
+- SAM integration moved from `@icure/api` to **`@icure/cardinal-be-sam-sdk`**;
+  component `sdk` props are now typed `SamV2Api`.
+- `MedicationSearch` `onAddPrescription` now receives
+  `(medication, cheapAlternatives)`.
+- `PrescriptionModal` requires new props: `sdk`, and optionally
+  `alternativeCheapMedications` and `standardDosageContext`.
+- `sendRecipe` / `verifyCertificateWithSts` / `validateDecryptedCertificate`
+  take a `cache: TokenStore` argument (create one with
+  `createIndexedDbTokenStore()`); `verifyCertificateWithSts` no longer takes a
+  keystore `ArrayBuffer`.
+- `CertificateValidationResultType` is trimmed to `{ status, error? }`.
+- `MedicationType.standardDosage` was removed (standard dosages now travel via
+  `MedicationType.vmpGroup.standardDosage`); `findMedicationsByLabel` returns the
+  SDK's `PaginatedListIterator<T>`.
+- Internal types and translation dictionaries are no longer exported — only the
+  documented public surface is.
+
+See [TESTING.md](../../TESTING.md) for the test setup.

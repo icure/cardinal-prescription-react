@@ -5,6 +5,9 @@ export * from './shared/services/fhc'
 export * from './shared/services/indexed-db'
 export * from './shared/types'
 
+// StandardDosageContext is part of the public PrescriptionModal prop surface.
+export type { StandardDosageContext } from './internal/services/prescription/create-prescription'
+
 export * from './shared/components/PractitionerCertificate'
 export * from './shared/components/MedicationSearch'
 export * from './shared/components/PrescriptionModal'
