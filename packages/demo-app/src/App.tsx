@@ -18,6 +18,7 @@ import {
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { IccBesamv2Api, SamVersion, EnsembleAuthenticationProvider, NoAuthenticationProvider, IccAuthApi } from '@icure/api'
+import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE } from './config'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -51,19 +52,8 @@ const samPackage = {
   packageVersion: '1.0]-freehealth-connector',
 }
 
-// To create new Credentials.UsernamePassword(), follow these steps:
-// 1. Go to https://cockpit.icure.dev/ — the management platform for Cardinal.
-// 2. Register and log in.
-// 3. Create a solution, then a database, and then a healthcare professional (HCP).
-// 4. For this HCP, generate an Active Authentication Token.
-// 5. Use the HCP's email address as the username, and the token as the password.
-const practitionerCredentials = {
-  username: 'larisa.shashuk+medicationsTest@gmail.com',
-  password: '5aa9d0f0-2fab-4f9f-9f6a-5d8244280873',
-}
-const ICURE_URL = 'https://api.icure.cloud'
-const FHC_URL = 'https://fhcacc.icure.cloud'
-const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
+// Credentials and environment URLs come from environment variables — see config.ts
+// and .env.example. Copy .env.example to .env.local and fill in your own values.
 
 export const App = () => {
   // Service instance refs
