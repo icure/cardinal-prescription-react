@@ -507,3 +507,9 @@ export const DeleteIcn = () => (
     />
   </svg>
 )
+
+export const WarningIcn = ({ color = '#3D87C5' }: { color?: string }) => (
+  <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z" fill={color} />
+  </svg>
+)

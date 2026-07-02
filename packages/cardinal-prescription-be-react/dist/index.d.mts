@@ -166,9 +166,18 @@ interface MedicationSearchProps {
 }
 declare const MedicationSearch: React.FC<MedicationSearchProps>;
 
+interface StandardDosageContext {
+    ageInYears?: number;
+    weightInKg?: number;
+    renalFunctionMlPerMin?: number;
+}
+
 interface Props {
+    sdk: SamV2Api;
     medicationToPrescribe?: MedicationType;
     prescriptionToModify?: PrescribedMedicationType;
+    alternativeCheapMedications?: MedicationType[];
+    standardDosageContext?: StandardDosageContext;
     onClose: () => void;
     onSubmit: (meds: PrescribedMedicationType[]) => void;
     modalMood: 'create' | 'modify';

@@ -1,14 +1,12 @@
-import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { makeParser } from '@icure/medication-sdk'
-import { Duration, Medication, Medicinalproduct, Substanceproduct } from '@icure/be-fhc-lite-api'
-import { v4 as uuid } from 'uuid'
-import { MedicationType, PharmacistVisibilityType, PractitionerVisibilityType, PrescribedMedicationType } from '../../types'
-import { createFhcCode } from '../../services/fhc'
-import { getExecutableUntilDate, getTreatmentStartDate, offsetDate } from '../../../internal/utils/date-helpers'
-import { findCommonSequence } from '../../../internal/utils/dosage-helpers'
+import React, { KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { makeParser, marshal, RegimenItem as ParsedRegimenItem } from '@icure/medication-sdk'
+import { MagistralText } from '@icure/be-fhc-lite-api'
+import { SamText, SamV2Api } from '@icure/cardinal-be-sam-sdk'
+import { MedicationType, PrescribedMedicationType } from '../../types'
+import { getExecutableUntilDate, getTreatmentStartDate } from '../../../internal/utils/date-helpers'
+import { suffixPrefixOverlap } from '../../../internal/utils/dosage-helpers'
 import { cardinalLanguage, t } from '../../services/i18n'
-import { SamText } from '@icure/cardinal-be-sam-sdk'
-import { durationTimeUnitsEnum, getDurationFromDays, getDurationInDays, getDurationTimeUnits, getPeriodicityTimeUnits } from '../../../internal/utils/prescription-duration-helpers'
+import { getDurationFromDays, getDurationTimeUnits, getPeriodicityTimeUnits } from '../../../internal/utils/prescription-duration-helpers'
 import { getPharmacistVisibilityOptions, getPractitionerVisibilityOptions } from '../../../internal/utils/visibility-helpers'
 import { CloseIcn } from '../../../internal/components/common/Icons'
 import { TextInput } from '../../../internal/components/form-elements/TextInput'
@@ -22,10 +20,17 @@ import { StyledDosageInput, StyledPrescriptionModal, StyledSuggestionItem } from
 import { GlobalStyles } from '../../../styles'
 import { Controller, useForm } from 'react-hook-form'
 import { trim } from '../../../internal/utils/string-helpers'
+import { CheapAlternatives } from '../../../internal/components/medication-elements/CheapAlternatives'
+import { StandardDosages } from '../../../internal/components/medication-elements/StandardDosages'
+import { createPosologyFromStandardDosage, createPrescribedMedication, StandardDosageContext } from '../../../internal/services/prescription/create-prescription'
+import { PrescriptionFormType as ServicePrescriptionFormType } from '../../../internal/types'
 
 interface Props {
+  sdk: SamV2Api
   medicationToPrescribe?: MedicationType
   prescriptionToModify?: PrescribedMedicationType
+  alternativeCheapMedications?: MedicationType[]
+  standardDosageContext?: StandardDosageContext
 
   onClose: () => void
   onSubmit: (meds: PrescribedMedicationType[]) => void
@@ -51,13 +56,27 @@ type PrescriptionFormType = {
   pharmacistVisibility?: string
 }
 
-export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
+export const PrescriptionModal: React.FC<Props> = ({
+  sdk,
+  medicationToPrescribe,
+  prescriptionToModify,
+  alternativeCheapMedications,
+  standardDosageContext,
+  onClose,
+  onSubmit,
+  modalMood,
+}) => {
   // State for all form fields and logic
 
   const [posologySuggestions, setPosologySuggestions] = useState<string[]>([])
   const [focusedDosageIndex, setFocusedDosageIndex] = useState(-1)
   const [disableHover, setDisableHover] = useState(false)
   const [dosageFromSuggestion, setDosageFromSuggestion] = useState<string>('')
+
+  // The medication being prescribed and its cheaper alternatives are stateful so
+  // the user can swap the prescribed medication for a cheaper alternative.
+  const [medication, setMedication] = useState<MedicationType | undefined>(medicationToPrescribe)
+  const [alternatives, setAlternatives] = useState<MedicationType[]>(alternativeCheapMedications ?? [])
 
   const resultRefs = useRef<(HTMLLIElement | null)[]>([])
 
@@ -67,6 +86,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
         prescriptionToModify?.medication?.medicinalProduct?.intendedname ??
         prescriptionToModify?.medication?.substanceProduct?.intendedname ??
         prescriptionToModify?.medication?.compoundPrescription ??
+        (prescriptionToModify?.medication?.compoundPrescriptionV2 as MagistralText)?.text ??
         '',
     ),
     dosage: prescriptionToModify?.medication?.instructionForPatient ?? '',
@@ -123,100 +143,33 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
     }, 100)
   }, [dosage])
 
+  // SAM-suggested standard dosages for the prescribed medication's VMP group,
+  // filtered by the patient context supplied by the host app.
+  const standardDosages = useMemo<ParsedRegimenItem[]>(
+    () => (medication?.vmpGroup ? createPosologyFromStandardDosage(medication.vmpGroup, standardDosageContext ?? {}) : []),
+    [medication, standardDosageContext],
+  )
+
+  const onSelectStandardDosage = (item: ParsedRegimenItem) => {
+    setValue('dosage', marshal(item, language), { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+  }
+
+  const onSelectAlternativeMedication = (selected: MedicationType) => {
+    setAlternatives((prev) => {
+      const withoutSelected = prev.filter((m) => m !== selected)
+      return medication ? [medication, ...withoutSelected] : withoutSelected
+    })
+    setMedication(selected)
+    setValue('medicationTitle', trim(selected.title), { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+  }
+
   const handleModalClose = () => {
     onClose()
     reset()
   }
 
   const handleFormSubmit = (data: PrescriptionFormType) => {
-    const {
-      dosage,
-      duration,
-      durationTimeUnit,
-      treatmentStartDate,
-      executableUntil,
-      prescriptionsNumber,
-      periodicityTimeUnit,
-      periodicityDaysNumber,
-      substitutionAllowed,
-      recipeInstructionForPatient,
-      instructionsForReimbursement,
-      prescriberVisibility,
-      pharmacistVisibility,
-    } = data
-    const prescribedMedications = prescriptionToModify
-      ? [
-          {
-            ...prescriptionToModify,
-            medication: new Medication({
-              ...prescriptionToModify.medication,
-              beginMoment: offsetDate(
-                parseInt((treatmentStartDate as string)?.replace(/-/g, '')),
-                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) : 0,
-              ),
-              endMoment: offsetDate(
-                parseInt((executableUntil as string)?.replace(/-/g, '')),
-                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) : 0,
-              ),
-              duration: new Duration({
-                unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                value: getDurationInDays(durationTimeUnit as durationTimeUnitsEnum, duration as number),
-              }),
-              instructionForPatient: dosage,
-              recipeInstructionForPatient: recipeInstructionForPatient,
-              instructionsForReimbursement: instructionsForReimbursement,
-              substitutionAllowed: substitutionAllowed,
-            }),
-            prescriberVisibility: prescriberVisibility as PractitionerVisibilityType,
-            pharmacistVisibility: pharmacistVisibility as PharmacistVisibilityType,
-          },
-        ]
-      : Array.from({ length: prescriptionsNumber ?? 1 }, (_, i) => i).map(
-          (idx): PrescribedMedicationType => ({
-            uuid: uuid(),
-            medication: new Medication({
-              ...(medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired
-                ? {
-                    medicinalProduct: new Medicinalproduct({
-                      samId: medicationToPrescribe.dmppProductId,
-                      intendedcds: [createFhcCode('CD-DRUG-CNK', medicationToPrescribe.cnk)],
-                      intendedname: trim(medicationToPrescribe.intendedName),
-                    }),
-                  }
-                : medicationToPrescribe?.vmpGroupId
-                  ? {
-                      substanceProduct: new Substanceproduct({
-                        samId: medicationToPrescribe.vmpGroupId,
-                        intendedcds: [createFhcCode('CD_VMPGROUP', medicationToPrescribe.vmpGroupId)],
-                        intendedname: trim(medicationToPrescribe?.vmpTitle ?? medicationToPrescribe.title),
-                      }),
-                    }
-                  : {
-                      compoundPrescription: trim(medicationToPrescribe.title),
-                    }),
-              beginMoment: offsetDate(
-                parseInt((treatmentStartDate as string)?.replace(/-/g, '')),
-                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) * idx : 0,
-              ),
-              endMoment: offsetDate(
-                parseInt((executableUntil as string)?.replace(/-/g, '')),
-                periodicityTimeUnit ? parseInt(periodicityTimeUnit) * (periodicityDaysNumber ?? 1) * idx : 0,
-              ),
-
-              duration: new Duration({
-                unit: createFhcCode('CD-TIMEUNIT', 'D'),
-                value: getDurationInDays(durationTimeUnit as durationTimeUnitsEnum, duration as number),
-              }),
-
-              instructionForPatient: dosage,
-              recipeInstructionForPatient: recipeInstructionForPatient,
-              instructionsForReimbursement: instructionsForReimbursement,
-              substitutionAllowed: substitutionAllowed,
-            }),
-            prescriberVisibility: prescriberVisibility as PractitionerVisibilityType,
-            pharmacistVisibility: pharmacistVisibility as PharmacistVisibilityType,
-          }),
-        )
+    const prescribedMedications = createPrescribedMedication(data as unknown as ServicePrescriptionFormType, prescriptionToModify, medication)
 
     onSubmit(prescribedMedications)
     handleModalClose()
@@ -236,10 +189,15 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
       defaultActions()
       setFocusedDosageIndex((prev) => (prev - 1 + length) % length)
       scrollToFocusedItem((focusedDosageIndex - 1 + length) % length)
-    } else if (event.key === 'Enter' && focusedDosageIndex >= 0) {
+    } else if (event.key === 'Enter') {
+      // Enter never submits the form from within the dosage field; it only
+      // accepts the focused posology suggestion (if any).
       event.preventDefault()
-      setDisableHover(false)
-      validateSuggestion(posologySuggestions[focusedDosageIndex])
+      event.stopPropagation()
+      if (focusedDosageIndex >= 0) {
+        setDisableHover(false)
+        validateSuggestion(posologySuggestions[focusedDosageIndex])
+      }
     } else if (event.key === 'Escape') {
       if (posologySuggestions.length) {
         event.preventDefault()
@@ -247,8 +205,6 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
         setPosologySuggestions([])
         setFocusedDosageIndex(-1)
       }
-    } else if (event.key === 'Enter') {
-      handleSubmit(handleFormSubmit)
     }
   }
 
@@ -264,13 +220,18 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
 
   const validateSuggestion = (suggestion: string) => {
     if (suggestion) {
-      const common = findCommonSequence(dosage ?? '', suggestion)
-      setValue('dosage', (dosageRef.current + (common.length ? suggestion.slice(common.length) : ' ' + suggestion))?.replace(/ {2,}/g, ' ')?.replace(/\/ /g, '/'), {
+      const current = dosageRef.current ?? ''
+      const overlap = suffixPrefixOverlap(current, suggestion)
+      const merged = ((overlap > 0 ? current.replace(/\s+$/, '') : current.trimEnd() + (current ? ' ' : '')) + suggestion.slice(overlap))
+        .replace(/\s*\/\s*/g, ' / ')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+      setValue('dosage', merged, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
       })
-      setDosageFromSuggestion(dosageRef.current)
+      setDosageFromSuggestion(merged)
       setPosologySuggestions([])
       setFocusedDosageIndex(1)
     }
@@ -306,6 +267,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                   })}
                   errorMessage={prescriptionFormErrors['medicationTitle']?.message}
                 />
+                {alternatives.length > 0 && <CheapAlternatives sdk={sdk} medications={alternatives} onSelectMedication={onSelectAlternativeMedication} />}
                 <StyledDosageInput className="StyledDosageInput">
                   <TextInput
                     label={t('prescription.form.dosage')}
@@ -340,6 +302,7 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                     </ul>
                   )}
                 </StyledDosageInput>
+                {standardDosages.length > 0 && <StandardDosages dosages={standardDosages} language={language} onSelectDosage={onSelectStandardDosage} />}
                 <div className="addMedicationForm__body__content__inputsGroup">
                   <TextInput
                     label={t('prescription.form.duration')}
@@ -447,8 +410,8 @@ export const PrescriptionModal: React.FC<Props> = ({ medicationToPrescribe, pres
                         onChange={(val) => field.onChange(val)}
                         label={t('prescription.form.substitutionAllowed')}
                         options={[
-                          { label: 'Non', value: false, id: 'substitutionIsNotAllowed' },
-                          { label: 'Oui', value: true, id: 'substitutionIsAllowed' },
+                          { label: t('medication.no'), value: false, id: 'substitutionIsNotAllowed' },
+                          { label: t('medication.yes'), value: true, id: 'substitutionIsAllowed' },
                         ]}
                         required
                         errorMessage={prescriptionFormErrors['substitutionAllowed']?.message}

@@ -1,5 +1,7 @@
 export const medicationTranslations = {
   fr: {
+    yes: 'Oui',
+    no: 'Non',
     drugType: {
       medication: 'Médicament',
       molecule: 'Molécule',
@@ -14,6 +16,9 @@ export const medicationTranslations = {
       cheapDescription: 'Médicament classé dans la catégorie des médicaments bon marché',
       notCheapDescription: 'Médicament n\'appartenant pas à la catégorie des médicaments "bon marché"',
       cheapest: 'Le moins cher',
+      cheapAlternativesMessage: "Ce médicament n'est pas classé comme bon marché. Souhaitez-vous voir des alternatives moins chères ?",
+      otherCheapAlternativesMessage: "Voici d'autres alternatives bon marché pour ce médicament :",
+      standardDosagesMessage: 'Posologie suggérée',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Aucun stupéfiant, médicament soumis à réglementation particulière',
@@ -87,6 +92,8 @@ export const medicationTranslations = {
     },
   },
   en: {
+    yes: 'Yes',
+    no: 'No',
     drugType: {
       medication: 'Medication',
       molecule: 'Molecule',
@@ -101,6 +108,9 @@ export const medicationTranslations = {
       cheapDescription: 'Medicine is classified as a "cheap" medicine',
       notCheapDescription: 'Medicine that is not classified as a "cheap" medicine',
       cheapest: 'Cheapest',
+      cheapAlternativesMessage: 'This medication is not classified as cheap. Would you like to see cheaper alternatives?',
+      otherCheapAlternativesMessage: 'Here are other cheap alternatives for this medication:',
+      standardDosagesMessage: 'Suggested dosage',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'No narcotic, specially regulated drug',
@@ -174,6 +184,8 @@ export const medicationTranslations = {
     },
   },
   nl: {
+    yes: 'Ja',
+    no: 'Nee',
     drugType: {
       medication: 'Geneesmiddel',
       molecule: 'Molecule',
@@ -188,6 +200,9 @@ export const medicationTranslations = {
       cheapDescription: 'Geneesmiddel dat is ingedeeld in de categorie goedkope geneesmiddelen',
       notCheapDescription: 'Geneesmiddel dat niet behoort tot de "goedkope" geneesmiddelen',
       cheapest: 'Goedkoopste',
+      cheapAlternativesMessage: 'Dit geneesmiddel is niet geclassificeerd als goedkoop. Wilt u goedkopere alternatieven zien?',
+      otherCheapAlternativesMessage: 'Hier zijn andere goedkope alternatieven voor dit geneesmiddel:',
+      standardDosagesMessage: 'Voorgestelde dosering',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Geen verdovend middel, geneesmiddel onderworpen aan specifieke regelgeving',
@@ -261,6 +276,8 @@ export const medicationTranslations = {
     },
   },
   de: {
+    yes: 'Ja',
+    no: 'Nein',
     drugType: {
       medication: 'Arzneimittel',
       molecule: 'Molekül',
@@ -275,6 +292,9 @@ export const medicationTranslations = {
       cheapDescription: 'Das Medikament wird als „günstiges" Medikament eingestuft.',
       notCheapDescription: 'Medikament, das nicht als „günstiges" Medikament eingestuft ist.',
       cheapest: 'Am günstigsten',
+      cheapAlternativesMessage: 'Dieses Medikament ist nicht als günstig klassifiziert. Möchten Sie günstigere Alternativen sehen?',
+      otherCheapAlternativesMessage: 'Hier sind weitere günstige Alternativen für dieses Medikament:',
+      standardDosagesMessage: 'Empfohlene Dosierung',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Kein Betäubungsmittel, Arzneimittel mit besonderer Regelung',

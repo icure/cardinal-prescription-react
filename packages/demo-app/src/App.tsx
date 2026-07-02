@@ -267,16 +267,26 @@ export const App = () => {
         </>
       )}
 
-      {prescriptionModalMode === 'create' && (
+      {prescriptionModalMode === 'create' && cardinalBeSamInstance && (
         <PrescriptionModal
+          sdk={cardinalBeSamInstance}
           onClose={onClosePrescriptionModal}
           onSubmit={onSubmitCreatePrescription}
           modalMood={prescriptionModalMode}
           medicationToPrescribe={medicationToPrescribe}
+          alternativeCheapMedications={alternativeCheapMedications}
+          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
         />
       )}
-      {prescriptionModalMode === 'modify' && (
-        <PrescriptionModal onClose={onClosePrescriptionModal} onSubmit={onSubmitModifyPrescription} modalMood={prescriptionModalMode} prescriptionToModify={prescriptionToModify} />
+      {prescriptionModalMode === 'modify' && cardinalBeSamInstance && (
+        <PrescriptionModal
+          sdk={cardinalBeSamInstance}
+          onClose={onClosePrescriptionModal}
+          onSubmit={onSubmitModifyPrescription}
+          modalMood={prescriptionModalMode}
+          prescriptionToModify={prescriptionToModify}
+          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
+        />
       )}
       {isPrescriptionPrintModalOpen && (
         <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />
