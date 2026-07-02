@@ -19,10 +19,10 @@ const required = (name: string, value: string | undefined): string => {
 }
 
 export const practitionerCredentials = {
-  username: required('REACT_APP_ICURE_USERNAME', process.env.REACT_APP_ICURE_USERNAME),
-  password: required('REACT_APP_ICURE_PASSWORD', process.env.REACT_APP_ICURE_PASSWORD),
+  username: required('VITE_ICURE_USERNAME', import.meta.env.VITE_ICURE_USERNAME),
+  password: required('VITE_ICURE_PASSWORD', import.meta.env.VITE_ICURE_PASSWORD),
 }
 
-export const ICURE_URL = process.env.REACT_APP_ICURE_URL ?? 'https://nightly.icure.cloud'
-export const FHC_URL = process.env.REACT_APP_FHC_URL ?? 'https://fhcacc.icure.cloud'
-export const CARDINAL_PRESCRIPTION_LANGUAGE = (process.env.REACT_APP_CARDINAL_LANGUAGE ?? 'fr') as 'fr' | 'nl' | 'de' | 'en'
+export const ICURE_URL = import.meta.env.VITE_ICURE_URL ?? 'https://nightly.icure.cloud'
+export const FHC_URL = import.meta.env.VITE_FHC_URL ?? 'https://fhcacc.icure.cloud'
+export const CARDINAL_PRESCRIPTION_LANGUAGE = (import.meta.env.VITE_CARDINAL_LANGUAGE ?? 'fr') as 'fr' | 'nl' | 'de' | 'en'
