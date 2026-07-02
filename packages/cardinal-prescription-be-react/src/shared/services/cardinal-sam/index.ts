@@ -21,6 +21,21 @@ export const findMedicationsByLabel = async (sdk: SamV2Api, query: string): Prom
 }
 
 /**
+ * Load cheaper alternative medications for a given VMP group code.
+ */
+export const loadAlternativeMedications = async (sdk: SamV2Api, vmpGroupCode: string): Promise<PaginatedListIterator<Amp>> => {
+  return sdk.findPaginatedAmpsByGroupCode(vmpGroupCode)
+}
+
+/**
+ * Load the full VmpGroup (incl. standard dosages) for a given VMP group code.
+ */
+export const loadVmpGroup = async (sdk: SamV2Api, vmpGroupCode: string): Promise<VmpGroup | undefined> => {
+  const groups = await sdk.listVmpGroupsByVmpGroupCodes([vmpGroupCode])
+  return groups[0]
+}
+
+/**
  * Fetch the current version information for the SAM database.
  */
 export const fetchSamVersion = async (sdk: SamV2Api): Promise<SamVersion | undefined> => {

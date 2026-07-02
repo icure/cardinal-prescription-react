@@ -9,6 +9,11 @@ export const medicationTranslations = {
       blackTriangle: 'Pharmacovigilance renforcée (Triangle noir)',
       rma: 'Activités additionnelles de minimisation des risques ou additional RMA (Risk Minimisation Activities) (Source: AFMPS)',
       genericPrescriptionRequired: 'Ordonnance générique requise',
+      cheap: 'Bon marché :',
+      cheapTitle: 'Catégorie des médicaments "bon marché" :',
+      cheapDescription: 'Médicament classé dans la catégorie des médicaments bon marché',
+      notCheapDescription: 'Médicament n\'appartenant pas à la catégorie des médicaments "bon marché"',
+      cheapest: 'Le moins cher',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Aucun stupéfiant, médicament soumis à réglementation particulière',
@@ -78,6 +83,7 @@ export const medicationTranslations = {
     search: {
       label: 'Trouver un médicament',
       errorMessage: ' Entrez au moins 3 lettres du nom du médicament',
+      noMatchingPlaceholder: 'Aucun médicament ne correspond à vos critères de recherche.',
     },
   },
   en: {
@@ -90,6 +96,11 @@ export const medicationTranslations = {
       blackTriangle: 'Enhanced pharmacovigilance (Black triangle)',
       rma: 'Additional risk minimisation activities or additional RMA (Risk Minimisation Activities) (Source: FAMHP)',
       genericPrescriptionRequired: 'Generic prescription required',
+      cheap: 'Cheap:',
+      cheapTitle: '"Cheap medicine" category:',
+      cheapDescription: 'Medicine is classified as a "cheap" medicine',
+      notCheapDescription: 'Medicine that is not classified as a "cheap" medicine',
+      cheapest: 'Cheapest',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'No narcotic, specially regulated drug',
@@ -159,6 +170,7 @@ export const medicationTranslations = {
     search: {
       label: 'Find a medication',
       errorMessage: 'Enter at least 3 letters of the medication name',
+      noMatchingPlaceholder: 'No medications correspond to your search criteria.',
     },
   },
   nl: {
@@ -171,6 +183,11 @@ export const medicationTranslations = {
       blackTriangle: 'Verhoogde waakzaamheid (Zwarte driehoek)',
       rma: 'Aanvullende risicobeperkende maatregelen (RMA) (Bron: FAGG)',
       genericPrescriptionRequired: 'Generiek voorschrift vereist',
+      cheap: 'Goedkoop:',
+      cheapTitle: 'Categorie van "goedkope" geneesmiddelen:',
+      cheapDescription: 'Geneesmiddel dat is ingedeeld in de categorie goedkope geneesmiddelen',
+      notCheapDescription: 'Geneesmiddel dat niet behoort tot de "goedkope" geneesmiddelen',
+      cheapest: 'Goedkoopste',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Geen verdovend middel, geneesmiddel onderworpen aan specifieke regelgeving',
@@ -240,6 +257,7 @@ export const medicationTranslations = {
     search: {
       label: 'Zoek een geneesmiddel',
       errorMessage: 'Voer minstens 3 letters van de naam in',
+      noMatchingPlaceholder: 'Er komen geen medicijnen overeen met uw zoekcriteria.',
     },
   },
   de: {
@@ -252,6 +270,11 @@ export const medicationTranslations = {
       blackTriangle: 'Verstärkte Pharmakovigilanz (Schwarzes Dreieck)',
       rma: 'Zusätzliche Maßnahmen zur Risikominimierung (RMA) (Quelle: BfArM)',
       genericPrescriptionRequired: 'Generisches Rezept erforderlich',
+      cheap: 'Günstig :',
+      cheapTitle: 'Kategorie der „günstigen" Medikamente :',
+      cheapDescription: 'Das Medikament wird als „günstiges" Medikament eingestuft.',
+      notCheapDescription: 'Medikament, das nicht als „günstiges" Medikament eingestuft ist.',
+      cheapest: 'Am günstigsten',
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: 'Kein Betäubungsmittel, Arzneimittel mit besonderer Regelung',
@@ -321,6 +344,7 @@ export const medicationTranslations = {
     search: {
       label: 'Arzneimittel suchen',
       errorMessage: 'Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein',
+      noMatchingPlaceholder: 'Keine Medikamente entsprechen Ihren Suchkriterien.',
     },
   },
 }

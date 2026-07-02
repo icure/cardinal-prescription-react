@@ -11,19 +11,20 @@ interface MedicationCardProps {
   focused?: boolean
   disableHover?: boolean
   short?: boolean
+  subMedication?: boolean
 }
 
-export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, handleAddPrescription, id, focused, disableHover }) => {
+export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
-    <StyledMedicationCard className="StyledMedicationCard" $focused={focused} $isExpanded={isExpanded} $disableHover={disableHover} id={id}>
-      {/*TODO: the medication must be past to the handleAddPrescription function on upper level*/}
+    <StyledMedicationCard className="StyledMedicationCard" $focused={focused} $isExpanded={isExpanded} $disableHover={disableHover} $subMedication={subMedication} id={id}>
       <Header
         handleAddPrescription={() => handleAddPrescription(medication)}
         medication={medication}
         isMedicationCardExpanded={isExpanded}
         setMedicationCardExpanded={(status: boolean) => setIsExpanded(status)}
+        subMedication={subMedication}
       />
       {isExpanded && <Extension medication={medication} />}
     </StyledMedicationCard>

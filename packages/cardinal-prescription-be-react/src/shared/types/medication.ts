@@ -1,19 +1,26 @@
 import { Medication } from '@icure/be-fhc-lite-api'
-import { Commercialization, Reimbursement, StandardDosage, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
+import { Commercialization, Reimbursement, StandardDosage, SupplyProblem, VmpGroup, VmpStub } from '@icure/cardinal-be-sam-sdk'
 
-import { PharmacistVisibilityType, PractitionerVisibilityType } from './visibility'
+import { PractitionerVisibilityType, PharmacistVisibilityType } from './visibility'
 
-export type MedicationType = {
+export type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1'
+
+export type Med = MedicationType | MedicationProductType
+
+export interface MedicationType {
   ampId?: string
   vmpGroupId?: string
   nmpId?: string
   cnk?: string
   dmppProductId?: string
   id?: string
+  index?: number
   title: string
   vmpTitle?: string
   activeIngredient?: string
   price?: string
+  cheap?: boolean
+  cheapest?: boolean
   crmLink?: string
   patientInformationLeafletLink?: string
   blackTriangle?: boolean
@@ -25,17 +32,23 @@ export type MedicationType = {
   dhpcLink?: string
   rmakeyMessages?: string
   vmp?: VmpStub
+  vmpGroup?: VmpGroup
   supplyProblems?: SupplyProblem[]
   commercializations?: Commercialization[]
   deliveryModusCode?: string
   deliveryModus?: string
-  deliveryModusSpecificationCode?: string
+  deliveryModusSpecificationCode?: DeliveryModusSpecificationCodeType
   deliveryModusSpecification?: string
   reimbursements?: Reimbursement
-  standardDosage?: StandardDosage[]
 }
 
-export type PrescribedMedicationType = {
+export interface MedicationProductType {
+  ampId: string
+  title: string
+  medications: MedicationType[]
+}
+
+export interface PrescribedMedicationType {
   uuid: string
   medication: Medication
   rid?: string

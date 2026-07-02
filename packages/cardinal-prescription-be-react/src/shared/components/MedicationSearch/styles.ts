@@ -6,6 +6,28 @@ export const StyledMedicationSearch = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  .spinner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0;
+  }
+
+  .placeholder {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 12px;
+
+    p {
+      color: ${colors.grey[600]};
+      font-size: 14px;
+      text-align: center;
+    }
+  }
 `
 
 export const StyledMedicationSearchInput = styled.div<{ $dropdownDisplayed?: boolean; $error?: boolean }>`
@@ -85,5 +107,20 @@ export const StyledMedicationSearchDropdown = styled.div`
 
   .medicationCardWrap {
     width: 100%;
+  }
+
+  .medOrProdWrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .cardWrap {
+    width: 100%;
+
+    &.subMedication {
+      padding-left: 12px;
+    }
   }
 `

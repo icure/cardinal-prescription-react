@@ -7,7 +7,7 @@ export const activeMedicationCard = css`
   box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
 `
 
-export const StyledMedicationCard = styled.div<{ $focused: boolean; $isExpanded: boolean; $disableHover: boolean }>`
+export const StyledMedicationCard = styled.div<{ $focused?: boolean; $isExpanded: boolean; $disableHover?: boolean; $subMedication?: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -15,6 +15,18 @@ export const StyledMedicationCard = styled.div<{ $focused: boolean; $isExpanded:
   background: #fff;
   border: 1px solid ${colors.blue[100]};
   cursor: pointer;
+
+  ${({ $subMedication }) =>
+    $subMedication &&
+    css`
+      ${StyledHeader} {
+        padding-left: 28px;
+
+        h3 {
+          font-size: 14px;
+        }
+      }
+    `};
 
   &:hover {
     ${activeMedicationCard};

@@ -1,12 +1,12 @@
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { findMedicationsByLabel } from '../../services/cardinal-sam'
+import { findMedicationsByLabel, loadAlternativeMedications, loadVmpGroup } from '../../services/cardinal-sam'
 import { MedicationCard } from '../../../internal/components/medication-elements/MedicationCard'
+import { MedicationProductTitle } from '../../../internal/components/medication-elements/MedicationProductTitle'
 import { InfiniteScroll } from '../../../internal/components/common/InfiniteScroll'
+import { loadMedicationsPage, loadMore } from '../../../internal/services/loaders/medication-loader'
 
-import { MedicationType } from '../../types'
-import { SearchIcn } from '../../../internal/components/common/Icons'
-import { mergeSortedPartialArraysN } from '../../../internal/utils/loader-helpers'
-import { ampToMedicationTypes, nmpToMedicationTypes, vmpGroupToMedicationTypes } from '../../../internal/services/medication-mapper'
+import { Med, MedicationProductType, MedicationType } from '../../types'
+import { SearchIcn, SpinnerIcn } from '../../../internal/components/common/Icons'
 import { StyledLabel, StyledMedicationSearch, StyledMedicationSearchDropdown, StyledMedicationSearchInput } from './styles'
 import { t } from '../../services/i18n'
 import { GlobalStyles } from '../../../styles'
@@ -15,175 +15,125 @@ import { Amp, Nmp, PaginatedListIterator, SamV2Api, VmpGroup } from '@icure/card
 interface MedicationSearchProps {
   sdk: SamV2Api
   deliveryEnvironment: string
-  onAddPrescription: (medication: MedicationType) => void
+  onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void
   disableInputEventsTracking: boolean
   short?: boolean
 }
 
+interface MedOrProduct {
+  product?: MedicationProductType
+  medications: MedicationType[]
+}
+
+const medMapper = (item: Med): MedOrProduct => ({
+  medications: (item as MedicationProductType).medications ?? [item as MedicationType],
+  product: (item as MedicationProductType).medications ? (item as MedicationProductType) : undefined,
+})
+
 export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
-
-  const searchQueryRef = useRef(searchQuery) // Create a ref to store the state
+  const searchQueryRef = useRef(searchQuery)
   useEffect(() => {
     searchQueryRef.current = searchQuery
   }, [searchQuery])
 
   const [dropdownDisplayed, setDropdownDisplayed] = useState(false)
-  const [pages, setPages] = useState<MedicationType[]>([])
-  const [medications, setMedications] = useState<PaginatedListIterator<Amp>>()
-  const [molecules, setMolecules] = useState<PaginatedListIterator<VmpGroup>>()
-  const [products, setProducts] = useState<PaginatedListIterator<Nmp>>()
-  const [medicationsPage, setMedicationsPage] = useState<MedicationType[]>([])
-  const [moleculesPage, setMoleculesPage] = useState<MedicationType[]>([])
-  const [productsPage, setProductsPage] = useState<MedicationType[]>([])
-  const [focusedMedicationIndex, setFocusedMedicationIndex] = useState(-1)
-  const [disableHover, setDisableHover] = useState(false)
-  const resultRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [pages, setPages] = useState<MedOrProduct[]>([])
+  const [showSpinner, setShowSpinner] = useState(false)
+  const [showNoMatchesPlaceholder, setShowNoMatchesPlaceholder] = useState(false)
+  const [focusedMedicationIndex, setFocusedMedicationIndex] = useState(0)
+  const [focusedSubMedicationIndex, setFocusedSubMedicationIndex] = useState(0)
 
-  useEffect(() => {
-    setFocusedMedicationIndex(0)
-  }, [])
+  // Working data used by the loader. Kept in refs so async load-more callbacks
+  // always read/write the latest values without being caught in stale closures.
+  const medicationsIterRef = useRef<PaginatedListIterator<Amp> | undefined>(undefined)
+  const moleculesIterRef = useRef<PaginatedListIterator<VmpGroup> | undefined>(undefined)
+  const productsIterRef = useRef<PaginatedListIterator<Nmp> | undefined>(undefined)
+  const medicationsPageRef = useRef<MedicationProductType[]>([])
+  const moleculesPageRef = useRef<MedicationType[]>([])
+  const productsPageRef = useRef<MedicationType[]>([])
+
+  const resultRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     setDropdownDisplayed(!!searchQuery)
   }, [searchQuery])
 
-  useEffect(() => {
-    if (searchQuery && searchQuery.length >= 3) {
-      const cachedQuery = searchQueryRef.current
-      setPages([])
-      setTimeout(() => {
-        if (cachedQuery === searchQueryRef.current) {
-          findMedicationsByLabel(sdk, cachedQuery).then(async ([meds, mols, prods]: any) => {
-            setMedications(meds)
-            setMolecules(mols)
-            setProducts(prods)
-            if (cachedQuery !== searchQueryRef.current) {
-              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`)
-              return
-            }
-            const [medsPage, molsPage, prodsPage] = await Promise.all([
-              meds ? loadMedicationsPage(meds, 10) : [],
-              mols ? loadMoleculesPage(mols, 10) : [],
-              prods ? loadNonMedicinalPage(prods, 10) : [],
-            ])
-            if (cachedQuery !== searchQueryRef.current) {
-              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`)
-              return
-            }
-            setMedicationsPage(medsPage)
-            setMoleculesPage(molsPage)
-            setProductsPage(prodsPage)
-            loadMore({ medicationsPage: medsPage, moleculesPage: molsPage, productsPage: prodsPage }).then((result) => {
-              if (cachedQuery === searchQueryRef.current) {
-                console.log(`Search query ${cachedQuery} results loaded, setting pages...`)
-                setPages(result)
-              } else {
-                console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`)
-              }
-            })
-          })
-        } else {
-          console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`)
-        }
-      }, 100)
-    }
-    // eslint-disable-next-line
-  }, [searchQuery, searchQueryRef, sdk])
-
-  // Implementations based on Svelte logic:
-  async function loadMedicationsPage(medications: PaginatedListIterator<Amp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
-    const page: MedicationType[] = (!(await medications.hasNext()) ? [] : await medications.next(min)).flatMap((amp: Amp) => ampToMedicationTypes(amp, deliveryEnvironment))
-    return (!(await medications.hasNext()) ? [] : await medications.next(min)).length < min || page.length + acc.length >= min
-      ? [...acc, ...page]
-      : await loadMedicationsPage(medications, min, [...acc, ...page])
+  const resetSearch = () => {
+    medicationsIterRef.current = undefined
+    moleculesIterRef.current = undefined
+    productsIterRef.current = undefined
+    medicationsPageRef.current = []
+    moleculesPageRef.current = []
+    productsPageRef.current = []
+    setPages([])
+    setFocusedMedicationIndex(0)
+    setFocusedSubMedicationIndex(0)
   }
 
-  async function loadMoleculesPage(molecules: PaginatedListIterator<VmpGroup>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
-    const page = (!(await molecules.hasNext()) ? [] : await molecules.next(min)).flatMap((vmp: VmpGroup) => vmpGroupToMedicationTypes(vmp))
-    return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page])
-  }
-
-  async function loadNonMedicinalPage(products: PaginatedListIterator<Nmp>, min: number, acc: MedicationType[] = []): Promise<MedicationType[]> {
-    const page = (!(await products.hasNext()) ? [] : await products.next(min)).flatMap((nmp: Nmp) => nmpToMedicationTypes(nmp))
-    return (!(await products.hasNext()) ? [] : await products.next(min)).length < min || page.length + acc.length >= min
-      ? [...acc, ...page]
-      : await loadNonMedicinalPage(products, min, [...acc, ...page])
-  }
-
-  const loadUntil = async (toName: string | undefined, loadPage: () => Promise<MedicationType[]>) => {
-    let page = await loadPage()
-    const lcToName = toName?.toLowerCase()
-    while (page.length && (!lcToName || page[page.length - 1].title.toLowerCase() < lcToName)) {
-      const newPage = await loadPage()
-      if (!newPage.length) {
-        break
-      }
-      page = [...page, ...newPage]
-    }
-    return page
-  }
-
-  const loadMore = async ({
-    medicationsPage,
-    moleculesPage,
-    productsPage,
-  }: {
-    medicationsPage: MedicationType[]
-    moleculesPage: MedicationType[]
-    productsPage: MedicationType[]
-  }) => {
-    const [result, pointers] = await mergeSortedPartialArraysN(
-      10,
-      [[...medicationsPage], [...moleculesPage], [...productsPage]],
-      [
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => (medications ? loadMedicationsPage(medications, 10) : Promise.resolve([])))
-          setMedicationsPage((medicationsPage) => [...medicationsPage, ...loaded])
-          return loaded
-        },
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => (molecules ? loadMoleculesPage(molecules, 10) : Promise.resolve([])))
-          setMoleculesPage((moleculesPage) => [...moleculesPage, ...loaded])
-          return loaded
-        },
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => (products ? loadNonMedicinalPage(products, 10) : Promise.resolve([])))
-          setProductsPage((productsPage) => [...productsPage, ...loaded])
-          return loaded
-        },
-      ],
-    )
-
-    setMedicationsPage(medicationsPage.slice(pointers[0]))
-    setMoleculesPage(moleculesPage.slice(pointers[1]))
-    setProductsPage(productsPage.slice(pointers[2]))
-
+  const runLoadMore = async (): Promise<Med[]> => {
+    const { result, updated } = await loadMore({
+      untreatedLoadedMedicationProducts: [...medicationsPageRef.current],
+      untreatedLoadedMolecules: [...moleculesPageRef.current],
+      untreatedLoadNonMedicinals: [...productsPageRef.current],
+      medicationProductsIterator: medicationsIterRef.current,
+      moleculesIterator: moleculesIterRef.current,
+      nonMedicinalesIterator: productsIterRef.current,
+      deliveryEnvironment,
+    })
+    medicationsPageRef.current = updated.medicationsPage
+    moleculesPageRef.current = updated.moleculesPage
+    productsPageRef.current = updated.productsPage
     return result
   }
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (disableInputEventsTracking) return
-    const totalPagesLength = pages.length
-    const defaultActions = () => {
-      event.preventDefault()
-      setDisableHover(true)
-    }
-    if (event.key === 'ArrowDown') {
-      defaultActions()
-      setFocusedMedicationIndex((prev) => (prev + 1) % totalPagesLength)
-      scrollToFocusedItem((focusedMedicationIndex + 1) % totalPagesLength)
-    } else if (event.key === 'ArrowUp') {
-      defaultActions()
-      setFocusedMedicationIndex((prev) => (prev - 1 + totalPagesLength) % totalPagesLength)
-      scrollToFocusedItem((focusedMedicationIndex - 1 + totalPagesLength) % totalPagesLength)
-    } else if (event.key === 'Enter' && focusedMedicationIndex >= 0) {
-      event.preventDefault()
-      setDisableHover(false)
-      onAddPrescription(pages[focusedMedicationIndex])
-      setSearchQuery('')
-    }
+  const doSearch = async (q: string) => {
+    const [meds, mols, prods] = await findMedicationsByLabel(sdk, q)
+    if (q !== searchQueryRef.current) return
+
+    medicationsIterRef.current = meds
+    moleculesIterRef.current = mols
+    productsIterRef.current = prods
+    medicationsPageRef.current = []
+    moleculesPageRef.current = []
+    productsPageRef.current = []
+
+    setShowSpinner(true)
+
+    const result = await runLoadMore()
+    if (q !== searchQueryRef.current) return
+
+    setShowSpinner(false)
+    setPages(result.map(medMapper))
+    setShowNoMatchesPlaceholder(!result.length)
+    setFocusedMedicationIndex(0)
+    setFocusedSubMedicationIndex(0)
   }
+
+  useEffect(() => {
+    const q = searchQuery.trim()
+    setShowNoMatchesPlaceholder(false)
+
+    if (q.length === 0) {
+      resetSearch()
+      setShowSpinner(false)
+      return
+    }
+
+    if (q.length < 3) {
+      setShowSpinner(false)
+      return
+    }
+
+    const handle = setTimeout(() => {
+      if (q === searchQueryRef.current) {
+        doSearch(q).catch((error) => console.error('Error while searching medications:', error))
+      }
+    }, 100)
+
+    return () => clearTimeout(handle)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, sdk])
 
   const scrollToFocusedItem = (index: number) => {
     if (index >= 0 && resultRefs.current[index]) {
@@ -191,8 +141,55 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
     }
   }
 
-  const handleMouseMove = () => {
-    if (!disableInputEventsTracking) setDisableHover(false)
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (disableInputEventsTracking) return
+    const pageCount = pages.length
+    if (pageCount === 0) return
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      let mi = focusedMedicationIndex
+      let si = focusedSubMedicationIndex + 1
+      if (si >= (pages[mi]?.medications.length ?? 0)) {
+        si = 0
+        mi = (mi + 1) % pageCount
+      }
+      setFocusedMedicationIndex(mi)
+      setFocusedSubMedicationIndex(si)
+      scrollToFocusedItem(mi)
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      let mi = focusedMedicationIndex
+      let si = focusedSubMedicationIndex - 1
+      if (si < 0) {
+        mi = (mi - 1 + pageCount) % pageCount
+        si = (pages[mi]?.medications.length ?? 1) - 1
+      }
+      setFocusedMedicationIndex(mi)
+      setFocusedSubMedicationIndex(si)
+      scrollToFocusedItem(mi)
+    } else if (event.key === 'Enter' && focusedMedicationIndex >= 0 && focusedSubMedicationIndex >= 0) {
+      event.preventDefault()
+      const med = pages[focusedMedicationIndex]?.medications[focusedSubMedicationIndex]
+      if (med) handleAddPrescription(med)
+    }
+  }
+
+  const handleAddPrescription = async (med: MedicationType) => {
+    const enriched: MedicationType = {
+      ...med,
+      vmpGroup: med.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, med.vmp.vmpGroup.code) : undefined,
+    }
+
+    const alternatives: MedicationType[] =
+      med.cheap || !med.vmp?.vmpGroup?.code
+        ? []
+        : await loadAlternativeMedications(sdk, med.vmp.vmpGroup.code)
+            .then((ampPage) => loadMedicationsPage(ampPage, 10, deliveryEnvironment, [], (mt) => (mt.cheap || mt.cheapest ? mt : undefined)))
+            .then((products) => products.flatMap((p) => p.medications))
+
+    onAddPrescription(enriched, alternatives)
+    setSearchQuery('')
   }
 
   const showSearchError = () => {
@@ -200,19 +197,12 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
     return !!value && value.length < 3
   }
 
-  const handleAddPrescription = (medication: MedicationType) => {
-    onAddPrescription(medication)
-    setSearchQuery('')
-  }
+  const isFocused = (medicationIndex: number, subMedicationIndex: number) => focusedMedicationIndex === medicationIndex && focusedSubMedicationIndex === subMedicationIndex
 
   return (
     <>
       <GlobalStyles />
-      <StyledMedicationSearch
-        className="StyledMedicationSearch"
-        onKeyDown={handleKeyDown}
-        aria-activedescendant={focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : undefined}
-      >
+      <StyledMedicationSearch className="StyledMedicationSearch" onKeyDown={handleKeyDown}>
         <StyledMedicationSearchInput className="StyledMedicationSearchInput" $dropdownDisplayed={dropdownDisplayed} $error={showSearchError()}>
           <p>{t('medication.search.label')}:</p>
           <StyledLabel className="StyledLabel" $error={showSearchError()} htmlFor="searchMedications">
@@ -230,31 +220,61 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
           {showSearchError() && <p className="error">{t('medication.search.errorMessage')}</p>}
         </StyledMedicationSearchInput>
 
+        {showSpinner && (
+          <div className="spinner">
+            <SpinnerIcn size={32} pathFill="#3d87c5" />
+          </div>
+        )}
+
         {pages.length !== 0 && dropdownDisplayed && (
-          <StyledMedicationSearchDropdown className="medicationSearchDropdown" onMouseMove={handleMouseMove}>
-            {pages.map((medication, index) => (
-              <div key={index} ref={(el) => (resultRefs.current[index] = el)} className="medicationCardWrap">
-                <MedicationCard
-                  medication={medication}
-                  handleAddPrescription={handleAddPrescription}
-                  id={`result-${index}`}
-                  focused={focusedMedicationIndex === index}
-                  disableHover={disableHover}
-                  short={short}
-                />
+          <StyledMedicationSearchDropdown className="medicationSearchDropdown">
+            {pages.map((entry, i) => (
+              <div key={i} ref={(el) => (resultRefs.current[i] = el)} className="medOrProdWrap">
+                {entry.product ? (
+                  <>
+                    <MedicationProductTitle productTitle={entry.product.title} />
+                    {entry.medications.map((smed, j) => (
+                      <div key={j} className={`cardWrap subMedication${isFocused(i, j) ? ' focused' : ''}`}>
+                        <MedicationCard
+                          medication={smed}
+                          handleAddPrescription={handleAddPrescription}
+                          id={`result-${i}-${j}`}
+                          focused={isFocused(i, j)}
+                          subMedication={true}
+                          short={short}
+                        />
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <div className={`cardWrap${isFocused(i, 0) ? ' focused' : ''}`}>
+                    <MedicationCard
+                      medication={entry.medications[0]}
+                      handleAddPrescription={handleAddPrescription}
+                      id={`result-${i}`}
+                      focused={isFocused(i, 0)}
+                      subMedication={false}
+                      short={short}
+                    />
+                  </div>
+                )}
               </div>
             ))}
             <InfiniteScroll
               threshold={50}
               loadMore={() =>
-                loadMore({
-                  medicationsPage,
-                  moleculesPage,
-                  productsPage,
-                }).then((results) => setPages([...pages, ...results]))
+                runLoadMore().then((result) => {
+                  if (result.length) setPages((prev) => [...prev, ...result.map(medMapper)])
+                })
               }
             />
           </StyledMedicationSearchDropdown>
+        )}
+
+        {showNoMatchesPlaceholder && (
+          <div className="placeholder">
+            <p>{t('medication.search.noMatchingPlaceholder')}</p>
+          </div>
         )}
       </StyledMedicationSearch>
     </>

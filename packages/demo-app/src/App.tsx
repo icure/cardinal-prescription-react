@@ -65,6 +65,7 @@ export const App = () => {
   const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<SamV2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
+  const [alternativeCheapMedications, setAlternativeCheapMedications] = useState<MedicationType[]>([])
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
   const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
   const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
@@ -153,10 +154,12 @@ export const App = () => {
     setErrorWhileVerifyingCertificate(undefined)
   }
 
-  const onCreatePrescription = (medication: MedicationType) => {
+  const onCreatePrescription = (medication: MedicationType, cheapAlternatives: MedicationType[]) => {
     setPrescriptionModalOpen(true)
     setPrescriptionModalMode('create')
     setMedicationToPrescribe(medication)
+    // Held in state for a later phase where the PrescriptionModal will surface cheaper alternatives.
+    setAlternativeCheapMedications(cheapAlternatives)
   }
   const onClosePrescriptionModal = () => {
     setPrescriptionModalMode(null)

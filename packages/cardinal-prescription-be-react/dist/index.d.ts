@@ -1,4 +1,4 @@
-import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement, StandardDosage } from '@icure/cardinal-be-sam-sdk';
+import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/cardinal-be-sam-sdk';
 export { PaginatedListIterator } from '@icure/cardinal-be-sam-sdk';
 import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
@@ -21,6 +21,14 @@ declare const getSamTextTranslation: (samText?: SamText) => string | undefined;
  */
 declare const findMedicationsByLabel: (sdk: SamV2Api, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
 /**
+ * Load cheaper alternative medications for a given VMP group code.
+ */
+declare const loadAlternativeMedications: (sdk: SamV2Api, vmpGroupCode: string) => Promise<PaginatedListIterator<Amp>>;
+/**
+ * Load the full VmpGroup (incl. standard dosages) for a given VMP group code.
+ */
+declare const loadVmpGroup: (sdk: SamV2Api, vmpGroupCode: string) => Promise<VmpGroup | undefined>;
+/**
  * Fetch the current version information for the SAM database.
  */
 declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
@@ -28,17 +36,22 @@ declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined
 type PractitionerVisibilityType = 'open' | 'locked' | 'gmd_prescriber';
 type PharmacistVisibilityType = null | 'locked';
 
-type MedicationType = {
+type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1';
+type Med = MedicationType | MedicationProductType;
+interface MedicationType {
     ampId?: string;
     vmpGroupId?: string;
     nmpId?: string;
     cnk?: string;
     dmppProductId?: string;
     id?: string;
+    index?: number;
     title: string;
     vmpTitle?: string;
     activeIngredient?: string;
     price?: string;
+    cheap?: boolean;
+    cheapest?: boolean;
     crmLink?: string;
     patientInformationLeafletLink?: string;
     blackTriangle?: boolean;
@@ -50,16 +63,21 @@ type MedicationType = {
     dhpcLink?: string;
     rmakeyMessages?: string;
     vmp?: VmpStub;
+    vmpGroup?: VmpGroup;
     supplyProblems?: SupplyProblem[];
     commercializations?: Commercialization[];
     deliveryModusCode?: string;
     deliveryModus?: string;
-    deliveryModusSpecificationCode?: string;
+    deliveryModusSpecificationCode?: DeliveryModusSpecificationCodeType;
     deliveryModusSpecification?: string;
     reimbursements?: Reimbursement;
-    standardDosage?: StandardDosage[];
-};
-type PrescribedMedicationType = {
+}
+interface MedicationProductType {
+    ampId: string;
+    title: string;
+    medications: MedicationType[];
+}
+interface PrescribedMedicationType {
     uuid: string;
     medication: Medication;
     rid?: string;
@@ -68,7 +86,7 @@ type PrescribedMedicationType = {
     dmppProductId?: string;
     prescriberVisibility?: PractitionerVisibilityType;
     pharmacistVisibility?: PharmacistVisibilityType;
-};
+}
 
 interface CertificateValidationResultType {
     keystoreUuid?: string;
@@ -142,7 +160,7 @@ declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 interface MedicationSearchProps {
     sdk: SamV2Api;
     deliveryEnvironment: string;
-    onAddPrescription: (medication: MedicationType) => void;
+    onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void;
     disableInputEventsTracking: boolean;
     short?: boolean;
 }
@@ -175,4 +193,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

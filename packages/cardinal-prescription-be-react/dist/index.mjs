@@ -233,7 +233,12 @@ var medicationTranslations = {
     drugInfographic: {
       blackTriangle: "Pharmacovigilance renforc\xE9e (Triangle noir)",
       rma: "Activit\xE9s additionnelles de minimisation des risques ou additional RMA (Risk Minimisation Activities) (Source: AFMPS)",
-      genericPrescriptionRequired: "Ordonnance g\xE9n\xE9rique requise"
+      genericPrescriptionRequired: "Ordonnance g\xE9n\xE9rique requise",
+      cheap: "Bon march\xE9 :",
+      cheapTitle: 'Cat\xE9gorie des m\xE9dicaments "bon march\xE9" :',
+      cheapDescription: "M\xE9dicament class\xE9 dans la cat\xE9gorie des m\xE9dicaments bon march\xE9",
+      notCheapDescription: `M\xE9dicament n'appartenant pas \xE0 la cat\xE9gorie des m\xE9dicaments "bon march\xE9"`,
+      cheapest: "Le moins cher"
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: "Aucun stup\xE9fiant, m\xE9dicament soumis \xE0 r\xE9glementation particuli\xE8re",
@@ -302,7 +307,8 @@ var medicationTranslations = {
     },
     search: {
       label: "Trouver un m\xE9dicament",
-      errorMessage: " Entrez au moins 3 lettres du nom du m\xE9dicament"
+      errorMessage: " Entrez au moins 3 lettres du nom du m\xE9dicament",
+      noMatchingPlaceholder: "Aucun m\xE9dicament ne correspond \xE0 vos crit\xE8res de recherche."
     }
   },
   en: {
@@ -314,7 +320,12 @@ var medicationTranslations = {
     drugInfographic: {
       blackTriangle: "Enhanced pharmacovigilance (Black triangle)",
       rma: "Additional risk minimisation activities or additional RMA (Risk Minimisation Activities) (Source: FAMHP)",
-      genericPrescriptionRequired: "Generic prescription required"
+      genericPrescriptionRequired: "Generic prescription required",
+      cheap: "Cheap:",
+      cheapTitle: '"Cheap medicine" category:',
+      cheapDescription: 'Medicine is classified as a "cheap" medicine',
+      notCheapDescription: 'Medicine that is not classified as a "cheap" medicine',
+      cheapest: "Cheapest"
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: "No narcotic, specially regulated drug",
@@ -383,7 +394,8 @@ var medicationTranslations = {
     },
     search: {
       label: "Find a medication",
-      errorMessage: "Enter at least 3 letters of the medication name"
+      errorMessage: "Enter at least 3 letters of the medication name",
+      noMatchingPlaceholder: "No medications correspond to your search criteria."
     }
   },
   nl: {
@@ -395,7 +407,12 @@ var medicationTranslations = {
     drugInfographic: {
       blackTriangle: "Verhoogde waakzaamheid (Zwarte driehoek)",
       rma: "Aanvullende risicobeperkende maatregelen (RMA) (Bron: FAGG)",
-      genericPrescriptionRequired: "Generiek voorschrift vereist"
+      genericPrescriptionRequired: "Generiek voorschrift vereist",
+      cheap: "Goedkoop:",
+      cheapTitle: 'Categorie van "goedkope" geneesmiddelen:',
+      cheapDescription: "Geneesmiddel dat is ingedeeld in de categorie goedkope geneesmiddelen",
+      notCheapDescription: 'Geneesmiddel dat niet behoort tot de "goedkope" geneesmiddelen',
+      cheapest: "Goedkoopste"
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: "Geen verdovend middel, geneesmiddel onderworpen aan specifieke regelgeving",
@@ -464,7 +481,8 @@ var medicationTranslations = {
     },
     search: {
       label: "Zoek een geneesmiddel",
-      errorMessage: "Voer minstens 3 letters van de naam in"
+      errorMessage: "Voer minstens 3 letters van de naam in",
+      noMatchingPlaceholder: "Er komen geen medicijnen overeen met uw zoekcriteria."
     }
   },
   de: {
@@ -476,7 +494,12 @@ var medicationTranslations = {
     drugInfographic: {
       blackTriangle: "Verst\xE4rkte Pharmakovigilanz (Schwarzes Dreieck)",
       rma: "Zus\xE4tzliche Ma\xDFnahmen zur Risikominimierung (RMA) (Quelle: BfArM)",
-      genericPrescriptionRequired: "Generisches Rezept erforderlich"
+      genericPrescriptionRequired: "Generisches Rezept erforderlich",
+      cheap: "G\xFCnstig :",
+      cheapTitle: 'Kategorie der \u201Eg\xFCnstigen" Medikamente :',
+      cheapDescription: 'Das Medikament wird als \u201Eg\xFCnstiges" Medikament eingestuft.',
+      notCheapDescription: 'Medikament, das nicht als \u201Eg\xFCnstiges" Medikament eingestuft ist.',
+      cheapest: "Am g\xFCnstigsten"
     },
     drugSpecialRegulation: {
       noNarcoticRegulation: "Kein Bet\xE4ubungsmittel, Arzneimittel mit besonderer Regelung",
@@ -545,7 +568,8 @@ var medicationTranslations = {
     },
     search: {
       label: "Arzneimittel suchen",
-      errorMessage: "Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein"
+      errorMessage: "Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein",
+      noMatchingPlaceholder: "Keine Medikamente entsprechen Ihren Suchkriterien."
     }
   }
 };
@@ -1011,6 +1035,13 @@ var findMedicationsByLabel = async (sdk, query) => {
     console.error("Error in findMedicationsByLabel:", error);
     throw error;
   }
+};
+var loadAlternativeMedications = async (sdk, vmpGroupCode) => {
+  return sdk.findPaginatedAmpsByGroupCode(vmpGroupCode);
+};
+var loadVmpGroup = async (sdk, vmpGroupCode) => {
+  const groups = await sdk.listVmpGroupsByVmpGroupCodes([vmpGroupCode]);
+  return groups[0];
 };
 var fetchSamVersion = async (sdk) => {
   try {
@@ -2584,6 +2615,9 @@ var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", bound
   );
 };
 
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+import { useRef as useRef2 } from "react";
+
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
 import styled7 from "styled-components";
 var StyledRmaLink = styled7.div`
@@ -2953,9 +2987,6 @@ var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryM
   ] });
 };
 
-// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
-import { useRef as useRef2 } from "react";
-
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
 import styled14, { css as css7 } from "styled-components";
 var StyledHeader = styled14.div`
@@ -3008,57 +3039,6 @@ var StyledHeader = styled14.div`
           }
         }
 
-        &__infographics {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          .medicationInfographics,
-          .medicationAvailabilityInfographics,
-          .deliveryPrescriptionConditions {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-          }
-
-          .medicationInfographics {
-            &__item {
-              display: flex;
-              width: 22px;
-              height: 22px;
-              justify-content: center;
-              align-items: center;
-
-              border-radius: 5px;
-              border: 1px solid ${colors.blue[400]};
-            }
-          }
-
-          .medicationAvailabilityInfographics {
-            &__item {
-              display: flex;
-              width: 22px;
-              height: 22px;
-              justify-content: center;
-              align-items: center;
-
-              border-radius: 5px;
-
-              &--red {
-                background-color: ${colors.red[400]};
-              }
-
-              &--orange {
-                background-color: ${colors.orange[800]};
-              }
-
-              &--green {
-                background-color: ${colors.green[400]};
-              }
-            }
-          }
-        }
-
         &__activeIngredient {
           color: ${colors.grey[900]};
           font-size: 14px;
@@ -3103,6 +3083,18 @@ var StyledHeader = styled14.div`
     }
   }
 `;
+var StyledCheapBadge = styled14.span`
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background-color: ${({ $variant }) => $variant === "cheapest" ? colors.green[600] : colors.green[500]};
+`;
 var StyledExpandButton = styled14.button`
   width: 18px;
   background: none;
@@ -3144,10 +3136,62 @@ var StyledTextToIcon = styled14.div`
     `};
 `;
 
-// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
-import { Fragment as Fragment3, jsx as jsx15, jsxs as jsxs14 } from "react/jsx-runtime";
-var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded }) => {
-  const medicationCardRef = useRef2(null);
+// src/internal/components/medication-elements/MedicationInfographics/styles.ts
+import styled15 from "styled-components";
+var StyledMedicationInfographics = styled15.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .medicationInfographics,
+  .medicationAvailabilityInfographics,
+  .deliveryPrescriptionConditions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .medicationInfographics {
+    &__item {
+      display: flex;
+      width: 22px;
+      height: 22px;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 5px;
+      border: 1px solid ${colors.blue[400]};
+    }
+  }
+
+  .medicationAvailabilityInfographics {
+    &__item {
+      display: flex;
+      width: 22px;
+      height: 22px;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 5px;
+
+      &--red {
+        background-color: ${colors.red[400]};
+      }
+
+      &--orange {
+        background-color: ${colors.orange[800]};
+      }
+
+      &--green {
+        background-color: ${colors.green[400]};
+      }
+    }
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationInfographics/index.tsx
+import { jsx as jsx15, jsxs as jsxs14 } from "react/jsx-runtime";
+var MedicationInfographics = ({ medication, boundaryBox }) => {
   const medicationCommercialization = medication.commercializations?.[0];
   const medicationSupplyProblem = medication.supplyProblems?.[0];
   const medicationReimbursement = medication.reimbursements;
@@ -3161,12 +3205,88 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
         return t("medication.drugSpecialRegulation.noSpecialRegulation");
     }
   };
-  const ReimbursementIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx15("p", { children: medicationReimbursement.reimbursementCriterion?.category }) });
+  const ReimbursementIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx15("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
   const DeliveryConditionsIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx15("p", { children: medication.deliveryModusCode }) });
   const PrescriptionConditionsIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx15("p", { children: medication.deliveryModusSpecificationCode }) });
-  const NonApplicableIcn = ({ text, colorGrey }) => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: colorGrey ? "grey" : "green", children: /* @__PURE__ */ jsx15("p", { children: text }) });
-  return /* @__PURE__ */ jsxs14(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
-    /* @__PURE__ */ jsx15(
+  return /* @__PURE__ */ jsxs14(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: [
+    /* @__PURE__ */ jsxs14("div", { className: "medicationInfographics", children: [
+      medication.blackTriangle && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ jsx15(BlackTriangleIcn, {}), boundaryBox }) }),
+      medication.rmaProfessionalLink && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(
+        Tooltip,
+        {
+          contentSnippet: /* @__PURE__ */ jsx15(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: medication.rmakeyMessages }),
+          iconSnippet: /* @__PURE__ */ jsx15(OrangeTriangleIcn, {}),
+          boundaryBox
+        }
+      ) }),
+      medication.speciallyRegulated && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: getSpecialRegulation(medication.speciallyRegulated), iconSnippet: /* @__PURE__ */ jsx15(PillsBottleIcn, {}), boundaryBox }) }),
+      medication.genericPrescriptionRequired && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ jsx15(PrescriptionIcn, {}), boundaryBox }) })
+    ] }),
+    /* @__PURE__ */ jsxs14("div", { className: "medicationAvailabilityInfographics", children: [
+      medicationSupplyProblem && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange", children: /* @__PURE__ */ jsx15(Tooltip, { contentSnippet: /* @__PURE__ */ jsx15(SupplyProblemsContent, { medicationSupplyProblem }), iconSnippet: /* @__PURE__ */ jsx15(SupplyIcn, {}), boundaryBox }) }),
+      medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--red", children: /* @__PURE__ */ jsx15(
+        Tooltip,
+        {
+          contentSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationContent, { medicationCommercialization }),
+          iconSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationIcn, {}),
+          boundaryBox
+        }
+      ) }),
+      medicationCommercialization && !medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--green", children: /* @__PURE__ */ jsx15(
+        Tooltip,
+        {
+          contentSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationContent, { medicationCommercialization }),
+          iconSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationIcn, {}),
+          boundaryBox
+        }
+      ) })
+    ] }),
+    /* @__PURE__ */ jsxs14("div", { className: "deliveryPrescriptionConditions", children: [
+      medicationReimbursement && /* @__PURE__ */ jsx15(Tooltip, { contentSnippet: /* @__PURE__ */ jsx15(ReimbursementsContent, { reimbursement: medication.reimbursements }), iconSnippet: /* @__PURE__ */ jsx15(ReimbursementIcn, {}), boundaryBox }),
+      medication.deliveryModusCode && /* @__PURE__ */ jsx15(
+        Tooltip,
+        {
+          contentSnippet: /* @__PURE__ */ jsx15(
+            DeliveryConditionsContent,
+            {
+              deliveryModus: medication.deliveryModus,
+              deliveryModusSpecification: medication.deliveryModusSpecification,
+              deliveryModusCode: medication.deliveryModusCode
+            }
+          ),
+          iconSnippet: /* @__PURE__ */ jsx15(DeliveryConditionsIcn, {}),
+          boundaryBox
+        }
+      ),
+      medication.deliveryModusCode && medication.deliveryModusSpecificationCode && /* @__PURE__ */ jsx15(
+        Tooltip,
+        {
+          contentSnippet: /* @__PURE__ */ jsx15(
+            PrescriptionConditionsContent,
+            {
+              deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
+              deliveryModusSpecification: medication.deliveryModusSpecification
+            }
+          ),
+          iconSnippet: /* @__PURE__ */ jsx15(PrescriptionConditionsIcn, {}),
+          boundaryBox
+        }
+      )
+    ] })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+import { Fragment as Fragment3, jsx as jsx16, jsxs as jsxs15 } from "react/jsx-runtime";
+var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
+  const medicationCardRef = useRef2(null);
+  const medicationReimbursement = medication.reimbursements;
+  const ReimbursementIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx16("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
+  const DeliveryConditionsIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx16("p", { children: medication.deliveryModusCode }) });
+  const PrescriptionConditionsIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx16("p", { children: medication.deliveryModusSpecificationCode }) });
+  const NonApplicableIcn = ({ text, colorGrey }) => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: colorGrey ? "grey" : "green", children: /* @__PURE__ */ jsx16("p", { children: text }) });
+  return /* @__PURE__ */ jsxs15(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
+    /* @__PURE__ */ jsx16(
       "div",
       {
         className: "medication",
@@ -3176,114 +3296,43 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
         onKeyDown: (event) => {
           if (event.key === "Enter") handleAddPrescription();
         },
-        children: /* @__PURE__ */ jsxs14("div", { className: "medication__content", children: [
-          /* @__PURE__ */ jsxs14("div", { className: "medication__content__heading", children: [
-            /* @__PURE__ */ jsxs14("div", { className: "medication__content__heading__title", children: [
-              medication.ampId ? /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx15(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.nmpId ? /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ jsx15(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.vmpGroupId ? /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ jsx15(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null,
-              /* @__PURE__ */ jsx15("h3", { children: medication.title }),
-              /* @__PURE__ */ jsxs14("div", { className: "medication__content__heading__infographics", children: [
-                /* @__PURE__ */ jsxs14("div", { className: "medicationInfographics", children: [
-                  medication.blackTriangle && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ jsx15(BlackTriangleIcn, {}), boundaryBox: medicationCardRef }) }),
-                  medication.rmaProfessionalLink && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: medication.rmakeyMessages }),
-                      iconSnippet: /* @__PURE__ */ jsx15(OrangeTriangleIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  ) }),
-                  medication.speciallyRegulated && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: getSpecialRegulation(medication.speciallyRegulated), iconSnippet: /* @__PURE__ */ jsx15(PillsBottleIcn, {}), boundaryBox: medicationCardRef }) }),
-                  medication.genericPrescriptionRequired && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ jsx15(PrescriptionIcn, {}), boundaryBox: medicationCardRef }) })
-                ] }),
-                /* @__PURE__ */ jsxs14("div", { className: "medicationAvailabilityInfographics", children: [
-                  medicationSupplyProblem && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange", children: /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(SupplyProblemsContent, { medicationSupplyProblem }),
-                      iconSnippet: /* @__PURE__ */ jsx15(SupplyIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  ) }),
-                  medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--red", children: /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationContent, { medicationCommercialization }),
-                      iconSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  ) }),
-                  medicationCommercialization && !medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--green", children: /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationContent, { medicationCommercialization }),
-                      iconSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  ) })
-                ] }),
-                /* @__PURE__ */ jsxs14("div", { className: "deliveryPrescriptionConditions", children: [
-                  medicationReimbursement && /* @__PURE__ */ jsx15(Tooltip, { contentSnippet: /* @__PURE__ */ jsx15(ReimbursementsContent, { reimbursement: medication.reimbursements }), iconSnippet: /* @__PURE__ */ jsx15(ReimbursementIcn, {}) }),
-                  medication.deliveryModusCode && /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(
-                        DeliveryConditionsContent,
-                        {
-                          deliveryModus: medication.deliveryModus,
-                          deliveryModusSpecification: medication.deliveryModusSpecification,
-                          deliveryModusCode: medication.deliveryModusCode
-                        }
-                      ),
-                      iconSnippet: /* @__PURE__ */ jsx15(DeliveryConditionsIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  ),
-                  medication.deliveryModusCode && medication.deliveryModusSpecificationCode && /* @__PURE__ */ jsx15(
-                    Tooltip,
-                    {
-                      contentSnippet: /* @__PURE__ */ jsx15(
-                        PrescriptionConditionsContent,
-                        {
-                          deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
-                          deliveryModusSpecification: medication.deliveryModusSpecification
-                        }
-                      ),
-                      iconSnippet: /* @__PURE__ */ jsx15(PrescriptionConditionsIcn, {}),
-                      boundaryBox: medicationCardRef
-                    }
-                  )
-                ] })
-              ] })
+        children: /* @__PURE__ */ jsxs15("div", { className: "medication__content", children: [
+          /* @__PURE__ */ jsxs15("div", { className: "medication__content__heading", children: [
+            /* @__PURE__ */ jsxs15("div", { className: "medication__content__heading__title", children: [
+              !subMedication && (medication.ampId ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx16(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.nmpId ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ jsx16(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.vmpGroupId ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ jsx16(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
+              /* @__PURE__ */ jsx16("h3", { children: medication.title }),
+              medication.cheapest ? /* @__PURE__ */ jsx16(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.cheap ? /* @__PURE__ */ jsx16(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
+              /* @__PURE__ */ jsx16(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
             ] }),
-            /* @__PURE__ */ jsx15("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
+            /* @__PURE__ */ jsx16("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
           ] }),
-          /* @__PURE__ */ jsxs14("div", { className: "medication__content__description", children: [
-            medication.price && /* @__PURE__ */ jsxs14(Fragment3, { children: [
-              /* @__PURE__ */ jsxs14("div", { className: "medication__content__description__item", children: [
-                /* @__PURE__ */ jsx15("span", { children: t("medication.ui.price") }),
-                /* @__PURE__ */ jsx15("p", { className: "price", children: medication.price })
+          /* @__PURE__ */ jsxs15("div", { className: "medication__content__description", children: [
+            medication.price && /* @__PURE__ */ jsxs15(Fragment3, { children: [
+              /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
+                /* @__PURE__ */ jsx16("span", { children: t("medication.ui.price") }),
+                /* @__PURE__ */ jsx16("p", { className: "price", children: medication.price })
               ] }),
-              /* @__PURE__ */ jsxs14("div", { className: "medication__content__description__item", children: [
-                /* @__PURE__ */ jsxs14("span", { children: [
+              /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
+                /* @__PURE__ */ jsxs15("span", { children: [
                   " ",
                   t("medication.reimbursement.title")
                 ] }),
-                medicationReimbursement ? /* @__PURE__ */ jsx15(ReimbursementIcn, {}) : /* @__PURE__ */ jsx15(NonApplicableIcn, { text: t("medication.reimbursement.non"), colorGrey: true })
+                medicationReimbursement ? /* @__PURE__ */ jsx16(ReimbursementIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.reimbursement.non"), colorGrey: true })
               ] })
             ] }),
-            /* @__PURE__ */ jsxs14("div", { className: "medication__content__description__item", children: [
-              /* @__PURE__ */ jsx15("span", { children: t("medication.delivery.title") }),
-              medication.deliveryModusCode ? /* @__PURE__ */ jsx15(DeliveryConditionsIcn, {}) : /* @__PURE__ */ jsx15(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
+            /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
+              /* @__PURE__ */ jsx16("span", { children: t("medication.delivery.title") }),
+              medication.deliveryModusCode ? /* @__PURE__ */ jsx16(DeliveryConditionsIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
             ] }),
-            /* @__PURE__ */ jsxs14("div", { className: "medication__content__description__item", children: [
-              /* @__PURE__ */ jsx15("span", { children: t("medication.prescription.title") }),
-              medication.deliveryModusSpecificationCode ? /* @__PURE__ */ jsx15(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ jsx15(NonApplicableIcn, { text: t("medication.prescription.free") })
+            /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
+              /* @__PURE__ */ jsx16("span", { children: t("medication.prescription.title") }),
+              medication.deliveryModusSpecificationCode ? /* @__PURE__ */ jsx16(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.prescription.free") })
             ] })
           ] })
         ] })
       }
     ),
-    /* @__PURE__ */ jsx15(
+    /* @__PURE__ */ jsx16(
       StyledExpandButton,
       {
         className: "StyledExpandButton",
@@ -3293,15 +3342,15 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
           setMedicationCardExpanded(!isMedicationCardExpanded);
         },
         type: "button",
-        children: /* @__PURE__ */ jsx15(ChevronIcn, {})
+        children: /* @__PURE__ */ jsx16(ChevronIcn, {})
       }
     )
   ] });
 };
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/styles.ts
-import styled15 from "styled-components";
-var StyledExtension = styled15.div`
+import styled16 from "styled-components";
+var StyledExtension = styled16.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -3370,44 +3419,44 @@ var StyledExtension = styled15.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
-import { Fragment as Fragment4, jsx as jsx16, jsxs as jsxs15 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx17, jsxs as jsxs16 } from "react/jsx-runtime";
 var Extension = ({ medication }) => {
   const medicationCommercialization = medication.commercializations?.[0];
   const medicationSupplyProblem = medication.supplyProblems?.[0];
   const medicationReimbursement = medication.reimbursements;
-  return /* @__PURE__ */ jsxs15(StyledExtension, { className: "StyledExtension", children: [
-    medication.vmp && /* @__PURE__ */ jsxs15("div", { className: "vmp", children: [
-      medication.vmp.name?.fr && /* @__PURE__ */ jsxs15("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ jsx16("span", { children: "VMP:" }),
-        /* @__PURE__ */ jsx16("p", { children: medication.vmp.name.fr })
+  return /* @__PURE__ */ jsxs16(StyledExtension, { className: "StyledExtension", children: [
+    medication.vmp && /* @__PURE__ */ jsxs16("div", { className: "vmp", children: [
+      medication.vmp.name?.fr && /* @__PURE__ */ jsxs16("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ jsx17("span", { children: "VMP:" }),
+        /* @__PURE__ */ jsx17("p", { children: medication.vmp.name.fr })
       ] }),
-      medication.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ jsxs15("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ jsx16("span", { children: "VMP-group:" }),
-        /* @__PURE__ */ jsx16("p", { children: medication.vmp.vmpGroup.name.fr })
+      medication.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ jsxs16("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ jsx17("span", { children: "VMP-group:" }),
+        /* @__PURE__ */ jsx17("p", { children: medication.vmp.vmpGroup.name.fr })
       ] })
     ] }),
-    /* @__PURE__ */ jsx16("div", { className: "divider" }),
-    /* @__PURE__ */ jsxs15("div", { className: "links", children: [
-      medication.crmLink && /* @__PURE__ */ jsx16("a", { href: medication.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
-      medication.patientInformationLeafletLink && /* @__PURE__ */ jsx16("a", { href: medication.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
-      medication.rmaProfessionalLink && /* @__PURE__ */ jsx16("a", { href: medication.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
-      medication.spcLink && /* @__PURE__ */ jsx16("a", { href: medication.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
-      medication.dhpcLink && /* @__PURE__ */ jsx16("a", { href: medication.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
+    /* @__PURE__ */ jsx17("div", { className: "divider" }),
+    /* @__PURE__ */ jsxs16("div", { className: "links", children: [
+      medication.crmLink && /* @__PURE__ */ jsx17("a", { href: medication.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
+      medication.patientInformationLeafletLink && /* @__PURE__ */ jsx17("a", { href: medication.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
+      medication.rmaProfessionalLink && /* @__PURE__ */ jsx17("a", { href: medication.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
+      medication.spcLink && /* @__PURE__ */ jsx17("a", { href: medication.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
+      medication.dhpcLink && /* @__PURE__ */ jsx17("a", { href: medication.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
     ] }),
-    medicationReimbursement && /* @__PURE__ */ jsxs15(Fragment4, { children: [
-      /* @__PURE__ */ jsx16("div", { className: "divider" }),
-      /* @__PURE__ */ jsx16(ReimbursementsContent, { reimbursement: medication.reimbursements })
+    medicationReimbursement && /* @__PURE__ */ jsxs16(Fragment4, { children: [
+      /* @__PURE__ */ jsx17("div", { className: "divider" }),
+      /* @__PURE__ */ jsx17(ReimbursementsContent, { reimbursement: medication.reimbursements })
     ] }),
-    /* @__PURE__ */ jsx16("div", { className: "divider" }),
-    /* @__PURE__ */ jsx16(
+    /* @__PURE__ */ jsx17("div", { className: "divider" }),
+    /* @__PURE__ */ jsx17(
       PrescriptionConditionsContent,
       {
         deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
         deliveryModusSpecification: medication.deliveryModusSpecification
       }
     ),
-    /* @__PURE__ */ jsx16("div", { className: "divider" }),
-    /* @__PURE__ */ jsx16(
+    /* @__PURE__ */ jsx17("div", { className: "divider" }),
+    /* @__PURE__ */ jsx17(
       DeliveryConditionsContent,
       {
         deliveryModus: medication.deliveryModus,
@@ -3415,28 +3464,28 @@ var Extension = ({ medication }) => {
         deliveryModusCode: medication.deliveryModusCode
       }
     ),
-    medication.supplyProblems && /* @__PURE__ */ jsxs15(Fragment4, { children: [
-      /* @__PURE__ */ jsx16("div", { className: "divider" }),
-      /* @__PURE__ */ jsx16(SupplyProblemsContent, { medicationSupplyProblem })
+    medication.supplyProblems && /* @__PURE__ */ jsxs16(Fragment4, { children: [
+      /* @__PURE__ */ jsx17("div", { className: "divider" }),
+      /* @__PURE__ */ jsx17(SupplyProblemsContent, { medicationSupplyProblem })
     ] }),
-    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsxs15(Fragment4, { children: [
-      /* @__PURE__ */ jsx16("div", { className: "divider" }),
-      /* @__PURE__ */ jsx16(EndOfCommercialisationContent, { medicationCommercialization })
+    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsxs16(Fragment4, { children: [
+      /* @__PURE__ */ jsx17("div", { className: "divider" }),
+      /* @__PURE__ */ jsx17(EndOfCommercialisationContent, { medicationCommercialization })
     ] }),
-    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ jsxs15(Fragment4, { children: [
-      /* @__PURE__ */ jsx16("div", { className: "divider" }),
-      /* @__PURE__ */ jsx16(StartOfCommercialisationContent, { medicationCommercialization })
+    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ jsxs16(Fragment4, { children: [
+      /* @__PURE__ */ jsx17("div", { className: "divider" }),
+      /* @__PURE__ */ jsx17(StartOfCommercialisationContent, { medicationCommercialization })
     ] })
   ] });
 };
 
 // src/internal/components/medication-elements/MedicationCard/styles.ts
-import styled16, { css as css8 } from "styled-components";
+import styled17, { css as css8 } from "styled-components";
 var activeMedicationCard = css8`
   border-color: ${colors.blue[500]};
   box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
 `;
-var StyledMedicationCard = styled16.div`
+var StyledMedicationCard = styled17.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -3444,6 +3493,16 @@ var StyledMedicationCard = styled16.div`
   background: #fff;
   border: 1px solid ${colors.blue[100]};
   cursor: pointer;
+
+  ${({ $subMedication }) => $subMedication && css8`
+      ${StyledHeader} {
+        padding-left: 28px;
+
+        h3 {
+          font-size: 14px;
+        }
+      }
+    `};
 
   &:hover {
     ${activeMedicationCard};
@@ -3477,27 +3536,57 @@ var StyledMedicationCard = styled16.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/index.tsx
-import { jsx as jsx17, jsxs as jsxs16 } from "react/jsx-runtime";
-var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover }) => {
+import { jsx as jsx18, jsxs as jsxs17 } from "react/jsx-runtime";
+var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication }) => {
   const [isExpanded, setIsExpanded] = useState2(false);
-  return /* @__PURE__ */ jsxs16(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, id, children: [
-    /* @__PURE__ */ jsx17(
+  return /* @__PURE__ */ jsxs17(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, $subMedication: subMedication, id, children: [
+    /* @__PURE__ */ jsx18(
       Header,
       {
         handleAddPrescription: () => handleAddPrescription(medication),
         medication,
         isMedicationCardExpanded: isExpanded,
-        setMedicationCardExpanded: (status) => setIsExpanded(status)
+        setMedicationCardExpanded: (status) => setIsExpanded(status),
+        subMedication
       }
     ),
-    isExpanded && /* @__PURE__ */ jsx17(Extension, { medication })
+    isExpanded && /* @__PURE__ */ jsx18(Extension, { medication })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationProductTitle/styles.ts
+import styled18 from "styled-components";
+var StyledMedicationProductTitle = styled18.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid ${colors.blue[100]};
+  padding: 8px 12px;
+
+  h3 {
+    color: ${colors.grey[900]};
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationProductTitle/index.tsx
+import { jsx as jsx19, jsxs as jsxs18 } from "react/jsx-runtime";
+var MedicationProductTitle = ({ productTitle }) => {
+  return /* @__PURE__ */ jsxs18(StyledMedicationProductTitle, { className: "StyledMedicationProductTitle", children: [
+    /* @__PURE__ */ jsx19(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx19(SolidPillIcn, {}) }),
+    /* @__PURE__ */ jsx19("h3", { children: productTitle })
   ] });
 };
 
 // src/internal/components/common/InfiniteScroll/index.tsx
 import { useEffect as useEffect2, useRef as useRef3 } from "react";
-import { jsx as jsx18 } from "react/jsx-runtime";
-var InfiniteScroll = ({ threshold = 0, loadMore }) => {
+import { jsx as jsx20 } from "react/jsx-runtime";
+var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
   const infiniteScrollRef = useRef3(null);
   const isLoadMore = useRef3(false);
   useEffect2(() => {
@@ -3508,7 +3597,7 @@ var InfiniteScroll = ({ threshold = 0, loadMore }) => {
       const offset = target.scrollHeight - target.clientHeight - target.scrollTop;
       if (offset <= threshold) {
         if (!isLoadMore.current) {
-          loadMore();
+          loadMore2();
         }
         isLoadMore.current = true;
       } else {
@@ -3521,87 +3610,11 @@ var InfiniteScroll = ({ threshold = 0, loadMore }) => {
       element.removeEventListener("scroll", onScroll);
       element.removeEventListener("resize", onScroll);
     };
-  }, [threshold, loadMore]);
-  return /* @__PURE__ */ jsx18("div", { ref: infiniteScrollRef, style: { width: 0 } });
+  }, [threshold, loadMore2]);
+  return /* @__PURE__ */ jsx20("div", { ref: infiniteScrollRef, style: { width: 0 } });
 };
 
-// src/internal/utils/loader-helpers.ts
-async function mergeSortedPartialArraysN(limit, arrays, fetchMissingCallbacks) {
-  if (arrays.length !== fetchMissingCallbacks.length) {
-    throw new Error("Each array must have a corresponding fetch callback.");
-  }
-  const result = [];
-  const pointers = arrays.map(() => 0);
-  let lastPushedName = "";
-  async function drainArrayUpTo(k, limitName, limit2) {
-    const arr = arrays[k];
-    let p = pointers[k];
-    const fetchMissing = fetchMissingCallbacks[k];
-    while (result.length < limit2) {
-      if (p < arr.length) {
-        const itemName = arr[p].title.toLowerCase();
-        if (limitName === null || itemName < limitName) {
-          result.push(arr[p]);
-          lastPushedName = itemName;
-          p++;
-        } else {
-          break;
-        }
-      } else {
-        const upper = limitName === null ? void 0 : limitName;
-        const newItems = await fetchMissing(lastPushedName, upper);
-        if (newItems.length === 0) {
-          break;
-        }
-        arr.splice(p, 0, ...newItems);
-      }
-    }
-    pointers[k] = p;
-  }
-  function indexOfSmallestFront() {
-    let smallestIndex = null;
-    let smallestName = "";
-    for (let k = 0; k < arrays.length; k++) {
-      const p = pointers[k];
-      if (p < arrays[k].length) {
-        const candidateName = arrays[k][p].title.toLowerCase();
-        if (smallestIndex === null || candidateName < smallestName) {
-          smallestIndex = k;
-          smallestName = candidateName;
-        }
-      }
-    }
-    return smallestIndex;
-  }
-  while (result.length < limit) {
-    const si = indexOfSmallestFront();
-    if (si === null) {
-      break;
-    }
-    const nextName = arrays[si][pointers[si]].title.toLowerCase();
-    for (let k = 0; k < arrays.length; k++) {
-      await drainArrayUpTo(k, nextName, limit);
-    }
-    if (result.length < limit) {
-      if (pointers[si] < arrays[si].length) {
-        const item = arrays[si][pointers[si]];
-        if (item.title.toLowerCase() === nextName) {
-          result.push(item);
-          lastPushedName = nextName;
-          pointers[si]++;
-        }
-      }
-    }
-  }
-  if (result.length < limit) {
-    for (let k = 0; k < arrays.length; k++) {
-      await drainArrayUpTo(k, null, limit);
-    }
-  }
-  return [result, pointers];
-}
-
-// src/internal/services/medication-mapper/index.ts
+// src/internal/services/loaders/medication-loader.ts
 import { AmpStatus, DmppCodeType } from "@icure/cardinal-be-sam-sdk";
 
 // src/internal/utils/string-helpers.ts
@@ -3613,79 +3626,274 @@ function trim(s) {
   if (!s) return s;
   return s.replace(/\s+/g, " ").trim();
 }
+function normalizeForSort(s) {
+  if (!s) return s;
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
-// src/internal/services/medication-mapper/index.ts
-var nmpToMedicationTypes = (nmp) => {
-  const now = Date.now();
-  return nmp.to && nmp.to < now ? [] : [
-    {
-      nmpId: nmp.id,
-      id: nmp.code,
-      title: capitalize(getSamTextTranslation(nmp.name))
+// src/internal/services/loaders/merge-lazy-sorted-named-items.ts
+function isSorted(items) {
+  for (let i = 0; i < items.length - 1; i++) {
+    if (normalizeForSort(items[i].title) > normalizeForSort(items[i + 1].title)) {
+      return false;
     }
-  ];
-};
-var vmpGroupToMedicationTypes = (vmp) => {
-  const now = Date.now();
-  return vmp.to && vmp.to < now ? [] : [
-    {
-      vmpGroupId: vmp.id,
-      id: vmp.code,
-      title: capitalize(getSamTextTranslation(vmp.name)),
-      standardDosage: vmp.standardDosage
+  }
+  return true;
+}
+async function mergeLazySortedNamedItems(limit, arrays, fetchMissingCallbacks) {
+  if (arrays.length !== fetchMissingCallbacks.length) {
+    throw new Error("Each array must have a corresponding fetch callback.");
+  }
+  const result = [];
+  const pointers = arrays.map(() => 0);
+  let lastPushedName = "";
+  async function loadItemsAtPointer(k, toName) {
+    const p = pointers[k];
+    if (p >= arrays[k].length) {
+      const newItems = await fetchMissingCallbacks[k](lastPushedName, toName);
+      if (!isSorted(newItems)) {
+        throw new Error(`Fetched items for array ${k} are not sorted.`);
+      }
+      if (newItems.length > 0) {
+        arrays[k].splice(p, 0, ...newItems);
+      }
     }
-  ];
-};
-var ampToMedicationTypes = (amp, deliveryEnvironment) => {
+  }
+  async function indexOfSmallestFront() {
+    let smallestName = void 0;
+    for (let k = 0; k < arrays.length; k++) {
+      const p = pointers[k];
+      if (p < arrays[k].length) {
+        const candidateName = normalizeForSort(arrays[k][p].title);
+        if (smallestName === void 0 || candidateName < smallestName) {
+          smallestName = candidateName;
+        }
+      }
+    }
+    for (let k = 0; k < arrays.length; k++) {
+      await loadItemsAtPointer(k, smallestName);
+    }
+    let smallestIndex = null;
+    smallestName = void 0;
+    for (let k = 0; k < arrays.length; k++) {
+      const p = pointers[k];
+      if (p < arrays[k].length) {
+        const candidateName = normalizeForSort(arrays[k][p].title);
+        if (smallestName === void 0 || candidateName < smallestName) {
+          smallestIndex = k;
+          smallestName = candidateName;
+        }
+      }
+    }
+    return smallestIndex;
+  }
+  while (result.length < limit) {
+    const si = await indexOfSmallestFront();
+    if (si === null) break;
+    const item = arrays[si][pointers[si]];
+    result.push(item);
+    lastPushedName = normalizeForSort(item.title);
+    pointers[si]++;
+  }
+  return [result, pointers];
+}
+
+// src/internal/services/loaders/medication-loader.ts
+var defaultLanguage = "fr";
+async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = [], filter = (m) => m) {
+  const language2 = cardinalLanguage.getLanguage();
   const now = Date.now();
   const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
-  return amp.to && amp.to < now ? [] : amp.ampps.filter((ampp) => {
-    return ampp.from && ampp.from < now && (!ampp.to || ampp.to > now) && ampp.status == AmpStatus.Authorized && ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)) && ampp.dmpps?.some((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment);
-  }).map((ampp) => {
-    const dmpp = ampp.dmpps?.find(
-      (dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp2.codeType == DmppCodeType.Cnk
+  const loadedPage = !await medications.hasNext() ? [] : await medications.next(min);
+  const page = loadedPage.map((amp) => {
+    if (amp.to && amp.to < now) {
+      return null;
+    }
+    const activeAmpps = amp.ampps.filter((ampp) => ampp.from && (!ampp.to || ampp.to > now));
+    const authorizedAmpps = activeAmpps.filter((ampp) => ampp.status?.toLowerCase() === AmpStatus.Authorized.toLowerCase());
+    const commercializedAmpps = authorizedAmpps.filter((ampp) => ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)));
+    const deliverableAmpps = commercializedAmpps.filter(
+      (ampp) => ampp.dmpps?.some((dmpp) => dmpp.from && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() === deliveryEnvironment)
     );
+    if (deliverableAmpps.length === 0) {
+      return null;
+    }
+    const medications2 = deliverableAmpps.map((ampp, index) => {
+      const dmpp = ampp.dmpps?.find(
+        (dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() === deliveryEnvironment && dmpp2.codeType === DmppCodeType.Cnk
+      );
+      return {
+        ampId: amp.id,
+        vmpGroupId: amp.vmp?.vmpGroup?.id,
+        id: ampp.ctiExtended,
+        cnk: dmpp?.code,
+        dmppProductId: dmpp?.productId,
+        index,
+        title: ampp.prescriptionName?.[language2] ?? ampp.prescriptionName?.[defaultLanguage] ?? ampp.abbreviatedName?.[language2] ?? ampp.abbreviatedName?.[defaultLanguage] ?? amp.prescriptionName?.[language2] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language2] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language2] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
+        vmpTitle: amp.vmp?.name?.[language2] ?? amp.vmp?.name?.[defaultLanguage] ?? "",
+        activeIngredient: amp.vmp?.vmpGroup?.name?.[language2] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? "",
+        price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
+        cheap: dmpp?.cheap,
+        cheapest: dmpp?.cheapest,
+        crmLink: ampp.crmLink?.[language2] ?? ampp.crmLink?.[defaultLanguage],
+        patientInformationLeafletLink: ampp.leafletLink?.[language2] ?? ampp.leafletLink?.[defaultLanguage],
+        blackTriangle: amp.blackTriangle,
+        speciallyRegulated: ampp.speciallyRegulated,
+        genericPrescriptionRequired: ampp.genericPrescriptionRequired,
+        intendedName: ampp.prescriptionName?.[language2] ?? ampp.prescriptionName?.[defaultLanguage],
+        rmaProfessionalLink: ampp.rmaProfessionalLink?.[language2] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
+        spcLink: ampp.spcLink?.[language2] ?? ampp.spcLink?.[defaultLanguage],
+        dhpcLink: ampp.dhpcLink?.[language2] ?? ampp.dhpcLink?.[defaultLanguage],
+        rmakeyMessages: ampp.rmaKeyMessages?.[language2] ?? ampp.rmaKeyMessages?.[defaultLanguage],
+        vmp: amp.vmp,
+        supplyProblems: ampp.supplyProblems,
+        commercializations: ampp?.commercializations,
+        deliveryModusCode: ampp.deliveryModusCode,
+        deliveryModus: ampp.deliveryModus?.[language2] ?? ampp.deliveryModus?.[defaultLanguage],
+        deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
+        deliveryModusSpecification: ampp.deliveryModusSpecification?.[language2] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
+        reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now))
+      };
+    }).map(filter).filter((m) => !!m).sort((a, b) => {
+      const indexA = a.index ?? 0;
+      const indexB = b.index ?? 0;
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+      return normalizeForSort(a.title).localeCompare(normalizeForSort(b.title));
+    });
+    if (medications2.length === 0) {
+      return null;
+    }
     return {
       ampId: amp.id,
-      vmpGroupId: amp.vmp?.vmpGroup?.id,
-      id: ampp.ctiExtended,
-      cnk: dmpp?.code,
-      dmppProductId: dmpp?.productId,
-      title: getSamTextTranslation(ampp.prescriptionName ?? ampp.abbreviatedName ?? amp.prescriptionName ?? amp.name ?? amp.abbreviatedName),
-      vmpTitle: getSamTextTranslation(amp.vmp?.name),
-      activeIngredient: getSamTextTranslation(amp.vmp?.vmpGroup?.name),
-      price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : void 0,
-      crmLink: getSamTextTranslation(ampp.crmLink),
-      patientInformationLeafletLink: getSamTextTranslation(ampp.leafletLink),
-      blackTriangle: amp.blackTriangle,
-      speciallyRegulated: ampp.speciallyRegulated,
-      genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-      intendedName: getSamTextTranslation(ampp.prescriptionName),
-      rmaProfessionalLink: getSamTextTranslation(ampp.rmaProfessionalLink),
-      spcLink: getSamTextTranslation(ampp.spcLink),
-      dhpcLink: getSamTextTranslation(ampp.dhpcLink),
-      rmakeyMessages: getSamTextTranslation(ampp.rmaKeyMessages),
-      vmp: amp.vmp,
-      supplyProblems: ampp.supplyProblems,
-      commercializations: ampp?.commercializations,
-      deliveryModusCode: ampp.deliveryModusCode,
-      deliveryModus: getSamTextTranslation(ampp.deliveryModus),
-      deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
-      deliveryModusSpecification: getSamTextTranslation(ampp.deliveryModusSpecification),
-      reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now))
+      title: amp.prescriptionName?.[language2] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language2] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language2] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
+      medications: medications2
+    };
+  }).filter((mp) => mp !== null);
+  return loadedPage.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications, min, deliveryEnvironment, [...acc, ...page], filter);
+}
+async function loadMoleculesPage(molecules, min, acc = []) {
+  const language2 = cardinalLanguage.getLanguage();
+  const now = Date.now();
+  const loadedPage = !await molecules.hasNext() ? [] : await molecules.next(min);
+  const page = loadedPage.filter((vmp) => !(vmp.to && vmp.to < now)).map((vmp) => {
+    return {
+      vmpGroupId: vmp.id,
+      id: vmp.code,
+      title: capitalize(vmp.name?.[language2]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? "",
+      vmpGroup: vmp
     };
   });
-};
+  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page]);
+}
+async function loadNonMedicinalPage(products, min, acc = []) {
+  const language2 = cardinalLanguage.getLanguage();
+  const now = Date.now();
+  const loadedPage = !await products.hasNext() ? [] : await products.next(min);
+  const page = loadedPage.filter((nmp) => !(nmp.to && nmp.to < now)).map((nmp) => {
+    return {
+      nmpId: nmp.id,
+      id: nmp.code,
+      title: capitalize(nmp.name?.[language2]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? ""
+    };
+  });
+  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products, min, [...acc, ...page]);
+}
+async function loadUntil(toName, loadPage, limit = 10) {
+  let page = [];
+  if (!toName) {
+    while (page.length < limit) {
+      const newPage = await loadPage();
+      if (!newPage.length) break;
+      page = [...page, ...newPage];
+    }
+    return page;
+  }
+  const lcToName = normalizeForSort(toName);
+  while (page.length === 0 || normalizeForSort(page[page.length - 1].title) < lcToName) {
+    const newPage = await loadPage();
+    if (!newPage.length) break;
+    page = [...page, ...newPage];
+  }
+  return page;
+}
+async function loadMore({
+  untreatedLoadedMedicationProducts,
+  untreatedLoadedMolecules,
+  untreatedLoadNonMedicinals,
+  medicationProductsIterator,
+  moleculesIterator,
+  nonMedicinalesIterator,
+  deliveryEnvironment,
+  limit = 10
+}) {
+  const [result, pointers] = await mergeLazySortedNamedItems(
+    limit,
+    [[...untreatedLoadedMedicationProducts], [...untreatedLoadedMolecules], [...untreatedLoadNonMedicinals]],
+    [
+      async (_, toName) => {
+        const loaded = await loadUntil(
+          toName,
+          () => medicationProductsIterator ? loadMedicationsPage(medicationProductsIterator, limit, deliveryEnvironment) : Promise.resolve([]),
+          limit
+        );
+        untreatedLoadedMedicationProducts.push(...loaded);
+        return loaded;
+      },
+      async (_, toName) => {
+        const loaded = await loadUntil(toName, () => moleculesIterator ? loadMoleculesPage(moleculesIterator, limit) : Promise.resolve([]), limit);
+        untreatedLoadedMolecules.push(...loaded);
+        return loaded;
+      },
+      async (_, toName) => {
+        const loaded = await loadUntil(toName, () => nonMedicinalesIterator ? loadNonMedicinalPage(nonMedicinalesIterator, limit) : Promise.resolve([]), limit);
+        untreatedLoadNonMedicinals.push(...loaded);
+        return loaded;
+      }
+    ]
+  );
+  return {
+    result,
+    updated: {
+      medicationsPage: untreatedLoadedMedicationProducts.slice(pointers[0]),
+      moleculesPage: untreatedLoadedMolecules.slice(pointers[1]),
+      productsPage: untreatedLoadNonMedicinals.slice(pointers[2])
+    }
+  };
+}
 
 // src/shared/components/MedicationSearch/styles.ts
-import styled17, { css as css9 } from "styled-components";
-var StyledMedicationSearch = styled17.div`
+import styled19, { css as css9 } from "styled-components";
+var StyledMedicationSearch = styled19.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  .spinner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0;
+  }
+
+  .placeholder {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 12px;
+
+    p {
+      color: ${colors.grey[600]};
+      font-size: 14px;
+      text-align: center;
+    }
+  }
 `;
-var StyledMedicationSearchInput = styled17.div`
+var StyledMedicationSearchInput = styled19.div`
   ${fieldCommonStyles};
 
   p {
@@ -3718,7 +3926,7 @@ var StyledMedicationSearchInput = styled17.div`
     ${errorMessageCommonStyles}
   }
 `;
-var StyledLabel = styled17.label`
+var StyledLabel = styled19.label`
   ${inputCommonStyles};
 
   justify-content: space-between;
@@ -3732,7 +3940,7 @@ var StyledLabel = styled17.label`
       ${inputCommonStyles_error};
     `};
 `;
-var StyledMedicationSearchDropdown = styled17.div`
+var StyledMedicationSearchDropdown = styled19.div`
   width: 100%;
   height: 400px;
   overflow-y: scroll;
@@ -3756,10 +3964,29 @@ var StyledMedicationSearchDropdown = styled17.div`
   .medicationCardWrap {
     width: 100%;
   }
+
+  .medOrProdWrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .cardWrap {
+    width: 100%;
+
+    &.subMedication {
+      padding-left: 12px;
+    }
+  }
 `;
 
 // src/shared/components/MedicationSearch/index.tsx
-import { Fragment as Fragment5, jsx as jsx19, jsxs as jsxs17 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
+var medMapper = (item) => ({
+  medications: item.medications ?? [item],
+  product: item.medications ? item : void 0
+});
 var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState3("");
   const searchQueryRef = useRef4(searchQuery);
@@ -3768,213 +3995,197 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableIn
   }, [searchQuery]);
   const [dropdownDisplayed, setDropdownDisplayed] = useState3(false);
   const [pages, setPages] = useState3([]);
-  const [medications, setMedications] = useState3();
-  const [molecules, setMolecules] = useState3();
-  const [products, setProducts] = useState3();
-  const [medicationsPage, setMedicationsPage] = useState3([]);
-  const [moleculesPage, setMoleculesPage] = useState3([]);
-  const [productsPage, setProductsPage] = useState3([]);
-  const [focusedMedicationIndex, setFocusedMedicationIndex] = useState3(-1);
-  const [disableHover, setDisableHover] = useState3(false);
+  const [showSpinner, setShowSpinner] = useState3(false);
+  const [showNoMatchesPlaceholder, setShowNoMatchesPlaceholder] = useState3(false);
+  const [focusedMedicationIndex, setFocusedMedicationIndex] = useState3(0);
+  const [focusedSubMedicationIndex, setFocusedSubMedicationIndex] = useState3(0);
+  const medicationsIterRef = useRef4(void 0);
+  const moleculesIterRef = useRef4(void 0);
+  const productsIterRef = useRef4(void 0);
+  const medicationsPageRef = useRef4([]);
+  const moleculesPageRef = useRef4([]);
+  const productsPageRef = useRef4([]);
   const resultRefs = useRef4([]);
-  useEffect3(() => {
-    setFocusedMedicationIndex(0);
-  }, []);
   useEffect3(() => {
     setDropdownDisplayed(!!searchQuery);
   }, [searchQuery]);
-  useEffect3(() => {
-    if (searchQuery && searchQuery.length >= 3) {
-      const cachedQuery = searchQueryRef.current;
-      setPages([]);
-      setTimeout(() => {
-        if (cachedQuery === searchQueryRef.current) {
-          findMedicationsByLabel(sdk, cachedQuery).then(async ([meds, mols, prods]) => {
-            setMedications(meds);
-            setMolecules(mols);
-            setProducts(prods);
-            if (cachedQuery !== searchQueryRef.current) {
-              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
-              return;
-            }
-            const [medsPage, molsPage, prodsPage] = await Promise.all([
-              meds ? loadMedicationsPage(meds, 10) : [],
-              mols ? loadMoleculesPage(mols, 10) : [],
-              prods ? loadNonMedicinalPage(prods, 10) : []
-            ]);
-            if (cachedQuery !== searchQueryRef.current) {
-              console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
-              return;
-            }
-            setMedicationsPage(medsPage);
-            setMoleculesPage(molsPage);
-            setProductsPage(prodsPage);
-            loadMore({ medicationsPage: medsPage, moleculesPage: molsPage, productsPage: prodsPage }).then((result) => {
-              if (cachedQuery === searchQueryRef.current) {
-                console.log(`Search query ${cachedQuery} results loaded, setting pages...`);
-                setPages(result);
-              } else {
-                console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
-              }
-            });
-          });
-        } else {
-          console.log(`Search query ${cachedQuery} changed before results were loaded, aborting...`);
-        }
-      }, 100);
-    }
-  }, [searchQuery, searchQueryRef, sdk]);
-  async function loadMedicationsPage(medications2, min, acc = []) {
-    const page = (!await medications2.hasNext() ? [] : await medications2.next(min)).flatMap((amp) => ampToMedicationTypes(amp, deliveryEnvironment));
-    return (!await medications2.hasNext() ? [] : await medications2.next(min)).length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications2, min, [...acc, ...page]);
-  }
-  async function loadMoleculesPage(molecules2, min, acc = []) {
-    const page = (!await molecules2.hasNext() ? [] : await molecules2.next(min)).flatMap((vmp) => vmpGroupToMedicationTypes(vmp));
-    return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules2, min, [...acc, ...page]);
-  }
-  async function loadNonMedicinalPage(products2, min, acc = []) {
-    const page = (!await products2.hasNext() ? [] : await products2.next(min)).flatMap((nmp) => nmpToMedicationTypes(nmp));
-    return (!await products2.hasNext() ? [] : await products2.next(min)).length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products2, min, [...acc, ...page]);
-  }
-  const loadUntil = async (toName, loadPage) => {
-    let page = await loadPage();
-    const lcToName = toName?.toLowerCase();
-    while (page.length && (!lcToName || page[page.length - 1].title.toLowerCase() < lcToName)) {
-      const newPage = await loadPage();
-      if (!newPage.length) {
-        break;
-      }
-      page = [...page, ...newPage];
-    }
-    return page;
+  const resetSearch = () => {
+    medicationsIterRef.current = void 0;
+    moleculesIterRef.current = void 0;
+    productsIterRef.current = void 0;
+    medicationsPageRef.current = [];
+    moleculesPageRef.current = [];
+    productsPageRef.current = [];
+    setPages([]);
+    setFocusedMedicationIndex(0);
+    setFocusedSubMedicationIndex(0);
   };
-  const loadMore = async ({
-    medicationsPage: medicationsPage2,
-    moleculesPage: moleculesPage2,
-    productsPage: productsPage2
-  }) => {
-    const [result, pointers] = await mergeSortedPartialArraysN(
-      10,
-      [[...medicationsPage2], [...moleculesPage2], [...productsPage2]],
-      [
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => medications ? loadMedicationsPage(medications, 10) : Promise.resolve([]));
-          setMedicationsPage((medicationsPage3) => [...medicationsPage3, ...loaded]);
-          return loaded;
-        },
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => molecules ? loadMoleculesPage(molecules, 10) : Promise.resolve([]));
-          setMoleculesPage((moleculesPage3) => [...moleculesPage3, ...loaded]);
-          return loaded;
-        },
-        async (_, toName) => {
-          const loaded = await loadUntil(toName, () => products ? loadNonMedicinalPage(products, 10) : Promise.resolve([]));
-          setProductsPage((productsPage3) => [...productsPage3, ...loaded]);
-          return loaded;
-        }
-      ]
-    );
-    setMedicationsPage(medicationsPage2.slice(pointers[0]));
-    setMoleculesPage(moleculesPage2.slice(pointers[1]));
-    setProductsPage(productsPage2.slice(pointers[2]));
+  const runLoadMore = async () => {
+    const { result, updated } = await loadMore({
+      untreatedLoadedMedicationProducts: [...medicationsPageRef.current],
+      untreatedLoadedMolecules: [...moleculesPageRef.current],
+      untreatedLoadNonMedicinals: [...productsPageRef.current],
+      medicationProductsIterator: medicationsIterRef.current,
+      moleculesIterator: moleculesIterRef.current,
+      nonMedicinalesIterator: productsIterRef.current,
+      deliveryEnvironment
+    });
+    medicationsPageRef.current = updated.medicationsPage;
+    moleculesPageRef.current = updated.moleculesPage;
+    productsPageRef.current = updated.productsPage;
     return result;
   };
-  const handleKeyDown = (event) => {
-    if (disableInputEventsTracking) return;
-    const totalPagesLength = pages.length;
-    const defaultActions = () => {
-      event.preventDefault();
-      setDisableHover(true);
-    };
-    if (event.key === "ArrowDown") {
-      defaultActions();
-      setFocusedMedicationIndex((prev) => (prev + 1) % totalPagesLength);
-      scrollToFocusedItem((focusedMedicationIndex + 1) % totalPagesLength);
-    } else if (event.key === "ArrowUp") {
-      defaultActions();
-      setFocusedMedicationIndex((prev) => (prev - 1 + totalPagesLength) % totalPagesLength);
-      scrollToFocusedItem((focusedMedicationIndex - 1 + totalPagesLength) % totalPagesLength);
-    } else if (event.key === "Enter" && focusedMedicationIndex >= 0) {
-      event.preventDefault();
-      setDisableHover(false);
-      onAddPrescription(pages[focusedMedicationIndex]);
-      setSearchQuery("");
-    }
+  const doSearch = async (q) => {
+    const [meds, mols, prods] = await findMedicationsByLabel(sdk, q);
+    if (q !== searchQueryRef.current) return;
+    medicationsIterRef.current = meds;
+    moleculesIterRef.current = mols;
+    productsIterRef.current = prods;
+    medicationsPageRef.current = [];
+    moleculesPageRef.current = [];
+    productsPageRef.current = [];
+    setShowSpinner(true);
+    const result = await runLoadMore();
+    if (q !== searchQueryRef.current) return;
+    setShowSpinner(false);
+    setPages(result.map(medMapper));
+    setShowNoMatchesPlaceholder(!result.length);
+    setFocusedMedicationIndex(0);
+    setFocusedSubMedicationIndex(0);
   };
+  useEffect3(() => {
+    const q = searchQuery.trim();
+    setShowNoMatchesPlaceholder(false);
+    if (q.length === 0) {
+      resetSearch();
+      setShowSpinner(false);
+      return;
+    }
+    if (q.length < 3) {
+      setShowSpinner(false);
+      return;
+    }
+    const handle = setTimeout(() => {
+      if (q === searchQueryRef.current) {
+        doSearch(q).catch((error) => console.error("Error while searching medications:", error));
+      }
+    }, 100);
+    return () => clearTimeout(handle);
+  }, [searchQuery, sdk]);
   const scrollToFocusedItem = (index) => {
     if (index >= 0 && resultRefs.current[index]) {
       resultRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   };
-  const handleMouseMove = () => {
-    if (!disableInputEventsTracking) setDisableHover(false);
+  const handleKeyDown = (event) => {
+    if (disableInputEventsTracking) return;
+    const pageCount = pages.length;
+    if (pageCount === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      let mi = focusedMedicationIndex;
+      let si = focusedSubMedicationIndex + 1;
+      if (si >= (pages[mi]?.medications.length ?? 0)) {
+        si = 0;
+        mi = (mi + 1) % pageCount;
+      }
+      setFocusedMedicationIndex(mi);
+      setFocusedSubMedicationIndex(si);
+      scrollToFocusedItem(mi);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      let mi = focusedMedicationIndex;
+      let si = focusedSubMedicationIndex - 1;
+      if (si < 0) {
+        mi = (mi - 1 + pageCount) % pageCount;
+        si = (pages[mi]?.medications.length ?? 1) - 1;
+      }
+      setFocusedMedicationIndex(mi);
+      setFocusedSubMedicationIndex(si);
+      scrollToFocusedItem(mi);
+    } else if (event.key === "Enter" && focusedMedicationIndex >= 0 && focusedSubMedicationIndex >= 0) {
+      event.preventDefault();
+      const med = pages[focusedMedicationIndex]?.medications[focusedSubMedicationIndex];
+      if (med) handleAddPrescription(med);
+    }
+  };
+  const handleAddPrescription = async (med) => {
+    const enriched = {
+      ...med,
+      vmpGroup: med.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, med.vmp.vmpGroup.code) : void 0
+    };
+    const alternatives = med.cheap || !med.vmp?.vmpGroup?.code ? [] : await loadAlternativeMedications(sdk, med.vmp.vmpGroup.code).then((ampPage) => loadMedicationsPage(ampPage, 10, deliveryEnvironment, [], (mt) => mt.cheap || mt.cheapest ? mt : void 0)).then((products) => products.flatMap((p) => p.medications));
+    onAddPrescription(enriched, alternatives);
+    setSearchQuery("");
   };
   const showSearchError = () => {
     const value = searchQuery?.trim();
     return !!value && value.length < 3;
   };
-  const handleAddPrescription = (medication) => {
-    onAddPrescription(medication);
-    setSearchQuery("");
-  };
-  return /* @__PURE__ */ jsxs17(Fragment5, { children: [
-    /* @__PURE__ */ jsx19(GlobalStyles, {}),
-    /* @__PURE__ */ jsxs17(
-      StyledMedicationSearch,
-      {
-        className: "StyledMedicationSearch",
-        onKeyDown: handleKeyDown,
-        "aria-activedescendant": focusedMedicationIndex >= 0 ? `result-${focusedMedicationIndex}` : void 0,
-        children: [
-          /* @__PURE__ */ jsxs17(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
-            /* @__PURE__ */ jsxs17("p", { children: [
-              t("medication.search.label"),
-              ":"
-            ] }),
-            /* @__PURE__ */ jsxs17(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
-              /* @__PURE__ */ jsx19(
-                "input",
-                {
-                  id: "searchMedications",
-                  type: "text",
-                  placeholder: t("medication.search.label"),
-                  autoComplete: "off",
-                  autoCapitalize: "off",
-                  value: searchQuery,
-                  onChange: (e) => setSearchQuery(e.target.value)
-                }
-              ),
-              /* @__PURE__ */ jsx19(SearchIcn, {})
-            ] }),
-            showSearchError() && /* @__PURE__ */ jsx19("p", { className: "error", children: t("medication.search.errorMessage") })
-          ] }),
-          pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ jsxs17(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", onMouseMove: handleMouseMove, children: [
-            pages.map((medication, index) => /* @__PURE__ */ jsx19("div", { ref: (el) => resultRefs.current[index] = el, className: "medicationCardWrap", children: /* @__PURE__ */ jsx19(
-              MedicationCard,
-              {
-                medication,
-                handleAddPrescription,
-                id: `result-${index}`,
-                focused: focusedMedicationIndex === index,
-                disableHover,
-                short
-              }
-            ) }, index)),
-            /* @__PURE__ */ jsx19(
-              InfiniteScroll,
-              {
-                threshold: 50,
-                loadMore: () => loadMore({
-                  medicationsPage,
-                  moleculesPage,
-                  productsPage
-                }).then((results) => setPages([...pages, ...results]))
-              }
-            )
-          ] })
-        ]
-      }
-    )
+  const isFocused = (medicationIndex, subMedicationIndex) => focusedMedicationIndex === medicationIndex && focusedSubMedicationIndex === subMedicationIndex;
+  return /* @__PURE__ */ jsxs19(Fragment5, { children: [
+    /* @__PURE__ */ jsx21(GlobalStyles, {}),
+    /* @__PURE__ */ jsxs19(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
+      /* @__PURE__ */ jsxs19(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
+        /* @__PURE__ */ jsxs19("p", { children: [
+          t("medication.search.label"),
+          ":"
+        ] }),
+        /* @__PURE__ */ jsxs19(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
+          /* @__PURE__ */ jsx21(
+            "input",
+            {
+              id: "searchMedications",
+              type: "text",
+              placeholder: t("medication.search.label"),
+              autoComplete: "off",
+              autoCapitalize: "off",
+              value: searchQuery,
+              onChange: (e) => setSearchQuery(e.target.value)
+            }
+          ),
+          /* @__PURE__ */ jsx21(SearchIcn, {})
+        ] }),
+        showSearchError() && /* @__PURE__ */ jsx21("p", { className: "error", children: t("medication.search.errorMessage") })
+      ] }),
+      showSpinner && /* @__PURE__ */ jsx21("div", { className: "spinner", children: /* @__PURE__ */ jsx21(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
+      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ jsxs19(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
+        pages.map((entry, i) => /* @__PURE__ */ jsx21("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ jsxs19(Fragment5, { children: [
+          /* @__PURE__ */ jsx21(MedicationProductTitle, { productTitle: entry.product.title }),
+          entry.medications.map((smed, j) => /* @__PURE__ */ jsx21("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ jsx21(
+            MedicationCard,
+            {
+              medication: smed,
+              handleAddPrescription,
+              id: `result-${i}-${j}`,
+              focused: isFocused(i, j),
+              subMedication: true,
+              short
+            }
+          ) }, j))
+        ] }) : /* @__PURE__ */ jsx21("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ jsx21(
+          MedicationCard,
+          {
+            medication: entry.medications[0],
+            handleAddPrescription,
+            id: `result-${i}`,
+            focused: isFocused(i, 0),
+            subMedication: false,
+            short
+          }
+        ) }) }, i)),
+        /* @__PURE__ */ jsx21(
+          InfiniteScroll,
+          {
+            threshold: 50,
+            loadMore: () => runLoadMore().then((result) => {
+              if (result.length) setPages((prev) => [...prev, ...result.map(medMapper)]);
+            })
+          }
+        )
+      ] }),
+      showNoMatchesPlaceholder && /* @__PURE__ */ jsx21("div", { className: "placeholder", children: /* @__PURE__ */ jsx21("p", { children: t("medication.search.noMatchingPlaceholder") }) })
+    ] })
   ] });
 };
 
@@ -4087,8 +4298,8 @@ function getPharmacistVisibilityOptions() {
 import { forwardRef as forwardRef2 } from "react";
 
 // src/internal/components/form-elements/SelectInput/styles.ts
-import styled18, { css as css10 } from "styled-components";
-var StyledSelectInputLabel = styled18.label`
+import styled20, { css as css10 } from "styled-components";
+var StyledSelectInputLabel = styled20.label`
   ${labelCommonStyles};
   ${({ $error }) => !!$error && css10`
       ${labelCommonStyles_error}
@@ -4097,14 +4308,14 @@ var StyledSelectInputLabel = styled18.label`
       ${labelCommonStyles_required}
     `};
 `;
-var StyledSelectInput = styled18.div`
+var StyledSelectInput = styled20.div`
   ${fieldCommonStyles};
 
   .error {
     ${errorMessageCommonStyles}
   }
 `;
-var StyledSelectDropdown = styled18.select`
+var StyledSelectDropdown = styled20.select`
   ${inputCommonStyles};
 
   ${({ $error }) => !!$error && css10`
@@ -4116,22 +4327,22 @@ var StyledSelectDropdown = styled18.select`
 `;
 
 // src/internal/components/form-elements/SelectInput/index.tsx
-import { jsx as jsx20, jsxs as jsxs18 } from "react/jsx-runtime";
-var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs18(StyledSelectInput, { className: "StyledSelectInput", children: [
-  /* @__PURE__ */ jsxs18(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ jsx20("span", { children: "*" }),
+import { jsx as jsx22, jsxs as jsxs20 } from "react/jsx-runtime";
+var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs20(StyledSelectInput, { className: "StyledSelectInput", children: [
+  /* @__PURE__ */ jsxs20(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx22("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ jsx20(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ jsx20("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
-  !!errorMessage && /* @__PURE__ */ jsx20("p", { className: "error", children: errorMessage })
+  /* @__PURE__ */ jsx22(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ jsx22("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
+  !!errorMessage && /* @__PURE__ */ jsx22("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/internal/components/form-elements/RadioInput/index.tsx
 import { forwardRef as forwardRef3 } from "react";
 
 // src/internal/components/form-elements/RadioInput/styles.ts
-import styled19, { css as css11 } from "styled-components";
-var StyledRadioGroupLabel = styled19.p`
+import styled21, { css as css11 } from "styled-components";
+var StyledRadioGroupLabel = styled21.p`
   ${labelCommonStyles};
   ${({ $error }) => !!$error && css11`
       ${labelCommonStyles_error}
@@ -4140,14 +4351,14 @@ var StyledRadioGroupLabel = styled19.p`
       ${labelCommonStyles_required}
     `};
 `;
-var StyledRadioButtonToggleStuffing = styled19.span`
+var StyledRadioButtonToggleStuffing = styled21.span`
   display: none;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   background: ${colors.blue[800]};
 `;
-var StyledRadioButtonToggle = styled19.span`
+var StyledRadioButtonToggle = styled21.span`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4170,7 +4381,7 @@ var StyledRadioButtonToggle = styled19.span`
       }
     `}
 `;
-var StyledRadioButtonLabel = styled19.span`
+var StyledRadioButtonLabel = styled21.span`
   ${labelCommonStyles};
 
   ${({ $error }) => !!$error && css11`
@@ -4180,7 +4391,7 @@ var StyledRadioButtonLabel = styled19.span`
   width: auto;
   font-weight: 400;
 `;
-var StyledRadioButton = styled19.label`
+var StyledRadioButton = styled21.label`
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -4228,7 +4439,7 @@ var StyledRadioButton = styled19.label`
       }
     `}
 `;
-var StyledRadioInput = styled19.div`
+var StyledRadioInput = styled21.div`
   ${fieldCommonStyles};
 
   .radioBtnsGroup {
@@ -4246,15 +4457,15 @@ var StyledRadioInput = styled19.div`
 `;
 
 // src/internal/components/form-elements/RadioInput/index.tsx
-import { jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
+import { jsx as jsx23, jsxs as jsxs21 } from "react/jsx-runtime";
 var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
-  return /* @__PURE__ */ jsxs19(StyledRadioInput, { className: "StyledRadioInput", children: [
-    /* @__PURE__ */ jsxs19(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx21("span", { children: "*" }),
+  return /* @__PURE__ */ jsxs21(StyledRadioInput, { className: "StyledRadioInput", children: [
+    /* @__PURE__ */ jsxs21(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ jsx23("span", { children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ jsx21("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ jsxs19(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx21(
+    /* @__PURE__ */ jsx23("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ jsxs21(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
+      /* @__PURE__ */ jsx23(
         "input",
         {
           id: option.id,
@@ -4267,10 +4478,10 @@ var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, va
           ref
         }
       ),
-      /* @__PURE__ */ jsx21(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ jsx21(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
-      /* @__PURE__ */ jsx21(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
+      /* @__PURE__ */ jsx23(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ jsx23(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
+      /* @__PURE__ */ jsx23(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
     ] }, option.id)) }),
-    !!errorMessage && /* @__PURE__ */ jsx21("p", { className: "error", children: errorMessage })
+    !!errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
   ] });
 });
 RadioInput.displayName = "RadioInput";
@@ -4279,8 +4490,8 @@ RadioInput.displayName = "RadioInput";
 import { forwardRef as forwardRef4 } from "react";
 
 // src/internal/components/form-elements/ToggleSwitch/styles.ts
-import styled20 from "styled-components";
-var StyledSwitch = styled20.div`
+import styled22 from "styled-components";
+var StyledSwitch = styled22.div`
 
   ${fieldCommonStyles};
 
@@ -4362,16 +4573,16 @@ var StyledSwitch = styled20.div`
 `;
 
 // src/internal/components/form-elements/ToggleSwitch/index.tsx
-import { jsx as jsx22, jsxs as jsxs20 } from "react/jsx-runtime";
+import { jsx as jsx24, jsxs as jsxs22 } from "react/jsx-runtime";
 var ToggleSwitch = forwardRef4(({ id, value, label, onChange, checked }, ref) => {
-  return /* @__PURE__ */ jsxs20(StyledSwitch, { className: "StyledSwitch", children: [
-    label && /* @__PURE__ */ jsx22("p", { className: "toggleSwitchLabel", children: label }),
-    /* @__PURE__ */ jsxs20("div", { className: "toggleWrapper", children: [
-      /* @__PURE__ */ jsxs20("label", { htmlFor: id, className: "toggle", children: [
-        /* @__PURE__ */ jsx22("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
-        /* @__PURE__ */ jsx22("span", { className: "slider" })
+  return /* @__PURE__ */ jsxs22(StyledSwitch, { className: "StyledSwitch", children: [
+    label && /* @__PURE__ */ jsx24("p", { className: "toggleSwitchLabel", children: label }),
+    /* @__PURE__ */ jsxs22("div", { className: "toggleWrapper", children: [
+      /* @__PURE__ */ jsxs22("label", { htmlFor: id, className: "toggle", children: [
+        /* @__PURE__ */ jsx24("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
+        /* @__PURE__ */ jsx24("span", { className: "slider" })
       ] }),
-      /* @__PURE__ */ jsx22("p", { children: value })
+      /* @__PURE__ */ jsx24("p", { children: value })
     ] })
   ] });
 });
@@ -4381,8 +4592,8 @@ ToggleSwitch.displayName = "ToggleSwitch";
 import React10 from "react";
 
 // src/internal/components/form-elements/TextareaInput/styles.ts
-import styled21, { css as css12 } from "styled-components";
-var StyledTextareaInputLabel = styled21.label`
+import styled23, { css as css12 } from "styled-components";
+var StyledTextareaInputLabel = styled23.label`
   ${labelCommonStyles};
   ${({ $error }) => !!$error && css12`
       ${labelCommonStyles_error}
@@ -4391,14 +4602,14 @@ var StyledTextareaInputLabel = styled21.label`
       ${labelCommonStyles_required}
     `};
 `;
-var StyledTextareaInput = styled21.div`
+var StyledTextareaInput = styled23.div`
   ${fieldCommonStyles};
 
   .error {
     ${errorMessageCommonStyles}
   }
 `;
-var StyledTextarea = styled21.textarea`
+var StyledTextarea = styled23.textarea`
   ${inputCommonStyles};
   height: unset;
 
@@ -4411,13 +4622,13 @@ var StyledTextarea = styled21.textarea`
 `;
 
 // src/internal/components/form-elements/TextareaInput/index.tsx
-import { jsx as jsx23, jsxs as jsxs21 } from "react/jsx-runtime";
-var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs21(StyledTextareaInput, { className: "StyledTextareaInput", children: [
-  /* @__PURE__ */ jsxs21(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ jsx23("span", { children: "*" }),
+import { jsx as jsx25, jsxs as jsxs23 } from "react/jsx-runtime";
+var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs23(StyledTextareaInput, { className: "StyledTextareaInput", children: [
+  /* @__PURE__ */ jsxs23(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx25("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ jsx23(
+  /* @__PURE__ */ jsx25(
     StyledTextarea,
     {
       className: "StyledTextarea",
@@ -4432,12 +4643,12 @@ var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMe
       ...rest
     }
   ),
-  errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
+  errorMessage && /* @__PURE__ */ jsx25("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/shared/components/PrescriptionModal/styles.ts
-import styled22, { css as css13 } from "styled-components";
-var StyledPrescriptionModal = styled22.div`
+import styled24, { css as css13 } from "styled-components";
+var StyledPrescriptionModal = styled24.div`
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -4612,7 +4823,7 @@ var StyledPrescriptionModal = styled22.div`
     }
   }
 `;
-var StyledDosageInput = styled22.div`
+var StyledDosageInput = styled24.div`
   width: 100%;
   position: relative;
   display: flex;
@@ -4642,7 +4853,7 @@ var suggestionItemOnAction = css13`
   background: ${colors.blue[300]};
   color: ${colors.blue[800]} !important;
 `;
-var StyledSuggestionItem = styled22.li`
+var StyledSuggestionItem = styled24.li`
   width: 100%;
   display: flex;
   padding: 8px;
@@ -4685,7 +4896,7 @@ var StyledSuggestionItem = styled22.li`
 
 // src/shared/components/PrescriptionModal/index.tsx
 import { Controller, useForm as useForm2 } from "react-hook-form";
-import { Fragment as Fragment6, jsx as jsx24, jsxs as jsxs22 } from "react/jsx-runtime";
+import { Fragment as Fragment6, jsx as jsx26, jsxs as jsxs24 } from "react/jsx-runtime";
 var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
   const [posologySuggestions, setPosologySuggestions] = useState4([]);
   const [focusedDosageIndex, setFocusedDosageIndex] = useState4(-1);
@@ -4882,14 +5093,14 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
       setFocusedDosageIndex(1);
     }
   };
-  return /* @__PURE__ */ jsxs22(Fragment6, { children: [
-    /* @__PURE__ */ jsx24(GlobalStyles, {}),
-    /* @__PURE__ */ jsx24(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ jsx24("div", { className: "content", children: /* @__PURE__ */ jsxs22("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
-      /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__header", children: [
-        /* @__PURE__ */ jsx24("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
-        /* @__PURE__ */ jsx24("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ jsx24(CloseIcn, {}) })
+  return /* @__PURE__ */ jsxs24(Fragment6, { children: [
+    /* @__PURE__ */ jsx26(GlobalStyles, {}),
+    /* @__PURE__ */ jsx26(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ jsx26("div", { className: "content", children: /* @__PURE__ */ jsxs24("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
+      /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__header", children: [
+        /* @__PURE__ */ jsx26("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
+        /* @__PURE__ */ jsx26("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ jsx26(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ jsxs22(
+      /* @__PURE__ */ jsxs24(
         "div",
         {
           className: "addMedicationForm__body",
@@ -4898,8 +5109,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
           tabIndex: 0,
           "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
           children: [
-            /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ jsx24(
+            /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ jsx26(
                 TextInput,
                 {
                   label: t("prescription.form.medicationTitle"),
@@ -4912,8 +5123,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   errorMessage: prescriptionFormErrors["medicationTitle"]?.message
                 }
               ),
-              /* @__PURE__ */ jsxs22(StyledDosageInput, { className: "StyledDosageInput", children: [
-                /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsxs24(StyledDosageInput, { className: "StyledDosageInput", children: [
+                /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.dosage"),
@@ -4926,14 +5137,14 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     errorMessage: prescriptionFormErrors["dosage"]?.message
                   }
                 ),
-                posologySuggestions.length !== 0 && /* @__PURE__ */ jsx24("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ jsx24(
+                posologySuggestions.length !== 0 && /* @__PURE__ */ jsx26("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ jsx26(
                   StyledSuggestionItem,
                   {
                     id: `posology-${index}`,
                     $disableHover: disableHover,
                     $focused: focusedDosageIndex === index,
                     className: "StyledSuggestionItem",
-                    children: /* @__PURE__ */ jsx24(
+                    children: /* @__PURE__ */ jsx26(
                       "button",
                       {
                         onClick: (e) => {
@@ -4947,8 +5158,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   index
                 )) })
               ] }),
-              /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.duration"),
@@ -4962,13 +5173,13 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     errorMessage: prescriptionFormErrors["duration"]?.message
                   }
                 ),
-                /* @__PURE__ */ jsx24(
+                /* @__PURE__ */ jsx26(
                   Controller,
                   {
                     name: "durationTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ jsx24(
+                    render: ({ field }) => /* @__PURE__ */ jsx26(
                       SelectInput,
                       {
                         ...field,
@@ -4982,8 +5193,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.treatmentStartDate"),
@@ -4996,7 +5207,7 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
                   }
                 ),
-                /* @__PURE__ */ jsx24(
+                /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.executableUntil"),
@@ -5010,8 +5221,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   }
                 )
               ] }),
-              !prescriptionToModify && /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx24(
+              !prescriptionToModify && /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.prescriptionsNumber"),
@@ -5026,13 +5237,13 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
                   }
                 ),
-                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ jsx24(
+                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ jsx26(
                   Controller,
                   {
                     name: "periodicityTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ jsx24(
+                    render: ({ field }) => /* @__PURE__ */ jsx26(
                       SelectInput,
                       {
                         ...field,
@@ -5045,7 +5256,7 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                     )
                   }
                 ),
-                periodicityTimeUnit === "1" && /* @__PURE__ */ jsx24(
+                periodicityTimeUnit === "1" && /* @__PURE__ */ jsx26(
                   TextInput,
                   {
                     label: t("prescription.form.periodicityDaysNumber"),
@@ -5060,12 +5271,12 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsx24("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsx26("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ jsx26(
                 Controller,
                 {
                   name: "substitutionAllowed",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx24(
+                  render: ({ field }) => /* @__PURE__ */ jsx26(
                     RadioInput,
                     {
                       ...field,
@@ -5083,55 +5294,55 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                 }
               ) })
             ] }),
-            /* @__PURE__ */ jsx24(
+            /* @__PURE__ */ jsx26(
               Controller,
               {
                 name: "showExtraFields",
                 control,
-                render: ({ field }) => /* @__PURE__ */ jsx24(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
+                render: ({ field }) => /* @__PURE__ */ jsx26(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
               }
             ),
-            !showExtraFields ? /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
-              /* @__PURE__ */ jsxs22("p", { children: [
-                /* @__PURE__ */ jsxs22("span", { children: [
+            !showExtraFields ? /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
+              /* @__PURE__ */ jsxs24("p", { children: [
+                /* @__PURE__ */ jsxs24("span", { children: [
                   t("prescription.form.patientInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ jsx26("i", { children: /* @__PURE__ */ jsx26("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ jsxs22("p", { children: [
-                /* @__PURE__ */ jsxs22("span", { children: [
+              /* @__PURE__ */ jsxs24("p", { children: [
+                /* @__PURE__ */ jsxs24("span", { children: [
                   t("prescription.form.reimbursementInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ jsx26("i", { children: /* @__PURE__ */ jsx26("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ jsxs22("p", { children: [
-                /* @__PURE__ */ jsxs22("span", { children: [
+              /* @__PURE__ */ jsxs24("p", { children: [
+                /* @__PURE__ */ jsxs24("span", { children: [
                   t("prescription.form.prescriberVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
+                /* @__PURE__ */ jsx26("i", { children: /* @__PURE__ */ jsx26("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
               ] }),
-              /* @__PURE__ */ jsxs22("p", { children: [
-                /* @__PURE__ */ jsxs22("span", { children: [
+              /* @__PURE__ */ jsxs24("p", { children: [
+                /* @__PURE__ */ jsxs24("span", { children: [
                   t("prescription.form.pharmacistVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx24("i", { children: /* @__PURE__ */ jsx24("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
+                /* @__PURE__ */ jsx26("i", { children: /* @__PURE__ */ jsx26("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
               ] })
-            ] }) : /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ jsx24(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
-              /* @__PURE__ */ jsx24(
+            ] }) : /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ jsx26(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
+              /* @__PURE__ */ jsx26(
                 Controller,
                 {
                   name: "instructionsForReimbursement",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx24(
+                  render: ({ field }) => /* @__PURE__ */ jsx26(
                     SelectInput,
                     {
                       ...field,
@@ -5147,20 +5358,20 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
                   )
                 }
               ),
-              /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsx26(
                 Controller,
                 {
                   name: "prescriberVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx24(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
+                  render: ({ field }) => /* @__PURE__ */ jsx26(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
                 }
               ),
-              /* @__PURE__ */ jsx24(
+              /* @__PURE__ */ jsx26(
                 Controller,
                 {
                   name: "pharmacistVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx24(
+                  render: ({ field }) => /* @__PURE__ */ jsx26(
                     SelectInput,
                     {
                       ...field,
@@ -5180,9 +5391,9 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
           ]
         }
       ),
-      /* @__PURE__ */ jsxs22("div", { className: "addMedicationForm__footer", children: [
-        /* @__PURE__ */ jsx24(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
-        /* @__PURE__ */ jsx24(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+      /* @__PURE__ */ jsxs24("div", { className: "addMedicationForm__footer", children: [
+        /* @__PURE__ */ jsx26(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
+        /* @__PURE__ */ jsx26(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
       ] })
     ] }) }) })
   ] });
@@ -5192,7 +5403,7 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
 import { useState as useState5 } from "react";
 
 // src/internal/components/prescription-elements/PrescriptionCard/styles.ts
-import styled23, { css as css14 } from "styled-components";
+import styled25, { css as css14 } from "styled-components";
 var actionBtnCommonStyles = css14`
   background: none;
   cursor: pointer;
@@ -5208,7 +5419,7 @@ var actionBtnCommonStyles = css14`
         border-radius: 6px;
     `};
 `;
-var StyledPrescriptionCard = styled23.div`
+var StyledPrescriptionCard = styled25.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -5331,23 +5542,23 @@ var StyledPrescriptionCard = styled23.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionCard/index.tsx
-import { jsx as jsx25, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs25 } from "react/jsx-runtime";
 var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
-  return /* @__PURE__ */ jsxs23(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
-    /* @__PURE__ */ jsx25("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ jsx25("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ jsxs23("div", { className: "prescriptionCardHeader__prescription__content", children: [
-      /* @__PURE__ */ jsx25("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ jsx25("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
-      /* @__PURE__ */ jsx25("p", { children: prescribedMedication.medication.instructionForPatient })
+  return /* @__PURE__ */ jsxs25(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
+    /* @__PURE__ */ jsx27("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ jsx27("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ jsxs25("div", { className: "prescriptionCardHeader__prescription__content", children: [
+      /* @__PURE__ */ jsx27("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ jsx27("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
+      /* @__PURE__ */ jsx27("p", { children: prescribedMedication.medication.instructionForPatient })
     ] }) }) }),
-    !prescribedMedication.rid ? /* @__PURE__ */ jsxs23("div", { className: "actions", children: [
-      /* @__PURE__ */ jsx25("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ jsx25(EditIcn, {}) }),
-      /* @__PURE__ */ jsx25("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ jsx25(DeleteIcn, {}) })
-    ] }) : /* @__PURE__ */ jsx25("div", { className: "rid", children: prescribedMedication.rid })
+    !prescribedMedication.rid ? /* @__PURE__ */ jsxs25("div", { className: "actions", children: [
+      /* @__PURE__ */ jsx27("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ jsx27(EditIcn, {}) }),
+      /* @__PURE__ */ jsx27("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ jsx27(DeleteIcn, {}) })
+    ] }) : /* @__PURE__ */ jsx27("div", { className: "rid", children: prescribedMedication.rid })
   ] });
 };
 
 // src/shared/components/PrescriptionList/styles.ts
-import styled24 from "styled-components";
-var StyledPrescriptionList = styled24.div`
+import styled26 from "styled-components";
+var StyledPrescriptionList = styled26.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -5395,7 +5606,7 @@ var StyledPrescriptionList = styled24.div`
 `;
 
 // src/shared/components/PrescriptionList/index.tsx
-import { Fragment as Fragment7, jsx as jsx26, jsxs as jsxs24 } from "react/jsx-runtime";
+import { Fragment as Fragment7, jsx as jsx28, jsxs as jsxs26 } from "react/jsx-runtime";
 var PrescriptionList = ({
   handleModifyPrescription,
   handleDeletePrescription,
@@ -5423,12 +5634,12 @@ var PrescriptionList = ({
     return prescribedMedications.filter((item) => !item.rid);
   };
   if (!prescribedMedications) return null;
-  return /* @__PURE__ */ jsxs24(Fragment7, { children: [
-    /* @__PURE__ */ jsx26(GlobalStyles, {}),
-    /* @__PURE__ */ jsxs24(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
-      sentPrescriptions().length !== 0 && /* @__PURE__ */ jsxs24("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ jsx26("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
-        /* @__PURE__ */ jsx26("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsxs26(Fragment7, { children: [
+    /* @__PURE__ */ jsx28(GlobalStyles, {}),
+    /* @__PURE__ */ jsxs26(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
+      sentPrescriptions().length !== 0 && /* @__PURE__ */ jsxs26("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ jsx28("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        /* @__PURE__ */ jsx28("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx28(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -5437,7 +5648,7 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        handlePrintPrescriptions && /* @__PURE__ */ jsx26("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ jsx26(
+        handlePrintPrescriptions && /* @__PURE__ */ jsx28("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ jsx28(
           Button,
           {
             disabled: sending,
@@ -5448,12 +5659,12 @@ var PrescriptionList = ({
           }
         ) })
       ] }),
-      pendingPrescriptions().length !== 0 && /* @__PURE__ */ jsxs24("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ jsxs24("p", { className: "cardinal-prescriptions__title", children: [
+      pendingPrescriptions().length !== 0 && /* @__PURE__ */ jsxs26("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ jsxs26("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),
-        /* @__PURE__ */ jsx26("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx26(
+        /* @__PURE__ */ jsx28("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx28(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -5462,8 +5673,8 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ jsxs24("div", { className: "cardinal-prescriptions__footer", children: [
-          handlePrintPrescriptions && /* @__PURE__ */ jsx26(
+        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ jsxs26("div", { className: "cardinal-prescriptions__footer", children: [
+          handlePrintPrescriptions && /* @__PURE__ */ jsx28(
             Button,
             {
               disabled: sending,
@@ -5474,7 +5685,7 @@ var PrescriptionList = ({
               form: "prescriptionForm"
             }
           ),
-          handleSendPrescriptions && /* @__PURE__ */ jsx26(
+          handleSendPrescriptions && /* @__PURE__ */ jsx28(
             Button,
             {
               disabled: printing,
@@ -5495,8 +5706,8 @@ import { useEffect as useEffect5, useRef as useRef6 } from "react";
 import JsBarcode from "jsbarcode";
 
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/styles.ts
-import styled25 from "styled-components";
-var StyledPrescriptionDocument = styled25.div`
+import styled27 from "styled-components";
+var StyledPrescriptionDocument = styled27.div`
   @media print {
     .prescription {
       page-break-after: always;
@@ -5599,7 +5810,7 @@ var StyledPrescriptionDocument = styled25.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
-import { jsx as jsx27, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs27 } from "react/jsx-runtime";
 function chunk(arr, chunkSize = 1, cache = []) {
   const tmp = [...arr];
   if (chunkSize <= 0) return cache;
@@ -5625,24 +5836,24 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
   const formatDate = (date) => {
     return (date && dateDecode(date)?.toLocaleDateString()) ?? "-";
   };
-  return /* @__PURE__ */ jsx27(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ jsxs25("div", { className: "prescription-document", children: [
-    /* @__PURE__ */ jsxs25("div", { className: "prescription-document__header", children: [
-      /* @__PURE__ */ jsx27("h1", { children: t("prescription.pdf.title") }),
-      /* @__PURE__ */ jsx27("p", { children: t("prescription.pdf.instructions") })
+  return /* @__PURE__ */ jsx29(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ jsxs27("div", { className: "prescription-document", children: [
+    /* @__PURE__ */ jsxs27("div", { className: "prescription-document__header", children: [
+      /* @__PURE__ */ jsx29("h1", { children: t("prescription.pdf.title") }),
+      /* @__PURE__ */ jsx29("p", { children: t("prescription.pdf.instructions") })
     ] }),
-    /* @__PURE__ */ jsx27("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ jsxs25("div", { className: "prescription-document__options", children: [
-      /* @__PURE__ */ jsx27("h5", { children: /* @__PURE__ */ jsx27("strong", { children: t("prescription.pdf.options.title") }) }),
-      /* @__PURE__ */ jsxs25("ol", { children: [
-        /* @__PURE__ */ jsx27("li", { children: t("prescription.pdf.options.option1") }),
-        /* @__PURE__ */ jsx27("li", { children: t("prescription.pdf.options.option2") })
+    /* @__PURE__ */ jsx29("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ jsxs27("div", { className: "prescription-document__options", children: [
+      /* @__PURE__ */ jsx29("h5", { children: /* @__PURE__ */ jsx29("strong", { children: t("prescription.pdf.options.title") }) }),
+      /* @__PURE__ */ jsxs27("ol", { children: [
+        /* @__PURE__ */ jsx29("li", { children: t("prescription.pdf.options.option1") }),
+        /* @__PURE__ */ jsx29("li", { children: t("prescription.pdf.options.option2") })
       ] })
     ] }),
-    /* @__PURE__ */ jsx27("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ jsxs25("div", { className: "prescription-section", children: [
-      /* @__PURE__ */ jsxs25("div", { className: "prescription-section__persons", children: [
-        /* @__PURE__ */ jsxs25("p", { children: [
-          /* @__PURE__ */ jsxs25("strong", { children: [
+    /* @__PURE__ */ jsx29("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ jsxs27("div", { className: "prescription-section", children: [
+      /* @__PURE__ */ jsxs27("div", { className: "prescription-section__persons", children: [
+        /* @__PURE__ */ jsxs27("p", { children: [
+          /* @__PURE__ */ jsxs27("strong", { children: [
             t("prescription.pdf.prescriber"),
             ": "
           ] }),
@@ -5652,8 +5863,8 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           " ",
           prescriber.nihii
         ] }),
-        /* @__PURE__ */ jsxs25("p", { children: [
-          /* @__PURE__ */ jsxs25("strong", { children: [
+        /* @__PURE__ */ jsxs27("p", { children: [
+          /* @__PURE__ */ jsxs27("strong", { children: [
             t("prescription.pdf.patient"),
             ": "
           ] }),
@@ -5664,39 +5875,39 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           patient.ssin
         ] })
       ] }),
-      /* @__PURE__ */ jsx27("h3", { children: t("prescription.pdf.electronicContent") }),
-      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ jsxs25("div", { className: "prescription-item", children: [
-        /* @__PURE__ */ jsxs25("div", { className: "prescription-item__block", children: [
-          /* @__PURE__ */ jsxs25("p", { children: [
+      /* @__PURE__ */ jsx29("h3", { children: t("prescription.pdf.electronicContent") }),
+      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ jsxs27("div", { className: "prescription-item", children: [
+        /* @__PURE__ */ jsxs27("div", { className: "prescription-item__block", children: [
+          /* @__PURE__ */ jsxs27("p", { children: [
             t("prescription.pdf.product"),
             " ",
             "",
-            /* @__PURE__ */ jsx27("strong", { children: trim(
+            /* @__PURE__ */ jsx29("strong", { children: trim(
               prescription.medication.medicinalProduct?.intendedname ?? prescription.medication?.substanceProduct?.intendedname ?? prescription.medication?.compoundPrescription ?? ""
             ) })
           ] }),
-          /* @__PURE__ */ jsxs25("p", { children: [
+          /* @__PURE__ */ jsxs27("p", { children: [
             t("prescription.pdf.dosage"),
             " ",
             prescription.medication.instructionForPatient
           ] }),
-          /* @__PURE__ */ jsxs25("p", { children: [
+          /* @__PURE__ */ jsxs27("p", { children: [
             t("prescription.pdf.date"),
             " ",
             formatDate(prescription.medication.beginMoment)
           ] }),
-          /* @__PURE__ */ jsxs25("p", { children: [
+          /* @__PURE__ */ jsxs27("p", { children: [
             t("prescription.pdf.validUntil"),
             " ",
             prescription.medication.endMoment ? formatDate(prescription.medication.endMoment) : "-"
           ] })
         ] }),
-        /* @__PURE__ */ jsxs25("div", { className: "prescription-item__block prescription-item__block--right", children: [
-          /* @__PURE__ */ jsxs25("strong", { className: "ridTitle", children: [
+        /* @__PURE__ */ jsxs27("div", { className: "prescription-item__block prescription-item__block--right", children: [
+          /* @__PURE__ */ jsxs27("strong", { className: "ridTitle", children: [
             "RID ",
             prescriptionIndex + 1
           ] }),
-          /* @__PURE__ */ jsx27("div", { className: "barcode", children: /* @__PURE__ */ jsx27("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
+          /* @__PURE__ */ jsx29("div", { className: "barcode", children: /* @__PURE__ */ jsx29("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
         ] })
       ] }, prescriptionIndex))
     ] })
@@ -5704,8 +5915,8 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
 };
 
 // src/shared/components/PrescriptionPrintModal/styles.ts
-import styled26 from "styled-components";
-var StyledPrescriptionPrintModal = styled26.div`
+import styled28 from "styled-components";
+var StyledPrescriptionPrintModal = styled28.div`
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -5851,7 +6062,7 @@ var StyledPrescriptionPrintModal = styled26.div`
 `;
 
 // src/shared/components/PrescriptionPrintModal/index.tsx
-import { Fragment as Fragment8, jsx as jsx28, jsxs as jsxs26 } from "react/jsx-runtime";
+import { Fragment as Fragment8, jsx as jsx30, jsxs as jsxs28 } from "react/jsx-runtime";
 var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, patient }) => {
   const print = () => {
     const div = document.getElementById("print-container");
@@ -5881,17 +6092,17 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
       document.body.appendChild(hideFrame);
     }
   };
-  return /* @__PURE__ */ jsxs26(Fragment8, { children: [
-    /* @__PURE__ */ jsx28(GlobalStyles, {}),
-    /* @__PURE__ */ jsx28(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ jsx28("div", { className: "contentWrap", children: /* @__PURE__ */ jsxs26("div", { className: "content", children: [
-      /* @__PURE__ */ jsxs26("div", { className: "content__header", children: [
-        /* @__PURE__ */ jsx28("h3", { children: t("practitioner.printModal.title") }),
-        /* @__PURE__ */ jsx28("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ jsx28(CloseIcn, {}) })
+  return /* @__PURE__ */ jsxs28(Fragment8, { children: [
+    /* @__PURE__ */ jsx30(GlobalStyles, {}),
+    /* @__PURE__ */ jsx30(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ jsx30("div", { className: "contentWrap", children: /* @__PURE__ */ jsxs28("div", { className: "content", children: [
+      /* @__PURE__ */ jsxs28("div", { className: "content__header", children: [
+        /* @__PURE__ */ jsx30("h3", { children: t("practitioner.printModal.title") }),
+        /* @__PURE__ */ jsx30("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ jsx30(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ jsx28("div", { className: "content__body", children: /* @__PURE__ */ jsx28("div", { id: "print-container", children: /* @__PURE__ */ jsx28(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
-      /* @__PURE__ */ jsxs26("div", { className: "content__footer", children: [
-        /* @__PURE__ */ jsx28(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
-        /* @__PURE__ */ jsx28(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
+      /* @__PURE__ */ jsx30("div", { className: "content__body", children: /* @__PURE__ */ jsx30("div", { id: "print-container", children: /* @__PURE__ */ jsx30(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
+      /* @__PURE__ */ jsxs28("div", { className: "content__footer", children: [
+        /* @__PURE__ */ jsx30(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
+        /* @__PURE__ */ jsx30(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
       ] })
     ] }) }) })
   ] });
@@ -5909,8 +6120,10 @@ export {
   fetchSamVersion,
   findMedicationsByLabel,
   getSamTextTranslation,
+  loadAlternativeMedications,
   loadAndDecryptCertificate,
   loadCertificateInformation,
+  loadVmpGroup,
   sendRecipe,
   t,
   uploadAndEncryptCertificate,

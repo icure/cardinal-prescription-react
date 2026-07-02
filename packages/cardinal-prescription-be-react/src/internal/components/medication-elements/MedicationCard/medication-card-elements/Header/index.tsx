@@ -1,56 +1,26 @@
 import { Tooltip } from '../../../../common/Tooltip'
-import {
-  BlackTriangleIcn,
-  ChevronIcn,
-  EndOfCommercialisationIcn,
-  LeafIcn,
-  MoleculeIcn,
-  OrangeTriangleIcn,
-  PillsBottleIcn,
-  PrescriptionIcn,
-  SolidPillIcn,
-  StartOfCommercialisationIcn,
-  SupplyIcn,
-} from '../../../../common/Icons'
-import { RmaProfessionalLinkContent } from '../../infographic-elements/RmaProfessionalLinkContent'
-import { SupplyProblemsContent } from '../../infographic-elements/SupplyProblemsContent'
-import { EndOfCommercialisationContent } from '../../infographic-elements/EndOfCommercialisationContent'
-import { StartOfCommercialisationContent } from '../../infographic-elements/StartOfCommercialisationContent'
-import { ReimbursementsContent } from '../../infographic-elements/ReimbursementsContent'
-import { DeliveryConditionsContent } from '../../infographic-elements/DeliveryConditionsContent'
-import { PrescriptionConditionsContent } from '../../infographic-elements/PrescriptionConditionsContent'
+import { ChevronIcn, LeafIcn, MoleculeIcn, SolidPillIcn } from '../../../../common/Icons'
 import React, { FC, useRef } from 'react'
 import type { MedicationType } from '../../../../../../shared/types'
 import { t } from '../../../../../../shared/services/i18n'
-import { StyledExpandButton, StyledHeader, StyledTextToIcon } from './styles'
+import { MedicationInfographics } from '../../../MedicationInfographics'
+import { StyledCheapBadge, StyledExpandButton, StyledHeader, StyledTextToIcon } from './styles'
 
 interface Props {
   handleAddPrescription: () => void
   medication: MedicationType
   isMedicationCardExpanded: boolean
   setMedicationCardExpanded: (status: boolean) => void
+  subMedication?: boolean
 }
 
-export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded }) => {
+export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = useRef<HTMLDivElement>(null)
-  const medicationCommercialization = medication.commercializations?.[0]
-  const medicationSupplyProblem = medication.supplyProblems?.[0]
   const medicationReimbursement = medication.reimbursements
-
-  const getSpecialRegulation = (code?: number) => {
-    switch (code) {
-      case 1:
-        return t('medication.drugSpecialRegulation.noNarcoticRegulation')
-      case 2:
-        return t('medication.drugSpecialRegulation.narcoticRegulation')
-      default:
-        return t('medication.drugSpecialRegulation.noSpecialRegulation')
-    }
-  }
 
   const ReimbursementIcn = () => (
     <StyledTextToIcon className="StyledTextToIcon" $color={'green'}>
-      <p>{medicationReimbursement.reimbursementCriterion?.category}</p>
+      <p>{medicationReimbursement?.reimbursementCriterion?.category}</p>
     </StyledTextToIcon>
   )
   const DeliveryConditionsIcn = () => (
@@ -83,101 +53,28 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
         <div className="medication__content">
           <div className="medication__content__heading">
             <div className="medication__content__heading__title">
-              {medication.ampId ? (
-                <Tooltip content={t('medication.drugType.medication')} iconSnippet={<SolidPillIcn />} boundaryBox={medicationCardRef} />
-              ) : medication.nmpId ? (
-                <Tooltip content={t('medication.drugType.homologation')} iconSnippet={<LeafIcn />} boundaryBox={medicationCardRef} />
-              ) : medication.vmpGroupId ? (
-                <Tooltip content={t('medication.drugType.molecule')} iconSnippet={<MoleculeIcn />} boundaryBox={medicationCardRef} />
-              ) : null}
+              {!subMedication &&
+                (medication.ampId ? (
+                  <Tooltip content={t('medication.drugType.medication')} iconSnippet={<SolidPillIcn />} boundaryBox={medicationCardRef} />
+                ) : medication.nmpId ? (
+                  <Tooltip content={t('medication.drugType.homologation')} iconSnippet={<LeafIcn />} boundaryBox={medicationCardRef} />
+                ) : medication.vmpGroupId ? (
+                  <Tooltip content={t('medication.drugType.molecule')} iconSnippet={<MoleculeIcn />} boundaryBox={medicationCardRef} />
+                ) : null)}
 
               <h3>{medication.title}</h3>
 
-              <div className="medication__content__heading__infographics">
-                <div className="medicationInfographics">
-                  {medication.blackTriangle && (
-                    <div className="medicationInfographics__item">
-                      <Tooltip content={t('medication.drugInfographic.blackTriangle')} iconSnippet={<BlackTriangleIcn />} boundaryBox={medicationCardRef} />
-                    </div>
-                  )}
-                  {medication.rmaProfessionalLink && (
-                    <div className="medicationInfographics__item">
-                      <Tooltip
-                        contentSnippet={<RmaProfessionalLinkContent rmaProfessionalLink={medication.rmaProfessionalLink} rmakeyMessages={medication.rmakeyMessages} />}
-                        iconSnippet={<OrangeTriangleIcn />}
-                        boundaryBox={medicationCardRef}
-                      />
-                    </div>
-                  )}
-                  {medication.speciallyRegulated && (
-                    <div className="medicationInfographics__item">
-                      <Tooltip content={getSpecialRegulation(medication.speciallyRegulated)} iconSnippet={<PillsBottleIcn />} boundaryBox={medicationCardRef} />
-                    </div>
-                  )}
-                  {medication.genericPrescriptionRequired && (
-                    <div className="medicationInfographics__item">
-                      <Tooltip content={t('medication.drugInfographic.genericPrescriptionRequired')} iconSnippet={<PrescriptionIcn />} boundaryBox={medicationCardRef} />
-                    </div>
-                  )}
-                </div>
-                <div className="medicationAvailabilityInfographics">
-                  {medicationSupplyProblem && (
-                    <div className="medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange">
-                      <Tooltip
-                        contentSnippet={<SupplyProblemsContent medicationSupplyProblem={medicationSupplyProblem} />}
-                        iconSnippet={<SupplyIcn />}
-                        boundaryBox={medicationCardRef}
-                      />
-                    </div>
-                  )}
-                  {medicationCommercialization?.endOfComercialization && (
-                    <div className="medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--red">
-                      <Tooltip
-                        contentSnippet={<EndOfCommercialisationContent medicationCommercialization={medicationCommercialization} />}
-                        iconSnippet={<EndOfCommercialisationIcn />}
-                        boundaryBox={medicationCardRef}
-                      />
-                    </div>
-                  )}
-                  {medicationCommercialization && !medicationCommercialization?.endOfComercialization && (
-                    <div className="medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--green">
-                      <Tooltip
-                        contentSnippet={<StartOfCommercialisationContent medicationCommercialization={medicationCommercialization} />}
-                        iconSnippet={<StartOfCommercialisationIcn />}
-                        boundaryBox={medicationCardRef}
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="deliveryPrescriptionConditions">
-                  {medicationReimbursement && <Tooltip contentSnippet={<ReimbursementsContent reimbursement={medication.reimbursements} />} iconSnippet={<ReimbursementIcn />} />}
-                  {medication.deliveryModusCode && (
-                    <Tooltip
-                      contentSnippet={
-                        <DeliveryConditionsContent
-                          deliveryModus={medication.deliveryModus}
-                          deliveryModusSpecification={medication.deliveryModusSpecification}
-                          deliveryModusCode={medication.deliveryModusCode}
-                        />
-                      }
-                      iconSnippet={<DeliveryConditionsIcn />}
-                      boundaryBox={medicationCardRef}
-                    />
-                  )}
-                  {medication.deliveryModusCode && medication.deliveryModusSpecificationCode && (
-                    <Tooltip
-                      contentSnippet={
-                        <PrescriptionConditionsContent
-                          deliveryModusSpecificationCode={medication.deliveryModusSpecificationCode}
-                          deliveryModusSpecification={medication.deliveryModusSpecification}
-                        />
-                      }
-                      iconSnippet={<PrescriptionConditionsIcn />}
-                      boundaryBox={medicationCardRef}
-                    />
-                  )}
-                </div>
-              </div>
+              {medication.cheapest ? (
+                <StyledCheapBadge className="StyledCheapBadge" $variant="cheapest">
+                  {t('medication.drugInfographic.cheapest')}
+                </StyledCheapBadge>
+              ) : medication.cheap ? (
+                <StyledCheapBadge className="StyledCheapBadge" $variant="cheap">
+                  {t('medication.drugInfographic.cheap')}
+                </StyledCheapBadge>
+              ) : null}
+
+              <MedicationInfographics medication={medication} boundaryBox={medicationCardRef} />
             </div>
 
             <p className="medication__content__heading__activeIngredient">{medication.activeIngredient}</p>
