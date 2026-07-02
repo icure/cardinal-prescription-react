@@ -89,8 +89,6 @@ interface PrescribedMedicationType {
 }
 
 interface CertificateValidationResultType {
-    keystoreUuid?: string;
-    stsTokenId?: string;
     status: boolean;
     error?: SamText;
 }
@@ -105,6 +103,11 @@ interface CertificateRecordType {
     salt: number[];
     iv: number[];
     encryptedCertificate: number[];
+}
+
+interface TokenStore {
+    put: (key: string, value: string) => Promise<string>;
+    get: (key: string) => Promise<string>;
 }
 
 declare const loadCertificateInformation: (hcp_ssin: string) => Promise<{
@@ -130,9 +133,9 @@ interface FhcServiceConfig {
     samPackage: SamPackageType;
 }
 declare const createFhcCode: (type: string, code: string, version?: string) => Code;
-declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string, fhc_url: string) => Promise<Prescription[]>;
-declare const verifyCertificateWithSts: (keystore: ArrayBuffer, prescriber: HealthcareParty, passphrase: string, fhc_url: string) => Promise<CertificateValidationResultType>;
-declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string, fhc_url: string) => Promise<CertificateValidationResultType>;
+declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string, fhc_url: string, cache: TokenStore) => Promise<Prescription[]>;
+declare const verifyCertificateWithSts: (prescriber: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string) => Promise<CertificateValidationResultType>;
+declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string) => Promise<CertificateValidationResultType>;
 
 declare class IndexedDbServiceStore<T> {
     private readonly db;
@@ -146,6 +149,12 @@ declare class IndexedDbServiceStore<T> {
     put(key: string, value: T): Promise<T>;
     delete(key: string): Promise<void>;
 }
+/**
+ * Create a ready-made {@link TokenStore} backed by IndexedDB, used to cache the
+ * FHC keystore uuid / STS token between certificate validation and prescription
+ * sending. Provided so consumers don't have to wire up their own store.
+ */
+declare const createIndexedDbTokenStore: () => TokenStore;
 
 interface PractitionerCertificate {
     certificateValid: boolean;
@@ -202,4 +211,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

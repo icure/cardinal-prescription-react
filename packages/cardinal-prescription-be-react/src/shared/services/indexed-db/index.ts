@@ -1,3 +1,6 @@
+import { TokenStore } from '../../types/tokenStore'
+import { TOKEN_IDB_CONFIG } from '../../../internal/services/constants'
+
 export class IndexedDbServiceStore<T> {
   private readonly db: Promise<IDBDatabase>
   private readonly config: {
@@ -73,3 +76,10 @@ export class IndexedDbServiceStore<T> {
     })
   }
 }
+
+/**
+ * Create a ready-made {@link TokenStore} backed by IndexedDB, used to cache the
+ * FHC keystore uuid / STS token between certificate validation and prescription
+ * sending. Provided so consumers don't have to wire up their own store.
+ */
+export const createIndexedDbTokenStore = (): TokenStore => new IndexedDbServiceStore<string>(TOKEN_IDB_CONFIG)

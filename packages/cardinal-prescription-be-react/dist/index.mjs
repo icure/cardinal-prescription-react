@@ -1014,8 +1014,8 @@ var TOKEN_IDB_CONFIG = {
 // src/shared/services/i18n/index.tsx
 var CardinalLanguage = class {
   language = DEFAULT_APP_LANGULAGE;
-  setLanguage(language2) {
-    this.language = language2;
+  setLanguage(language) {
+    this.language = language;
   }
   getLanguage() {
     return this.language;
@@ -1048,9 +1048,9 @@ var getSamTextTranslation = (samText) => {
 
 // src/shared/services/cardinal-sam/index.ts
 var findMedicationsByLabel = async (sdk, query) => {
-  const language2 = cardinalLanguage.getLanguage();
+  const language = cardinalLanguage.getLanguage();
   try {
-    return await Promise.all([sdk.findPaginatedAmpsByLabel(language2, query), sdk.findPaginatedVmpGroupsByLabel(language2, query), sdk.findPaginatedNmpsByLabel(language2, query)]);
+    return await Promise.all([sdk.findPaginatedAmpsByLabel(language, query), sdk.findPaginatedVmpGroupsByLabel(language, query), sdk.findPaginatedNmpsByLabel(language, query)]);
   } catch (error) {
     console.error("Error in findMedicationsByLabel:", error);
     throw error;
@@ -1133,6 +1133,7 @@ var IndexedDbServiceStore = class {
     });
   }
 };
+var createIndexedDbTokenStore = () => new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
 
 // src/shared/services/certificate/index.ts
 var certificateStore = new IndexedDbServiceStore(CERTIFICATE_IDB_CONFIG);
@@ -1268,12 +1269,6 @@ function offsetDate(date, offsetInDays) {
 }
 
 // src/shared/services/fhc/index.ts
-var tokenStore = new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
-var getTokenStorageKeys = (hcp) => ({
-  STORE_KEY: `keystore.${hcp.ssin}`,
-  TOKEN_KEY: `token.${hcp.ssin}`
-});
-var language = cardinalLanguage.getLanguage();
 var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new PrescriptionRequest({
   medications: [prescribedMedication.medication],
   patient: {
@@ -1300,7 +1295,7 @@ var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescrib
   samVersion,
   deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
   expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
-  lang: language
+  lang: cardinalLanguage.getLanguage()
 });
 var createFhcCode = (type, code, version = "1.0") => new FhcCode({
   id: `${type}:${code}:${version}`,
@@ -1308,18 +1303,25 @@ var createFhcCode = (type, code, version = "1.0") => new FhcCode({
   code,
   version
 });
-var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase, fhc_url) => {
+var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase, fhc_url, cache) => {
   const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication);
   if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
   const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
   if (!keystore) throw new Error("Cannot obtain keystore");
+  const sts = new fhcStsApi(fhc_url, []);
   const recipe = new fhcRecipeApi(fhc_url, []);
-  const { keystoreUuid, stsTokenId } = await verifyCertificateWithSts(keystore, prescriber, passphrase, fhc_url);
+  const storeKey = `keystore.${prescriber.ssin}`;
+  const keystoreUuid = await cache.get(storeKey) ?? await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid: uuid2 }) => {
+    if (!uuid2) throw new Error("Cannot obtain keystore uuid");
+    return cache.put(storeKey, uuid2);
+  });
+  const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor", await cache.get(storeKey));
+  if (!stsToken.tokenId) console.error("Cannot obtain token");
   return Promise.all(
     prescription.medications?.map(
       (m) => recipe.createPrescriptionV4UsingPOST(
         keystoreUuid,
-        stsTokenId,
+        stsToken.tokenId,
         passphrase,
         "persphysician",
         prescriber.nihii,
@@ -1332,7 +1334,7 @@ var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedic
     ) ?? []
   );
 };
-var verifyCertificateWithSts = async (keystore, prescriber, passphrase, fhc_url) => {
+var verifyCertificateWithSts = async (prescriber, passphrase, cache, fhc_url) => {
   if (!prescriber?.ssin || !prescriber?.nihii) {
     return {
       status: false,
@@ -1345,29 +1347,7 @@ var verifyCertificateWithSts = async (keystore, prescriber, passphrase, fhc_url)
     };
   }
   try {
-    const { STORE_KEY, TOKEN_KEY } = getTokenStorageKeys(prescriber);
-    const sts = new fhcStsApi(fhc_url, []);
-    const { uuid: uuid2 } = await sts.uploadKeystoreUsingPOST(keystore);
-    if (!uuid2) throw new Error("Cannot obtain keystore uuid");
-    await tokenStore.put(STORE_KEY, uuid2);
-    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, uuid2, "doctor");
-    await tokenStore.put(TOKEN_KEY, stsToken.tokenId);
-    return { stsTokenId: stsToken.tokenId, keystoreUuid: uuid2, status: !!stsToken.tokenId };
-  } catch (error) {
-    return {
-      status: false,
-      error: {
-        en: error?.message || "Unknown error occurred",
-        fr: error?.message || "Une erreur inconnue est survenue",
-        nl: error?.message || "Er is een onbekende fout opgetreden",
-        de: error?.message || "Ein unbekannter Fehler ist aufgetreten"
-      }
-    };
-  }
-};
-var validateDecryptedCertificate = async (hcp, passphrase, fhc_url) => {
-  try {
-    const keystore = await loadAndDecryptCertificate(hcp.ssin, passphrase);
+    const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
     if (!keystore) {
       return {
         status: false,
@@ -1379,7 +1359,30 @@ var validateDecryptedCertificate = async (hcp, passphrase, fhc_url) => {
         }
       };
     }
-    return await verifyCertificateWithSts(keystore, hcp, passphrase, fhc_url);
+    const sts = new fhcStsApi(fhc_url, []);
+    const storeKey = `keystore.${prescriber.ssin}`;
+    const keystoreUuid = await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid: uuid2 }) => {
+      if (!uuid2) throw new Error("Cannot obtain keystore uuid");
+      return cache.put(storeKey, uuid2);
+    });
+    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor", await cache.get(storeKey));
+    return { status: !!stsToken.tokenId };
+  } catch (error) {
+    console.error("Certificate verification error:", error);
+    return {
+      status: false,
+      error: {
+        en: error?.message || "Unknown error occurred",
+        fr: error?.message || "Une erreur inconnue est survenue",
+        nl: error?.message || "Er is een onbekende fout opgetreden",
+        de: error?.message || "Ein unbekannter Fehler ist aufgetreten"
+      }
+    };
+  }
+};
+var validateDecryptedCertificate = async (hcp, passphrase, cache, fhc_url) => {
+  try {
+    return await verifyCertificateWithSts(hcp, passphrase, cache, fhc_url);
   } catch {
     return { status: false };
   }
@@ -3722,7 +3725,7 @@ async function mergeLazySortedNamedItems(limit, arrays, fetchMissingCallbacks) {
 // src/internal/services/loaders/medication-loader.ts
 var defaultLanguage = "fr";
 async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = [], filter = (m) => m) {
-  const language2 = cardinalLanguage.getLanguage();
+  const language = cardinalLanguage.getLanguage();
   const now = Date.now();
   const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
   const loadedPage = !await medications.hasNext() ? [] : await medications.next(min);
@@ -3750,29 +3753,29 @@ async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = 
         cnk: dmpp?.code,
         dmppProductId: dmpp?.productId,
         index,
-        title: ampp.prescriptionName?.[language2] ?? ampp.prescriptionName?.[defaultLanguage] ?? ampp.abbreviatedName?.[language2] ?? ampp.abbreviatedName?.[defaultLanguage] ?? amp.prescriptionName?.[language2] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language2] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language2] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
-        vmpTitle: amp.vmp?.name?.[language2] ?? amp.vmp?.name?.[defaultLanguage] ?? "",
-        activeIngredient: amp.vmp?.vmpGroup?.name?.[language2] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? "",
+        title: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage] ?? ampp.abbreviatedName?.[language] ?? ampp.abbreviatedName?.[defaultLanguage] ?? amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
+        vmpTitle: amp.vmp?.name?.[language] ?? amp.vmp?.name?.[defaultLanguage] ?? "",
+        activeIngredient: amp.vmp?.vmpGroup?.name?.[language] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? "",
         price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
         cheap: dmpp?.cheap,
         cheapest: dmpp?.cheapest,
-        crmLink: ampp.crmLink?.[language2] ?? ampp.crmLink?.[defaultLanguage],
-        patientInformationLeafletLink: ampp.leafletLink?.[language2] ?? ampp.leafletLink?.[defaultLanguage],
+        crmLink: ampp.crmLink?.[language] ?? ampp.crmLink?.[defaultLanguage],
+        patientInformationLeafletLink: ampp.leafletLink?.[language] ?? ampp.leafletLink?.[defaultLanguage],
         blackTriangle: amp.blackTriangle,
         speciallyRegulated: ampp.speciallyRegulated,
         genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-        intendedName: ampp.prescriptionName?.[language2] ?? ampp.prescriptionName?.[defaultLanguage],
-        rmaProfessionalLink: ampp.rmaProfessionalLink?.[language2] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
-        spcLink: ampp.spcLink?.[language2] ?? ampp.spcLink?.[defaultLanguage],
-        dhpcLink: ampp.dhpcLink?.[language2] ?? ampp.dhpcLink?.[defaultLanguage],
-        rmakeyMessages: ampp.rmaKeyMessages?.[language2] ?? ampp.rmaKeyMessages?.[defaultLanguage],
+        intendedName: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage],
+        rmaProfessionalLink: ampp.rmaProfessionalLink?.[language] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
+        spcLink: ampp.spcLink?.[language] ?? ampp.spcLink?.[defaultLanguage],
+        dhpcLink: ampp.dhpcLink?.[language] ?? ampp.dhpcLink?.[defaultLanguage],
+        rmakeyMessages: ampp.rmaKeyMessages?.[language] ?? ampp.rmaKeyMessages?.[defaultLanguage],
         vmp: amp.vmp,
         supplyProblems: ampp.supplyProblems,
         commercializations: ampp?.commercializations,
         deliveryModusCode: ampp.deliveryModusCode,
-        deliveryModus: ampp.deliveryModus?.[language2] ?? ampp.deliveryModus?.[defaultLanguage],
+        deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
         deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
-        deliveryModusSpecification: ampp.deliveryModusSpecification?.[language2] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
+        deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
         reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now))
       };
     }).map(filter).filter((m) => !!m).sort((a, b) => {
@@ -3788,35 +3791,35 @@ async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = 
     }
     return {
       ampId: amp.id,
-      title: amp.prescriptionName?.[language2] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language2] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language2] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
+      title: amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
       medications: medications2
     };
   }).filter((mp) => mp !== null);
   return loadedPage.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications, min, deliveryEnvironment, [...acc, ...page], filter);
 }
 async function loadMoleculesPage(molecules, min, acc = []) {
-  const language2 = cardinalLanguage.getLanguage();
+  const language = cardinalLanguage.getLanguage();
   const now = Date.now();
   const loadedPage = !await molecules.hasNext() ? [] : await molecules.next(min);
   const page = loadedPage.filter((vmp) => !(vmp.to && vmp.to < now)).map((vmp) => {
     return {
       vmpGroupId: vmp.id,
       id: vmp.code,
-      title: capitalize(vmp.name?.[language2]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? "",
+      title: capitalize(vmp.name?.[language]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? "",
       vmpGroup: vmp
     };
   });
   return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page]);
 }
 async function loadNonMedicinalPage(products, min, acc = []) {
-  const language2 = cardinalLanguage.getLanguage();
+  const language = cardinalLanguage.getLanguage();
   const now = Date.now();
   const loadedPage = !await products.hasNext() ? [] : await products.next(min);
   const page = loadedPage.filter((nmp) => !(nmp.to && nmp.to < now)).map((nmp) => {
     return {
       nmpId: nmp.id,
       id: nmp.code,
-      title: capitalize(nmp.name?.[language2]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? ""
+      title: capitalize(nmp.name?.[language]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? ""
     };
   });
   return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products, min, [...acc, ...page]);
@@ -5052,7 +5055,7 @@ var StyledStandardDosagesItem = styled26.li`
 
 // src/internal/components/medication-elements/StandardDosages/index.tsx
 import { jsx as jsx27, jsxs as jsxs25 } from "react/jsx-runtime";
-var StandardDosages = ({ dosages, language: language2, onSelectDosage }) => {
+var StandardDosages = ({ dosages, language, onSelectDosage }) => {
   const [isExpanded, setIsExpanded] = useState5(false);
   if (!dosages || dosages.length === 0) {
     return null;
@@ -5065,7 +5068,7 @@ var StandardDosages = ({ dosages, language: language2, onSelectDosage }) => {
       ] }),
       /* @__PURE__ */ jsx27(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ jsx27(ChevronIcn, {}) })
     ] }),
-    isExpanded && /* @__PURE__ */ jsx27(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ jsx27(StyledStandardDosagesItem, { children: /* @__PURE__ */ jsx27("button", { type: "button", onClick: () => onSelectDosage(dosage), children: marshal(dosage, language2) }) }, index)) })
+    isExpanded && /* @__PURE__ */ jsx27(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ jsx27(StyledStandardDosagesItem, { children: /* @__PURE__ */ jsx27("button", { type: "button", onClick: () => onSelectDosage(dosage), children: marshal(dosage, language) }) }, index)) })
   ] });
 };
 
@@ -5386,8 +5389,8 @@ var PrescriptionModal = ({
   const instructionsForReimbursement = watch("instructionsForReimbursement");
   const prescriberVisibility = watch("prescriberVisibility");
   const pharmacistVisibility = watch("pharmacistVisibility");
-  const language2 = cardinalLanguage.getLanguage();
-  const { completePosology: completeDosage } = makeParser2(language2);
+  const language = cardinalLanguage.getLanguage();
+  const { completePosology: completeDosage } = makeParser2(language);
   const dosageRef = useRef5(dosage);
   useEffect4(() => {
     if (dosage !== void 0) {
@@ -5407,7 +5410,7 @@ var PrescriptionModal = ({
     [medication, standardDosageContext]
   );
   const onSelectStandardDosage = (item) => {
-    setValue("dosage", marshal2(item, language2), { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    setValue("dosage", marshal2(item, language), { shouldValidate: true, shouldDirty: true, shouldTouch: true });
   };
   const onSelectAlternativeMedication = (selected) => {
     setAlternatives((prev) => {
@@ -5545,7 +5548,7 @@ var PrescriptionModal = ({
                   index
                 )) })
               ] }),
-              standardDosages.length > 0 && /* @__PURE__ */ jsx28(StandardDosages, { dosages: standardDosages, language: language2, onSelectDosage: onSelectStandardDosage }),
+              standardDosages.length > 0 && /* @__PURE__ */ jsx28(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
               /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
                 /* @__PURE__ */ jsx28(
                   TextInput,
@@ -6504,6 +6507,7 @@ export {
   PrescriptionPrintModal,
   cardinalLanguage,
   createFhcCode,
+  createIndexedDbTokenStore,
   deleteCertificate,
   fetchSamVersion,
   findMedicationsByLabel,

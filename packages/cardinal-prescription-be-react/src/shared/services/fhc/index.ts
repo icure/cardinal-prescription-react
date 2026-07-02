@@ -1,12 +1,8 @@
-import { CertificateValidationResultType, PrescribedMedicationType } from '../../types'
-import { Code as FhcCode, fhcRecipeApi, fhcStsApi, HealthcareParty, Patient, Prescription, PrescriptionRequest } from '@icure/be-fhc-lite-api'
-import { IndexedDbServiceStore } from '../indexed-db'
-import { TOKEN_IDB_CONFIG } from '../../../internal/services/constants'
+import { CertificateValidationResultType, PrescribedMedicationType, TokenStore } from '../../types'
+import { Code as FhcCode, fhcRecipeApi, fhcStsApi, HealthcareParty, Patient, Prescription, PrescriptionRequest, UUIDType } from '@icure/be-fhc-lite-api'
 import { dateEncode } from '../../../internal/utils/date-helpers'
 import { loadAndDecryptCertificate } from '../certificate'
 import { cardinalLanguage } from '../i18n'
-
-const tokenStore = new IndexedDbServiceStore<string>(TOKEN_IDB_CONFIG)
 
 export interface VendorType {
   vendorName: string
@@ -23,13 +19,6 @@ export interface FhcServiceConfig {
   vendor: VendorType
   samPackage: SamPackageType
 }
-
-const getTokenStorageKeys = (hcp: HealthcareParty) => ({
-  STORE_KEY: `keystore.${hcp.ssin}`,
-  TOKEN_KEY: `token.${hcp.ssin}`,
-})
-
-const language = cardinalLanguage.getLanguage()
 
 const makePrescriptionRequest = (
   config: FhcServiceConfig,
@@ -64,7 +53,7 @@ const makePrescriptionRequest = (
     samVersion,
     deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date()),
     expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+new Date() + 1000 * 3600 * 24 * 90)),
-    lang: language,
+    lang: cardinalLanguage.getLanguage(),
   })
 
 export const createFhcCode = (type: string, code: string, version = '1.0') =>
@@ -83,6 +72,7 @@ export const sendRecipe = async (
   prescribedMedication: PrescribedMedicationType,
   passphrase: string,
   fhc_url: string,
+  cache: TokenStore,
 ): Promise<Prescription[]> => {
   const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication)
   if (!prescriber?.ssin || !prescriber?.nihii) throw new Error('Missing prescriber information')
@@ -90,16 +80,29 @@ export const sendRecipe = async (
   const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase)
   if (!keystore) throw new Error('Cannot obtain keystore')
 
+  const sts = new fhcStsApi(fhc_url, [])
   const recipe = new fhcRecipeApi(fhc_url, [])
 
-  const { keystoreUuid, stsTokenId } = await verifyCertificateWithSts(keystore, prescriber, passphrase, fhc_url)
+  const storeKey = `keystore.${prescriber.ssin}`
+
+  // Reuse the keystore uuid cached during certificate verification; only upload
+  // the keystore again if it is not already cached.
+  const keystoreUuid =
+    (await cache.get(storeKey)) ??
+    (await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid }: UUIDType) => {
+      if (!uuid) throw new Error('Cannot obtain keystore uuid')
+      return cache.put(storeKey, uuid)
+    }))
+
+  const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, 'doctor', await cache.get(storeKey))
+  if (!stsToken.tokenId) console.error('Cannot obtain token')
 
   // Create all prescriptions (for each medication)
   return Promise.all(
     prescription.medications?.map((m) =>
       recipe.createPrescriptionV4UsingPOST(
         keystoreUuid,
-        stsTokenId,
+        stsToken.tokenId,
         passphrase,
         'persphysician',
         prescriber.nihii,
@@ -113,12 +116,7 @@ export const sendRecipe = async (
   )
 }
 
-export const verifyCertificateWithSts = async (
-  keystore: ArrayBuffer,
-  prescriber: HealthcareParty,
-  passphrase: string,
-  fhc_url: string,
-): Promise<CertificateValidationResultType> => {
+export const verifyCertificateWithSts = async (prescriber: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string): Promise<CertificateValidationResultType> => {
   if (!prescriber?.ssin || !prescriber?.nihii) {
     return {
       status: false,
@@ -131,17 +129,31 @@ export const verifyCertificateWithSts = async (
     }
   }
   try {
-    const { STORE_KEY, TOKEN_KEY } = getTokenStorageKeys(prescriber)
+    const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase)
+    if (!keystore) {
+      return {
+        status: false,
+        error: {
+          en: 'Cannot obtain the certificate',
+          fr: 'Impossible d’obtenir le certificat',
+          nl: 'Certificaat kan niet worden verkregen',
+          de: 'Zertifikat kann nicht abgerufen werden',
+        },
+      }
+    }
+
     const sts = new fhcStsApi(fhc_url, [])
-    const { uuid } = await sts.uploadKeystoreUsingPOST(keystore)
-    if (!uuid) throw new Error('Cannot obtain keystore uuid')
-    await tokenStore.put(STORE_KEY, uuid)
+    const storeKey = `keystore.${prescriber.ssin}`
 
-    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, uuid, 'doctor')
-    await tokenStore.put(TOKEN_KEY, stsToken.tokenId)
+    const keystoreUuid = await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid }: UUIDType) => {
+      if (!uuid) throw new Error('Cannot obtain keystore uuid')
+      return cache.put(storeKey, uuid)
+    })
 
-    return { stsTokenId: stsToken.tokenId, keystoreUuid: uuid, status: !!stsToken.tokenId }
+    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, 'doctor', await cache.get(storeKey))
+    return { status: !!stsToken.tokenId }
   } catch (error: any) {
+    console.error('Certificate verification error:', error)
     return {
       status: false,
       error: {
@@ -154,21 +166,9 @@ export const verifyCertificateWithSts = async (
   }
 }
 
-export const validateDecryptedCertificate = async (hcp: HealthcareParty, passphrase: string, fhc_url: string): Promise<CertificateValidationResultType> => {
+export const validateDecryptedCertificate = async (hcp: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string): Promise<CertificateValidationResultType> => {
   try {
-    const keystore = await loadAndDecryptCertificate(hcp.ssin, passphrase)
-    if (!keystore) {
-      return {
-        status: false,
-        error: {
-          en: 'Cannot obtain the certificate',
-          fr: 'Impossible d’obtenir le certificat',
-          nl: 'Certificaat kan niet worden verkregen',
-          de: 'Zertifikat kann nicht abgerufen werden',
-        },
-      }
-    }
-    return await verifyCertificateWithSts(keystore, hcp, passphrase, fhc_url)
+    return await verifyCertificateWithSts(hcp, passphrase, cache, fhc_url)
   } catch {
     return { status: false }
   }

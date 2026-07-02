@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   cardinalLanguage,
+  createIndexedDbTokenStore,
   deleteCertificate,
   fetchSamVersion,
   loadCertificateInformation,
@@ -71,6 +72,10 @@ export const App = () => {
   const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
   const [isPrescriptionPrintModalOpen, setPrescriptionPrintModalOpen] = useState(false)
 
+  // Token store used to cache the FHC keystore uuid / STS token between
+  // certificate validation and prescription sending.
+  const tokenStore = useMemo(() => createIndexedDbTokenStore(), [])
+
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
   // Initialize all backend services on mount
@@ -104,7 +109,7 @@ export const App = () => {
 
   const validateCertificate = async (passphrase: string) => {
     try {
-      const res = await validateDecryptedCertificate(hcp, passphrase, FHC_URL)
+      const res = await validateDecryptedCertificate(hcp, passphrase, tokenStore, FHC_URL)
 
       setIsCertificateValid(res.status)
       setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
@@ -203,6 +208,7 @@ export const App = () => {
                 med,
                 passphrase,
                 FHC_URL,
+                tokenStore,
               )
               setPrescriptions((prev) =>
                 prev.map((item) =>
