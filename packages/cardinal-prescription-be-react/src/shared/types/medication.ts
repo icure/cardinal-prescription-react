@@ -1,8 +1,7 @@
 import { Medication } from '@icure/be-fhc-lite-api'
-import { Commercialization, Reimbursement, SupplyProblem, VmpStub } from '@icure/api'
+import { Commercialization, Reimbursement, StandardDosage, SupplyProblem, VmpStub } from '@icure/cardinal-be-sam-sdk'
 
 import { PharmacistVisibilityType, PractitionerVisibilityType } from './visibility'
-import { StandardDosage } from '@icure/api/icc-api/model/StandardDosage'
 
 export type MedicationType = {
   ampId?: string

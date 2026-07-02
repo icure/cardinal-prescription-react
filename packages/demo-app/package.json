@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@icure/be-fhc-lite-api": "0.6.6",
+    "@icure/cardinal-be-sam-sdk": "^0.0.1",
     "@icure/cardinal-prescription-be-react": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -23,6 +23,6 @@ export const practitionerCredentials = {
   password: required('REACT_APP_ICURE_PASSWORD', process.env.REACT_APP_ICURE_PASSWORD),
 }
 
-export const ICURE_URL = process.env.REACT_APP_ICURE_URL ?? 'https://api.icure.cloud'
+export const ICURE_URL = process.env.REACT_APP_ICURE_URL ?? 'https://nightly.icure.cloud'
 export const FHC_URL = process.env.REACT_APP_FHC_URL ?? 'https://fhcacc.icure.cloud'
 export const CARDINAL_PRESCRIPTION_LANGUAGE = (process.env.REACT_APP_CARDINAL_LANGUAGE ?? 'fr') as 'fr' | 'nl' | 'de' | 'en'

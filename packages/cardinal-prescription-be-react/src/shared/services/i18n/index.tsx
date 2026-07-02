@@ -1,6 +1,6 @@
 import { appTranslations } from '../../../internal/translations'
 import { DEFAULT_APP_LANGULAGE } from '../../../internal/services/constants'
-import { SamText } from '@icure/api'
+import { SamText } from '@icure/cardinal-be-sam-sdk'
 
 type SamLanguage = keyof SamText
 

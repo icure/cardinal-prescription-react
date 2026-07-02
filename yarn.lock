@@ -1531,7 +1531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.21.0":
+"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3":
   version: 7.28.2
   resolution: "@babel/runtime@npm:7.28.2"
   checksum: 10c0/c20afe253629d53a405a610b12a62ac74d341a2c1e0fb202bbef0c118f6b5c84f94bf16039f58fd0483dd256901259930a43976845bdeb180cab1f882c21b6e0
@@ -2190,29 +2190,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@icure/api@npm:^8.4.6":
-  version: 8.4.7
-  resolution: "@icure/api@npm:8.4.7"
-  dependencies:
-    async-mutex: "npm:^0.5.0"
-    big-integer: "npm:^1.6.52"
-    browser-or-node: "npm:^3.0.0"
-    date-fns: "npm:^2.23.0"
-    libphonenumber-js: "npm:^1.7.18"
-    lodash: "npm:^4.17.21"
-    moment: "npm:^2.22.1"
-    text-encoding: "npm:^0.7.0"
-    uuid: "npm:^8.3.2"
-    uuid-encoder: "npm:^1.1.0"
-    ws: "npm:^8.18.0"
-  checksum: 10c0/ea18e5a32d36312bac27c286c7d2c4c910fe2e5d1c328991333142592bad3edeb7ce320ddabbbd196511b4d87cff99b0fc3698a1dab816157c8898fd0c99e2ee
+"@icure/be-fhc-lite-api@npm:0.6.6":
+  version: 0.6.6
+  resolution: "@icure/be-fhc-lite-api@npm:0.6.6"
+  checksum: 10c0/3d96b561db613bf72c2b095e8f53ffae7ffb17fde0fce7716a936dc53787133832a6154d55da30747c960fdb6ba383806ef75e59af27f3ce1435cc7325695bf0
   languageName: node
   linkType: hard
 
-"@icure/be-fhc-lite-api@npm:^0.6.4":
-  version: 0.6.4
-  resolution: "@icure/be-fhc-lite-api@npm:0.6.4"
-  checksum: 10c0/2c733fb62da447ed299533a5fca1022455d8919d03f05bcb7f3c0f9b71686413cb46a1a7efe83f3ec4ed69340567372d848434fb796f2bec3e4dbb2253e3de12
+"@icure/cardinal-be-sam-sdk@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@icure/cardinal-be-sam-sdk@npm:0.0.1"
+  dependencies:
+    "@js-joda/core": "npm:3.2.0"
+    format-util: "npm:^1.0.5"
+    ws: "npm:8.18.0"
+  checksum: 10c0/3185faf5ebab5fa7493c5e4e3e2123565165930967e719119f0cadf1b3c98caa3b4bac74d4a05e3a0c3a8653b8a7f425068a47609fc23134da294e664bbda1b3
   languageName: node
   linkType: hard
 
@@ -2220,9 +2212,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@icure/cardinal-prescription-be-react@workspace:packages/cardinal-prescription-be-react"
   dependencies:
-    "@icure/api": "npm:^8.4.6"
-    "@icure/be-fhc-lite-api": "npm:^0.6.4"
-    "@icure/medication-sdk": "npm:^0.0.8"
+    "@icure/be-fhc-lite-api": "npm:0.6.6"
+    "@icure/cardinal-be-sam-sdk": "npm:^0.0.1"
+    "@icure/medication-sdk": "npm:0.0.22"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
     jsbarcode: "npm:^3.12.1"
@@ -2237,12 +2229,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@icure/medication-sdk@npm:^0.0.8":
-  version: 0.0.8
-  resolution: "@icure/medication-sdk@npm:0.0.8"
+"@icure/medication-sdk@npm:0.0.22":
+  version: 0.0.22
+  resolution: "@icure/medication-sdk@npm:0.0.22"
   dependencies:
     chevrotain: "npm:^11.0.3"
-  checksum: 10c0/0ab02c348f4754674d91ce4e01847f1f1d66088fe13b0582db82c8cf2662926fe109a6fd9d63e328914427effce81870ec60a0e289c83b0307b4d974e6f685af
+  checksum: 10c0/fb6077ae107f7b18e5233d21ba98a85a0e1c6576c180fa0b215fe9a5b7cfc55c2009813cb8032340cf2072e331a1d1efe3f500efdf9d0e78536e7fed26aed3f2
   languageName: node
   linkType: hard
 
@@ -2580,6 +2572,13 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:^3.1.0"
     "@jridgewell/sourcemap-codec": "npm:^1.4.14"
   checksum: 10c0/fb547ba31658c4d74eb17e7389f4908bf7c44cef47acb4c5baa57289daf68e6fe53c639f41f751b3923aca67010501264f70e7b49978ad1f040294b22c37b333
+  languageName: node
+  linkType: hard
+
+"@js-joda/core@npm:3.2.0":
+  version: 3.2.0
+  resolution: "@js-joda/core@npm:3.2.0"
+  checksum: 10c0/f3b3f58f6788bd1318ef66d108f7bd8f4c09224b826d37d4f0e460d80ed2246ea09da2d88ef66701e5affc19218dee5f42f2ec8f7a99d2d3aa8baf5ecff94ce7
   languageName: node
   linkType: hard
 
@@ -4412,15 +4411,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-mutex@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "async-mutex@npm:0.5.0"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 10c0/9096e6ad6b674c894d8ddd5aa4c512b09bb05931b8746ebd634952b05685608b2b0820ed5c406e6569919ff5fe237ab3c491e6f2887d6da6b6ba906db3ee9c32
-  languageName: node
-  linkType: hard
-
 "async@npm:^3.2.3":
   version: 3.2.6
   resolution: "async@npm:3.2.6"
@@ -4700,13 +4690,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:^1.6.46, big-integer@npm:^1.6.52":
-  version: 1.6.52
-  resolution: "big-integer@npm:1.6.52"
-  checksum: 10c0/9604224b4c2ab3c43c075d92da15863077a9f59e5d4205f4e7e76acd0cd47e8d469ec5e5dba8d9b32aa233951893b29329ca56ac80c20ce094b4a647a66abae0
-  languageName: node
-  linkType: hard
-
 "big.js@npm:^5.2.2":
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
@@ -4799,13 +4782,6 @@ __metadata:
   dependencies:
     fill-range: "npm:^7.1.1"
   checksum: 10c0/7c6dfd30c338d2997ba77500539227b9d1f85e388a5f43220865201e407e076783d0881f2d297b9f80951b4c957fcf0b51c1d2d24227631643c3f7c284b0aa04
-  languageName: node
-  linkType: hard
-
-"browser-or-node@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "browser-or-node@npm:3.0.0"
-  checksum: 10c0/05db930e0a21bfffef74dbc4a27eaa12113e7f43a95f3b80a925f624212d701b86034cdfb5c422bdee061c4ae8442d294feee8996e6ae2555a8e46ea0b830b52
   languageName: node
   linkType: hard
 
@@ -5774,15 +5750,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.23.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
-  languageName: node
-  linkType: hard
-
 "debug@npm:2.6.9, debug@npm:^2.6.0":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -5902,6 +5869,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demo-app@workspace:packages/demo-app"
   dependencies:
+    "@icure/be-fhc-lite-api": "npm:0.6.6"
+    "@icure/cardinal-be-sam-sdk": "npm:^0.0.1"
     "@icure/cardinal-prescription-be-react": "npm:*"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -7488,6 +7457,13 @@ __metadata:
     hasown: "npm:^2.0.2"
     mime-types: "npm:^2.1.35"
   checksum: 10c0/2451043b3e931653ce9690ba051b0bf1b5855a63029279bd7bdf8d02e4b5b42f4582b23ed3637df27a0d21bac2013c37d165ec9486e1af2470c13114aee83acc
+  languageName: node
+  linkType: hard
+
+"format-util@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "format-util@npm:1.0.5"
+  checksum: 10c0/89b9d73799bb51fba141029bbc358d6c5e591863156a806d0eece4718e9c8c7daacf3b0581ddde481e5183dd530072fc2cca8630434122b328bc3110d16ab38e
   languageName: node
   linkType: hard
 
@@ -9602,13 +9578,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.7.18":
-  version: 1.12.10
-  resolution: "libphonenumber-js@npm:1.12.10"
-  checksum: 10c0/c348aee275c4161e289b14f2ffd0c00f2923dcd5b2cfd99415b2f5ea15fa0632adffb78c51373b3a2839416223b65452bee11cc5386d2352782e1b064aaaf0ce
-  languageName: node
-  linkType: hard
-
 "lilconfig@npm:^2.0.3":
   version: 2.1.0
   resolution: "lilconfig@npm:2.1.0"
@@ -10048,13 +10017,6 @@ __metadata:
     pkg-types: "npm:^1.3.0"
     ufo: "npm:^1.5.4"
   checksum: 10c0/69e738218a13d6365caf930e0ab4e2b848b84eec261597df9788cefb9930f3e40667be9cb58a4718834ba5f97a6efeef31d3b5a95f4388143fd4e0d0deff72ff
-  languageName: node
-  linkType: hard
-
-"moment@npm:^2.22.1":
-  version: 2.30.1
-  resolution: "moment@npm:2.30.1"
-  checksum: 10c0/865e4279418c6de666fca7786607705fd0189d8a7b7624e2e56be99290ac846f90878a6f602e34b4e0455c549b85385b1baf9966845962b313699e7cb847543a
   languageName: node
   linkType: hard
 
@@ -13557,13 +13519,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"text-encoding@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "text-encoding@npm:0.7.0"
-  checksum: 10c0/6c20f5d19f996501677cc60b79bc4af550f840b426eacc5f67bd2bd5a7a7a058ab58679f851e0afee879aaaaf7fdb95cfe4de35ab29f9b34f9ce2a7b8de9bacb
-  languageName: node
-  linkType: hard
-
 "text-table@npm:^0.2.0":
   version: 0.2.0
   resolution: "text-table@npm:0.2.0"
@@ -13741,7 +13696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.3, tslib@npm:^2.4.0":
+"tslib@npm:^2.0.3":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -14132,15 +14087,6 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10c0/02ba649de1b7ca8854bfe20a82f1dfbdda3fb57a22ab4a8972a63a34553cf7aa51bc9081cf7e001b035b88186d23689d69e71b510e610a09a4c66f68aa95b672
-  languageName: node
-  linkType: hard
-
-"uuid-encoder@npm:^1.1.0":
-  version: 1.2.0
-  resolution: "uuid-encoder@npm:1.2.0"
-  dependencies:
-    big-integer: "npm:^1.6.46"
-  checksum: 10c0/bf30b7e679adb518a75d16729ec40f3a9ad929ca6d39ecb96c94d601f39be7e99e04d836497300aab3ed098d8b73c915a8d797c438636d1e4aa9469311e9d210
   languageName: node
   linkType: hard
 
@@ -14803,6 +14749,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:8.18.0":
+  version: 8.18.0
+  resolution: "ws@npm:8.18.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
+  languageName: node
+  linkType: hard
+
 "ws@npm:^7.4.6":
   version: 7.5.10
   resolution: "ws@npm:7.5.10"
@@ -14818,7 +14779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.13.0, ws@npm:^8.18.0":
+"ws@npm:^8.13.0":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:

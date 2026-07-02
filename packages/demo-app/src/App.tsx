@@ -17,7 +17,7 @@ import {
 } from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
-import { IccBesamv2Api, SamVersion, EnsembleAuthenticationProvider, NoAuthenticationProvider, IccAuthApi } from '@icure/api'
+import { CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
 import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE } from './config'
 
 const patient: Patient = {
@@ -62,7 +62,7 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<IccBesamv2Api | undefined>(undefined)
+  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<SamV2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
@@ -77,13 +77,13 @@ export const App = () => {
     const initializeAll = async () => {
       try {
         // Initialize Cardinal Be Sam (SAM)
-        const cardinalBeSamInstance: IccBesamv2Api = new IccBesamv2Api(
+        const cardinalBeSamApi = await CardinalBeSamSdk.initialize(
+          undefined,
           ICURE_URL,
-          {},
-          new EnsembleAuthenticationProvider(new IccAuthApi(ICURE_URL, {}, new NoAuthenticationProvider()), practitionerCredentials.username, practitionerCredentials.password),
+          new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
         )
-        setCardinalBeSamInstance(cardinalBeSamInstance)
-        setSamVersion(await fetchSamVersion(cardinalBeSamInstance))
+        setCardinalBeSamInstance(cardinalBeSamApi.sam)
+        setSamVersion(await fetchSamVersion(cardinalBeSamApi.sam))
 
         try {
           if (hcp.ssin) {

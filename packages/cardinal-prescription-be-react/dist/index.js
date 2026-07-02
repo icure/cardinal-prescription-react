@@ -31,7 +31,6 @@ var index_exports = {};
 __export(index_exports, {
   IndexedDbServiceStore: () => IndexedDbServiceStore,
   MedicationSearch: () => MedicationSearch,
-  PaginatedListIterator: () => PaginatedListIterator,
   PractitionerCertificate: () => PractitionerCertificate,
   PrescriptionList: () => PrescriptionList,
   PrescriptionModal: () => PrescriptionModal,
@@ -1024,8 +1023,8 @@ var TOKEN_IDB_CONFIG = {
 // src/shared/services/i18n/index.tsx
 var CardinalLanguage = class {
   language = DEFAULT_APP_LANGULAGE;
-  setLanguage(language3) {
-    this.language = language3;
+  setLanguage(language2) {
+    this.language = language2;
   }
   getLanguage() {
     return this.language;
@@ -1057,57 +1056,10 @@ var getSamTextTranslation = (samText) => {
 };
 
 // src/shared/services/cardinal-sam/index.ts
-var language = cardinalLanguage.getLanguage();
-var PaginatedListIterator = class {
-  loader;
-  limit;
-  hasNextPage;
-  currentList;
-  constructor(loader) {
-    this.loader = loader;
-    this.limit = 20;
-    this.hasNextPage = true;
-    this.currentList = null;
-  }
-  async hasNext() {
-    if (this.hasNextPage === null) {
-      this.currentList = await this.loader(this.limit);
-      this.hasNextPage = this.currentList.rows && this.currentList.rows.length > 0;
-    }
-    return this.hasNextPage;
-  }
-  async next(limit) {
-    if (this.hasNextPage === null || !this.hasNextPage) {
-      throw new Error("No more pages available");
-    }
-    if (!this.currentList) {
-      this.currentList = await this.loader(limit);
-    }
-    const rows = this.currentList.rows || [];
-    this.hasNextPage = !!this.currentList.nextKeyPair && rows.length === limit;
-    if (this.hasNextPage) {
-      const nextKey = this.currentList.nextKeyPair?.startKey;
-      const nextDocumentId = this.currentList.nextKeyPair?.startKeyDocId;
-      this.currentList = await this.loader(limit, nextKey, nextDocumentId);
-    } else {
-      this.currentList = null;
-    }
-    return rows;
-  }
-};
 var findMedicationsByLabel = async (sdk, query) => {
+  const language2 = cardinalLanguage.getLanguage();
   try {
-    return await Promise.all([
-      new PaginatedListIterator((limit, startKey, startDocumentId) => {
-        return sdk.findPaginatedAmpsByLabel(language, query, startKey ? JSON.stringify(startKey) : void 0, startDocumentId, limit);
-      }),
-      new PaginatedListIterator((limit, startKey, startDocumentId) => {
-        return sdk.findPaginatedVmpGroupsByLabel(language, query, startKey ? JSON.stringify(startKey) : void 0, startDocumentId, limit);
-      }),
-      new PaginatedListIterator((limit, startKey, startDocumentId) => {
-        return sdk.findPaginatedNmpsByLabel(language, query, startKey ? JSON.stringify(startKey) : void 0, startDocumentId, limit);
-      })
-    ]);
+    return await Promise.all([sdk.findPaginatedAmpsByLabel(language2, query), sdk.findPaginatedVmpGroupsByLabel(language2, query), sdk.findPaginatedNmpsByLabel(language2, query)]);
   } catch (error) {
     console.error("Error in findMedicationsByLabel:", error);
     throw error;
@@ -1323,7 +1275,7 @@ var getTokenStorageKeys = (hcp) => ({
   STORE_KEY: `keystore.${hcp.ssin}`,
   TOKEN_KEY: `token.${hcp.ssin}`
 });
-var language2 = cardinalLanguage.getLanguage();
+var language = cardinalLanguage.getLanguage();
 var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new import_be_fhc_lite_api.PrescriptionRequest({
   medications: [prescribedMedication.medication],
   patient: {
@@ -1350,7 +1302,7 @@ var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescrib
   samVersion,
   deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
   expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
-  lang: language2
+  lang: language
 });
 var createFhcCode = (type, code, version = "1.0") => new import_be_fhc_lite_api.Code({
   id: `${type}:${code}:${version}`,
@@ -3703,7 +3655,7 @@ async function mergeSortedPartialArraysN(limit, arrays, fetchMissingCallbacks) {
 }
 
 // src/internal/services/medication-mapper/index.ts
-var import_api = require("@icure/api");
+var import_cardinal_be_sam_sdk = require("@icure/cardinal-be-sam-sdk");
 
 // src/internal/utils/string-helpers.ts
 function capitalize(s) {
@@ -3741,10 +3693,10 @@ var ampToMedicationTypes = (amp, deliveryEnvironment) => {
   const now = Date.now();
   const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
   return amp.to && amp.to < now ? [] : amp.ampps.filter((ampp) => {
-    return ampp.from && ampp.from < now && (!ampp.to || ampp.to > now) && ampp.status == import_api.Ampp.StatusEnum.AUTHORIZED && ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)) && ampp.dmpps?.some((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment);
+    return ampp.from && ampp.from < now && (!ampp.to || ampp.to > now) && ampp.status == import_cardinal_be_sam_sdk.AmpStatus.Authorized && ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)) && ampp.dmpps?.some((dmpp) => dmpp.from && dmpp.from < now && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() == deliveryEnvironment);
   }).map((ampp) => {
     const dmpp = ampp.dmpps?.find(
-      (dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp2.codeType == import_api.Dmpp.CodeTypeEnum.CNK
+      (dmpp2) => dmpp2.from && dmpp2.from < now && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() == deliveryEnvironment && dmpp2.codeType == import_cardinal_be_sam_sdk.DmppCodeType.Cnk
     );
     return {
       ampId: amp.id,
@@ -4829,8 +4781,8 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
   const instructionsForReimbursement = watch("instructionsForReimbursement");
   const prescriberVisibility = watch("prescriberVisibility");
   const pharmacistVisibility = watch("pharmacistVisibility");
-  const language3 = cardinalLanguage.getLanguage();
-  const { completePosology: completeDosage } = (0, import_medication_sdk.makeParser)(language3);
+  const language2 = cardinalLanguage.getLanguage();
+  const { completePosology: completeDosage } = (0, import_medication_sdk.makeParser)(language2);
   const dosageRef = (0, import_react11.useRef)(dosage);
   (0, import_react11.useEffect)(() => {
     if (dosage !== void 0) {
@@ -6001,7 +5953,6 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
 0 && (module.exports = {
   IndexedDbServiceStore,
   MedicationSearch,
-  PaginatedListIterator,
   PractitionerCertificate,
   PrescriptionList,
   PrescriptionModal,

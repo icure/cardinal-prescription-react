@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Reimbursement } from '@icure/api'
+import { Reimbursement } from '@icure/cardinal-be-sam-sdk'
 import { getSamTextTranslation, t } from '../../../../../../shared/services/i18n'
 import { getCategoryLabelForReimbursement } from '../../../../../utils/reimbursement-helpers'
 import { StyledReimbursement } from './styles'
