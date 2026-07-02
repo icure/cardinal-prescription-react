@@ -1,4 +1,4 @@
-// src/services/i18n/translations/components/home.translations.ts
+// src/internal/translations/components/home.translations.ts
 var homeTranslations = {
   fr: {
     samVersionLabel: "Version Sam :"
@@ -14,7 +14,7 @@ var homeTranslations = {
   }
 };
 
-// src/services/i18n/translations/components/prescription.translations.ts
+// src/internal/translations/components/prescription.translations.ts
 var prescriptionTranslations = {
   fr: {
     createTitle: "Cr\xE9er la prescription",
@@ -222,7 +222,7 @@ var prescriptionTranslations = {
   }
 };
 
-// src/services/i18n/translations/components/medication.translations.ts
+// src/internal/translations/components/medication.translations.ts
 var medicationTranslations = {
   fr: {
     drugType: {
@@ -550,7 +550,7 @@ var medicationTranslations = {
   }
 };
 
-// src/services/i18n/translations/components/practitioner.translations.ts
+// src/internal/translations/components/practitioner.translations.ts
 var practitionerTranslations = {
   fr: {
     certificateUpload: {
@@ -662,7 +662,7 @@ var practitionerTranslations = {
   }
 };
 
-// src/services/i18n/translations/utils/visibility-helpers.translations.ts
+// src/internal/translations/utils/visibility-helpers.translations.ts
 var prescriptionVisibilityTranslations = {
   fr: {
     practitionerVisibility: {
@@ -710,7 +710,7 @@ var prescriptionVisibilityTranslations = {
   }
 };
 
-// src/services/i18n/translations/utils/reimbursement-helpers.translations.ts
+// src/internal/translations/utils/reimbursement-helpers.translations.ts
 var reimbursementTranslations = {
   fr: {
     practitionerSelectionOptions: {
@@ -810,7 +810,7 @@ var reimbursementTranslations = {
   }
 };
 
-// src/services/i18n/translations/utils/prescription-duration-helpers.translations.ts
+// src/internal/translations/utils/prescription-duration-helpers.translations.ts
 var prescriptionDurationTranslations = {
   fr: {
     durationUnits: {
@@ -866,7 +866,7 @@ var prescriptionDurationTranslations = {
   }
 };
 
-// src/services/i18n/translations/utils/delivery-helpers.translations.ts
+// src/internal/translations/utils/delivery-helpers.translations.ts
 var deliveryModusTranslations = {
   fr: {
     specifications: {
@@ -910,7 +910,7 @@ var deliveryModusTranslations = {
   }
 };
 
-// src/services/i18n/translations/index.ts
+// src/internal/translations/index.ts
 var appTranslations = {
   fr: {
     home: homeTranslations.fr,
@@ -954,7 +954,7 @@ var appTranslations = {
   }
 };
 
-// src/services/constants.ts
+// src/internal/services/constants.ts
 var DEFAULT_APP_LANGULAGE = "fr";
 var CERTIFICATE_IDB_CONFIG = {
   DB_NAME: "certificate-store",
@@ -967,7 +967,7 @@ var TOKEN_IDB_CONFIG = {
   KEY_PATH: "id"
 };
 
-// src/services/i18n/index.tsx
+// src/shared/services/i18n/index.tsx
 var CardinalLanguage = class {
   language = DEFAULT_APP_LANGULAGE;
   setLanguage(language3) {
@@ -1002,7 +1002,7 @@ var getSamTextTranslation = (samText) => {
   return samText[lang] ?? samText[fallback];
 };
 
-// src/services/cardinal-sam/index.ts
+// src/shared/services/cardinal-sam/index.ts
 var language = cardinalLanguage.getLanguage();
 var PaginatedListIterator = class {
   loader;
@@ -1068,7 +1068,7 @@ var fetchSamVersion = async (sdk) => {
   }
 };
 
-// src/services/indexed-db/index.ts
+// src/shared/services/indexed-db/index.ts
 var IndexedDbServiceStore = class {
   db;
   config;
@@ -1130,7 +1130,7 @@ var IndexedDbServiceStore = class {
   }
 };
 
-// src/services/certificate/index.ts
+// src/shared/services/certificate/index.ts
 var certificateStore = new IndexedDbServiceStore(CERTIFICATE_IDB_CONFIG);
 var loadCertificateInformation = async (hcp_ssin) => {
   try {
@@ -1213,10 +1213,10 @@ var deleteCertificate = async (hcp_ssin) => {
   }
 };
 
-// src/services/fhc/index.ts
+// src/shared/services/fhc/index.ts
 import { Code as FhcCode, fhcRecipeApi, fhcStsApi, PrescriptionRequest } from "@icure/be-fhc-lite-api";
 
-// src/utils/date-helpers.ts
+// src/internal/utils/date-helpers.ts
 var convertYyyyMmDdNumberToIsoDate = (dateNumber) => {
   const year = Math.floor(dateNumber / 1e4);
   const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
@@ -1263,7 +1263,7 @@ function offsetDate(date, offsetInDays) {
   return dateEncode(result);
 }
 
-// src/services/fhc/index.ts
+// src/shared/services/fhc/index.ts
 var tokenStore = new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
 var getTokenStorageKeys = (hcp) => ({
   STORE_KEY: `keystore.${hcp.ssin}`,
@@ -1381,7 +1381,7 @@ var validateDecryptedCertificate = async (hcp, passphrase, fhc_url) => {
   }
 };
 
-// src/components/common/Alert/styles.ts
+// src/internal/components/common/Alert/styles.ts
 import styled, { css as css3 } from "styled-components";
 
 // src/styles/reset.ts
@@ -1770,7 +1770,7 @@ var responsiveMediaQueries = {
     `
 };
 
-// src/components/common/Alert/styles.ts
+// src/internal/components/common/Alert/styles.ts
 var StyledAlert = styled.div`
   width: 100%;
   display: flex;
@@ -1821,7 +1821,7 @@ var StyledAlert = styled.div`
     `};
 `;
 
-// src/components/common/Icons/index.tsx
+// src/internal/components/common/Icons/index.tsx
 import { jsx, jsxs } from "react/jsx-runtime";
 function SpinnerIcn({ pathFill = "#000000", size = 12 }) {
   const sizePx = `${size}px`;
@@ -2087,7 +2087,7 @@ var DeleteIcn = () => /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", v
   )
 ] });
 
-// src/components/common/Alert/index.tsx
+// src/internal/components/common/Alert/index.tsx
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var Alert = ({ status, title, description }) => {
   return /* @__PURE__ */ jsxs2(StyledAlert, { className: "StyledAlert", $success: status === "success", $error: status === "error", children: [
@@ -2100,10 +2100,10 @@ var Alert = ({ status, title, description }) => {
   ] });
 };
 
-// src/components/certificate-elements/CertificateUploadForm/index.tsx
+// src/internal/components/certificate-elements/CertificateUploadForm/index.tsx
 import { useForm } from "react-hook-form";
 
-// src/utils/file-helpers.ts
+// src/internal/utils/file-helpers.ts
 var readFileAsArrayBuffer = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2113,7 +2113,7 @@ var readFileAsArrayBuffer = (file) => {
   });
 };
 
-// src/components/form-elements/Button/styles.ts
+// src/internal/components/form-elements/Button/styles.ts
 import styled2, { css as css4 } from "styled-components";
 var viewStyles = ($view) => {
   switch ($view) {
@@ -2174,16 +2174,16 @@ var StyledButton = styled2.button`
   }
 `;
 
-// src/components/form-elements/Button/index.tsx
+// src/internal/components/form-elements/Button/index.tsx
 import { jsx as jsx3 } from "react/jsx-runtime";
 var Button = ({ title, view = "primary", handleClick, type = "button", ...rest }) => {
   return /* @__PURE__ */ jsx3(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
 };
 
-// src/components/form-elements/TextInput/index.tsx
+// src/internal/components/form-elements/TextInput/index.tsx
 import { forwardRef, useEffect, useRef } from "react";
 
-// src/components/form-elements/TextInput/styles.ts
+// src/internal/components/form-elements/TextInput/styles.ts
 import styled3, { css as css5 } from "styled-components";
 var StyledTextInputLabel = styled3.label`
   ${labelCommonStyles};
@@ -2229,7 +2229,7 @@ var StyledInput = styled3.input`
     `};
 `;
 
-// src/components/form-elements/TextInput/index.tsx
+// src/internal/components/form-elements/TextInput/index.tsx
 import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
 var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
   const localRef = useRef(null);
@@ -2270,7 +2270,7 @@ var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disa
 });
 TextInput.displayName = "TextInput";
 
-// src/components/certificate-elements/CertificateUploadForm/styles.ts
+// src/internal/components/certificate-elements/CertificateUploadForm/styles.ts
 import styled4 from "styled-components";
 var StyledCertificateUpload = styled4.div`
   width: 100%;
@@ -2313,7 +2313,7 @@ var StyledCertificateForm = styled4.form`
   }
 `;
 
-// src/components/certificate-elements/CertificateUploadForm/index.tsx
+// src/internal/components/certificate-elements/CertificateUploadForm/index.tsx
 import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
 var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
@@ -2379,7 +2379,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
   ] });
 };
 
-// src/components/certificate-elements/PractitionerCertificate/styles.ts
+// src/shared/components/PractitionerCertificate/styles.ts
 import styled5 from "styled-components";
 var StyledPractitionerCertificate = styled5.div`
   width: 100%;
@@ -2394,7 +2394,7 @@ var StyledPractitionerCertificate = styled5.div`
   `}
 `;
 
-// src/components/certificate-elements/PractitionerCertificate/index.tsx
+// src/shared/components/PractitionerCertificate/index.tsx
 import { Fragment, jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
 var PractitionerCertificate = ({
   certificateValid,
@@ -2424,16 +2424,16 @@ var PractitionerCertificate = ({
   ] });
 };
 
-// src/components/medication-elements/MedicationSearch/index.tsx
+// src/shared/components/MedicationSearch/index.tsx
 import { useEffect as useEffect3, useRef as useRef4, useState as useState3 } from "react";
 
-// src/components/medication-elements/MedicationCard/index.tsx
+// src/internal/components/medication-elements/MedicationCard/index.tsx
 import { useState as useState2 } from "react";
 
-// src/components/common/Tooltip/index.tsx
+// src/internal/components/common/Tooltip/index.tsx
 import React2, { useState } from "react";
 
-// src/components/common/Tooltip/styles.ts
+// src/internal/components/common/Tooltip/styles.ts
 import styled6, { css as css6 } from "styled-components";
 var tooltipArrow = css6`
   content: '';
@@ -2587,7 +2587,7 @@ var StyleTooltip = styled6.div`
     `};
 `;
 
-// src/components/common/Tooltip/index.tsx
+// src/internal/components/common/Tooltip/index.tsx
 import { jsx as jsx7, jsxs as jsxs6 } from "react/jsx-runtime";
 var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", boundaryBox }) => {
   const [active, setActive] = useState(false);
@@ -2631,7 +2631,7 @@ var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", bound
   );
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
 import styled7 from "styled-components";
 var StyledRmaLink = styled7.div`
   ${infographicElementCommonStyles};
@@ -2649,7 +2649,7 @@ var StyledRmaLink = styled7.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/index.tsx
 import { jsx as jsx8, jsxs as jsxs7 } from "react/jsx-runtime";
 var RmaProfessionalLinkContent = ({ rmaProfessionalLink, rmakeyMessages }) => {
   return /* @__PURE__ */ jsx8(StyledRmaLink, { className: "StyledRmaLink", children: /* @__PURE__ */ jsxs7("div", { className: "content", children: [
@@ -2658,7 +2658,7 @@ var RmaProfessionalLinkContent = ({ rmaProfessionalLink, rmakeyMessages }) => {
   ] }) });
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/styles.ts
 import styled8 from "styled-components";
 var StyledSupplyProblems = styled8.div`
   ${infographicElementCommonStyles};
@@ -2673,7 +2673,7 @@ var StyledSupplyProblems = styled8.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/index.tsx
 import { jsx as jsx9, jsxs as jsxs8 } from "react/jsx-runtime";
 var SupplyProblemsContent = ({ medicationSupplyProblem }) => {
   return /* @__PURE__ */ jsxs8(StyledSupplyProblems, { className: "StyledSupplyProblems", children: [
@@ -2707,7 +2707,7 @@ var SupplyProblemsContent = ({ medicationSupplyProblem }) => {
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
 import styled9 from "styled-components";
 var StyledEndCommercialization = styled9.div`
   ${infographicElementCommonStyles};
@@ -2722,7 +2722,7 @@ var StyledEndCommercialization = styled9.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/index.tsx
 import { jsx as jsx10, jsxs as jsxs9 } from "react/jsx-runtime";
 var EndOfCommercialisationContent = ({ medicationCommercialization }) => {
   return /* @__PURE__ */ jsxs9(StyledEndCommercialization, { className: "StyledEndCommercialization", children: [
@@ -2756,7 +2756,7 @@ var EndOfCommercialisationContent = ({ medicationCommercialization }) => {
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
 import styled10 from "styled-components";
 var StyledStartCommercialization = styled10.div`
   ${infographicElementCommonStyles};
@@ -2771,7 +2771,7 @@ var StyledStartCommercialization = styled10.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/index.tsx
 import { jsx as jsx11, jsxs as jsxs10 } from "react/jsx-runtime";
 var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
   return /* @__PURE__ */ jsxs10(StyledStartCommercialization, { className: "StyledStartCommercialization", children: [
@@ -2783,7 +2783,7 @@ var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
   ] });
 };
 
-// src/utils/reimbursement-helpers.ts
+// src/internal/utils/reimbursement-helpers.ts
 import { Medication } from "@icure/be-fhc-lite-api";
 var getReimbursementOptions = () => [
   {
@@ -2836,7 +2836,7 @@ function getCategoryLabelForReimbursement(code) {
   return t(`reimbursementHelper.categoryOptions.${code}`) || code;
 }
 
-// src/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/styles.ts
 import styled11 from "styled-components";
 var StyledReimbursement = styled11.div`
   ${infographicElementCommonStyles};
@@ -2851,7 +2851,7 @@ var StyledReimbursement = styled11.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/index.tsx
 import { Fragment as Fragment2, jsx as jsx12, jsxs as jsxs11 } from "react/jsx-runtime";
 var ReimbursementsContent = ({ reimbursement }) => {
   const computeFeeAmount = (fee) => Math.round(+fee * 100) / 100 + "\u20AC";
@@ -2900,7 +2900,7 @@ var ReimbursementsContent = ({ reimbursement }) => {
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
 import styled12 from "styled-components";
 var StyledDeliveryConditions = styled12.div`
   ${infographicElementCommonStyles};
@@ -2927,7 +2927,7 @@ var StyledDeliveryConditionsNotApplicable = styled12.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/index.tsx
 import { jsx as jsx13, jsxs as jsxs12 } from "react/jsx-runtime";
 var DeliveryConditionsContent = ({ deliveryModusCode, deliveryModus, deliveryModusSpecification }) => {
   return deliveryModusCode ? /* @__PURE__ */ jsxs12(StyledDeliveryConditions, { className: "StyledDeliveryConditions", children: [
@@ -2952,7 +2952,7 @@ var DeliveryConditionsContent = ({ deliveryModusCode, deliveryModus, deliveryMod
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
 import styled13 from "styled-components";
 var StyledPrescriptionConditions = styled13.div`
   ${infographicElementCommonStyles};
@@ -2979,7 +2979,7 @@ var StyledPrescriptionConditionsNotApplicable = styled13.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/index.tsx
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/index.tsx
 import { jsx as jsx14, jsxs as jsxs13 } from "react/jsx-runtime";
 var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryModusSpecification }) => {
   return deliveryModusSpecificationCode ? /* @__PURE__ */ jsxs13(StyledPrescriptionConditions, { className: "StyledPrescriptionConditions", children: [
@@ -3000,10 +3000,10 @@ var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryM
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
 import { useRef as useRef2 } from "react";
 
-// src/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
 import styled14, { css as css7 } from "styled-components";
 var StyledHeader = styled14.div`
   width: 100%;
@@ -3191,7 +3191,7 @@ var StyledTextToIcon = styled14.div`
     `};
 `;
 
-// src/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
 import { Fragment as Fragment3, jsx as jsx15, jsxs as jsxs14 } from "react/jsx-runtime";
 var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded }) => {
   const medicationCardRef = useRef2(null);
@@ -3346,7 +3346,7 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/medication-card-elements/Extension/styles.ts
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/styles.ts
 import styled15 from "styled-components";
 var StyledExtension = styled15.div`
   width: 100%;
@@ -3416,7 +3416,7 @@ var StyledExtension = styled15.div`
   }
 `;
 
-// src/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
 import { Fragment as Fragment4, jsx as jsx16, jsxs as jsxs15 } from "react/jsx-runtime";
 var Extension = ({ medication }) => {
   const medicationCommercialization = medication.commercializations?.[0];
@@ -3477,7 +3477,7 @@ var Extension = ({ medication }) => {
   ] });
 };
 
-// src/components/medication-elements/MedicationCard/styles.ts
+// src/internal/components/medication-elements/MedicationCard/styles.ts
 import styled16, { css as css8 } from "styled-components";
 var activeMedicationCard = css8`
   border-color: ${colors.blue[500]};
@@ -3523,7 +3523,7 @@ var StyledMedicationCard = styled16.div`
     `};
 `;
 
-// src/components/medication-elements/MedicationCard/index.tsx
+// src/internal/components/medication-elements/MedicationCard/index.tsx
 import { jsx as jsx17, jsxs as jsxs16 } from "react/jsx-runtime";
 var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover }) => {
   const [isExpanded, setIsExpanded] = useState2(false);
@@ -3541,7 +3541,7 @@ var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableH
   ] });
 };
 
-// src/components/common/InfiniteScroll/index.tsx
+// src/internal/components/common/InfiniteScroll/index.tsx
 import { useEffect as useEffect2, useRef as useRef3 } from "react";
 import { jsx as jsx18 } from "react/jsx-runtime";
 var InfiniteScroll = ({ threshold = 0, loadMore }) => {
@@ -3572,7 +3572,7 @@ var InfiniteScroll = ({ threshold = 0, loadMore }) => {
   return /* @__PURE__ */ jsx18("div", { ref: infiniteScrollRef, style: { width: 0 } });
 };
 
-// src/utils/loader-helpers.ts
+// src/internal/utils/loader-helpers.ts
 async function mergeSortedPartialArraysN(limit, arrays, fetchMissingCallbacks) {
   if (arrays.length !== fetchMissingCallbacks.length) {
     throw new Error("Each array must have a corresponding fetch callback.");
@@ -3648,10 +3648,10 @@ async function mergeSortedPartialArraysN(limit, arrays, fetchMissingCallbacks) {
   return [result, pointers];
 }
 
-// src/services/medication-mapper/index.ts
+// src/internal/services/medication-mapper/index.ts
 import { Ampp, Dmpp } from "@icure/api";
 
-// src/utils/string-helpers.ts
+// src/internal/utils/string-helpers.ts
 function capitalize(s) {
   if (!s) return s;
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
@@ -3661,7 +3661,7 @@ function trim(s) {
   return s.replace(/\s+/g, " ").trim();
 }
 
-// src/services/medication-mapper/index.ts
+// src/internal/services/medication-mapper/index.ts
 var nmpToMedicationTypes = (nmp) => {
   const now = Date.now();
   return nmp.to && nmp.to < now ? [] : [
@@ -3724,7 +3724,7 @@ var ampToMedicationTypes = (amp, deliveryEnvironment) => {
   });
 };
 
-// src/components/medication-elements/MedicationSearch/styles.ts
+// src/shared/components/MedicationSearch/styles.ts
 import styled17, { css as css9 } from "styled-components";
 var StyledMedicationSearch = styled17.div`
   width: 100%;
@@ -3805,7 +3805,7 @@ var StyledMedicationSearchDropdown = styled17.div`
   }
 `;
 
-// src/components/medication-elements/MedicationSearch/index.tsx
+// src/shared/components/MedicationSearch/index.tsx
 import { Fragment as Fragment5, jsx as jsx19, jsxs as jsxs17 } from "react/jsx-runtime";
 var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState3("");
@@ -4025,13 +4025,13 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableIn
   ] });
 };
 
-// src/components/prescription-elements/PrescriptionModal/index.tsx
+// src/shared/components/PrescriptionModal/index.tsx
 import { useEffect as useEffect4, useRef as useRef5, useState as useState4 } from "react";
 import { makeParser } from "@icure/medication-sdk";
 import { Duration, Medication as Medication2, Medicinalproduct, Substanceproduct } from "@icure/be-fhc-lite-api";
 import { v4 as uuid } from "uuid";
 
-// src/utils/dosage-helpers.ts
+// src/internal/utils/dosage-helpers.ts
 var findCommonSequence = (str1, str2) => {
   let commonSequence = "";
   const maxOverlap = Math.min(str1.length, str2.length);
@@ -4045,7 +4045,7 @@ var findCommonSequence = (str1, str2) => {
   return commonSequence;
 };
 
-// src/utils/prescription-duration-helpers.ts
+// src/internal/utils/prescription-duration-helpers.ts
 var getDurationTimeUnits = () => [
   {
     value: "DAY" /* DAY */,
@@ -4100,7 +4100,7 @@ var getDurationFromDays = (numberOfDays) => {
   }
 };
 
-// src/utils/visibility-helpers.ts
+// src/internal/utils/visibility-helpers.ts
 function getPractitionerVisibilityOptions() {
   return [
     {
@@ -4130,10 +4130,10 @@ function getPharmacistVisibilityOptions() {
   ];
 }
 
-// src/components/form-elements/SelectInput/index.tsx
+// src/internal/components/form-elements/SelectInput/index.tsx
 import { forwardRef as forwardRef2 } from "react";
 
-// src/components/form-elements/SelectInput/styles.ts
+// src/internal/components/form-elements/SelectInput/styles.ts
 import styled18, { css as css10 } from "styled-components";
 var StyledSelectInputLabel = styled18.label`
   ${labelCommonStyles};
@@ -4162,7 +4162,7 @@ var StyledSelectDropdown = styled18.select`
     `};
 `;
 
-// src/components/form-elements/SelectInput/index.tsx
+// src/internal/components/form-elements/SelectInput/index.tsx
 import { jsx as jsx20, jsxs as jsxs18 } from "react/jsx-runtime";
 var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs18(StyledSelectInput, { className: "StyledSelectInput", children: [
   /* @__PURE__ */ jsxs18(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
@@ -4173,10 +4173,10 @@ var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, 
   !!errorMessage && /* @__PURE__ */ jsx20("p", { className: "error", children: errorMessage })
 ] }));
 
-// src/components/form-elements/RadioInput/index.tsx
+// src/internal/components/form-elements/RadioInput/index.tsx
 import { forwardRef as forwardRef3 } from "react";
 
-// src/components/form-elements/RadioInput/styles.ts
+// src/internal/components/form-elements/RadioInput/styles.ts
 import styled19, { css as css11 } from "styled-components";
 var StyledRadioGroupLabel = styled19.p`
   ${labelCommonStyles};
@@ -4292,7 +4292,7 @@ var StyledRadioInput = styled19.div`
   }
 `;
 
-// src/components/form-elements/RadioInput/index.tsx
+// src/internal/components/form-elements/RadioInput/index.tsx
 import { jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
 var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
   return /* @__PURE__ */ jsxs19(StyledRadioInput, { className: "StyledRadioInput", children: [
@@ -4322,10 +4322,10 @@ var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, va
 });
 RadioInput.displayName = "RadioInput";
 
-// src/components/form-elements/ToggleSwitch/index.tsx
+// src/internal/components/form-elements/ToggleSwitch/index.tsx
 import { forwardRef as forwardRef4 } from "react";
 
-// src/components/form-elements/ToggleSwitch/styles.ts
+// src/internal/components/form-elements/ToggleSwitch/styles.ts
 import styled20 from "styled-components";
 var StyledSwitch = styled20.div`
 
@@ -4408,7 +4408,7 @@ var StyledSwitch = styled20.div`
     }
 `;
 
-// src/components/form-elements/ToggleSwitch/index.tsx
+// src/internal/components/form-elements/ToggleSwitch/index.tsx
 import { jsx as jsx22, jsxs as jsxs20 } from "react/jsx-runtime";
 var ToggleSwitch = forwardRef4(({ id, value, label, onChange, checked }, ref) => {
   return /* @__PURE__ */ jsxs20(StyledSwitch, { className: "StyledSwitch", children: [
@@ -4424,10 +4424,10 @@ var ToggleSwitch = forwardRef4(({ id, value, label, onChange, checked }, ref) =>
 });
 ToggleSwitch.displayName = "ToggleSwitch";
 
-// src/components/form-elements/TextareaInput/index.tsx
+// src/internal/components/form-elements/TextareaInput/index.tsx
 import React10 from "react";
 
-// src/components/form-elements/TextareaInput/styles.ts
+// src/internal/components/form-elements/TextareaInput/styles.ts
 import styled21, { css as css12 } from "styled-components";
 var StyledTextareaInputLabel = styled21.label`
   ${labelCommonStyles};
@@ -4457,7 +4457,7 @@ var StyledTextarea = styled21.textarea`
     `};
 `;
 
-// src/components/form-elements/TextareaInput/index.tsx
+// src/internal/components/form-elements/TextareaInput/index.tsx
 import { jsx as jsx23, jsxs as jsxs21 } from "react/jsx-runtime";
 var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs21(StyledTextareaInput, { className: "StyledTextareaInput", children: [
   /* @__PURE__ */ jsxs21(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
@@ -4482,7 +4482,7 @@ var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMe
   errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
 ] }));
 
-// src/components/prescription-elements/PrescriptionModal/styles.ts
+// src/shared/components/PrescriptionModal/styles.ts
 import styled22, { css as css13 } from "styled-components";
 var StyledPrescriptionModal = styled22.div`
   width: 100vw;
@@ -4730,7 +4730,7 @@ var StyledSuggestionItem = styled22.li`
     `};
 `;
 
-// src/components/prescription-elements/PrescriptionModal/index.tsx
+// src/shared/components/PrescriptionModal/index.tsx
 import { Controller, useForm as useForm2 } from "react-hook-form";
 import { Fragment as Fragment6, jsx as jsx24, jsxs as jsxs22 } from "react/jsx-runtime";
 var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose, onSubmit, modalMood }) => {
@@ -5235,10 +5235,10 @@ var PrescriptionModal = ({ medicationToPrescribe, prescriptionToModify, onClose,
   ] });
 };
 
-// src/components/prescription-elements/PrescriptionList/index.tsx
+// src/shared/components/PrescriptionList/index.tsx
 import { useState as useState5 } from "react";
 
-// src/components/prescription-elements/PrescriptionCard/styles.ts
+// src/internal/components/prescription-elements/PrescriptionCard/styles.ts
 import styled23, { css as css14 } from "styled-components";
 var actionBtnCommonStyles = css14`
   background: none;
@@ -5377,7 +5377,7 @@ var StyledPrescriptionCard = styled23.div`
   }
 `;
 
-// src/components/prescription-elements/PrescriptionCard/index.tsx
+// src/internal/components/prescription-elements/PrescriptionCard/index.tsx
 import { jsx as jsx25, jsxs as jsxs23 } from "react/jsx-runtime";
 var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
   return /* @__PURE__ */ jsxs23(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
@@ -5392,7 +5392,7 @@ var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handle
   ] });
 };
 
-// src/components/prescription-elements/PrescriptionList/styles.ts
+// src/shared/components/PrescriptionList/styles.ts
 import styled24 from "styled-components";
 var StyledPrescriptionList = styled24.div`
   display: flex;
@@ -5441,7 +5441,7 @@ var StyledPrescriptionList = styled24.div`
   }
 `;
 
-// src/components/prescription-elements/PrescriptionList/index.tsx
+// src/shared/components/PrescriptionList/index.tsx
 import { Fragment as Fragment7, jsx as jsx26, jsxs as jsxs24 } from "react/jsx-runtime";
 var PrescriptionList = ({
   handleModifyPrescription,
@@ -5537,11 +5537,11 @@ var PrescriptionList = ({
   ] });
 };
 
-// src/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
+// src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
 import { useEffect as useEffect5, useRef as useRef6 } from "react";
 import JsBarcode from "jsbarcode";
 
-// src/components/prescription-elements/PrescriptionDocumentToPrint/styles.ts
+// src/internal/components/prescription-elements/PrescriptionDocumentToPrint/styles.ts
 import styled25 from "styled-components";
 var StyledPrescriptionDocument = styled25.div`
   @media print {
@@ -5645,7 +5645,7 @@ var StyledPrescriptionDocument = styled25.div`
   }
 `;
 
-// src/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
+// src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
 import { jsx as jsx27, jsxs as jsxs25 } from "react/jsx-runtime";
 function chunk(arr, chunkSize = 1, cache = []) {
   const tmp = [...arr];
@@ -5750,7 +5750,7 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
   ] }, chunkIndex)) : null });
 };
 
-// src/components/prescription-elements/PrescriptionPrintModal/styles.ts
+// src/shared/components/PrescriptionPrintModal/styles.ts
 import styled26 from "styled-components";
 var StyledPrescriptionPrintModal = styled26.div`
   width: 100vw;
@@ -5897,7 +5897,7 @@ var StyledPrescriptionPrintModal = styled26.div`
   }
 `;
 
-// src/components/prescription-elements/PrescriptionPrintModal/index.tsx
+// src/shared/components/PrescriptionPrintModal/index.tsx
 import { Fragment as Fragment8, jsx as jsx28, jsxs as jsxs26 } from "react/jsx-runtime";
 var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, patient }) => {
   const print = () => {

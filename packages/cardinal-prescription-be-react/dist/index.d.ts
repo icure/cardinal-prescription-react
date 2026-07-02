@@ -1,5 +1,5 @@
 import { SamText, IccBesamv2Api, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/api';
-import { Medication, Duration, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
+import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import { StandardDosage } from '@icure/api/icc-api/model/StandardDosage';
 import React from 'react';
 
@@ -36,6 +36,9 @@ declare const findMedicationsByLabel: (sdk: IccBesamv2Api, query: string) => Pro
  * Fetch the current version information for the SAM database.
  */
 declare const fetchSamVersion: (sdk: IccBesamv2Api) => Promise<SamVersion | undefined>;
+
+type PractitionerVisibilityType = 'open' | 'locked' | 'gmd_prescriber';
+type PharmacistVisibilityType = null | 'locked';
 
 type MedicationType = {
     ampId?: string;
@@ -79,37 +82,11 @@ type PrescribedMedicationType = {
     pharmacistVisibility?: PharmacistVisibilityType;
 };
 
-type ReimbursementType = null | Medication.InstructionsForReimbursementEnum;
-
-type PractitionerVisibilityType = 'open' | 'locked' | 'gmd_prescriber';
-type PharmacistVisibilityType = null | 'locked';
-
-type PrescriptionFormType = {
-    medicationTitle?: string;
-    dosage?: string;
-    duration?: number | Duration;
-    durationTimeUnit?: string;
-    treatmentStartDate?: string;
-    executableUntil?: string;
-    prescriptionsNumber?: number;
-    periodicityTimeUnit?: string;
-    periodicityDaysNumber?: number;
-    substitutionAllowed?: boolean;
-    recipeInstructionForPatient?: string;
-    instructionsForReimbursement?: ReimbursementType;
-    prescriberVisibility?: PractitionerVisibilityType;
-    pharmacistVisibility?: PharmacistVisibilityType;
-};
-
 interface CertificateValidationResultType {
     keystoreUuid?: string;
     stsTokenId?: string;
     status: boolean;
     error?: SamText;
-}
-
-interface IconComponentBase {
-    color?: string;
 }
 
 interface GenericStoreType<T> {
@@ -210,4 +187,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, type IconComponentBase, IndexedDbServiceStore, MedicationSearch, type MedicationType, PaginatedListIterator, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, type PrescriptionFormType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type ReimbursementType, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type CertificateRecordType, type CertificateValidationResultType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, MedicationSearch, type MedicationType, PaginatedListIterator, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type VendorType, cardinalLanguage, createFhcCode, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAndDecryptCertificate, loadCertificateInformation, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
