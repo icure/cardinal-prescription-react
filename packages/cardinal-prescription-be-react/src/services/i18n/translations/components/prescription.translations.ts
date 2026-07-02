@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 export const prescriptionTranslations = {
   fr: {
     createTitle: 'Créer la prescription',

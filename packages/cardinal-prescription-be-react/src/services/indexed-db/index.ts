@@ -23,22 +23,28 @@ export class IndexedDbServiceStore<T> {
     })
   }
 
-  public get(key: string): Promise<T> {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readonly')
+  public async get(key: string): Promise<T> {
+    const db = await this.db
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, 'readonly')
       const store = tx.objectStore(this.config.STORE_NAME)
       const request = store.get(key)
 
       request.onsuccess = () => {
-        request.result?.value != null ? resolve(request.result.value as T) : reject(new Error(`No value for key: ${key}`))
+        if (request.result?.value != null) {
+          resolve(request.result.value as T)
+        } else {
+          reject(new Error(`No value for key: ${key}`))
+        }
       }
       request.onerror = () => reject(request.error)
     })
   }
 
-  public put(key: string, value: T): Promise<T> {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readwrite')
+  public async put(key: string, value: T): Promise<T> {
+    const db = await this.db
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, 'readwrite')
       const store = tx.objectStore(this.config.STORE_NAME)
 
       const getRequest = store.get(key)
@@ -55,18 +61,12 @@ export class IndexedDbServiceStore<T> {
     })
   }
 
-  public delete(key: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, 'readwrite')
+  public async delete(key: string): Promise<void> {
+    const db = await this.db
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, 'readwrite')
       const store = tx.objectStore(this.config.STORE_NAME)
-
-      console.log('store')
-      console.log(store)
-
       const request = store.delete(key)
-
-      console.log('request')
-      console.log(request)
 
       request.onsuccess = () => resolve()
       request.onerror = () => reject(request.error)

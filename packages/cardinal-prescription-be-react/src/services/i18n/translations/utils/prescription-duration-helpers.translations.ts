@@ -51,4 +51,4 @@ export const prescriptionDurationTranslations = {
       numberOfDays: 'x anzahl der tage',
     },
   },
-};
+}

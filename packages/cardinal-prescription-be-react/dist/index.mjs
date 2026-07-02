@@ -1086,20 +1086,26 @@ var IndexedDbServiceStore = class {
       request.onerror = () => reject(request.error);
     });
   }
-  get(key) {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, "readonly");
+  async get(key) {
+    const db = await this.db;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, "readonly");
       const store = tx.objectStore(this.config.STORE_NAME);
       const request = store.get(key);
       request.onsuccess = () => {
-        request.result?.value != null ? resolve(request.result.value) : reject(new Error(`No value for key: ${key}`));
+        if (request.result?.value != null) {
+          resolve(request.result.value);
+        } else {
+          reject(new Error(`No value for key: ${key}`));
+        }
       };
       request.onerror = () => reject(request.error);
     });
   }
-  put(key, value) {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, "readwrite");
+  async put(key, value) {
+    const db = await this.db;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, "readwrite");
       const store = tx.objectStore(this.config.STORE_NAME);
       const getRequest = store.get(key);
       getRequest.onsuccess = () => {
@@ -1112,15 +1118,12 @@ var IndexedDbServiceStore = class {
       getRequest.onerror = () => reject(getRequest.error);
     });
   }
-  delete(key) {
-    return new Promise(async (resolve, reject) => {
-      const tx = (await this.db).transaction(this.config.STORE_NAME, "readwrite");
+  async delete(key) {
+    const db = await this.db;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.config.STORE_NAME, "readwrite");
       const store = tx.objectStore(this.config.STORE_NAME);
-      console.log("store");
-      console.log(store);
       const request = store.delete(key);
-      console.log("request");
-      console.log(request);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });

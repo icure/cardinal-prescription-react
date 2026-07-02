@@ -9,12 +9,24 @@
   ],
   "scripts": {
     "build": "yarn workspace @icure/cardinal-prescription-be-react build",
-    "start": "yarn workspace demo-app start"
+    "start": "yarn workspace demo-app start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "yarn workspace @icure/cardinal-prescription-be-react test",
+    "test:coverage": "yarn workspace @icure/cardinal-prescription-be-react test:coverage"
   },
   "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "eslint": "^9.30.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
-    "prettier": "^3.6.2"
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.35.0"
   },
   "packageManager": "yarn@4.5.2+sha512.570504f67349ef26d2d86a768dc5ec976ead977aa086b0bb4237e97d5db7ae5c620f9f0e0edf3ea5047205063faff102bf2a2d778664a94eaaa1085ad483fe2e"
 }

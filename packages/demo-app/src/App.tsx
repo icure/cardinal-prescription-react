@@ -114,7 +114,6 @@ export const App = () => {
       setCertificateUploaded(false)
 
       console.error('Error while validating certificate from the Demo App:', error)
-    } finally {
     }
   }
 
@@ -213,7 +212,9 @@ export const App = () => {
                 ),
               )
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error('Error while sending prescription from the Demo App:', e)
+          }
         }),
     )
   }

@@ -95,4 +95,4 @@ export const reimbursementTranslations = {
       Fb: 'Therapeutisch wichtige Medikamente mit Erstattung auf Basis eines Festbetrags',
     },
   },
-};
+}

@@ -43,4 +43,4 @@ export const prescriptionVisibilityTranslations = {
       locked: 'Das medikament ist nicht für alle apotheker sichtbar',
     },
   },
-};
+}
