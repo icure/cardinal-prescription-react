@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   cardinalLanguage,
+  createIndexedDbTokenStore,
   deleteCertificate,
   fetchSamVersion,
   loadCertificateInformation,
@@ -17,7 +18,8 @@ import {
 } from '@icure/cardinal-prescription-be-react'
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
-import { IccBesamv2Api, SamVersion, EnsembleAuthenticationProvider, NoAuthenticationProvider, IccAuthApi } from '@icure/api'
+import { CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
+import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE } from './config'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -51,19 +53,8 @@ const samPackage = {
   packageVersion: '1.0]-freehealth-connector',
 }
 
-// To create new Credentials.UsernamePassword(), follow these steps:
-// 1. Go to https://cockpit.icure.dev/ — the management platform for Cardinal.
-// 2. Register and log in.
-// 3. Create a solution, then a database, and then a healthcare professional (HCP).
-// 4. For this HCP, generate an Active Authentication Token.
-// 5. Use the HCP's email address as the username, and the token as the password.
-const practitionerCredentials = {
-  username: 'larisa.shashuk+medicationsTest@gmail.com',
-  password: '5aa9d0f0-2fab-4f9f-9f6a-5d8244280873',
-}
-const ICURE_URL = 'https://api.icure.cloud'
-const FHC_URL = 'https://fhcacc.icure.cloud'
-const CARDINAL_PRESCRIPTION_LANGUAGE = 'fr'
+// Credentials and environment URLs come from environment variables — see config.ts
+// and .env.example. Copy .env.example to .env.local and fill in your own values.
 
 export const App = () => {
   // Service instance refs
@@ -72,13 +63,18 @@ export const App = () => {
   const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
   const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
   const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<IccBesamv2Api | undefined>(undefined)
+  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<SamV2Api | undefined>(undefined)
   const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
+  const [alternativeCheapMedications, setAlternativeCheapMedications] = useState<MedicationType[]>([])
   const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
   const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
   const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
   const [isPrescriptionPrintModalOpen, setPrescriptionPrintModalOpen] = useState(false)
+
+  // Token store used to cache the FHC keystore uuid / STS token between
+  // certificate validation and prescription sending.
+  const tokenStore = useMemo(() => createIndexedDbTokenStore(), [])
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -87,13 +83,13 @@ export const App = () => {
     const initializeAll = async () => {
       try {
         // Initialize Cardinal Be Sam (SAM)
-        const cardinalBeSamInstance: IccBesamv2Api = new IccBesamv2Api(
+        const cardinalBeSamApi = await CardinalBeSamSdk.initialize(
+          undefined,
           ICURE_URL,
-          {},
-          new EnsembleAuthenticationProvider(new IccAuthApi(ICURE_URL, {}, new NoAuthenticationProvider()), practitionerCredentials.username, practitionerCredentials.password),
+          new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
         )
-        setCardinalBeSamInstance(cardinalBeSamInstance)
-        setSamVersion(await fetchSamVersion(cardinalBeSamInstance))
+        setCardinalBeSamInstance(cardinalBeSamApi.sam)
+        setSamVersion(await fetchSamVersion(cardinalBeSamApi.sam))
 
         try {
           if (hcp.ssin) {
@@ -113,7 +109,7 @@ export const App = () => {
 
   const validateCertificate = async (passphrase: string) => {
     try {
-      const res = await validateDecryptedCertificate(hcp, passphrase, FHC_URL)
+      const res = await validateDecryptedCertificate(hcp, passphrase, tokenStore, FHC_URL)
 
       setIsCertificateValid(res.status)
       setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
@@ -124,7 +120,6 @@ export const App = () => {
       setCertificateUploaded(false)
 
       console.error('Error while validating certificate from the Demo App:', error)
-    } finally {
     }
   }
 
@@ -164,10 +159,12 @@ export const App = () => {
     setErrorWhileVerifyingCertificate(undefined)
   }
 
-  const onCreatePrescription = (medication: MedicationType) => {
+  const onCreatePrescription = (medication: MedicationType, cheapAlternatives: MedicationType[]) => {
     setPrescriptionModalOpen(true)
     setPrescriptionModalMode('create')
     setMedicationToPrescribe(medication)
+    // Held in state for a later phase where the PrescriptionModal will surface cheaper alternatives.
+    setAlternativeCheapMedications(cheapAlternatives)
   }
   const onClosePrescriptionModal = () => {
     setPrescriptionModalMode(null)
@@ -211,6 +208,7 @@ export const App = () => {
                 med,
                 passphrase,
                 FHC_URL,
+                tokenStore,
               )
               setPrescriptions((prev) =>
                 prev.map((item) =>
@@ -223,7 +221,9 @@ export const App = () => {
                 ),
               )
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error('Error while sending prescription from the Demo App:', e)
+          }
         }),
     )
   }
@@ -273,16 +273,26 @@ export const App = () => {
         </>
       )}
 
-      {prescriptionModalMode === 'create' && (
+      {prescriptionModalMode === 'create' && cardinalBeSamInstance && (
         <PrescriptionModal
+          sdk={cardinalBeSamInstance}
           onClose={onClosePrescriptionModal}
           onSubmit={onSubmitCreatePrescription}
           modalMood={prescriptionModalMode}
           medicationToPrescribe={medicationToPrescribe}
+          alternativeCheapMedications={alternativeCheapMedications}
+          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
         />
       )}
-      {prescriptionModalMode === 'modify' && (
-        <PrescriptionModal onClose={onClosePrescriptionModal} onSubmit={onSubmitModifyPrescription} modalMood={prescriptionModalMode} prescriptionToModify={prescriptionToModify} />
+      {prescriptionModalMode === 'modify' && cardinalBeSamInstance && (
+        <PrescriptionModal
+          sdk={cardinalBeSamInstance}
+          onClose={onClosePrescriptionModal}
+          onSubmit={onSubmitModifyPrescription}
+          modalMood={prescriptionModalMode}
+          prescriptionToModify={prescriptionToModify}
+          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
+        />
       )}
       {isPrescriptionPrintModalOpen && (
         <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />

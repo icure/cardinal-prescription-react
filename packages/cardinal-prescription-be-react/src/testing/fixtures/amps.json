@@ -1,0 +1,1592 @@
+[
+  {
+    "id": "a89a18e214563960e044ce4b8d4d96e8",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol AB 1 000 mg comp.",
+      "nl": "Paracetamol AB 1 000 mg tabl.",
+      "de": "Paracetamol AB 1 000 mg Tabl.",
+      "en": "Paracetamol AB 1 000 mg tabl."
+    },
+    "name": {
+      "fr": "Paracetamol AB 1000 mg",
+      "nl": "Paracetamol AB 1000 mg",
+      "de": "Paracetamol AB 1000 mg",
+      "en": "Paracetamol AB 1000 mg"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol AB compr. (séc.) 1 g",
+      "nl": "Paracetamol AB tabl. (deelb.) 1 g"
+    },
+    "vmp": {
+      "id": "0a47d53b76e0092fb94045a5ec8deeb8",
+      "code": "26500",
+      "name": {
+        "fr": "paracétamol 1 g comprimé (or.)",
+        "nl": "paracetamol 1 g tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "648e0b0267871ee012f18df730874c7d",
+        "code": "24745",
+        "name": {
+          "fr": "paracétamol oral 1 g [CAVE solide/liq.]",
+          "nl": "paracetamol oraal 1 g [CAVE vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "525653-22",
+        "prescriptionName": {
+          "fr": "Paracetamol AB 1 000 mg comp. 100",
+          "nl": "Paracetamol AB 1 000 mg tabl. 100",
+          "de": "Paracetamol AB 1 000 mg Tabl. 100",
+          "en": "Paracetamol AB 1 000 mg tabl. 100"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol AB compr. (séc.) 100 x 1 g",
+          "nl": "Paracetamol AB tabl. (deelb.) 100 x 1 g"
+        },
+        "exFactoryPrice": 3.8,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=182725",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=182725"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfd2f",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfe70",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfbd2"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ab1e5c015ab3adffab",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ab1e5c015ab3ae00ce"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1646092800000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7733504",
+            "productId": "yhWhpTb4Tc0N+GnIUVtcTF0XMbtIgSxMhOsEGQraZAw=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1640995200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1759276800000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "525653-20",
+        "prescriptionName": {
+          "fr": "Paracetamol AB 1 000 mg comp. 60",
+          "nl": "Paracetamol AB 1 000 mg tabl. 60",
+          "de": "Paracetamol AB 1 000 mg Tabl. 60",
+          "en": "Paracetamol AB 1 000 mg tabl. 60"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol AB compr. (séc.) 60 x 1 g",
+          "nl": "Paracetamol AB tabl. (deelb.) 60 x 1 g"
+        },
+        "exFactoryPrice": 2.47,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=182717",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=182717"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfd2f",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfe70",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50aa1e5c015ab3adfbd2"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ab1e5c015ab3adffab",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ab1e5c015ab3ae00ce"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1646092800000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1727740800000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7733504",
+            "productId": "yhWhpTb4Tc0N+GnIUVtcTF0XMbtIgSxMhOsEGQraZAw=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1640995200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1759276800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "606e9f594ec49a00bae19bb219dba159",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol AB 500 mg comp.",
+      "nl": "Paracetamol AB 500 mg tabl.",
+      "de": "Paracetamol AB 500 mg Tabl.",
+      "en": "Paracetamol AB 500 mg tabl."
+    },
+    "name": {
+      "fr": "Paracetamol AB 500 mg",
+      "nl": "Paracetamol AB 500 mg",
+      "de": "Paracetamol AB 500 mg",
+      "en": "Paracetamol AB 500 mg"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol AB compr. (séc.) 500 mg",
+      "nl": "Paracetamol AB tabl. (deelb.) 500 mg"
+    },
+    "vmp": {
+      "id": "abb6f31a44a2419733681b0d80afff0a",
+      "code": "26799",
+      "name": {
+        "fr": "paracétamol 500 mg comprimé (or.)",
+        "nl": "paracetamol 500 mg tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "698ad75d2b36e4a1cb7610421216d2c7",
+        "code": "24901",
+        "name": {
+          "fr": "paracétamol oral 500 mg [CAVE séc., solide/liq.]",
+          "nl": "paracetamol oraal 500 mg [CAVE deelb., vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "525644-21",
+        "prescriptionName": {
+          "fr": "Paracetamol AB 500 mg comp. 100",
+          "nl": "Paracetamol AB 500 mg tabl. 100",
+          "de": "Paracetamol AB 500 mg Tabl. 100",
+          "en": "Paracetamol AB 500 mg tabl. 100"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol AB compr. (séc.) 100 x 500 mg",
+          "nl": "Paracetamol AB tabl. (deelb.) 100 x 500 mg"
+        },
+        "exFactoryPrice": 1.91,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=182709",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=182709"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ac1e5c015ab3ae02eb",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ac1e5c015ab3ae0396",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ab1e5c015ab3ae0228"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ac1e5c015ab3ae03ff",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc50ac1e5c015ab3ae046b"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1646092800000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7733512",
+            "productId": "KGyJcEBjjbiMSZuO4Mbr6U8Ztoa082oktRSsw8ZWemo=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1640995200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1759276800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bc5fc4679f926911756748baaea8b0d3",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Accord 10 mg/ml sol. perf. i.v. flac.",
+      "nl": "Paracetamol Accord 10 mg/ml inf. opl. i.v. flac.",
+      "de": "Paracetamol Accord 10 mg/ml Inf-Lös. i.v. Dstfl.",
+      "en": "Paracetamol Accord 10 mg/ml inf. sol. i.v. vial"
+    },
+    "name": {
+      "fr": "Paracetamol Accord 10 mg/ml",
+      "nl": "Paracetamol Accord 10 mg/ml",
+      "de": "Paracetamol Accord 10 mg/ml",
+      "en": "Paracetamol Accord 10 mg/ml"
+    },
+    "vmp": {
+      "id": "9a9b023c695135835b47796d2bbaef1c",
+      "code": "26468",
+      "name": {
+        "fr": "paracétamol 1 g / 100 ml solution pour perfusion (i.v.)",
+        "nl": "paracetamol 1 g / 100 ml oplossing voor infusie (i.v.)"
+      },
+      "vmpGroup": {
+        "id": "0fd0b840dce52676fdfa0c5ae3302c8f",
+        "code": "24737",
+        "name": {
+          "fr": "paracétamol perfusion 1 g / 100 ml",
+          "nl": "paracetamol infusie 1 g / 100 ml"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1729209600000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "529120-04",
+        "prescriptionName": {
+          "fr": "Paracetamol Accord 10 mg/ml sol. perf. i.v. flac. 20 x 100 ml",
+          "nl": "Paracetamol Accord 10 mg/ml inf. opl. i.v. flac. 20 x 100 ml",
+          "de": "Paracetamol Accord 10 mg/ml Inf-Lös. i.v. Dstfl. 20 x 100 ml",
+          "en": "Paracetamol Accord 10 mg/ml inf. sol. i.v. vial 20 x 100 ml"
+        },
+        "exFactoryPrice": 27.07,
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc56851e5c015ab3b9f99d",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc56861e5c015ab3b9fac0",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc56851e5c015ab3b9f87b"
+        },
+        "rmaProfessionalLink": {
+          "fr": "https://www.basededonneesdesmedicaments.be/medicament/62bc22958ab5583c188bdbc4/rma",
+          "nl": "https://www.geneesmiddelendatabank.be/geneesmiddel/62bc22958ab5583c188bdbc4/rma",
+          "en": "https://www.medicinesdatabase.be/medicine/62bc22958ab5583c188bdbc4/rma"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc56871e5c015ab3b9fc5a",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc56871e5c015ab3b9fda9"
+        },
+        "deliveryModusCode": "M1",
+        "deliveryModus": {
+          "fr": "Prescription médicale - Art 6, §1 bis, deuxième alinéa, premier tiret de la Loi du 25/03/1964 + Art 61 de l'AR 14/12/2006",
+          "nl": "Medisch voorschrift - Art 6, §1 bis, tweede lid, eerste streepje van de Wet van 25/03/1964 + Art 61 van het KB van 14/12/2006",
+          "de": "Arzneimittel auf Verschreibung - Art. 6, §1 bis, Absatz 2, erster Gedankenstrich des Gesetzes vom 25.03.1964 + Art. 61 des KE vom 14.12.2006",
+          "en": "Medical prescription - Art 6, §1 bis, 2nd paragraph, 1st indent Law 25/03/1964 + Art 61 Royal Decree 14/12/2006"
+        },
+        "commercializations": [
+          {
+            "from": 1632268800000,
+            "to": 1697328000000
+          },
+          {
+            "from": 1697587200000,
+            "to": 1729209600000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7731037",
+            "productId": "4bfMkBzAe7bx8sKQDqxZlXUlLSiamCpHICTgtdqLsxY=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1680220800000
+              },
+              {
+                "from": 1627776000000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1680307200000,
+                "to": 1759190400000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "433c3936659444d441c96593c2523e40",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol B. Braun 10 mg/ml sol. perf. i.v.",
+      "nl": "Paracetamol B. Braun 10 mg/ml inf. opl. i.v.",
+      "de": "Paracetamol B. Braun 10 mg/ml Inf-Lös. i.v.",
+      "en": "Paracetamol B. Braun 10 mg/ml inf. sol. i.v."
+    },
+    "name": {
+      "fr": "Paracetamol B. Braun 10 mg/ml",
+      "nl": "Paracetamol B. Braun 10 mg/ml",
+      "de": "Paracetamol B. Braun 10 mg/ml",
+      "en": "Paracetamol B. Braun 10 mg/ml"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol B. Braun sol. perf. i.v. [flac.] 500 mg / 50 ml",
+      "nl": "Paracetamol B. Braun inf. oploss. i.v. [flac.] 500 mg / 50 ml"
+    },
+    "vmp": {
+      "id": "081081dff7c6534b31b242536d5acc9c",
+      "code": "26617",
+      "name": {
+        "fr": "paracétamol 500 mg / 50 ml solution pour perfusion (i.v.)",
+        "nl": "paracetamol 500 mg / 50 ml oplossing voor infusie (i.v.)"
+      },
+      "vmpGroup": {
+        "id": "f280e4116620cf3b8f11ea742526fb6a",
+        "code": "24851",
+        "name": {
+          "fr": "paracétamol perfusion 500 mg / 50 ml",
+          "nl": "paracetamol infusie 500 mg / 50 ml"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1680307200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "416175-01",
+        "prescriptionName": {
+          "fr": "Paracetamol B. Braun 10 mg/ml sol. perf. i.v. 10 x 50 ml",
+          "nl": "Paracetamol B. Braun 10 mg/ml inf. opl. i.v. 10 x 50 ml",
+          "de": "Paracetamol B. Braun 10 mg/ml Inf-Lös. i.v. 10 x 50 ml",
+          "en": "Paracetamol B. Braun 10 mg/ml inf. sol. i.v. 10 x 50 ml"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol B. Braun sol. perf. i.v. [flac.] 10 x 500 mg / 50 ml",
+          "nl": "Paracetamol B. Braun inf. oploss. i.v. [flac.] 10 x 500 mg / 50 ml"
+        },
+        "exFactoryPrice": 9.85,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=118455",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=118455"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58161e5c015ab3bdb358",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58171e5c015ab3bdb3e4",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58151e5c015ab3bdb2a0"
+        },
+        "rmaProfessionalLink": {
+          "fr": "https://www.basededonneesdesmedicaments.be/medicament/62bc27e88ab5583c1899e7bd/rma",
+          "nl": "https://www.geneesmiddelendatabank.be/geneesmiddel/62bc27e88ab5583c1899e7bd/rma",
+          "en": "https://www.medicinesdatabase.be/medicine/62bc27e88ab5583c1899e7bd/rma"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58171e5c015ab3bdb4b8",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58181e5c015ab3bdb6d4"
+        },
+        "deliveryModusCode": "M1",
+        "deliveryModus": {
+          "fr": "Prescription médicale - Art 6, §1 bis, deuxième alinéa, premier tiret de la Loi du 25/03/1964 + Art 61 de l'AR 14/12/2006",
+          "nl": "Medisch voorschrift - Art 6, §1 bis, tweede lid, eerste streepje van de Wet van 25/03/1964 + Art 61 van het KB van 14/12/2006",
+          "de": "Arzneimittel auf Verschreibung - Art. 6, §1 bis, Absatz 2, erster Gedankenstrich des Gesetzes vom 25.03.1964 + Art. 61 des KE vom 14.12.2006",
+          "en": "Medical prescription - Art 6, §1 bis, 2nd paragraph, 1st indent Law 25/03/1964 + Art 61 Royal Decree 14/12/2006"
+        },
+        "commercializations": [
+          {
+            "from": 1406851200000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7702103",
+            "productId": "VBYkZvU7ygT8hb2Z1Z+gZIQBv/VAd1cEk2B+f7r/A7c=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1680307200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1577750400000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1577836800000,
+                "to": 1680220800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1759276800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "56f366cda9ace981be9f581c1f026927",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol B. Braun 10 mg/ml sol. perf. i.v.",
+      "nl": "Paracetamol B. Braun 10 mg/ml inf. opl. i.v.",
+      "de": "Paracetamol B. Braun 10 mg/ml Inf-Lös. i.v.",
+      "en": "Paracetamol B. Braun 10 mg/ml inf. sol. i.v."
+    },
+    "name": {
+      "fr": "Paracetamol B. Braun 10 mg/ml",
+      "nl": "Paracetamol B. Braun 10 mg/ml",
+      "de": "Paracetamol B. Braun 10 mg/ml",
+      "en": "Paracetamol B. Braun 10 mg/ml"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol B. Braun sol. perf. i.v. [flac.] 1 g / 100 ml",
+      "nl": "Paracetamol B. Braun inf. oploss. i.v. [flac.] 1 g / 100 ml"
+    },
+    "vmp": {
+      "id": "9a9b023c695135835b47796d2bbaef1c",
+      "code": "26468",
+      "name": {
+        "fr": "paracétamol 1 g / 100 ml solution pour perfusion (i.v.)",
+        "nl": "paracetamol 1 g / 100 ml oplossing voor infusie (i.v.)"
+      },
+      "vmpGroup": {
+        "id": "0fd0b840dce52676fdfa0c5ae3302c8f",
+        "code": "24737",
+        "name": {
+          "fr": "paracétamol perfusion 1 g / 100 ml",
+          "nl": "paracetamol infusie 1 g / 100 ml"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1680307200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "416184-01",
+        "prescriptionName": {
+          "fr": "Paracetamol B. Braun 10 mg/ml sol. perf. i.v. 10 x 100 ml",
+          "nl": "Paracetamol B. Braun 10 mg/ml inf. opl. i.v. 10 x 100 ml",
+          "de": "Paracetamol B. Braun 10 mg/ml Inf-Lös. i.v. 10 x 100 ml",
+          "en": "Paracetamol B. Braun 10 mg/ml inf. sol. i.v. 10 x 100 ml"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol B. Braun sol. perf. i.v. [flac.] 10 x 1 g / 100 ml",
+          "nl": "Paracetamol B. Braun inf. oploss. i.v. [flac.] 10 x 1 g / 100 ml"
+        },
+        "exFactoryPrice": 13.81,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=118463",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=118463"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58161e5c015ab3bdb358",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58171e5c015ab3bdb3e4",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58151e5c015ab3bdb2a0"
+        },
+        "rmaProfessionalLink": {
+          "fr": "https://www.basededonneesdesmedicaments.be/medicament/62bc279c8ab5583c18992100/rma",
+          "nl": "https://www.geneesmiddelendatabank.be/geneesmiddel/62bc279c8ab5583c18992100/rma",
+          "en": "https://www.medicinesdatabase.be/medicine/62bc279c8ab5583c18992100/rma"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58171e5c015ab3bdb4b8",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc58181e5c015ab3bdb6d4"
+        },
+        "deliveryModusCode": "M1",
+        "deliveryModus": {
+          "fr": "Prescription médicale - Art 6, §1 bis, deuxième alinéa, premier tiret de la Loi du 25/03/1964 + Art 61 de l'AR 14/12/2006",
+          "nl": "Medisch voorschrift - Art 6, §1 bis, tweede lid, eerste streepje van de Wet van 25/03/1964 + Art 61 van het KB van 14/12/2006",
+          "de": "Arzneimittel auf Verschreibung - Art. 6, §1 bis, Absatz 2, erster Gedankenstrich des Gesetzes vom 25.03.1964 + Art. 61 des KE vom 14.12.2006",
+          "en": "Medical prescription - Art 6, §1 bis, 2nd paragraph, 1st indent Law 25/03/1964 + Art 61 Royal Decree 14/12/2006"
+        },
+        "commercializations": [
+          {
+            "from": 1406851200000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7702111",
+            "productId": "cu1EaLziaL6UbKSHqHk4q8m1Ibqe+czIRKbIvZpguG4=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1680307200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1577750400000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1577836800000,
+                "to": 1680220800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ad440c14a7a6925fad1e32871c68286b",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol EG 500 mg compr. pellic.",
+      "nl": "Paracetamol EG 500 mg filmomh. tabl.",
+      "de": "Paracetamol EG 500 mg Filmtabl.",
+      "en": "Paracetamol EG 500 mg film-coat. tabl."
+    },
+    "name": {
+      "fr": "Paracetamol EG 500 mg",
+      "nl": "Paracetamol EG 500 mg",
+      "de": "Paracetamol EG 500 mg",
+      "en": "Paracetamol EG 500 mg"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol EG compr. pellic. (séc.) 500 mg",
+      "nl": "Paracetamol EG filmomh. tabl. (deelb.) 500 mg"
+    },
+    "vmp": {
+      "id": "abb6f31a44a2419733681b0d80afff0a",
+      "code": "26799",
+      "name": {
+        "fr": "paracétamol 500 mg comprimé (or.)",
+        "nl": "paracetamol 500 mg tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "698ad75d2b36e4a1cb7610421216d2c7",
+        "code": "24901",
+        "name": {
+          "fr": "paracétamol oral 500 mg [CAVE séc., solide/liq.]",
+          "nl": "paracetamol oraal 500 mg [CAVE deelb., vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "392271-28",
+        "prescriptionName": {
+          "fr": "Paracetamol EG 500 mg compr. pellic. 120",
+          "nl": "Paracetamol EG 500 mg filmomh. tabl. 120",
+          "de": "Paracetamol EG 500 mg Filmtabl. 120",
+          "en": "Paracetamol EG 500 mg film-coat. tabl. 120"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol EG compr. pellic. (séc.) 120 x 500 mg",
+          "nl": "Paracetamol EG filmomh. tabl. (deelb.) 120 x 500 mg"
+        },
+        "exFactoryPrice": 2.53,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=172650",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=172650"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e61e5c015ab3d2f934",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e71e5c015ab3d2fc32",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e41e5c015ab3d2f534"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e81e5c015ab3d2fe33",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e91e5c015ab3d3006d"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1596240000000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "0754341",
+            "productId": "+DuhHeyp0L8ZmXiIGEk4rL8YCcy+u2Ha2wCb/6ibxcM=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1609372800000
+              },
+              {
+                "from": 1609459200000,
+                "to": 1617148800000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "01e420c5096c56f48f5e7fc76dbd8ef4",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol EG Forte 1 g compr. pellic.",
+      "nl": "Paracetamol EG Forte 1 g filmomh. tabl.",
+      "de": "Paracetamol EG Forte 1 g Filmtabl.",
+      "en": "Paracetamol EG Forte 1 g film-coat. tabl."
+    },
+    "name": {
+      "fr": "Paracetamol EG Forte 1 g",
+      "nl": "Paracetamol EG Forte 1 g",
+      "de": "Paracetamol EG Forte 1 g",
+      "en": "Paracetamol EG Forte 1 g"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol EG compr. pellic. (séc.) Forte 1 g",
+      "nl": "Paracetamol EG filmomh. tabl. (deelb.) Forte 1 g"
+    },
+    "vmp": {
+      "id": "0a47d53b76e0092fb94045a5ec8deeb8",
+      "code": "26500",
+      "name": {
+        "fr": "paracétamol 1 g comprimé (or.)",
+        "nl": "paracetamol 1 g tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "648e0b0267871ee012f18df730874c7d",
+        "code": "24745",
+        "name": {
+          "fr": "paracétamol oral 1 g [CAVE solide/liq.]",
+          "nl": "paracetamol oraal 1 g [CAVE vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "392296-21",
+        "prescriptionName": {
+          "fr": "Paracetamol EG Forte 1 g compr. pellic. 120",
+          "nl": "Paracetamol EG Forte 1 g filmomh. tabl. 120",
+          "de": "Paracetamol EG Forte 1 g Filmtabl. 120",
+          "en": "Paracetamol EG Forte 1 g film-coat. tabl. 120"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol EG compr. pellic. (séc.) Forte 120 x 1 g",
+          "nl": "Paracetamol EG filmomh. tabl. (deelb.) Forte 120 x 1 g"
+        },
+        "exFactoryPrice": 4.72,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=66340",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=66340"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61dd1e5c015ab3d2dd87",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61df1e5c015ab3d2df95",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61dc1e5c015ab3d2dbde"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e01e5c015ab3d2e661",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc61e21e5c015ab3d2ed71"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1347408000000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "0754333",
+            "productId": "Yj1lIdw1OrePy6Tz6lKlM2nI2ze9Bt9S0eAeSrZw6H4=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1617148800000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "032137ec43628126e3aac133edb43231",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Fresenius Kabi   10 mg/ml sol. perf. i.v. flac.",
+      "nl": "Paracetamol Fresenius Kabi   10 mg/ml inf. opl. i.v. flac.",
+      "de": "Paracetamol Fresenius Kabi   10 mg/ml Inf-Lös. i.v. Dstfl.",
+      "en": "Paracetamol Fresenius Kabi   10 mg/ml inf. sol. i.v. vial"
+    },
+    "name": {
+      "fr": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "nl": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "de": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "en": "Paracetamol Fresenius Kabi   10 mg/ml"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol Fresenius Kabi sol. perf. i.v. [flac.] 500 mg / 50 ml",
+      "nl": "Paracetamol Fresenius Kabi inf. oploss. i.v. [flac.] 500 mg / 50 ml"
+    },
+    "vmp": {
+      "id": "081081dff7c6534b31b242536d5acc9c",
+      "code": "26617",
+      "name": {
+        "fr": "paracétamol 500 mg / 50 ml solution pour perfusion (i.v.)",
+        "nl": "paracetamol 500 mg / 50 ml oplossing voor infusie (i.v.)"
+      },
+      "vmpGroup": {
+        "id": "f280e4116620cf3b8f11ea742526fb6a",
+        "code": "24851",
+        "name": {
+          "fr": "paracétamol perfusion 500 mg / 50 ml",
+          "nl": "paracetamol infusie 500 mg / 50 ml"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1680307200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "379775-02",
+        "prescriptionName": {
+          "fr": "Paracetamol Fresenius Kabi   10 mg/ml sol. perf. i.v. flac. 10 x 50 ml",
+          "nl": "Paracetamol Fresenius Kabi   10 mg/ml inf. opl. i.v. flac. 10 x 50 ml",
+          "de": "Paracetamol Fresenius Kabi   10 mg/ml Inf-Lös. i.v. Dstfl. 10 x 50 ml",
+          "en": "Paracetamol Fresenius Kabi   10 mg/ml inf. sol. i.v. vial 10 x 50 ml"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Fresenius Kabi sol. perf. i.v. [flac.] 10 x 500 mg / 50 ml",
+          "nl": "Paracetamol Fresenius Kabi inf. oploss. i.v. [flac.] 10 x 500 mg / 50 ml"
+        },
+        "exFactoryPrice": 9.85,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=76307",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=76307"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51ca1e5c015ab3aff65e",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51ca1e5c015ab3aff719",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51c91e5c015ab3aff515"
+        },
+        "rmaProfessionalLink": {
+          "fr": "https://www.basededonneesdesmedicaments.be/medicament/62bc29908ab5583c189e60ee/rma",
+          "nl": "https://www.geneesmiddelendatabank.be/geneesmiddel/62bc29908ab5583c189e60ee/rma",
+          "en": "https://www.medicinesdatabase.be/medicine/62bc29908ab5583c189e60ee/rma"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51cb1e5c015ab3aff7c5",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51cc1e5c015ab3aff857"
+        },
+        "deliveryModusCode": "M1",
+        "deliveryModus": {
+          "fr": "Prescription médicale - Art 6, §1 bis, deuxième alinéa, premier tiret de la Loi du 25/03/1964 + Art 61 de l'AR 14/12/2006",
+          "nl": "Medisch voorschrift - Art 6, §1 bis, tweede lid, eerste streepje van de Wet van 25/03/1964 + Art 61 van het KB van 14/12/2006",
+          "de": "Arzneimittel auf Verschreibung - Art. 6, §1 bis, Absatz 2, erster Gedankenstrich des Gesetzes vom 25.03.1964 + Art. 61 des KE vom 14.12.2006",
+          "en": "Medical prescription - Art 6, §1 bis, 2nd paragraph, 1st indent Law 25/03/1964 + Art 61 Royal Decree 14/12/2006"
+        },
+        "commercializations": [
+          {
+            "from": 1301616000000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "0758805",
+            "productId": "NJREnODHPcFk0MjS7NRGiY4hDPZ63GAFR9bgLVKv6Wg=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1680220800000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1680307200000,
+                "to": 1759190400000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c68ccb516d540c055764ee07f8e2b09e",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Fresenius Kabi   10 mg/ml sol. perf. i.v. flac.",
+      "nl": "Paracetamol Fresenius Kabi   10 mg/ml inf. opl. i.v. flac.",
+      "de": "Paracetamol Fresenius Kabi   10 mg/ml Inf-Lös. i.v. Dstfl.",
+      "en": "Paracetamol Fresenius Kabi   10 mg/ml inf. sol. i.v. vial"
+    },
+    "name": {
+      "fr": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "nl": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "de": "Paracetamol Fresenius Kabi   10 mg/ml",
+      "en": "Paracetamol Fresenius Kabi   10 mg/ml"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol Fresenius Kabi sol. perf. i.v. [flac.] 1 g / 100 ml",
+      "nl": "Paracetamol Fresenius Kabi inf. oploss. i.v. [flac.] 1 g / 100 ml"
+    },
+    "vmp": {
+      "id": "9a9b023c695135835b47796d2bbaef1c",
+      "code": "26468",
+      "name": {
+        "fr": "paracétamol 1 g / 100 ml solution pour perfusion (i.v.)",
+        "nl": "paracetamol 1 g / 100 ml oplossing voor infusie (i.v.)"
+      },
+      "vmpGroup": {
+        "id": "0fd0b840dce52676fdfa0c5ae3302c8f",
+        "code": "24737",
+        "name": {
+          "fr": "paracétamol perfusion 1 g / 100 ml",
+          "nl": "paracetamol infusie 1 g / 100 ml"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1680307200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "379784-02",
+        "prescriptionName": {
+          "fr": "Paracetamol Fresenius Kabi   10 mg/ml sol. perf. i.v. flac. 10 x 100 ml",
+          "nl": "Paracetamol Fresenius Kabi   10 mg/ml inf. opl. i.v. flac. 10 x 100 ml",
+          "de": "Paracetamol Fresenius Kabi   10 mg/ml Inf-Lös. i.v. Dstfl. 10 x 100 ml",
+          "en": "Paracetamol Fresenius Kabi   10 mg/ml inf. sol. i.v. vial 10 x 100 ml"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Fresenius Kabi sol. perf. i.v. [flac.] 10 x 1 g / 100 ml",
+          "nl": "Paracetamol Fresenius Kabi inf. oploss. i.v. [flac.] 10 x 1 g / 100 ml"
+        },
+        "exFactoryPrice": 13.81,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=76299",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=76299"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51ca1e5c015ab3aff65e",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51ca1e5c015ab3aff719",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51c91e5c015ab3aff515"
+        },
+        "rmaProfessionalLink": {
+          "fr": "https://www.basededonneesdesmedicaments.be/medicament/62bc29a68ab5583c189e9a9d/rma",
+          "nl": "https://www.geneesmiddelendatabank.be/geneesmiddel/62bc29a68ab5583c189e9a9d/rma",
+          "en": "https://www.medicinesdatabase.be/medicine/62bc29a68ab5583c189e9a9d/rma"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51cb1e5c015ab3aff7c5",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc51cc1e5c015ab3aff857"
+        },
+        "deliveryModusCode": "M1",
+        "deliveryModus": {
+          "fr": "Prescription médicale - Art 6, §1 bis, deuxième alinéa, premier tiret de la Loi du 25/03/1964 + Art 61 de l'AR 14/12/2006",
+          "nl": "Medisch voorschrift - Art 6, §1 bis, tweede lid, eerste streepje van de Wet van 25/03/1964 + Art 61 van het KB van 14/12/2006",
+          "de": "Arzneimittel auf Verschreibung - Art. 6, §1 bis, Absatz 2, erster Gedankenstrich des Gesetzes vom 25.03.1964 + Art. 61 des KE vom 14.12.2006",
+          "en": "Medical prescription - Art 6, §1 bis, 2nd paragraph, 1st indent Law 25/03/1964 + Art 61 Royal Decree 14/12/2006"
+        },
+        "commercializations": [
+          {
+            "from": 1301616000000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "0758797",
+            "productId": "Al4uncG8QCMd55vC0nYDYI6j3lQZjQSmNhzMEbQgkp8=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1680220800000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1680307200000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ea5fcb7968d0d6c2d03e7b56868a5874",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Sandoz 1 g comp.",
+      "nl": "Paracetamol Sandoz 1 g tabl.",
+      "de": "Paracetamol Sandoz 1 g Tabl.",
+      "en": "Paracetamol Sandoz 1 g tabl."
+    },
+    "name": {
+      "fr": "Paracetamol Sandoz 1 g",
+      "nl": "Paracetamol Sandoz 1 g",
+      "de": "Paracetamol Sandoz 1 g",
+      "en": "Paracetamol Sandoz 1 g"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol Sandoz compr. (séc.) 1 g",
+      "nl": "Paracetamol Sandoz tabl. (deelb.) 1 g"
+    },
+    "vmp": {
+      "id": "0a47d53b76e0092fb94045a5ec8deeb8",
+      "code": "26500",
+      "name": {
+        "fr": "paracétamol 1 g comprimé (or.)",
+        "nl": "paracetamol 1 g tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "648e0b0267871ee012f18df730874c7d",
+        "code": "24745",
+        "name": {
+          "fr": "paracétamol oral 1 g [CAVE solide/liq.]",
+          "nl": "paracetamol oraal 1 g [CAVE vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "436861-08",
+        "prescriptionName": {
+          "fr": "Paracetamol Sandoz 1 g comp. 60",
+          "nl": "Paracetamol Sandoz 1 g tabl. 60",
+          "de": "Paracetamol Sandoz 1 g Tabl. 60",
+          "en": "Paracetamol Sandoz 1 g tabl. 60"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Sandoz compr. (séc.) 60 x 1 g",
+          "nl": "Paracetamol Sandoz tabl. (deelb.) 60 x 1 g"
+        },
+        "exFactoryPrice": 2.47,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=125468",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=125468"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81936",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81990",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc01e5c015ab3c818db"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c819ed",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81a42"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "supplyProblems": [
+          {
+            "from": 1764288000000,
+            "reason": {
+              "fr": "Augmentation de la demande",
+              "nl": "Toegenomen vraag",
+              "de": "-",
+              "en": "Increased demand"
+            },
+            "expectedEndOn": 1773532800000,
+            "impact": {
+              "fr": "Au moins trois conditionnements alternatifs disponibles",
+              "nl": "Minstens drie alternatieve verpakkingen beschikbaar",
+              "en": "At least three alternative packsizes available"
+            }
+          }
+        ],
+        "commercializations": [
+          {
+            "from": 1427414400000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1727740800000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7706724",
+            "productId": "FPd4MPCN1YUUIfQecxngIrMF2OCwbKC/fCIo4mKHmIQ=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1617148800000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "from": 1704067200000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "436861-09",
+        "prescriptionName": {
+          "fr": "Paracetamol Sandoz 1 g comp. 120",
+          "nl": "Paracetamol Sandoz 1 g tabl. 120",
+          "de": "Paracetamol Sandoz 1 g Tabl. 120",
+          "en": "Paracetamol Sandoz 1 g tabl. 120"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Sandoz compr. (séc.) 120 x 1 g",
+          "nl": "Paracetamol Sandoz tabl. (deelb.) 120 x 1 g"
+        },
+        "exFactoryPrice": 4.42,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=126045",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=126045"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81936",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81990",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc01e5c015ab3c818db"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c819ed",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc5cc11e5c015ab3c81a42"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "supplyProblems": [
+          {
+            "from": 1757980800000,
+            "reason": {
+              "fr": "Retard dans la production",
+              "nl": "Vertraging in de productie",
+              "de": "-",
+              "en": "Delay in production"
+            },
+            "expectedEndOn": 1771113600000,
+            "impact": {
+              "fr": "Au moins trois conditionnements alternatifs disponibles",
+              "nl": "Minstens drie alternatieve verpakkingen beschikbaar",
+              "en": "At least three alternative packsizes available"
+            }
+          }
+        ],
+        "commercializations": [
+          {
+            "from": 1427414400000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1719792000000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7706724",
+            "productId": "FPd4MPCN1YUUIfQecxngIrMF2OCwbKC/fCIo4mKHmIQ=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1617148800000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "b195bbd1e7d54569a5216e0c52f8e232",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Teva 1 g comp.",
+      "nl": "Paracetamol Teva 1 g tabl.",
+      "de": "Paracetamol Teva 1 g Tabl.",
+      "en": "Paracetamol Teva 1 g tabl."
+    },
+    "name": {
+      "fr": "Paracetamol Teva 1 g",
+      "nl": "Paracetamol Teva 1 g",
+      "de": "Paracetamol Teva 1 g",
+      "en": "Paracetamol Teva 1 g"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol Teva compr. (séc.) 1 g",
+      "nl": "Paracetamol Teva tabl. (deelb.) 1 g"
+    },
+    "vmp": {
+      "id": "0a47d53b76e0092fb94045a5ec8deeb8",
+      "code": "26500",
+      "name": {
+        "fr": "paracétamol 1 g comprimé (or.)",
+        "nl": "paracetamol 1 g tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "648e0b0267871ee012f18df730874c7d",
+        "code": "24745",
+        "name": {
+          "fr": "paracétamol oral 1 g [CAVE solide/liq.]",
+          "nl": "paracetamol oraal 1 g [CAVE vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1767225600000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "375453-10",
+        "prescriptionName": {
+          "fr": "Paracetamol Teva 1 g comp. 120",
+          "nl": "Paracetamol Teva 1 g tabl. 120",
+          "de": "Paracetamol Teva 1 g Tabl. 120",
+          "en": "Paracetamol Teva 1 g tabl. 120"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Teva compr. (séc.) 120 x 1 g",
+          "nl": "Paracetamol Teva tabl. (deelb.) 120 x 1 g"
+        },
+        "exFactoryPrice": 4.54,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=61234",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=61234"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc52861e5c015ab3b14562",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc52871e5c015ab3b145da",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc52861e5c015ab3b144c2"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc52871e5c015ab3b1464c",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc52891e5c015ab3b1495f"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1281312000000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "0758722",
+            "productId": "3Cf9k0AbZPy8JJhoYyx+7cpgQ6mOlL7cyaWaQkS66dk=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1498867200000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1617148800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "012a6645cb49f2ae735c69c6143fa4e3",
+    "blackTriangle": false,
+    "prescriptionName": {
+      "fr": "Paracetamol Teva 500 mg comp.",
+      "nl": "Paracetamol Teva 500 mg tabl.",
+      "de": "Paracetamol Teva 500 mg Tabl.",
+      "en": "Paracetamol Teva 500 mg tabl."
+    },
+    "name": {
+      "fr": "Paracetamol Teva 500 mg",
+      "nl": "Paracetamol Teva 500 mg",
+      "de": "Paracetamol Teva 500 mg",
+      "en": "Paracetamol Teva 500 mg"
+    },
+    "abbreviatedName": {
+      "fr": "Paracetamol Teva compr. 500 mg",
+      "nl": "Paracetamol Teva tabl. 500 mg"
+    },
+    "vmp": {
+      "id": "abb6f31a44a2419733681b0d80afff0a",
+      "code": "26799",
+      "name": {
+        "fr": "paracétamol 500 mg comprimé (or.)",
+        "nl": "paracetamol 500 mg tablet (or.)"
+      },
+      "vmpGroup": {
+        "id": "698ad75d2b36e4a1cb7610421216d2c7",
+        "code": "24901",
+        "name": {
+          "fr": "paracétamol oral 500 mg [CAVE séc., solide/liq.]",
+          "nl": "paracetamol oraal 500 mg [CAVE deelb., vast/vloeib.]"
+        }
+      }
+    },
+    "ampps": [
+      {
+        "from": 1767225600000,
+        "status": "AUTHORIZED",
+        "ctiExtended": "340374-03",
+        "prescriptionName": {
+          "fr": "Paracetamol Teva 500 mg comp. 100",
+          "nl": "Paracetamol Teva 500 mg tabl. 100",
+          "de": "Paracetamol Teva 500 mg Tabl. 100",
+          "en": "Paracetamol Teva 500 mg tabl. 100"
+        },
+        "abbreviatedName": {
+          "fr": "Paracetamol Teva compr. 100 x 500 mg",
+          "nl": "Paracetamol Teva tabl. 100 x 500 mg"
+        },
+        "exFactoryPrice": 1.91,
+        "crmLink": {
+          "fr": "http://www.cbip.be/fr/contents/jump?amppid=55335",
+          "nl": "http://www.bcfi.be/nl/contents/jump?amppid=55335"
+        },
+        "leafletLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc67c81e5c015ab3df7e7a",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc67c91e5c015ab3df7f0b",
+          "de": "https://app.fagg-afmps.be/pharma-status/api/files/62bc67c71e5c015ab3df7dd1"
+        },
+        "spcLink": {
+          "fr": "https://app.fagg-afmps.be/pharma-status/api/files/62bc67ca1e5c015ab3df7f99",
+          "nl": "https://app.fagg-afmps.be/pharma-status/api/files/62bc67cb1e5c015ab3df8151"
+        },
+        "deliveryModusCode": "TD",
+        "deliveryModus": {
+          "fr": "Prescription médicale ou demande écrite - Art. 3 de l'Arrêté du Régent 06/02/1946",
+          "nl": "Medisch voorschrift of schriftelijke aanvraag - Art. 3 van het Regentsbesluit van 06/02/1946",
+          "de": "Arzneimittel auf Verschreibung oder schriftlicher Antrag - Art. 3 des Erlasses des Regenten vom 06.02.1946",
+          "en": "Medical prescription or written request - Art. 3 Regent's Decree 06/02/1946"
+        },
+        "commercializations": [
+          {
+            "from": 1527811200000
+          }
+        ],
+        "dmpps": [
+          {
+            "from": 1704067200000,
+            "deliveryEnvironment": "A",
+            "codeType": "CNK",
+            "code": "7721012",
+            "productId": "JyUpwdeCKO4sGY5ExExW3jOffjErANa8qe1N9Wy9/W4=",
+            "cheap": true,
+            "cheapest": true,
+            "reimbursements": [
+              {
+                "from": 1554076800000,
+                "to": 1593475200000
+              },
+              {
+                "from": 1509494400000,
+                "to": 1522454400000
+              },
+              {
+                "from": 1593561600000,
+                "to": 1617148800000
+              },
+              {
+                "from": 1522540800000,
+                "to": 1530316800000
+              },
+              {
+                "from": 1759276800000
+              },
+              {
+                "from": 1530403200000,
+                "to": 1553990400000
+              },
+              {
+                "from": 1617235200000,
+                "to": 1630368000000
+              },
+              {
+                "from": 1630454400000,
+                "to": 1759190400000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
