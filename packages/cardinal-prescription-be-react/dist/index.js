@@ -2901,7 +2901,7 @@ function mapSamMedication(amp, ampp, dmpp, index, language, now) {
         deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
         deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
         deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
-        reimbursements: dmpp?.reimbursements?.find((reimbursement) => reimbursement.from && (!reimbursement.to || reimbursement.to > now))
+        reimbursements: dmpp?.reimbursements?.find((reimbursement) => reimbursement.from && reimbursement.from <= now && (!reimbursement.to || reimbursement.to > now))
       }
     }
   };

@@ -163,18 +163,13 @@ describe('mapSamMedication - reimbursement validity window', () => {
     expect(result.regulatory?.be?.reimbursements).toEqual(valid)
   })
 
-  // Surprising behavior, documented rather than silently special-cased: mapSamMedication's window
-  // check is `reimbursement.from && (!reimbursement.to || reimbursement.to > now)`. It only requires
-  // `from` to be truthy — it never checks `now >= from`. A reimbursement that hasn't started yet (its
-  // `from` is in the future) but carries a future/open-ended `to` therefore still passes the filter
-  // and is picked as if "currently valid". See this task's final report for this finding.
-  it('documents a bug: a reimbursement whose "from" is still in the future is nonetheless selected', () => {
+  it('excludes a reimbursement whose "from" date is still in the future', () => {
     const notYetStarted = { from: now + 10000, to: now + 20000 } as Reimbursement
     const dmpp = DmppMockFactory.create({ reimbursements: [notYetStarted] })
 
     const result = mapSamMedication(AmpMockFactory.create(), AmppMockFactory.create(), dmpp, 0, 'fr', now)
 
-    expect(result.regulatory?.be?.reimbursements).toEqual(notYetStarted)
+    expect(result.regulatory?.be?.reimbursements).toBeUndefined()
   })
 })
 

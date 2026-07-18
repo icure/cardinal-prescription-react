@@ -56,7 +56,7 @@ export function mapSamMedication(amp: Amp, ampp: Ampp, dmpp: Dmpp | undefined, i
         deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
         deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode as DeliveryModusSpecificationCodeType,
         deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
-        reimbursements: dmpp?.reimbursements?.find((reimbursement) => reimbursement.from && (!reimbursement.to || reimbursement.to > now)),
+        reimbursements: dmpp?.reimbursements?.find((reimbursement) => reimbursement.from && reimbursement.from <= now && (!reimbursement.to || reimbursement.to > now)),
       },
     },
   } as MedicationType
