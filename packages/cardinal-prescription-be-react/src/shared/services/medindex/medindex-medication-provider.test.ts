@@ -1,5 +1,5 @@
 import { describe, vi } from 'vitest'
-import { MedIndexClient, MedIndexValidationError, MedicationPackageDto, MedicationProductDto } from '@icure/medindex-sdk'
+import { MedIndexClient, MedicationPackageDto, MedicationProductDto } from '@icure/medindex-sdk'
 import { MedIndexMedicationProvider } from './medindex-medication-provider'
 import { runMedicationProviderContractTests } from '../medication-provider.contract-test'
 import { MedicationNotFoundError, MedicationProviderUnavailableError } from '../../types'
@@ -111,22 +111,14 @@ describe('MedIndexMedicationProvider', () => {
       return { provider: new MedIndexMedicationProvider(client), expectedErrorType: MedicationProviderUnavailableError }
     },
 
-    // KNOWN BUG (see this task's report): `MedIndexMedicationProvider.findByLabel` calls
-    // `client.product.iterateByLabel(...)` directly in its async-generator body, outside the
-    // try/catch that wraps `pullProducts`/`fetchPackagesByProduct` (the only place `translateError`
-    // is invoked). `iterateByLabel` throws `MedIndexValidationError` *synchronously*, client-side,
-    // for labels under 3 characters (see `@icure/medindex-sdk`'s `ProductResource.iterateByLabel` —
-    // confirmed via its own test, "throws MedIndexValidationError client-side ... without calling
-    // fetch") — so that raw SDK error escapes untranslated instead of becoming
-    // `MedicationSearchValidationError` like every other `MedIndexValidationError` this provider
-    // encounters. Not fixed here (out of scope for this test-only task) — this documents current
-    // behavior as a regression trip-wire.
+    // `iterateByLabel` throws `MedIndexValidationError` synchronously, client-side, for labels
+    // under 3 characters (see `@icure/medindex-sdk`'s `ProductResource.iterateByLabel`) — this
+    // used to escape `findByLabel` untranslated (obtaining the iterator happened outside any
+    // try/catch); now wrapped so it translates like every other `MedIndexValidationError`.
     shortLabel: {
-      kind: 'known-bug-leaks-native-error',
+      kind: 'translates',
       label: 'ab',
       provider: new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: vi.fn() })),
-      nativeErrorType: MedIndexValidationError,
-      note: 'MedIndexMedicationProvider.findByLabel leaks the raw MedIndexValidationError for a short label instead of translating it to MedicationSearchValidationError.',
     },
   })
 })

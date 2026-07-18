@@ -3225,7 +3225,12 @@ var MedIndexMedicationProvider = class {
     this.client = client;
   }
   async *findByLabel(label) {
-    const iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]();
+    let iterator;
+    try {
+      iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]();
+    } catch (error) {
+      throw this.translateError(error, `medINDEX product search failed for label "${label}"`);
+    }
     while (true) {
       const page = await this.loadNextPage(iterator, label);
       if (page.length === 0) return;

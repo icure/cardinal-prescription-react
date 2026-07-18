@@ -53,7 +53,16 @@ export class MedIndexMedicationProvider implements MedicationProvider {
   constructor(private readonly client: MedIndexClient) {}
 
   async *findByLabel(label: string): AsyncIterable<Med> {
-    const iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]()
+    // `iterateByLabel` throws `MedIndexValidationError` synchronously (client-side, for labels
+    // under the SDK's own minimum length) before returning an iterable at all — outside the
+    // try/catch inside `pullProducts`, so it needs its own translation here or it would leak the
+    // SDK's native error type instead of the shared `MedicationSearchValidationError`.
+    let iterator: AsyncIterator<MedicationProductDto>
+    try {
+      iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]()
+    } catch (error) {
+      throw this.translateError(error, `medINDEX product search failed for label "${label}"`)
+    }
 
     while (true) {
       const page = await this.loadNextPage(iterator, label)
