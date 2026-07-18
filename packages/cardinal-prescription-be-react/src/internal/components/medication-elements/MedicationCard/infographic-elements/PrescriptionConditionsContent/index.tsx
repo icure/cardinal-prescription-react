@@ -60,3 +60,12 @@ export const PrescriptionConditionsBadge: RegulatoryBadgeComponent = ({ medicati
     />
   )
 }
+
+// Registered `be` expanded badge — Extension always renders this block, regardless of
+// presence; `PrescriptionConditionsContent` handles its own "not applicable" fallback
+// internally, so (unlike the compact `detail` badge above, which gates to avoid an empty
+// tooltip icon) no presence gate is needed here.
+export const PrescriptionConditionsExpandedBadge: RegulatoryBadgeComponent = ({ medication }) => {
+  const be = medication.regulatory?.be
+  return <PrescriptionConditionsContent deliveryModusSpecificationCode={be?.deliveryModusSpecificationCode} deliveryModusSpecification={be?.deliveryModusSpecification} />
+}

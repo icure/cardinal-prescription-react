@@ -6,12 +6,14 @@ import { BlackTriangleBadge } from './MedicationCard/infographic-elements/BlackT
 import { RmaProfessionalLinkBadge } from './MedicationCard/infographic-elements/RmaProfessionalLinkContent'
 import { SpeciallyRegulatedBadge } from './MedicationCard/infographic-elements/SpeciallyRegulatedBadge'
 import { GenericPrescriptionRequiredBadge } from './MedicationCard/infographic-elements/GenericPrescriptionRequiredBadge'
-import { SupplyProblemsBadge } from './MedicationCard/infographic-elements/SupplyProblemsContent'
-import { EndOfCommercialisationBadge } from './MedicationCard/infographic-elements/EndOfCommercialisationContent'
-import { StartOfCommercialisationBadge } from './MedicationCard/infographic-elements/StartOfCommercialisationContent'
-import { ReimbursementsBadge } from './MedicationCard/infographic-elements/ReimbursementsContent'
-import { DeliveryConditionsBadge } from './MedicationCard/infographic-elements/DeliveryConditionsContent'
-import { PrescriptionConditionsBadge } from './MedicationCard/infographic-elements/PrescriptionConditionsContent'
+import { SupplyProblemsBadge, SupplyProblemsExpandedBadge } from './MedicationCard/infographic-elements/SupplyProblemsContent'
+import { EndOfCommercialisationBadge, EndOfCommercialisationExpandedBadge } from './MedicationCard/infographic-elements/EndOfCommercialisationContent'
+import { StartOfCommercialisationBadge, StartOfCommercialisationExpandedBadge } from './MedicationCard/infographic-elements/StartOfCommercialisationContent'
+import { ReimbursementsBadge, ReimbursementsExpandedBadge } from './MedicationCard/infographic-elements/ReimbursementsContent'
+import { DeliveryConditionsBadge, DeliveryConditionsExpandedBadge } from './MedicationCard/infographic-elements/DeliveryConditionsContent'
+import { PrescriptionConditionsBadge, PrescriptionConditionsExpandedBadge } from './MedicationCard/infographic-elements/PrescriptionConditionsContent'
+import { VmpBadge } from './MedicationCard/expanded-elements/VmpBadge'
+import { LinksBadge } from './MedicationCard/expanded-elements/LinksBadge'
 
 // `summary` placement — Header's collapsed row. Registration order doesn't matter here since
 // Header renders all 3 as one flat row inside a single flex-wrap container (no visual grouping
@@ -33,3 +35,15 @@ registerRegulatoryBadge('be', 'startOfCommercialisation', StartOfCommercialisati
 registerRegulatoryBadge('be', 'reimbursement', ReimbursementsBadge, 'detail')
 registerRegulatoryBadge('be', 'deliveryConditions', DeliveryConditionsBadge, 'detail')
 registerRegulatoryBadge('be', 'prescriptionConditions', PrescriptionConditionsBadge, 'detail')
+
+// `expanded` placement — MedicationCard's Extension panel (the always-visible full-detail view
+// shown below the header when a card is clicked open). Order matches Extension's original
+// render order exactly, since registration order == render order.
+registerRegulatoryBadge('be', 'vmp', VmpBadge, 'expanded')
+registerRegulatoryBadge('be', 'links', LinksBadge, 'expanded')
+registerRegulatoryBadge('be', 'reimbursement', ReimbursementsExpandedBadge, 'expanded')
+registerRegulatoryBadge('be', 'prescriptionConditions', PrescriptionConditionsExpandedBadge, 'expanded')
+registerRegulatoryBadge('be', 'deliveryConditions', DeliveryConditionsExpandedBadge, 'expanded')
+registerRegulatoryBadge('be', 'supplyProblems', SupplyProblemsExpandedBadge, 'expanded')
+registerRegulatoryBadge('be', 'endOfCommercialisation', EndOfCommercialisationExpandedBadge, 'expanded')
+registerRegulatoryBadge('be', 'startOfCommercialisation', StartOfCommercialisationExpandedBadge, 'expanded')

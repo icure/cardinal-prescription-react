@@ -302,7 +302,7 @@ declare class IndexedDbServiceStore<T> {
  */
 declare const createIndexedDbTokenStore: () => TokenStore;
 
-type RegulatoryBadgePlacement = 'summary' | 'detail';
+type RegulatoryBadgePlacement = 'summary' | 'detail' | 'expanded';
 interface RegulatoryBadgeProps {
     medication: MedicationType;
     boundaryBox?: RefObject<HTMLElement>;

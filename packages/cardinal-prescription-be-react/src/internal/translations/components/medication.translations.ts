@@ -95,6 +95,8 @@ export const medicationTranslations = {
       narcotic: 'Stupéfiant',
       coldChain: 'Nécessite une chaîne du froid',
       coldChainAbbreviation: 'CF',
+      gtin: 'Codes GTIN :',
+      genericGroup: 'Groupe générique :',
     },
   },
   en: {
@@ -193,6 +195,8 @@ export const medicationTranslations = {
       narcotic: 'Narcotic',
       coldChain: 'Requires cold-chain transport',
       coldChainAbbreviation: 'CC',
+      gtin: 'GTIN codes:',
+      genericGroup: 'Generic group:',
     },
   },
   nl: {
@@ -291,6 +295,8 @@ export const medicationTranslations = {
       narcotic: 'Verdovend middel',
       coldChain: 'Vereist koelketen transport',
       coldChainAbbreviation: 'CC',
+      gtin: 'GTIN-codes:',
+      genericGroup: 'Generieke groep:',
     },
   },
   de: {
@@ -389,6 +395,8 @@ export const medicationTranslations = {
       narcotic: 'Betäubungsmittel',
       coldChain: 'Erfordert Kühlkette',
       coldChainAbbreviation: 'KK',
+      gtin: 'GTIN-Codes:',
+      genericGroup: 'Generische Gruppe:',
     },
   },
 }

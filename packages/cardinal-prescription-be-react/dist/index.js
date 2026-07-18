@@ -398,7 +398,9 @@ var medicationTranslations = {
       category: "Cat\xE9gorie de remise Swissmedic :",
       narcotic: "Stup\xE9fiant",
       coldChain: "N\xE9cessite une cha\xEEne du froid",
-      coldChainAbbreviation: "CF"
+      coldChainAbbreviation: "CF",
+      gtin: "Codes GTIN :",
+      genericGroup: "Groupe g\xE9n\xE9rique :"
     }
   },
   en: {
@@ -496,7 +498,9 @@ var medicationTranslations = {
       category: "Swissmedic dispensing category:",
       narcotic: "Narcotic",
       coldChain: "Requires cold-chain transport",
-      coldChainAbbreviation: "CC"
+      coldChainAbbreviation: "CC",
+      gtin: "GTIN codes:",
+      genericGroup: "Generic group:"
     }
   },
   nl: {
@@ -594,7 +598,9 @@ var medicationTranslations = {
       category: "Swissmedic-afleveringscategorie:",
       narcotic: "Verdovend middel",
       coldChain: "Vereist koelketen transport",
-      coldChainAbbreviation: "CC"
+      coldChainAbbreviation: "CC",
+      gtin: "GTIN-codes:",
+      genericGroup: "Generieke groep:"
     }
   },
   de: {
@@ -692,7 +698,9 @@ var medicationTranslations = {
       category: "Swissmedic-Abgabekategorie :",
       narcotic: "Bet\xE4ubungsmittel",
       coldChain: "Erfordert K\xFChlkette",
-      coldChainAbbreviation: "KK"
+      coldChainAbbreviation: "KK",
+      gtin: "GTIN-Codes:",
+      genericGroup: "Generische Gruppe:"
     }
   }
 };
@@ -2366,6 +2374,11 @@ var SupplyProblemsBadge = ({ medication, boundaryBox }) => {
   if (!medicationSupplyProblem) return null;
   return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--orange", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Tooltip, { contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(SupplyProblemsContent, { medicationSupplyProblem }), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(SupplyIcn, {}), boundaryBox }) });
 };
+var SupplyProblemsExpandedBadge = ({ medication }) => {
+  const supplyProblems = medication.regulatory?.be?.supplyProblems;
+  if (!supplyProblems) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(SupplyProblemsContent, { medicationSupplyProblem: supplyProblems[0] });
+};
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
 var import_styled_components8 = __toESM(require("styled-components"));
@@ -2427,6 +2440,11 @@ var EndOfCommercialisationBadge = ({ medication, boundaryBox }) => {
     }
   ) });
 };
+var EndOfCommercialisationExpandedBadge = ({ medication }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0];
+  if (!medicationCommercialization?.endOfComercialization) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(EndOfCommercialisationContent, { medicationCommercialization });
+};
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
 var import_styled_components9 = __toESM(require("styled-components"));
@@ -2465,6 +2483,11 @@ var StartOfCommercialisationBadge = ({ medication, boundaryBox }) => {
       boundaryBox
     }
   ) });
+};
+var StartOfCommercialisationExpandedBadge = ({ medication }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0];
+  if (!medicationCommercialization || medicationCommercialization.endOfComercialization) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(StartOfCommercialisationContent, { medicationCommercialization });
 };
 
 // src/internal/utils/reimbursement-helpers.ts
@@ -2595,6 +2618,11 @@ var ReimbursementsBadge = ({ medication, boundaryBox }) => {
     }
   );
 };
+var ReimbursementsExpandedBadge = ({ medication }) => {
+  const reimbursement = medication.regulatory?.be?.reimbursements;
+  if (!reimbursement) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(ReimbursementsContent, { reimbursement });
+};
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
 var import_styled_components11 = __toESM(require("styled-components"));
@@ -2659,6 +2687,10 @@ var DeliveryConditionsBadge = ({ medication, boundaryBox }) => {
     }
   );
 };
+var DeliveryConditionsExpandedBadge = ({ medication }) => {
+  const be = medication.regulatory?.be;
+  return /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(DeliveryConditionsContent, { deliveryModus: be?.deliveryModus, deliveryModusSpecification: be?.deliveryModusSpecification, deliveryModusCode: be?.deliveryModusCode });
+};
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
 var import_styled_components12 = __toESM(require("styled-components"));
@@ -2719,6 +2751,41 @@ var PrescriptionConditionsBadge = ({ medication, boundaryBox }) => {
     }
   );
 };
+var PrescriptionConditionsExpandedBadge = ({ medication }) => {
+  const be = medication.regulatory?.be;
+  return /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be?.deliveryModusSpecificationCode, deliveryModusSpecification: be?.deliveryModusSpecification });
+};
+
+// src/internal/components/medication-elements/MedicationCard/expanded-elements/VmpBadge/index.tsx
+var import_jsx_runtime16 = require("react/jsx-runtime");
+var VmpBadge = ({ medication }) => {
+  const vmp = medication.regulatory?.be?.vmp;
+  if (!vmp) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp", children: [
+    vmp.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp__item", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: "VMP:" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: vmp.name.fr })
+    ] }),
+    vmp.vmpGroup?.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "vmp__item", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: "VMP-group:" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: vmp.vmpGroup.name.fr })
+    ] })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/expanded-elements/LinksBadge/index.tsx
+var import_jsx_runtime17 = require("react/jsx-runtime");
+var LinksBadge = ({ medication }) => {
+  const be = medication.regulatory?.be;
+  if (!be?.crmLink && !be?.patientInformationLeafletLink && !be?.rmaProfessionalLink && !be?.spcLink && !be?.dhpcLink) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "links", children: [
+    be?.crmLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
+    be?.patientInformationLeafletLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
+    be?.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
+    be?.spcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
+    be?.dhpcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
+  ] });
+};
 
 // src/internal/components/medication-elements/register-be-badges.ts
 registerRegulatoryBadge("be", "price", PriceReimbursementBadge, "summary");
@@ -2734,45 +2801,75 @@ registerRegulatoryBadge("be", "startOfCommercialisation", StartOfCommercialisati
 registerRegulatoryBadge("be", "reimbursement", ReimbursementsBadge, "detail");
 registerRegulatoryBadge("be", "deliveryConditions", DeliveryConditionsBadge, "detail");
 registerRegulatoryBadge("be", "prescriptionConditions", PrescriptionConditionsBadge, "detail");
+registerRegulatoryBadge("be", "vmp", VmpBadge, "expanded");
+registerRegulatoryBadge("be", "links", LinksBadge, "expanded");
+registerRegulatoryBadge("be", "reimbursement", ReimbursementsExpandedBadge, "expanded");
+registerRegulatoryBadge("be", "prescriptionConditions", PrescriptionConditionsExpandedBadge, "expanded");
+registerRegulatoryBadge("be", "deliveryConditions", DeliveryConditionsExpandedBadge, "expanded");
+registerRegulatoryBadge("be", "supplyProblems", SupplyProblemsExpandedBadge, "expanded");
+registerRegulatoryBadge("be", "endOfCommercialisation", EndOfCommercialisationExpandedBadge, "expanded");
+registerRegulatoryBadge("be", "startOfCommercialisation", StartOfCommercialisationExpandedBadge, "expanded");
 
 // src/internal/components/medication-elements/MedicationCard/summary-elements/ChPriceBadge/index.tsx
-var import_jsx_runtime16 = require("react/jsx-runtime");
+var import_jsx_runtime18 = require("react/jsx-runtime");
 var ChPriceBadge = ({ medication }) => {
   const price = medication.regulatory?.ch?.price;
   if (!price) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description__item", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: t("medication.ui.price") }),
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "price", children: `${price.currency} ${price.amount.toFixed(2)}` })
+  return /* @__PURE__ */ (0, import_jsx_runtime18.jsxs)("div", { className: "medication__content__description__item", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("span", { children: t("medication.ui.price") }),
+    /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("p", { className: "price", children: `${price.currency} ${price.amount.toFixed(2)}` })
   ] });
 };
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/SwissmedicCategoryContent/index.tsx
-var import_jsx_runtime17 = require("react/jsx-runtime");
+var import_jsx_runtime19 = require("react/jsx-runtime");
 var SwissmedicCategoryBadge = ({ medication, boundaryBox }) => {
   const category = medication.regulatory?.ch?.swissmedicCategory;
   if (!category) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Tooltip, { content: `${t("medication.swissmedic.category")} ${category}`, iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PillsBottleIcn, {}), boundaryBox }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(Tooltip, { content: `${t("medication.swissmedic.category")} ${category}`, iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(PillsBottleIcn, {}), boundaryBox }) });
 };
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/NarcoticContent/index.tsx
-var import_jsx_runtime18 = require("react/jsx-runtime");
+var import_jsx_runtime20 = require("react/jsx-runtime");
 var NarcoticBadge = ({ medication, boundaryBox }) => {
   if (!medication.regulatory?.ch?.narcotic) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(Tooltip, { content: t("medication.swissmedic.narcotic"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(WarningIcn, { color: "#EE1313" }), boundaryBox }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Tooltip, { content: t("medication.swissmedic.narcotic"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(WarningIcn, { color: "#EE1313" }), boundaryBox }) });
 };
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/ColdChainContent/index.tsx
-var import_jsx_runtime19 = require("react/jsx-runtime");
+var import_jsx_runtime21 = require("react/jsx-runtime");
 var ColdChainBadge = ({ medication, boundaryBox }) => {
   if (!medication.regulatory?.ch?.coldChain) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(
     Tooltip,
     {
       content: t("medication.swissmedic.coldChain"),
-      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "grey", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("p", { children: t("medication.swissmedic.coldChainAbbreviation") }) }),
+      iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "grey", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { children: t("medication.swissmedic.coldChainAbbreviation") }) }),
       boundaryBox
     }
   );
+};
+
+// src/internal/components/medication-elements/MedicationCard/expanded-elements/GtinBadge/index.tsx
+var import_jsx_runtime22 = require("react/jsx-runtime");
+var GtinBadge = ({ medication }) => {
+  const gtin = medication.regulatory?.ch?.gtin;
+  if (!gtin || gtin.length === 0) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)("div", { className: "regulatoryField", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("span", { children: t("medication.swissmedic.gtin") }),
+    /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("p", { children: gtin.join(", ") })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/expanded-elements/GenericGroupBadge/index.tsx
+var import_jsx_runtime23 = require("react/jsx-runtime");
+var GenericGroupBadge = ({ medication }) => {
+  const genericGroup = medication.regulatory?.ch?.genericGroup;
+  if (!genericGroup) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "regulatoryField", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("span", { children: t("medication.swissmedic.genericGroup") }),
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { children: genericGroup })
+  ] });
 };
 
 // src/internal/components/medication-elements/register-ch-badges.ts
@@ -2780,6 +2877,8 @@ registerRegulatoryBadge("ch", "price", ChPriceBadge, "summary");
 registerRegulatoryBadge("ch", "swissmedicCategory", SwissmedicCategoryBadge, "detail");
 registerRegulatoryBadge("ch", "narcotic", NarcoticBadge, "detail");
 registerRegulatoryBadge("ch", "coldChain", ColdChainBadge, "detail");
+registerRegulatoryBadge("ch", "gtin", GtinBadge, "expanded");
+registerRegulatoryBadge("ch", "genericGroup", GenericGroupBadge, "expanded");
 
 // src/internal/services/loaders/medication-loader.ts
 var import_cardinal_be_sam_sdk = require("@icure/cardinal-be-sam-sdk");
@@ -3632,15 +3731,15 @@ var StyledAlert = import_styled_components13.default.div`
 `;
 
 // src/internal/components/common/Alert/index.tsx
-var import_jsx_runtime20 = require("react/jsx-runtime");
+var import_jsx_runtime24 = require("react/jsx-runtime");
 var Alert = ({ status, title, description }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(StyledAlert, { className: "StyledAlert", $success: status === "success", $error: status === "error", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "heading", children: [
-      status === "success" && /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(StatusSuccessIcn, {}),
-      status === "error" && /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(StatusErrorIcn, {}),
-      /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("h4", { children: title })
+  return /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(StyledAlert, { className: "StyledAlert", $success: status === "success", $error: status === "error", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "heading", children: [
+      status === "success" && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(StatusSuccessIcn, {}),
+      status === "error" && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(StatusErrorIcn, {}),
+      /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("h4", { children: title })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("p", { children: description })
+    /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("p", { children: description })
   ] });
 };
 
@@ -3719,9 +3818,9 @@ var StyledButton = import_styled_components14.default.button`
 `;
 
 // src/internal/components/form-elements/Button/index.tsx
-var import_jsx_runtime21 = require("react/jsx-runtime");
+var import_jsx_runtime25 = require("react/jsx-runtime");
 var Button = ({ title, view = "primary", handleClick, type = "button", ...rest }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
+  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
 };
 
 // src/internal/components/form-elements/TextInput/index.tsx
@@ -3774,7 +3873,7 @@ var StyledInput = import_styled_components15.default.input`
 `;
 
 // src/internal/components/form-elements/TextInput/index.tsx
-var import_jsx_runtime22 = require("react/jsx-runtime");
+var import_jsx_runtime26 = require("react/jsx-runtime");
 var TextInput = (0, import_react2.forwardRef)(({ label, min, type, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
   const localRef = (0, import_react2.useRef)(null);
   (0, import_react2.useEffect)(() => {
@@ -3782,12 +3881,12 @@ var TextInput = (0, import_react2.forwardRef)(({ label, min, type, id, required,
       localRef.current.focus();
     }
   }, [autoFocus]);
-  return /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)(StyledTextInput, { className: "StyledTextInput", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)(StyledTextInputLabel, { className: "StyledTextInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("span", { children: "*" }),
+  return /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledTextInput, { className: "StyledTextInput", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledTextInputLabel, { className: "StyledTextInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("span", { children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime22.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
       StyledInput,
       {
         className: "StyledInput",
@@ -3809,7 +3908,7 @@ var TextInput = (0, import_react2.forwardRef)(({ label, min, type, id, required,
         $error: !!errorMessage
       }
     ),
-    errorMessage && /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("p", { className: "error", children: errorMessage })
+    errorMessage && /* @__PURE__ */ (0, import_jsx_runtime26.jsx)("p", { className: "error", children: errorMessage })
   ] });
 });
 TextInput.displayName = "TextInput";
@@ -3858,7 +3957,7 @@ var StyledCertificateForm = import_styled_components16.default.form`
 `;
 
 // src/internal/components/certificate-elements/CertificateUploadForm/index.tsx
-var import_jsx_runtime23 = require("react/jsx-runtime");
+var import_jsx_runtime27 = require("react/jsx-runtime");
 var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
     register,
@@ -3878,11 +3977,11 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
     onResetCertificate();
     reset();
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)(StyledCertificateUpload, { className: "StyledCertificateUpload", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)(StyledCertificateForm, { className: "StyledCertificateForm", onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "StyledCertificateUpload__inputs", children: [
-        !certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(StyledCertificateUpload, { className: "StyledCertificateUpload", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(StyledCertificateForm, { className: "StyledCertificateForm", onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
+      /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "StyledCertificateUpload__inputs", children: [
+        !certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
           TextInput,
           {
             label: t("practitioner.certificateUpload.fileLabel"),
@@ -3896,7 +3995,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
             errorMessage: certificateFormError["certificate"]?.message
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
           TextInput,
           {
             label: t("practitioner.certificateUpload.passwordLabel"),
@@ -3910,7 +4009,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
         Button,
         {
           title: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.submitButtonUpload") : t("practitioner.certificateUpload.submitButtonPassword"),
@@ -3919,7 +4018,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
         }
       )
     ] }),
-    certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(Button, { title: t("practitioner.certificateUpload.resetButton"), type: "reset", view: "outlined", form: "uploadCertificateForm", handleClick: onUploadedAnotherCertificate })
+    certificateAlreadyUploaded && /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(Button, { title: t("practitioner.certificateUpload.resetButton"), type: "reset", view: "outlined", form: "uploadCertificateForm", handleClick: onUploadedAnotherCertificate })
   ] });
 };
 
@@ -3939,7 +4038,7 @@ var StyledPractitionerCertificate = import_styled_components17.default.div`
 `;
 
 // src/shared/components/PractitionerCertificate/index.tsx
-var import_jsx_runtime24 = require("react/jsx-runtime");
+var import_jsx_runtime28 = require("react/jsx-runtime");
 var PractitionerCertificate = ({
   certificateValid,
   onUploadCertificate,
@@ -3948,14 +4047,14 @@ var PractitionerCertificate = ({
   certificateUploaded,
   errorWhileVerifyingCertificate
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(import_jsx_runtime24.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(StyledPractitionerCertificate, { className: "StyledPractitionerCertificate", children: [
-      certificateValid && certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
-      !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
-      errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
-      certificateUploaded && !certificateValid && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
-      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(import_jsx_runtime28.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(StyledPractitionerCertificate, { className: "StyledPractitionerCertificate", children: [
+      certificateValid && certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
+      !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
+      errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
+      certificateUploaded && !certificateValid && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
+      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(
         CertificateUploadForm,
         {
           onUploadCertificate,
@@ -3978,11 +4077,11 @@ var import_react4 = require("react");
 var import_react3 = require("react");
 
 // src/internal/components/common/RegulatoryBadges/index.tsx
-var import_jsx_runtime25 = require("react/jsx-runtime");
+var import_jsx_runtime29 = require("react/jsx-runtime");
 var RegulatoryBadges = ({ medication, placement, boundaryBox }) => {
   const countries = Object.keys(medication.regulatory ?? {});
-  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(import_jsx_runtime25.Fragment, { children: countries.flatMap(
-    (country) => getRegulatoryBadges(country, placement).map(({ key, Component }) => /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(Component, { medication, boundaryBox }, `${country}.${key}`))
+  return /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(import_jsx_runtime29.Fragment, { children: countries.flatMap(
+    (country) => getRegulatoryBadges(country, placement).map(({ key, Component }) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(Component, { medication, boundaryBox }, `${country}.${key}`))
   ) });
 };
 
@@ -4020,15 +4119,15 @@ var StyledMedicationInfographics = import_styled_components18.default.div`
 `;
 
 // src/internal/components/medication-elements/MedicationInfographics/index.tsx
-var import_jsx_runtime26 = require("react/jsx-runtime");
-var MedicationInfographics = ({ medication, boundaryBox }) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(RegulatoryBadges, { medication, placement: "detail", boundaryBox }) });
+var import_jsx_runtime30 = require("react/jsx-runtime");
+var MedicationInfographics = ({ medication, boundaryBox }) => /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(RegulatoryBadges, { medication, placement: "detail", boundaryBox }) });
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
-var import_jsx_runtime27 = require("react/jsx-runtime");
+var import_jsx_runtime31 = require("react/jsx-runtime");
 var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = (0, import_react3.useRef)(null);
-  return /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(
       "div",
       {
         className: "medication",
@@ -4038,21 +4137,21 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
         onKeyDown: (event) => {
           if (event.key === "Enter") handleAddPrescription();
         },
-        children: /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "medication__content", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "medication__content__heading", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "medication__content__heading__title", children: [
-              !subMedication && (medication.kind === "product" ? /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "nonMedicinal" ? /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "molecule" ? /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
-              /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("h3", { children: medication.title }),
-              medication.regulatory?.be?.cheapest ? /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.regulatory?.be?.cheap ? /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
-              /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
+        children: /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)("div", { className: "medication__content", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)("div", { className: "medication__content__heading", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)("div", { className: "medication__content__heading__title", children: [
+              !subMedication && (medication.kind === "product" ? /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "nonMedicinal" ? /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "molecule" ? /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
+              /* @__PURE__ */ (0, import_jsx_runtime31.jsx)("h3", { children: medication.title }),
+              medication.regulatory?.be?.cheapest ? /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.regulatory?.be?.cheap ? /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
+              /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
+            /* @__PURE__ */ (0, import_jsx_runtime31.jsx)("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "medication__content__description", children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(RegulatoryBadges, { medication, placement: "summary", boundaryBox: medicationCardRef }) })
+          /* @__PURE__ */ (0, import_jsx_runtime31.jsx)("div", { className: "medication__content__description", children: /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(RegulatoryBadges, { medication, placement: "summary", boundaryBox: medicationCardRef }) })
         ] })
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(
       StyledExpandButton,
       {
         className: "StyledExpandButton",
@@ -4062,7 +4161,7 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
           setMedicationCardExpanded(!isMedicationCardExpanded);
         },
         type: "button",
-        children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(ChevronIcn, {})
+        children: /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(ChevronIcn, {})
       }
     )
   ] });
@@ -4109,10 +4208,40 @@ var StyledExtension = import_styled_components19.default.div`
     }
   }
 
-  .divider {
+  // Generic label+value row for country-specific fields that don't warrant their own styled
+  // component (currently ch's GTIN list / generic group) — same visual treatment as .vmp__item
+  // above, under a country-neutral name.
+  .regulatoryField {
     width: 100%;
     display: flex;
-    border-bottom: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      color: ${colors.blue[600]};
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      color: black;
+    }
+  }
+
+  // Each section below is now an independently-registered 'expanded' badge that may render
+  // null (React emits no DOM node for it), so a divider div can no longer be hand-placed
+  // between "the next section that will actually render". Putting the divider styling on
+  // every child but the first sidesteps that: :not(:first-child) only ever matches DOM
+  // siblings that actually rendered, so the line shows up exactly between rendered sections
+  // with zero bookkeeping. padding-top replicates the second half of the original
+  // gap-line-gap spacing (18px gap, 1px line, 18px gap) that the container's gap alone
+  // only covers half of, now that the line lives on the section itself instead of its own
+  // flex item.
+  & > *:not(:first-child) {
+    padding-top: 18px;
+    border-top: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
   }
 
   .links {
@@ -4139,53 +4268,8 @@ var StyledExtension = import_styled_components19.default.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
-var import_jsx_runtime28 = require("react/jsx-runtime");
-var Extension = ({ medication }) => {
-  const be = medication.regulatory?.be;
-  const medicationCommercialization = be?.commercializations?.[0];
-  const medicationSupplyProblem = be?.supplyProblems?.[0];
-  const medicationReimbursement = be?.reimbursements;
-  return /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(StyledExtension, { className: "StyledExtension", children: [
-    be?.vmp && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "vmp", children: [
-      be.vmp.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("span", { children: "VMP:" }),
-        /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { children: be.vmp.name.fr })
-      ] }),
-      be.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("span", { children: "VMP-group:" }),
-        /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { children: be.vmp.vmpGroup.name.fr })
-      ] })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "links", children: [
-      be?.crmLink && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("a", { href: be.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
-      be?.patientInformationLeafletLink && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("a", { href: be.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
-      be?.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("a", { href: be.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
-      be?.spcLink && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("a", { href: be.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
-      be?.dhpcLink && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("a", { href: be.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
-    ] }),
-    medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(import_jsx_runtime28.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(ReimbursementsContent, { reimbursement: medicationReimbursement })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be?.deliveryModusSpecificationCode, deliveryModusSpecification: be?.deliveryModusSpecification }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(DeliveryConditionsContent, { deliveryModus: be?.deliveryModus, deliveryModusSpecification: be?.deliveryModusSpecification, deliveryModusCode: be?.deliveryModusCode }),
-    be?.supplyProblems && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(import_jsx_runtime28.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(SupplyProblemsContent, { medicationSupplyProblem })
-    ] }),
-    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(import_jsx_runtime28.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(EndOfCommercialisationContent, { medicationCommercialization })
-    ] }),
-    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(import_jsx_runtime28.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "divider" }),
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(StartOfCommercialisationContent, { medicationCommercialization })
-    ] })
-  ] });
-};
+var import_jsx_runtime32 = require("react/jsx-runtime");
+var Extension = ({ medication }) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(StyledExtension, { className: "StyledExtension", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(RegulatoryBadges, { medication, placement: "expanded" }) });
 
 // src/internal/components/medication-elements/MedicationCard/styles.ts
 var import_styled_components20 = __toESM(require("styled-components"));
@@ -4244,11 +4328,11 @@ var StyledMedicationCard = import_styled_components20.default.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/index.tsx
-var import_jsx_runtime29 = require("react/jsx-runtime");
+var import_jsx_runtime33 = require("react/jsx-runtime");
 var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication }) => {
   const [isExpanded, setIsExpanded] = (0, import_react4.useState)(false);
-  return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, $subMedication: subMedication, id, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, $subMedication: subMedication, id, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(
       Header,
       {
         handleAddPrescription: () => handleAddPrescription(medication),
@@ -4258,7 +4342,7 @@ var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableH
         subMedication
       }
     ),
-    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(Extension, { medication })
+    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Extension, { medication })
   ] });
 };
 
@@ -4283,17 +4367,17 @@ var StyledMedicationProductTitle = import_styled_components21.default.div`
 `;
 
 // src/internal/components/medication-elements/MedicationProductTitle/index.tsx
-var import_jsx_runtime30 = require("react/jsx-runtime");
+var import_jsx_runtime34 = require("react/jsx-runtime");
 var MedicationProductTitle = ({ productTitle }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)(StyledMedicationProductTitle, { className: "StyledMedicationProductTitle", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(SolidPillIcn, {}) }),
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("h3", { children: productTitle })
+  return /* @__PURE__ */ (0, import_jsx_runtime34.jsxs)(StyledMedicationProductTitle, { className: "StyledMedicationProductTitle", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(SolidPillIcn, {}) }),
+    /* @__PURE__ */ (0, import_jsx_runtime34.jsx)("h3", { children: productTitle })
   ] });
 };
 
 // src/internal/components/common/InfiniteScroll/index.tsx
 var import_react5 = require("react");
-var import_jsx_runtime31 = require("react/jsx-runtime");
+var import_jsx_runtime35 = require("react/jsx-runtime");
 var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
   const infiniteScrollRef = (0, import_react5.useRef)(null);
   const isLoadMore = (0, import_react5.useRef)(false);
@@ -4319,7 +4403,7 @@ var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
       element.removeEventListener("resize", onScroll);
     };
   }, [threshold, loadMore2]);
-  return /* @__PURE__ */ (0, import_jsx_runtime31.jsx)("div", { ref: infiniteScrollRef, style: { width: 0 } });
+  return /* @__PURE__ */ (0, import_jsx_runtime35.jsx)("div", { ref: infiniteScrollRef, style: { width: 0 } });
 };
 
 // src/shared/components/MedicationSearch/styles.ts
@@ -4441,7 +4525,7 @@ var StyledMedicationSearchDropdown = import_styled_components22.default.div`
 `;
 
 // src/shared/components/MedicationSearch/index.tsx
-var import_jsx_runtime32 = require("react/jsx-runtime");
+var import_jsx_runtime36 = require("react/jsx-runtime");
 var PAGE_SIZE2 = 10;
 var medMapper = (item) => ({
   medications: item.medications ?? [item],
@@ -4561,16 +4645,16 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
     return !!value && value.length < 3;
   };
   const isFocused = (medicationIndex, subMedicationIndex) => focusedMedicationIndex === medicationIndex && focusedSubMedicationIndex === subMedicationIndex;
-  return /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(import_jsx_runtime32.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)("p", { children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(import_jsx_runtime36.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
+        /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)("p", { children: [
           t("medication.search.label"),
           ":"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
             "input",
             {
               id: "searchMedications",
@@ -4582,15 +4666,15 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
               onChange: (e) => setSearchQuery(e.target.value)
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(SearchIcn, {})
+          /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(SearchIcn, {})
         ] }),
-        showSearchError() && /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("p", { className: "error", children: t("medication.search.errorMessage") })
+        showSearchError() && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("p", { className: "error", children: t("medication.search.errorMessage") })
       ] }),
-      showSpinner && /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "spinner", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
-      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
-        pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(import_jsx_runtime32.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
-          entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
+      showSpinner && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { className: "spinner", children: /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
+      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
+        pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(import_jsx_runtime36.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
+          entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
             MedicationCard,
             {
               medication: smed,
@@ -4601,7 +4685,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
               short
             }
           ) }, j))
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
+        ] }) : /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
           MedicationCard,
           {
             medication: entry.medications[0],
@@ -4612,7 +4696,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
             short
           }
         ) }) }, i)),
-        /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
           InfiniteScroll,
           {
             threshold: 50,
@@ -4622,7 +4706,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
           }
         )
       ] }),
-      showNoMatchesPlaceholder && /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "placeholder", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("p", { children: t("medication.search.noMatchingPlaceholder") }) })
+      showNoMatchesPlaceholder && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { className: "placeholder", children: /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("p", { children: t("medication.search.noMatchingPlaceholder") }) })
     ] })
   ] });
 };
@@ -4759,14 +4843,14 @@ var StyledSelectDropdown = import_styled_components23.default.select`
 `;
 
 // src/internal/components/form-elements/SelectInput/index.tsx
-var import_jsx_runtime33 = require("react/jsx-runtime");
-var SelectInput = (0, import_react7.forwardRef)(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(StyledSelectInput, { className: "StyledSelectInput", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "*" }),
+var import_jsx_runtime37 = require("react/jsx-runtime");
+var SelectInput = (0, import_react7.forwardRef)(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(StyledSelectInput, { className: "StyledSelectInput", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
-  !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "error", children: errorMessage })
+  /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
+  !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/internal/components/form-elements/RadioInput/index.tsx
@@ -4889,15 +4973,15 @@ var StyledRadioInput = import_styled_components24.default.div`
 `;
 
 // src/internal/components/form-elements/RadioInput/index.tsx
-var import_jsx_runtime34 = require("react/jsx-runtime");
+var import_jsx_runtime38 = require("react/jsx-runtime");
 var RadioInput = (0, import_react8.forwardRef)(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime34.jsxs)(StyledRadioInput, { className: "StyledRadioInput", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime34.jsxs)(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime34.jsx)("span", { children: "*" }),
+  return /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledRadioInput, { className: "StyledRadioInput", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("span", { children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime34.jsx)("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime34.jsxs)(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
         "input",
         {
           id: option.id,
@@ -4910,10 +4994,10 @@ var RadioInput = (0, import_react8.forwardRef)(({ label, name, options, required
           ref
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime34.jsx)(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
     ] }, option.id)) }),
-    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime34.jsx)("p", { className: "error", children: errorMessage })
+    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("p", { className: "error", children: errorMessage })
   ] });
 });
 RadioInput.displayName = "RadioInput";
@@ -5005,16 +5089,16 @@ var StyledSwitch = import_styled_components25.default.div`
 `;
 
 // src/internal/components/form-elements/ToggleSwitch/index.tsx
-var import_jsx_runtime35 = require("react/jsx-runtime");
+var import_jsx_runtime39 = require("react/jsx-runtime");
 var ToggleSwitch = (0, import_react9.forwardRef)(({ id, value, label, onChange, checked }, ref) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime35.jsxs)(StyledSwitch, { className: "StyledSwitch", children: [
-    label && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)("p", { className: "toggleSwitchLabel", children: label }),
-    /* @__PURE__ */ (0, import_jsx_runtime35.jsxs)("div", { className: "toggleWrapper", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime35.jsxs)("label", { htmlFor: id, className: "toggle", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime35.jsx)("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
-        /* @__PURE__ */ (0, import_jsx_runtime35.jsx)("span", { className: "slider" })
+  return /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(StyledSwitch, { className: "StyledSwitch", children: [
+    label && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("p", { className: "toggleSwitchLabel", children: label }),
+    /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "toggleWrapper", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("label", { htmlFor: id, className: "toggle", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
+        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { className: "slider" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime35.jsx)("p", { children: value })
+      /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("p", { children: value })
     ] })
   ] });
 });
@@ -5054,13 +5138,13 @@ var StyledTextarea = import_styled_components26.default.textarea`
 `;
 
 // src/internal/components/form-elements/TextareaInput/index.tsx
-var import_jsx_runtime36 = require("react/jsx-runtime");
-var TextareaInput = import_react10.default.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledTextareaInput, { className: "StyledTextareaInput", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("span", { children: "*" }),
+var import_jsx_runtime40 = require("react/jsx-runtime");
+var TextareaInput = import_react10.default.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledTextareaInput, { className: "StyledTextareaInput", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
+  /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     StyledTextarea,
     {
       className: "StyledTextarea",
@@ -5075,7 +5159,7 @@ var TextareaInput = import_react10.default.forwardRef(({ label, id, required, di
       ...rest
     }
   ),
-  errorMessage && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("p", { className: "error", children: errorMessage })
+  errorMessage && /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/shared/components/PrescriptionModal/styles.ts
@@ -5386,7 +5470,7 @@ var StyledCheapAlternativesItem = import_styled_components28.default.li`
 `;
 
 // src/internal/components/medication-elements/CheapAlternatives/index.tsx
-var import_jsx_runtime37 = require("react/jsx-runtime");
+var import_jsx_runtime41 = require("react/jsx-runtime");
 var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
   const [isExpanded, setIsExpanded] = (0, import_react11.useState)(false);
   const [isCheap, setIsCheap] = (0, import_react11.useState)(false);
@@ -5399,15 +5483,15 @@ var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
     const vmpGroup = vmpGroupCode ? await loadVmpGroup(sdk, vmpGroupCode) : void 0;
     onSelectMedication({ ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } });
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(StyledCheapAlternatives, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
-      /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(StyledCheapAlternativesHeaderContent, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(WarningIcn, { color: "#3D87C5" }),
-        /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("span", { children: isCheap ? t("medication.drugInfographic.otherCheapAlternativesMessage") : t("medication.drugInfographic.cheapAlternativesMessage") })
+  return /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(StyledCheapAlternatives, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+      /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(StyledCheapAlternativesHeaderContent, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(WarningIcn, { color: "#3D87C5" }),
+        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("span", { children: isCheap ? t("medication.drugInfographic.otherCheapAlternativesMessage") : t("medication.drugInfographic.cheapAlternativesMessage") })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(StyledCheapAlternativesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(ChevronIcn, {}) })
+      /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(StyledCheapAlternativesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(ChevronIcn, {}) })
     ] }),
-    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(StyledCheapAlternativesContent, { children: medications.map((medication, index) => /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(StyledCheapAlternativesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("button", { type: "button", onClick: () => onMedicationClick(medication), children: medication.title }) }, medication.id ?? index)) })
+    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(StyledCheapAlternativesContent, { children: medications.map((medication, index) => /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(StyledCheapAlternativesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("button", { type: "button", onClick: () => onMedicationClick(medication), children: medication.title }) }, medication.id ?? index)) })
   ] });
 };
 
@@ -5469,21 +5553,21 @@ var StyledStandardDosagesItem = import_styled_components29.default.li`
 `;
 
 // src/internal/components/medication-elements/StandardDosages/index.tsx
-var import_jsx_runtime38 = require("react/jsx-runtime");
+var import_jsx_runtime42 = require("react/jsx-runtime");
 var StandardDosages = ({ dosages, language, onSelectDosage }) => {
   const [isExpanded, setIsExpanded] = (0, import_react12.useState)(false);
   if (!dosages || dosages.length === 0) {
     return null;
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledStandardDosages, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledStandardDosagesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
-      /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledStandardDosagesHeaderContent, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(WarningIcn, { color: "#3D87C5" }),
+  return /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(StyledStandardDosages, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(StyledStandardDosagesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+      /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(StyledStandardDosagesHeaderContent, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(WarningIcn, { color: "#3D87C5" }),
         t("medication.drugInfographic.standardDosagesMessage")
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(ChevronIcn, {}) })
+      /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(ChevronIcn, {}) })
     ] }),
-    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(StyledStandardDosagesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("button", { type: "button", onClick: () => onSelectDosage(dosage), children: (0, import_medication_sdk.marshal)(dosage, language) }) }, index)) })
+    isExpanded && /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(StyledStandardDosagesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("button", { type: "button", onClick: () => onSelectDosage(dosage), children: (0, import_medication_sdk.marshal)(dosage, language) }) }, index)) })
   ] });
 };
 
@@ -5751,7 +5835,7 @@ var createPosologyFromStandardDosage = (group, context) => {
 };
 
 // src/shared/components/PrescriptionModal/index.tsx
-var import_jsx_runtime39 = require("react/jsx-runtime");
+var import_jsx_runtime43 = require("react/jsx-runtime");
 var PrescriptionModal = ({
   sdk,
   medicationToPrescribe,
@@ -5898,14 +5982,14 @@ var PrescriptionModal = ({
       setFocusedDosageIndex(1);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(import_jsx_runtime39.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__header", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
-        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(CloseIcn, {}) })
+  return /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(import_jsx_runtime43.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__header", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
+        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(
         "div",
         {
           className: "addMedicationForm__body",
@@ -5914,8 +5998,8 @@ var PrescriptionModal = ({
           tabIndex: 0,
           "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                 TextInput,
                 {
                   label: t("prescription.form.medicationTitle"),
@@ -5928,9 +6012,9 @@ var PrescriptionModal = ({
                   errorMessage: prescriptionFormErrors["medicationTitle"]?.message
                 }
               ),
-              alternatives.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(StyledDosageInput, { className: "StyledDosageInput", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              alternatives.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication }),
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(StyledDosageInput, { className: "StyledDosageInput", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.dosage"),
@@ -5943,14 +6027,14 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["dosage"]?.message
                   }
                 ),
-                posologySuggestions.length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                posologySuggestions.length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   StyledSuggestionItem,
                   {
                     id: `posology-${index}`,
                     $disableHover: disableHover,
                     $focused: focusedDosageIndex === index,
                     className: "StyledSuggestionItem",
-                    children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                    children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                       "button",
                       {
                         onClick: (e) => {
@@ -5964,9 +6048,9 @@ var PrescriptionModal = ({
                   index
                 )) })
               ] }),
-              standardDosages.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              standardDosages.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.duration"),
@@ -5980,13 +6064,13 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["duration"]?.message
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   import_react_hook_form2.Controller,
                   {
                     name: "durationTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                       SelectInput,
                       {
                         ...field,
@@ -6000,8 +6084,8 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.treatmentStartDate"),
@@ -6014,7 +6098,7 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.executableUntil"),
@@ -6028,8 +6112,8 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              !prescriptionToModify && /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              !prescriptionToModify && /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.prescriptionsNumber"),
@@ -6044,13 +6128,13 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
                   }
                 ),
-                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   import_react_hook_form2.Controller,
                   {
                     name: "periodicityTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                       SelectInput,
                       {
                         ...field,
@@ -6063,7 +6147,7 @@ var PrescriptionModal = ({
                     )
                   }
                 ),
-                periodicityTimeUnit === "1" && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                periodicityTimeUnit === "1" && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                   TextInput,
                   {
                     label: t("prescription.form.periodicityDaysNumber"),
@@ -6078,12 +6162,12 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                 import_react_hook_form2.Controller,
                 {
                   name: "substitutionAllowed",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                     RadioInput,
                     {
                       ...field,
@@ -6101,55 +6185,55 @@ var PrescriptionModal = ({
                 }
               ) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
               import_react_hook_form2.Controller,
               {
                 name: "showExtraFields",
                 control,
-                render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
+                render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
               }
             ),
-            !showExtraFields ? /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("span", { children: [
+            !showExtraFields ? /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("span", { children: [
                   t("prescription.form.patientInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("span", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("span", { children: [
                   t("prescription.form.reimbursementInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("span", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("span", { children: [
                   t("prescription.form.prescriberVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("span", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("p", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("span", { children: [
                   t("prescription.form.pharmacistVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
+                /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
               ] })
-            ] }) : /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+            ] }) : /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                 import_react_hook_form2.Controller,
                 {
                   name: "instructionsForReimbursement",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                     SelectInput,
                     {
                       ...field,
@@ -6165,20 +6249,20 @@ var PrescriptionModal = ({
                   )
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                 import_react_hook_form2.Controller,
                 {
                   name: "prescriberVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
+                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                 import_react_hook_form2.Controller,
                 {
                   name: "pharmacistVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
                     SelectInput,
                     {
                       ...field,
@@ -6198,9 +6282,9 @@ var PrescriptionModal = ({
           ]
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)("div", { className: "addMedicationForm__footer", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
-        /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+      /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "addMedicationForm__footer", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
+        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
       ] })
     ] }) }) })
   ] });
@@ -6349,17 +6433,17 @@ var StyledPrescriptionCard = import_styled_components30.default.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionCard/index.tsx
-var import_jsx_runtime40 = require("react/jsx-runtime");
+var import_jsx_runtime44 = require("react/jsx-runtime");
 var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)("div", { className: "prescriptionCardHeader__prescription__content", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("p", { children: prescribedMedication.medication.instructionForPatient })
+  return /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)("div", { className: "prescriptionCardHeader__prescription__content", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("p", { children: prescribedMedication.medication.instructionForPatient })
     ] }) }) }),
-    !prescribedMedication.rid ? /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)("div", { className: "actions", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(EditIcn, {}) }),
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(DeleteIcn, {}) })
-    ] }) : /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", { className: "rid", children: prescribedMedication.rid })
+    !prescribedMedication.rid ? /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)("div", { className: "actions", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(EditIcn, {}) }),
+      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(DeleteIcn, {}) })
+    ] }) : /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("div", { className: "rid", children: prescribedMedication.rid })
   ] });
 };
 
@@ -6413,7 +6497,7 @@ var StyledPrescriptionList = import_styled_components31.default.div`
 `;
 
 // src/shared/components/PrescriptionList/index.tsx
-var import_jsx_runtime41 = require("react/jsx-runtime");
+var import_jsx_runtime45 = require("react/jsx-runtime");
 var PrescriptionList = ({
   handleModifyPrescription,
   handleDeletePrescription,
@@ -6441,12 +6525,12 @@ var PrescriptionList = ({
     return prescribedMedications.filter((item) => !item.rid);
   };
   if (!prescribedMedications) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(import_jsx_runtime41.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
-      sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
-        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
+      sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -6455,7 +6539,7 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+        handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           Button,
           {
             disabled: sending,
@@ -6466,12 +6550,12 @@ var PrescriptionList = ({
           }
         ) })
       ] }),
-      pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
+      pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -6480,8 +6564,8 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("div", { className: "cardinal-prescriptions__footer", children: [
-          handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "cardinal-prescriptions__footer", children: [
+          handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
             Button,
             {
               disabled: sending,
@@ -6492,7 +6576,7 @@ var PrescriptionList = ({
               form: "prescriptionForm"
             }
           ),
-          handleSendPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+          handleSendPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
             Button,
             {
               disabled: printing,
@@ -6617,7 +6701,7 @@ var StyledPrescriptionDocument = import_styled_components32.default.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
-var import_jsx_runtime42 = require("react/jsx-runtime");
+var import_jsx_runtime46 = require("react/jsx-runtime");
 function chunk(arr, chunkSize = 1, cache = []) {
   const tmp = [...arr];
   if (chunkSize <= 0) return cache;
@@ -6643,24 +6727,24 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
   const formatDate = (date) => {
     return (date && dateDecode(date)?.toLocaleDateString()) ?? "-";
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-document", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-document__header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("h1", { children: t("prescription.pdf.title") }),
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("p", { children: t("prescription.pdf.instructions") })
+  return /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-document", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-document__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("h1", { children: t("prescription.pdf.title") }),
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("p", { children: t("prescription.pdf.instructions") })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-document__options", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("h5", { children: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("strong", { children: t("prescription.pdf.options.title") }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("ol", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("li", { children: t("prescription.pdf.options.option1") }),
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("li", { children: t("prescription.pdf.options.option2") })
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-document__options", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("h5", { children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("strong", { children: t("prescription.pdf.options.title") }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("ol", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("li", { children: t("prescription.pdf.options.option1") }),
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("li", { children: t("prescription.pdf.options.option2") })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-section", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-section__persons", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("strong", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-section", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-section__persons", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("strong", { children: [
             t("prescription.pdf.prescriber"),
             ": "
           ] }),
@@ -6670,8 +6754,8 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           " ",
           prescriber.nihii
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("strong", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("strong", { children: [
             t("prescription.pdf.patient"),
             ": "
           ] }),
@@ -6682,39 +6766,39 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           patient.ssin
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("h3", { children: t("prescription.pdf.electronicContent") }),
-      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-item", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-item__block", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("h3", { children: t("prescription.pdf.electronicContent") }),
+      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-item", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-item__block", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
             t("prescription.pdf.product"),
             " ",
             "",
-            /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("strong", { children: trim(
+            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("strong", { children: trim(
               prescription.medication.medicinalProduct?.intendedname ?? prescription.medication?.substanceProduct?.intendedname ?? prescription.medication?.compoundPrescription ?? ""
             ) })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
             t("prescription.pdf.dosage"),
             " ",
             prescription.medication.instructionForPatient
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
             t("prescription.pdf.date"),
             " ",
             formatDate(prescription.medication.beginMoment)
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { children: [
             t("prescription.pdf.validUntil"),
             " ",
             prescription.medication.endMoment ? formatDate(prescription.medication.endMoment) : "-"
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("div", { className: "prescription-item__block prescription-item__block--right", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)("strong", { className: "ridTitle", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "prescription-item__block prescription-item__block--right", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("strong", { className: "ridTitle", children: [
             "RID ",
             prescriptionIndex + 1
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("div", { className: "barcode", children: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
+          /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "barcode", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
         ] })
       ] }, prescriptionIndex))
     ] })
@@ -6869,7 +6953,7 @@ var StyledPrescriptionPrintModal = import_styled_components33.default.div`
 `;
 
 // src/shared/components/PrescriptionPrintModal/index.tsx
-var import_jsx_runtime43 = require("react/jsx-runtime");
+var import_jsx_runtime47 = require("react/jsx-runtime");
 var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, patient }) => {
   const print = () => {
     const div = document.getElementById("print-container");
@@ -6899,17 +6983,17 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
       document.body.appendChild(hideFrame);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(import_jsx_runtime43.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { className: "contentWrap", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "content", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "content__header", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("h3", { children: t("practitioner.printModal.title") }),
-        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(CloseIcn, {}) })
+  return /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(import_jsx_runtime47.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(GlobalStyles, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "contentWrap", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "content", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "content__header", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("h3", { children: t("practitioner.printModal.title") }),
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { className: "content__body", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { id: "print-container", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)("div", { className: "content__footer", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
-        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "content__body", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { id: "print-container", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "content__footer", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
       ] })
     ] }) }) })
   ] });

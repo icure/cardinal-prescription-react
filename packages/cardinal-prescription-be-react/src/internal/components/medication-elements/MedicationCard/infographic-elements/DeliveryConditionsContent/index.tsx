@@ -69,3 +69,11 @@ export const DeliveryConditionsBadge: RegulatoryBadgeComponent = ({ medication, 
     />
   )
 }
+
+// Registered `be` expanded badge — Extension always renders this block, regardless of
+// presence; `DeliveryConditionsContent` handles its own "not applicable" fallback internally,
+// so (unlike the compact `detail` badge above) no presence gate is needed here.
+export const DeliveryConditionsExpandedBadge: RegulatoryBadgeComponent = ({ medication }) => {
+  const be = medication.regulatory?.be
+  return <DeliveryConditionsContent deliveryModus={be?.deliveryModus} deliveryModusSpecification={be?.deliveryModusSpecification} deliveryModusCode={be?.deliveryModusCode} />
+}

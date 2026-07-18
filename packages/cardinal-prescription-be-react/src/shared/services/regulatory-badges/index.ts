@@ -1,7 +1,7 @@
 import { FC, RefObject } from 'react'
 import type { MedicationType } from '../../types'
 
-export type RegulatoryBadgePlacement = 'summary' | 'detail'
+export type RegulatoryBadgePlacement = 'summary' | 'detail' | 'expanded'
 
 export interface RegulatoryBadgeProps {
   medication: MedicationType

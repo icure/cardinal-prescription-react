@@ -95,3 +95,14 @@ export const ReimbursementsBadge: RegulatoryBadgeComponent = ({ medication, boun
     />
   )
 }
+
+// Registered `be` expanded badge — Extension's reimbursement block; gated on presence exactly
+// as today, unlike the prescription/delivery conditions badges below (`ReimbursementsContent`'s
+// "not applicable" fallback branch is never reached at this placement, only ever used if a
+// consumer imports the component directly).
+export const ReimbursementsExpandedBadge: RegulatoryBadgeComponent = ({ medication }) => {
+  const reimbursement = medication.regulatory?.be?.reimbursements
+  if (!reimbursement) return null
+
+  return <ReimbursementsContent reimbursement={reimbursement} />
+}

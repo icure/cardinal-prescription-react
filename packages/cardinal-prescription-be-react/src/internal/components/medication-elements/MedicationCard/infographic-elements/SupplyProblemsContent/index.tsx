@@ -75,3 +75,13 @@ export const SupplyProblemsBadge: RegulatoryBadgeComponent = ({ medication, boun
     </div>
   )
 }
+
+// Registered `be` expanded badge — Extension's supply-problems block; gated on presence of the
+// `supplyProblems` array exactly as today (note this is a truthy-array check, not a check on
+// the first entry, matching Extension's original `be?.supplyProblems &&` guard precisely).
+export const SupplyProblemsExpandedBadge: RegulatoryBadgeComponent = ({ medication }) => {
+  const supplyProblems = medication.regulatory?.be?.supplyProblems
+  if (!supplyProblems) return null
+
+  return <SupplyProblemsContent medicationSupplyProblem={supplyProblems[0]} />
+}

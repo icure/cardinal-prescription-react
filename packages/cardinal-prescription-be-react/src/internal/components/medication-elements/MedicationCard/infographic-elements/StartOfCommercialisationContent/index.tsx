@@ -44,3 +44,12 @@ export const StartOfCommercialisationBadge: RegulatoryBadgeComponent = ({ medica
     </div>
   )
 }
+
+// Registered `be` expanded badge — Extension's start-of-commercialisation block; same gating
+// as the `detail` badge above (mutually exclusive with `EndOfCommercialisationExpandedBadge`).
+export const StartOfCommercialisationExpandedBadge: RegulatoryBadgeComponent = ({ medication }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0]
+  if (!medicationCommercialization || medicationCommercialization.endOfComercialization) return null
+
+  return <StartOfCommercialisationContent medicationCommercialization={medicationCommercialization} />
+}
