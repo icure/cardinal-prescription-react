@@ -1,5 +1,6 @@
 export * from './shared/services/i18n'
 export * from './shared/services/cardinal-sam'
+export * from './shared/services/medindex'
 export * from './shared/services/certificate'
 export * from './shared/services/fhc'
 export * from './shared/services/indexed-db'

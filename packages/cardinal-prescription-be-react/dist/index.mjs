@@ -1430,6 +1430,143 @@ var fetchSamVersion = async (sdk) => {
   }
 };
 
+// src/shared/services/medindex/medindex-medication-provider.ts
+import {
+  MedIndexNetworkError,
+  MedIndexNotFoundError,
+  MedIndexServerError,
+  MedIndexValidationError
+} from "@icure/medindex-sdk";
+
+// src/internal/services/medication-mapper/map-medindex-medication.ts
+var DEFAULT_MEDINDEX_LANGUAGE = "de";
+function toMedIndexLanguage(language) {
+  return language === "fr" || language === "de" ? language : DEFAULT_MEDINDEX_LANGUAGE;
+}
+function resolveLocalized(dict, language) {
+  return dict[language] ?? dict[DEFAULT_MEDINDEX_LANGUAGE] ?? "";
+}
+var PRICE_TYPE_PREFERENCE = ["PPUB", "PPHA", "PEXF"];
+function selectDisplayPrice(prices) {
+  for (const type of PRICE_TYPE_PREFERENCE) {
+    const candidates = prices.filter((price) => price.type === type && price.chf != null);
+    if (candidates.length === 0) continue;
+    const latest = candidates.reduce((newest, candidate) => (candidate.validFrom ?? 0) > (newest.validFrom ?? 0) ? candidate : newest);
+    return { amount: latest.chf, currency: "CHF" };
+  }
+  return void 0;
+}
+function mapMedIndexMedication(product, pkg, language) {
+  return {
+    id: pkg.id,
+    kind: "product",
+    title: resolveLocalized(pkg.name, language) || resolveLocalized(product.names, language),
+    activeIngredient: product.composition.map((line) => line.substance?.name).filter((name) => !!name).join(", "),
+    regulatory: {
+      ch: {
+        pharmacode: String(pkg.pharmacode),
+        gtin: pkg.gtin,
+        swissmedicCategory: pkg.swissmedicCategory ?? void 0,
+        narcotic: pkg.narcotic,
+        coldChain: pkg.coldChain,
+        genericGroup: product.genericGroup ?? void 0,
+        price: selectDisplayPrice(pkg.prices)
+      }
+    }
+  };
+}
+function mapMedIndexProductTitle(product, language) {
+  return resolveLocalized(product.names, language);
+}
+
+// src/shared/services/medindex/medindex-medication-provider.ts
+var PAGE_SIZE = 10;
+async function pullNext(iterator, size) {
+  const items = [];
+  while (items.length < size) {
+    const { value, done } = await iterator.next();
+    if (done) break;
+    items.push(value);
+  }
+  return items;
+}
+var MedIndexMedicationProvider = class {
+  constructor(client) {
+    this.client = client;
+  }
+  async *findByLabel(label) {
+    const iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]();
+    while (true) {
+      const page = await this.loadNextPage(iterator, label);
+      if (page.length === 0) return;
+      for (const item of page) {
+        yield item;
+      }
+    }
+  }
+  /**
+   * Pulls product chunks from the source and maps each surviving one into a `MedicationProductType`,
+   * recursing for another chunk whenever filtering (inactive products/packages) leaves fewer
+   * qualifying results than `PAGE_SIZE` and the source isn't exhausted yet — mirrors
+   * `loadMedicationsPage`'s own recursion for the same "don't dribble out a near-empty page" reason.
+   */
+  async loadNextPage(iterator, label, acc = []) {
+    const products = await this.pullProducts(iterator, label);
+    if (products.length === 0) return acc;
+    const activeProducts = products.filter((product) => product.active);
+    const packagesByProductId = activeProducts.length ? await this.fetchPackagesByProduct(activeProducts, label) : /* @__PURE__ */ new Map();
+    const language = toMedIndexLanguage(cardinalLanguage.getLanguage());
+    const page = activeProducts.map((product) => this.toMedicationProductType(product, packagesByProductId.get(product.id) ?? [], language)).filter((product) => product !== null);
+    const combined = [...acc, ...page];
+    return products.length < PAGE_SIZE || combined.length >= PAGE_SIZE ? combined : this.loadNextPage(iterator, label, combined);
+  }
+  /** Returns `null` (filtered out) once none of a product's packages are active — mirroring how
+   * `loadMedicationsPage` returns `null` for an AMP whose AMPPs are all undeliverable. */
+  toMedicationProductType(product, packages, language) {
+    const activePackages = packages.filter((pkg) => pkg.active);
+    if (activePackages.length === 0) return null;
+    return {
+      id: product.id,
+      title: mapMedIndexProductTitle(product, language),
+      medications: activePackages.map((pkg) => mapMedIndexMedication(product, pkg, language))
+    };
+  }
+  async pullProducts(iterator, label) {
+    try {
+      return await pullNext(iterator, PAGE_SIZE);
+    } catch (error) {
+      throw this.translateError(error, `medINDEX product search failed for label "${label}"`);
+    }
+  }
+  /** One batched `byProductIds` call per chunk, not one call per product — the whole point of
+   * pulling products in chunks in the first place. */
+  async fetchPackagesByProduct(products, label) {
+    try {
+      const packages = await this.client.package.byProductIds(products.map((product) => product.id));
+      const byProductId = /* @__PURE__ */ new Map();
+      for (const pkg of packages) {
+        const productId = pkg.product?.id;
+        if (!productId) continue;
+        const existing = byProductId.get(productId);
+        if (existing) existing.push(pkg);
+        else byProductId.set(productId, [pkg]);
+      }
+      return byProductId;
+    } catch (error) {
+      throw this.translateError(error, `medINDEX package lookup failed for label "${label}"`);
+    }
+  }
+  // Collapses `MedIndexServerError`/`MedIndexNetworkError` into one `MedicationProviderUnavailableError`
+  // per this library's error contract (see `MedicationProvider`'s doc comment / docs/plan.md's
+  // Decisions table) — callers only need "try again later," not the exact transport-vs-server cause.
+  translateError(error, message) {
+    if (error instanceof MedIndexNotFoundError) return new MedicationNotFoundError(message, error);
+    if (error instanceof MedIndexValidationError) return new MedicationSearchValidationError(message, error);
+    if (error instanceof MedIndexServerError || error instanceof MedIndexNetworkError) return new MedicationProviderUnavailableError(message, error);
+    return new MedicationProviderUnavailableError(message, error);
+  }
+};
+
 // src/shared/services/indexed-db/index.ts
 var IndexedDbServiceStore = class {
   db;
@@ -4092,12 +4229,12 @@ var StyledMedicationSearchDropdown = styled19.div`
 
 // src/shared/components/MedicationSearch/index.tsx
 import { Fragment as Fragment5, jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
-var PAGE_SIZE = 10;
+var PAGE_SIZE2 = 10;
 var medMapper = (item) => ({
   medications: item.medications ?? [item],
   product: item.medications ? item : void 0
 });
-var pullNext = async (iterator, size) => {
+var pullNext2 = async (iterator, size) => {
   const items = [];
   while (items.length < size) {
     const { value, done } = await iterator.next();
@@ -4131,7 +4268,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
   };
   const runLoadMore = async () => {
     const iterator = iteratorRef.current;
-    return iterator ? pullNext(iterator, PAGE_SIZE) : [];
+    return iterator ? pullNext2(iterator, PAGE_SIZE2) : [];
   };
   const doSearch = async (q) => {
     iteratorRef.current = medicationProvider.findByLabel(q)[Symbol.asyncIterator]();
@@ -6566,6 +6703,7 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
 };
 export {
   IndexedDbServiceStore,
+  MedIndexMedicationProvider,
   MedicationNotFoundError,
   MedicationProviderError,
   MedicationProviderUnavailableError,

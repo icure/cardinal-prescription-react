@@ -1,5 +1,6 @@
 import { SamText, VmpStub, VmpGroup, SupplyProblem, Commercialization, Reimbursement, SamV2Api, PaginatedListIterator, Amp, Nmp, SamVersion } from '@icure/cardinal-be-sam-sdk';
 export { PaginatedListIterator } from '@icure/cardinal-be-sam-sdk';
+import { MedIndexClient } from '@icure/medindex-sdk';
 import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
 
@@ -201,6 +202,38 @@ declare const loadVmpGroup: (sdk: SamV2Api, vmpGroupCode: string) => Promise<Vmp
  */
 declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
 
+/**
+ * Swiss `MedicationProvider`, wrapping medINDEX's single product search stream. Unlike SAM's
+ * three-lane AMP/VMP-group/NMP merge, medINDEX has only one product-level concept — `findByLabel`
+ * adapts one already-ordered source stream instead of merging several, trusting the SDK's own
+ * ordering the same way `SamMedicationProvider` trusts each of its three SAM lanes.
+ *
+ * `enrichForPrescription`/`loadCheapAlternatives` are intentionally left unimplemented: there is
+ * no Swiss prescription-transmission or reimbursement-driven cheap-alternatives concept this
+ * phase (see docs/plan.md's "ch scope this phase" decision) — the interface already treats both
+ * as optional for exactly this reason.
+ */
+declare class MedIndexMedicationProvider implements MedicationProvider {
+    private readonly client;
+    constructor(client: MedIndexClient);
+    findByLabel(label: string): AsyncIterable<Med>;
+    /**
+     * Pulls product chunks from the source and maps each surviving one into a `MedicationProductType`,
+     * recursing for another chunk whenever filtering (inactive products/packages) leaves fewer
+     * qualifying results than `PAGE_SIZE` and the source isn't exhausted yet — mirrors
+     * `loadMedicationsPage`'s own recursion for the same "don't dribble out a near-empty page" reason.
+     */
+    private loadNextPage;
+    /** Returns `null` (filtered out) once none of a product's packages are active — mirroring how
+     * `loadMedicationsPage` returns `null` for an AMP whose AMPPs are all undeliverable. */
+    private toMedicationProductType;
+    private pullProducts;
+    /** One batched `byProductIds` call per chunk, not one call per product — the whole point of
+     * pulling products in chunks in the first place. */
+    private fetchPackagesByProduct;
+    private translateError;
+}
+
 declare const loadCertificateInformation: (hcp_ssin: string) => Promise<{
     salt: ArrayBuffer;
     iv: ArrayBuffer;
@@ -301,4 +334,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
