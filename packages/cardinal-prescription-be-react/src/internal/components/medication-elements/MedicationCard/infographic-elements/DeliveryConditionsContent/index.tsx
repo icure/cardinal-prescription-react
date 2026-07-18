@@ -1,5 +1,8 @@
 import React, { FC } from 'react'
 import { t } from '../../../../../../shared/services/i18n'
+import { Tooltip } from '../../../../common/Tooltip'
+import type { RegulatoryBadgeComponent } from '../../../../../../shared/services/regulatory-badges'
+import { StyledTextToIcon } from '../../medication-card-elements/Header/styles'
 import { StyledDeliveryConditions, StyledDeliveryConditionsNotApplicable } from './styles'
 
 interface Props {
@@ -44,5 +47,25 @@ export const DeliveryConditionsContent: FC<Props> = ({ deliveryModusCode, delive
         </div>
       </div>
     </StyledDeliveryConditionsNotApplicable>
+  )
+}
+
+// Registered `be` detail badge — presence-check relocated here from `MedicationInfographics`.
+export const DeliveryConditionsBadge: RegulatoryBadgeComponent = ({ medication, boundaryBox }) => {
+  const be = medication.regulatory?.be
+  if (!be?.deliveryModusCode) return null
+
+  return (
+    <Tooltip
+      contentSnippet={
+        <DeliveryConditionsContent deliveryModus={be.deliveryModus} deliveryModusSpecification={be.deliveryModusSpecification} deliveryModusCode={be.deliveryModusCode} />
+      }
+      iconSnippet={
+        <StyledTextToIcon className="StyledTextToIcon" $color="orange">
+          <p>{be.deliveryModusCode}</p>
+        </StyledTextToIcon>
+      }
+      boundaryBox={boundaryBox}
+    />
   )
 }

@@ -2,6 +2,9 @@ import React, { FC } from 'react'
 import { Reimbursement } from '@icure/cardinal-be-sam-sdk'
 import { getSamTextTranslation, t } from '../../../../../../shared/services/i18n'
 import { getCategoryLabelForReimbursement } from '../../../../../utils/reimbursement-helpers'
+import { Tooltip } from '../../../../common/Tooltip'
+import type { RegulatoryBadgeComponent } from '../../../../../../shared/services/regulatory-badges'
+import { StyledTextToIcon } from '../../medication-card-elements/Header/styles'
 import { StyledReimbursement } from './styles'
 
 interface Props {
@@ -72,5 +75,23 @@ export const ReimbursementsContent: FC<Props> = ({ reimbursement }) => {
         </div>
       </div>
     </div>
+  )
+}
+
+// Registered `be` detail badge — presence-check relocated here from `MedicationInfographics`.
+export const ReimbursementsBadge: RegulatoryBadgeComponent = ({ medication, boundaryBox }) => {
+  const reimbursement = medication.regulatory?.be?.reimbursements
+  if (!reimbursement) return null
+
+  return (
+    <Tooltip
+      contentSnippet={<ReimbursementsContent reimbursement={reimbursement} />}
+      iconSnippet={
+        <StyledTextToIcon className="StyledTextToIcon" $color="green">
+          <p>{reimbursement.reimbursementCriterion?.category}</p>
+        </StyledTextToIcon>
+      }
+      boundaryBox={boundaryBox}
+    />
   )
 }

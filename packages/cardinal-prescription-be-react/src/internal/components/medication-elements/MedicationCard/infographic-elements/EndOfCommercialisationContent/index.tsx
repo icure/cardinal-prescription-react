@@ -2,6 +2,9 @@ import { getSamTextTranslation, t } from '../../../../../../shared/services/i18n
 import { formatTimestamp } from '../../../../../utils/date-helpers'
 import React, { FC } from 'react'
 import { Commercialization } from '@icure/cardinal-be-sam-sdk'
+import { Tooltip } from '../../../../common/Tooltip'
+import { EndOfCommercialisationIcn } from '../../../../common/Icons'
+import type { RegulatoryBadgeComponent } from '../../../../../../shared/services/regulatory-badges'
 import { StyledEndCommercialization } from './styles'
 
 interface Props {
@@ -55,5 +58,22 @@ export const EndOfCommercialisationContent: FC<Props> = ({ medicationCommerciali
         )}
       </div>
     </StyledEndCommercialization>
+  )
+}
+
+// Registered `be` detail badge — presence-check relocated here from `MedicationInfographics`;
+// keyed on the first commercialization entry having an `endOfComercialization` value.
+export const EndOfCommercialisationBadge: RegulatoryBadgeComponent = ({ medication, boundaryBox }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0]
+  if (!medicationCommercialization?.endOfComercialization) return null
+
+  return (
+    <div className="regulatoryBadgeIcon regulatoryBadgeIcon--red">
+      <Tooltip
+        contentSnippet={<EndOfCommercialisationContent medicationCommercialization={medicationCommercialization} />}
+        iconSnippet={<EndOfCommercialisationIcn />}
+        boundaryBox={boundaryBox}
+      />
+    </div>
   )
 }

@@ -2,6 +2,9 @@ import React, { FC } from 'react'
 import { SupplyProblem } from '@icure/cardinal-be-sam-sdk'
 import { formatTimestamp } from '../../../../../utils/date-helpers'
 import { getSamTextTranslation, t } from '../../../../../../shared/services/i18n'
+import { Tooltip } from '../../../../common/Tooltip'
+import { SupplyIcn } from '../../../../common/Icons'
+import type { RegulatoryBadgeComponent } from '../../../../../../shared/services/regulatory-badges'
 import { StyledSupplyProblems } from './styles'
 
 interface Props {
@@ -57,5 +60,18 @@ export const SupplyProblemsContent: FC<Props> = ({ medicationSupplyProblem }) =>
         )}
       </div>
     </StyledSupplyProblems>
+  )
+}
+
+// Registered `be` detail badge — presence-check relocated here from `MedicationInfographics`;
+// keyed on the first entry of `supplyProblems`, matching today's `?.[0]` lookup.
+export const SupplyProblemsBadge: RegulatoryBadgeComponent = ({ medication, boundaryBox }) => {
+  const medicationSupplyProblem = medication.regulatory?.be?.supplyProblems?.[0]
+  if (!medicationSupplyProblem) return null
+
+  return (
+    <div className="regulatoryBadgeIcon regulatoryBadgeIcon--orange">
+      <Tooltip contentSnippet={<SupplyProblemsContent medicationSupplyProblem={medicationSupplyProblem} />} iconSnippet={<SupplyIcn />} boundaryBox={boundaryBox} />
+    </div>
   )
 }

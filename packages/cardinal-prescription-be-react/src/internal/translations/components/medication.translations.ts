@@ -90,6 +90,12 @@ export const medicationTranslations = {
       errorMessage: ' Entrez au moins 3 lettres du nom du médicament',
       noMatchingPlaceholder: 'Aucun médicament ne correspond à vos critères de recherche.',
     },
+    swissmedic: {
+      category: 'Catégorie de remise Swissmedic :',
+      narcotic: 'Stupéfiant',
+      coldChain: 'Nécessite une chaîne du froid',
+      coldChainAbbreviation: 'CF',
+    },
   },
   en: {
     yes: 'Yes',
@@ -181,6 +187,12 @@ export const medicationTranslations = {
       label: 'Find a medication',
       errorMessage: 'Enter at least 3 letters of the medication name',
       noMatchingPlaceholder: 'No medications correspond to your search criteria.',
+    },
+    swissmedic: {
+      category: 'Swissmedic dispensing category:',
+      narcotic: 'Narcotic',
+      coldChain: 'Requires cold-chain transport',
+      coldChainAbbreviation: 'CC',
     },
   },
   nl: {
@@ -274,6 +286,12 @@ export const medicationTranslations = {
       errorMessage: 'Voer minstens 3 letters van de naam in',
       noMatchingPlaceholder: 'Er komen geen medicijnen overeen met uw zoekcriteria.',
     },
+    swissmedic: {
+      category: 'Swissmedic-afleveringscategorie:',
+      narcotic: 'Verdovend middel',
+      coldChain: 'Vereist koelketen transport',
+      coldChainAbbreviation: 'CC',
+    },
   },
   de: {
     yes: 'Ja',
@@ -365,6 +383,12 @@ export const medicationTranslations = {
       label: 'Arzneimittel suchen',
       errorMessage: 'Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein',
       noMatchingPlaceholder: 'Keine Medikamente entsprechen Ihren Suchkriterien.',
+    },
+    swissmedic: {
+      category: 'Swissmedic-Abgabekategorie :',
+      narcotic: 'Betäubungsmittel',
+      coldChain: 'Erfordert Kühlkette',
+      coldChainAbbreviation: 'KK',
     },
   },
 }

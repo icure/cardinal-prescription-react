@@ -4,7 +4,8 @@ import React, { FC, useRef } from 'react'
 import type { MedicationType } from '../../../../../../shared/types'
 import { t } from '../../../../../../shared/services/i18n'
 import { MedicationInfographics } from '../../../MedicationInfographics'
-import { StyledCheapBadge, StyledExpandButton, StyledHeader, StyledTextToIcon } from './styles'
+import { RegulatoryBadges } from '../../../../common/RegulatoryBadges'
+import { StyledCheapBadge, StyledExpandButton, StyledHeader } from './styles'
 
 interface Props {
   handleAddPrescription: () => void
@@ -16,28 +17,6 @@ interface Props {
 
 export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = useRef<HTMLDivElement>(null)
-  const medicationReimbursement = medication.regulatory?.be?.reimbursements
-
-  const ReimbursementIcn = () => (
-    <StyledTextToIcon className="StyledTextToIcon" $color={'green'}>
-      <p>{medicationReimbursement?.reimbursementCriterion?.category}</p>
-    </StyledTextToIcon>
-  )
-  const DeliveryConditionsIcn = () => (
-    <StyledTextToIcon className="StyledTextToIcon" $color={'orange'}>
-      <p>{medication.regulatory?.be?.deliveryModusCode}</p>
-    </StyledTextToIcon>
-  )
-  const PrescriptionConditionsIcn = () => (
-    <StyledTextToIcon className="StyledTextToIcon" $color={'red'}>
-      <p>{medication.regulatory?.be?.deliveryModusSpecificationCode}</p>
-    </StyledTextToIcon>
-  )
-  const NonApplicableIcn = ({ text, colorGrey }: { text: string; colorGrey?: boolean }) => (
-    <StyledTextToIcon className="StyledTextToIcon" $color={colorGrey ? 'grey' : 'green'}>
-      <p>{text}</p>
-    </StyledTextToIcon>
-  )
 
   return (
     <StyledHeader className="StyledHeader" ref={medicationCardRef}>
@@ -80,26 +59,7 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
             <p className="medication__content__heading__activeIngredient">{medication.activeIngredient}</p>
           </div>
           <div className="medication__content__description">
-            {medication.regulatory?.be?.price && (
-              <>
-                <div className="medication__content__description__item">
-                  <span>{t('medication.ui.price')}</span>
-                  <p className="price">{medication.regulatory.be.price}</p>
-                </div>
-                <div className="medication__content__description__item">
-                  <span> {t('medication.reimbursement.title')}</span>
-                  {medicationReimbursement ? <ReimbursementIcn /> : <NonApplicableIcn text={t('medication.reimbursement.non')} colorGrey={true} />}
-                </div>
-              </>
-            )}
-            <div className="medication__content__description__item">
-              <span>{t('medication.delivery.title')}</span>
-              {medication.regulatory?.be?.deliveryModusCode ? <DeliveryConditionsIcn /> : <NonApplicableIcn text={t('medication.delivery.notApplicable')} />}
-            </div>
-            <div className="medication__content__description__item">
-              <span>{t('medication.prescription.title')}</span>
-              {medication.regulatory?.be?.deliveryModusSpecificationCode ? <PrescriptionConditionsIcn /> : <NonApplicableIcn text={t('medication.prescription.free')} />}
-            </div>
+            <RegulatoryBadges medication={medication} placement="summary" boundaryBox={medicationCardRef} />
           </div>
         </div>
       </div>
