@@ -32,7 +32,7 @@ function makePackageDto(overrides: Partial<MedicationPackageDto> = {}): Medicati
   return {
     id: 'medpkg:100',
     pharmacode: 100,
-    product: { id: 'medprod:1', names: { de: 'Aspirin' } },
+    product: { id: 'medprod:1', name: 'Aspirin' },
     name: { de: 'Aspirin 100 Stk', fr: 'Aspirine 100 cpr' },
     gtin: ['7680100000000'],
     swissmedicCategory: 'B',
@@ -85,10 +85,7 @@ describe('MedIndexMedicationProvider', () => {
         makeProductDto({ id: `medprod:${label}-${i}`, names: { de: `${label} ${i}`, fr: `${label} ${i}`, it: `${label} ${i}` } }),
       )
       const packagesByProductId = new Map(
-        products.map((product, i) => [
-          product.id,
-          [makePackageDto({ id: `medpkg:${label}-${i}`, pharmacode: 1000 + i, product: { id: product.id, names: product.names } })],
-        ]),
+        products.map((product, i) => [product.id, [makePackageDto({ id: `medpkg:${label}-${i}`, pharmacode: 1000 + i, product: { id: product.id, name: product.names.de } })]]),
       )
 
       const fetchMock = makeSearchFetchMock(products, packagesByProductId)
