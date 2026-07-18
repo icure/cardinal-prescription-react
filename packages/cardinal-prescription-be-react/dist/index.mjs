@@ -3237,6 +3237,16 @@ var MedIndexMedicationProvider = class {
   }
 };
 
+// src/shared/services/medication-provider-config/index.ts
+function createMedicationProvider(config) {
+  switch (config.country) {
+    case "be":
+      return new SamMedicationProvider(config.sdk, config.deliveryEnvironment);
+    case "ch":
+      return new MedIndexMedicationProvider(config.client);
+  }
+}
+
 // src/shared/services/indexed-db/index.ts
 var IndexedDbServiceStore = class {
   db;
@@ -6855,6 +6865,7 @@ export {
   cardinalLanguage,
   createFhcCode,
   createIndexedDbTokenStore,
+  createMedicationProvider,
   deleteCertificate,
   fetchSamVersion,
   findMedicationsByLabel,

@@ -234,6 +234,28 @@ declare class MedIndexMedicationProvider implements MedicationProvider {
     private translateError;
 }
 
+/**
+ * One member per country with an actual `MedicationProvider` implementation, discriminated by
+ * `country`, each carrying exactly the constructor arguments its concrete provider needs. No
+ * `fr` member yet: `fr` has no provider (or mapper) built this phase (see docs/plan.md) — a
+ * branch here with nothing behind it would just be dead code. This union naturally grows a
+ * `{ country: 'fr'; ... }` member once that provider exists.
+ */
+type MedicationProviderConfig = {
+    country: 'be';
+    sdk: SamV2Api;
+    deliveryEnvironment: string;
+} | {
+    country: 'ch';
+    client: MedIndexClient;
+};
+/**
+ * Constructs the concrete `MedicationProvider` matching `config.country`, so a consuming app
+ * can select a country via one config value instead of importing and instantiating
+ * `SamMedicationProvider`/`MedIndexMedicationProvider` itself.
+ */
+declare function createMedicationProvider(config: MedicationProviderConfig): MedicationProvider;
+
 declare const loadCertificateInformation: (hcp_ssin: string) => Promise<{
     salt: ArrayBuffer;
     iv: ArrayBuffer;
@@ -347,4 +369,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
