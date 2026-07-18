@@ -16,7 +16,7 @@ interface Props {
 
 export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = useRef<HTMLDivElement>(null)
-  const medicationReimbursement = medication.reimbursements
+  const medicationReimbursement = medication.regulatory?.be?.reimbursements
 
   const ReimbursementIcn = () => (
     <StyledTextToIcon className="StyledTextToIcon" $color={'green'}>
@@ -25,12 +25,12 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
   )
   const DeliveryConditionsIcn = () => (
     <StyledTextToIcon className="StyledTextToIcon" $color={'orange'}>
-      <p>{medication.deliveryModusCode}</p>
+      <p>{medication.regulatory?.be?.deliveryModusCode}</p>
     </StyledTextToIcon>
   )
   const PrescriptionConditionsIcn = () => (
     <StyledTextToIcon className="StyledTextToIcon" $color={'red'}>
-      <p>{medication.deliveryModusSpecificationCode}</p>
+      <p>{medication.regulatory?.be?.deliveryModusSpecificationCode}</p>
     </StyledTextToIcon>
   )
   const NonApplicableIcn = ({ text, colorGrey }: { text: string; colorGrey?: boolean }) => (
@@ -54,21 +54,21 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
           <div className="medication__content__heading">
             <div className="medication__content__heading__title">
               {!subMedication &&
-                (medication.ampId ? (
+                (medication.kind === 'product' ? (
                   <Tooltip content={t('medication.drugType.medication')} iconSnippet={<SolidPillIcn />} boundaryBox={medicationCardRef} />
-                ) : medication.nmpId ? (
+                ) : medication.kind === 'nonMedicinal' ? (
                   <Tooltip content={t('medication.drugType.homologation')} iconSnippet={<LeafIcn />} boundaryBox={medicationCardRef} />
-                ) : medication.vmpGroupId ? (
+                ) : medication.kind === 'molecule' ? (
                   <Tooltip content={t('medication.drugType.molecule')} iconSnippet={<MoleculeIcn />} boundaryBox={medicationCardRef} />
                 ) : null)}
 
               <h3>{medication.title}</h3>
 
-              {medication.cheapest ? (
+              {medication.regulatory?.be?.cheapest ? (
                 <StyledCheapBadge className="StyledCheapBadge" $variant="cheapest">
                   {t('medication.drugInfographic.cheapest')}
                 </StyledCheapBadge>
-              ) : medication.cheap ? (
+              ) : medication.regulatory?.be?.cheap ? (
                 <StyledCheapBadge className="StyledCheapBadge" $variant="cheap">
                   {t('medication.drugInfographic.cheap')}
                 </StyledCheapBadge>
@@ -80,11 +80,11 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
             <p className="medication__content__heading__activeIngredient">{medication.activeIngredient}</p>
           </div>
           <div className="medication__content__description">
-            {medication.price && (
+            {medication.regulatory?.be?.price && (
               <>
                 <div className="medication__content__description__item">
                   <span>{t('medication.ui.price')}</span>
-                  <p className="price">{medication.price}</p>
+                  <p className="price">{medication.regulatory.be.price}</p>
                 </div>
                 <div className="medication__content__description__item">
                   <span> {t('medication.reimbursement.title')}</span>
@@ -94,11 +94,11 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
             )}
             <div className="medication__content__description__item">
               <span>{t('medication.delivery.title')}</span>
-              {medication.deliveryModusCode ? <DeliveryConditionsIcn /> : <NonApplicableIcn text={t('medication.delivery.notApplicable')} />}
+              {medication.regulatory?.be?.deliveryModusCode ? <DeliveryConditionsIcn /> : <NonApplicableIcn text={t('medication.delivery.notApplicable')} />}
             </div>
             <div className="medication__content__description__item">
               <span>{t('medication.prescription.title')}</span>
-              {medication.deliveryModusSpecificationCode ? <PrescriptionConditionsIcn /> : <NonApplicableIcn text={t('medication.prescription.free')} />}
+              {medication.regulatory?.be?.deliveryModusSpecificationCode ? <PrescriptionConditionsIcn /> : <NonApplicableIcn text={t('medication.prescription.free')} />}
             </div>
           </div>
         </div>

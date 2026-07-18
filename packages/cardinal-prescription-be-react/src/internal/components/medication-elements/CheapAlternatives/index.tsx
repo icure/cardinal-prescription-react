@@ -29,8 +29,9 @@ export const CheapAlternatives: React.FC<CheapAlternativesProps> = ({ sdk, medic
 
   const onMedicationClick = async (medication: MedicationType) => {
     setIsCheap(true)
-    const vmpGroup = medication.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, medication.vmp.vmpGroup.code) : undefined
-    onSelectMedication({ ...medication, vmpGroup })
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code
+    const vmpGroup = vmpGroupCode ? await loadVmpGroup(sdk, vmpGroupCode) : undefined
+    onSelectMedication({ ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } })
   }
 
   return (

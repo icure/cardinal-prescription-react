@@ -13,52 +13,53 @@ interface Props {
 }
 
 export const Extension: FC<Props> = ({ medication }) => {
-  const medicationCommercialization = medication.commercializations?.[0]
-  const medicationSupplyProblem = medication.supplyProblems?.[0]
-  const medicationReimbursement = medication.reimbursements
+  const be = medication.regulatory?.be
+  const medicationCommercialization = be?.commercializations?.[0]
+  const medicationSupplyProblem = be?.supplyProblems?.[0]
+  const medicationReimbursement = be?.reimbursements
 
   return (
     <StyledExtension className="StyledExtension">
-      {medication.vmp && (
+      {be?.vmp && (
         <div className="vmp">
-          {medication.vmp.name?.fr && (
+          {be.vmp.name?.fr && (
             <div className="vmp__item">
               <span>VMP:</span>
-              <p>{medication.vmp.name.fr}</p>
+              <p>{be.vmp.name.fr}</p>
             </div>
           )}
-          {medication.vmp.vmpGroup?.name?.fr && (
+          {be.vmp.vmpGroup?.name?.fr && (
             <div className="vmp__item">
               <span>VMP-group:</span>
-              <p>{medication.vmp.vmpGroup.name.fr}</p>
+              <p>{be.vmp.vmpGroup.name.fr}</p>
             </div>
           )}
         </div>
       )}
       <div className="divider"></div>
       <div className="links">
-        {medication.crmLink && (
-          <a href={medication.crmLink} target="_blank" rel="noopener noreferrer">
+        {be?.crmLink && (
+          <a href={be.crmLink} target="_blank" rel="noopener noreferrer">
             Commented Medicines Directory (CBIP)
           </a>
         )}
-        {medication.patientInformationLeafletLink && (
-          <a href={medication.patientInformationLeafletLink} target="_blank" rel="noopener noreferrer">
+        {be?.patientInformationLeafletLink && (
+          <a href={be.patientInformationLeafletLink} target="_blank" rel="noopener noreferrer">
             Patient information leaflet
           </a>
         )}
-        {medication.rmaProfessionalLink && (
-          <a href={medication.rmaProfessionalLink} target="_blank" rel="noopener noreferrer">
+        {be?.rmaProfessionalLink && (
+          <a href={be.rmaProfessionalLink} target="_blank" rel="noopener noreferrer">
             Risk Minimisation Activities (RMA)
           </a>
         )}
-        {medication.spcLink && (
-          <a href={medication.spcLink} target="_blank" rel="noopener noreferrer">
+        {be?.spcLink && (
+          <a href={be.spcLink} target="_blank" rel="noopener noreferrer">
             Summary of Product Characteristics (SPC)
           </a>
         )}
-        {medication.dhpcLink && (
-          <a href={medication.dhpcLink} target="_blank" rel="noopener noreferrer">
+        {be?.dhpcLink && (
+          <a href={be.dhpcLink} target="_blank" rel="noopener noreferrer">
             Direct Healthcare Professional Communication (DHPC)
           </a>
         )}
@@ -66,21 +67,14 @@ export const Extension: FC<Props> = ({ medication }) => {
       {medicationReimbursement && (
         <>
           <div className="divider"></div>
-          <ReimbursementsContent reimbursement={medication.reimbursements} />
+          <ReimbursementsContent reimbursement={medicationReimbursement} />
         </>
       )}
       <div className="divider"></div>
-      <PrescriptionConditionsContent
-        deliveryModusSpecificationCode={medication.deliveryModusSpecificationCode}
-        deliveryModusSpecification={medication.deliveryModusSpecification}
-      />
+      <PrescriptionConditionsContent deliveryModusSpecificationCode={be?.deliveryModusSpecificationCode} deliveryModusSpecification={be?.deliveryModusSpecification} />
       <div className="divider"></div>
-      <DeliveryConditionsContent
-        deliveryModus={medication.deliveryModus}
-        deliveryModusSpecification={medication.deliveryModusSpecification}
-        deliveryModusCode={medication.deliveryModusCode}
-      />
-      {medication.supplyProblems && (
+      <DeliveryConditionsContent deliveryModus={be?.deliveryModus} deliveryModusSpecification={be?.deliveryModusSpecification} deliveryModusCode={be?.deliveryModusCode} />
+      {be?.supplyProblems && (
         <>
           <div className="divider"></div>
           <SupplyProblemsContent medicationSupplyProblem={medicationSupplyProblem} />

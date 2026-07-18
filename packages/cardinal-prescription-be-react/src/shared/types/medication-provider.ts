@@ -1,13 +1,20 @@
-import { Med } from './medication'
+import { Med, MedicationType } from './medication'
 
 /**
  * Country-agnostic medication lookup contract. Each country's concrete provider
  * (`SamMedicationProvider`, `MedIndexMedicationProvider`, ...) wraps its own backend and its
  * own pagination, but yields a single merged, sorted stream of `Med` — callers never see a
  * source's internal bucketing (e.g. SAM's AMP/VMP-group/NMP split).
+ *
+ * `enrichForPrescription`/`loadCheapAlternatives` are optional because they're only meaningful
+ * for a country with a reimbursement-driven prescription-sending flow (`be`, via VMP groups) —
+ * a provider for a country without that concept (e.g. `ch`'s medINDEX) simply omits them, and
+ * callers get no enrichment/no alternatives, which is the correct behavior there.
  */
 export interface MedicationProvider {
   findByLabel(label: string): AsyncIterable<Med>
+  enrichForPrescription?(medication: MedicationType): Promise<MedicationType>
+  loadCheapAlternatives?(medication: MedicationType): Promise<MedicationType[]>
 }
 
 /**

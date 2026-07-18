@@ -1,6 +1,6 @@
 import type { SamV2Api } from '@icure/cardinal-be-sam-sdk'
-import { findMedicationsByLabel } from './index'
-import { loadMore } from '../../../internal/services/loaders/medication-loader'
+import { findMedicationsByLabel, loadAlternativeMedications, loadVmpGroup } from './index'
+import { loadMedicationsPage, loadMore } from '../../../internal/services/loaders/medication-loader'
 import { Med, MedicationProductType, MedicationProvider, MedicationProviderUnavailableError, MedicationType } from '../../types'
 
 type SamIterators = Awaited<ReturnType<typeof findMedicationsByLabel>>
@@ -50,6 +50,32 @@ export class SamMedicationProvider implements MedicationProvider {
       untreatedLoadedMolecules = updated.moleculesPage
       untreatedLoadNonMedicinals = updated.productsPage
     }
+  }
+
+  /**
+   * Enriches a selected medication with its full VMP group (incl. standard dosages) ahead of
+   * prescribing — moved here verbatim from `MedicationSearch`'s old `handleAddPrescription`,
+   * which read `sdk` directly before this provider abstraction existed.
+   */
+  async enrichForPrescription(medication: MedicationType): Promise<MedicationType> {
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code
+    if (!vmpGroupCode) return medication
+
+    const vmpGroup = await loadVmpGroup(this.sdk, vmpGroupCode)
+    return { ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } }
+  }
+
+  /**
+   * Loads cheaper alternatives sharing the medication's VMP group — same gating (already-cheap
+   * medications have none) and cheap/cheapest filter as the pre-abstraction implementation.
+   */
+  async loadCheapAlternatives(medication: MedicationType): Promise<MedicationType[]> {
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code
+    if (medication.regulatory?.be?.cheap || !vmpGroupCode) return []
+
+    const ampPage = await loadAlternativeMedications(this.sdk, vmpGroupCode)
+    const products = await loadMedicationsPage(ampPage, 10, this.deliveryEnvironment, [], (mt) => (mt.regulatory?.be?.cheap || mt.regulatory?.be?.cheapest ? mt : undefined))
+    return products.flatMap((p) => p.medications)
   }
 
   private async searchByLabel(label: string) {

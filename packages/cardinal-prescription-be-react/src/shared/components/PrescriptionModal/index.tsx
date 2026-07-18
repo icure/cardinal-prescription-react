@@ -146,7 +146,7 @@ export const PrescriptionModal: React.FC<Props> = ({
   // SAM-suggested standard dosages for the prescribed medication's VMP group,
   // filtered by the patient context supplied by the host app.
   const standardDosages = useMemo<ParsedRegimenItem[]>(
-    () => (medication?.vmpGroup ? createPosologyFromStandardDosage(medication.vmpGroup, standardDosageContext ?? {}) : []),
+    () => (medication?.regulatory?.be?.vmpGroup ? createPosologyFromStandardDosage(medication.regulatory.be.vmpGroup, standardDosageContext ?? {}) : []),
     [medication, standardDosageContext],
   )
 

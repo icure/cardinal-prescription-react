@@ -1,4 +1,4 @@
-import { SamText, SamV2Api, PaginatedListIterator, Amp, VmpGroup, Nmp, SamVersion, VmpStub, SupplyProblem, Commercialization, Reimbursement } from '@icure/cardinal-be-sam-sdk';
+import { SamText, VmpStub, VmpGroup, SupplyProblem, Commercialization, Reimbursement, SamV2Api, PaginatedListIterator, Amp, Nmp, SamVersion } from '@icure/cardinal-be-sam-sdk';
 export { PaginatedListIterator } from '@icure/cardinal-be-sam-sdk';
 import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
 import React from 'react';
@@ -13,42 +13,19 @@ declare const cardinalLanguage: CardinalLanguage;
 declare const t: (key: string) => string;
 declare const getSamTextTranslation: (samText?: SamText) => string | undefined;
 
-/**
- * Search for medications matching the given query, using the currently selected language.
- * @param sdk Instance of the SamV2Api sdk
- * @param query Medication search query string
- * @returns Paginated iterators of AMP, VMPGroup, and NMP matches
- */
-declare const findMedicationsByLabel: (sdk: SamV2Api, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
-/**
- * Load cheaper alternative medications for a given VMP group code.
- */
-declare const loadAlternativeMedications: (sdk: SamV2Api, vmpGroupCode: string) => Promise<PaginatedListIterator<Amp>>;
-/**
- * Load the full VmpGroup (incl. standard dosages) for a given VMP group code.
- */
-declare const loadVmpGroup: (sdk: SamV2Api, vmpGroupCode: string) => Promise<VmpGroup | undefined>;
-/**
- * Fetch the current version information for the SAM database.
- */
-declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
-
 type PractitionerVisibilityType = 'open' | 'locked' | 'gmd_prescriber';
 type PharmacistVisibilityType = null | 'locked';
 
 type DeliveryModusSpecificationCodeType = 'Sp' | 'Sp1' | 'Sp/S' | 'Sp1/S' | 'IMP/Sp' | 'IMP/Sp1';
 type Med = MedicationType | MedicationProductType;
-interface MedicationType {
+type MedicationKind = 'product' | 'molecule' | 'nonMedicinal';
+interface BeRegulatoryFields {
     ampId?: string;
     vmpGroupId?: string;
     nmpId?: string;
     cnk?: string;
     dmppProductId?: string;
-    id?: string;
-    index?: number;
-    title: string;
     vmpTitle?: string;
-    activeIngredient?: string;
     price?: string;
     cheap?: boolean;
     cheapest?: boolean;
@@ -72,8 +49,32 @@ interface MedicationType {
     deliveryModusSpecification?: string;
     reimbursements?: Reimbursement;
 }
+interface ChPriceType {
+    amount: number;
+    currency: 'CHF';
+}
+interface ChRegulatoryFields {
+    pharmacode?: string;
+    gtin?: string[];
+    swissmedicCategory?: string;
+    price?: ChPriceType;
+    narcotic?: boolean;
+    coldChain?: boolean;
+    genericGroup?: string;
+}
+interface MedicationType {
+    id?: string;
+    kind?: MedicationKind;
+    title: string;
+    activeIngredient?: string;
+    index?: number;
+    regulatory?: {
+        be?: BeRegulatoryFields;
+        ch?: ChRegulatoryFields;
+    };
+}
 interface MedicationProductType {
-    ampId: string;
+    id: string;
     title: string;
     medications: MedicationType[];
 }
@@ -86,6 +87,45 @@ interface PrescribedMedicationType {
     dmppProductId?: string;
     prescriberVisibility?: PractitionerVisibilityType;
     pharmacistVisibility?: PharmacistVisibilityType;
+}
+
+/**
+ * Country-agnostic medication lookup contract. Each country's concrete provider
+ * (`SamMedicationProvider`, `MedIndexMedicationProvider`, ...) wraps its own backend and its
+ * own pagination, but yields a single merged, sorted stream of `Med` — callers never see a
+ * source's internal bucketing (e.g. SAM's AMP/VMP-group/NMP split).
+ *
+ * `enrichForPrescription`/`loadCheapAlternatives` are optional because they're only meaningful
+ * for a country with a reimbursement-driven prescription-sending flow (`be`, via VMP groups) —
+ * a provider for a country without that concept (e.g. `ch`'s medINDEX) simply omits them, and
+ * callers get no enrichment/no alternatives, which is the correct behavior there.
+ */
+interface MedicationProvider {
+    findByLabel(label: string): AsyncIterable<Med>;
+    enrichForPrescription?(medication: MedicationType): Promise<MedicationType>;
+    loadCheapAlternatives?(medication: MedicationType): Promise<MedicationType[]>;
+}
+/**
+ * Base of this library's own error hierarchy for medication lookup. Concrete providers
+ * translate their backend's native errors into one of the subclasses below at the boundary,
+ * so callers can handle failures the same way regardless of which country's source is active.
+ */
+declare class MedicationProviderError extends Error {
+    readonly cause?: unknown;
+    constructor(message: string, cause?: unknown);
+}
+/** The requested medication (or lookup target, e.g. a VMP group code) does not exist. */
+declare class MedicationNotFoundError extends MedicationProviderError {
+}
+/** The search input was rejected by the provider as malformed (e.g. a label that's too short). */
+declare class MedicationSearchValidationError extends MedicationProviderError {
+}
+/**
+ * The provider could not be reached or failed unexpectedly. Deliberately collapses a
+ * backend's server-vs-network distinction (e.g. medINDEX's `MedIndexServerError` /
+ * `MedIndexNetworkError`) — callers only need "try again later," not the exact cause.
+ */
+declare class MedicationProviderUnavailableError extends MedicationProviderError {
 }
 
 interface CertificateValidationResultType {
@@ -109,6 +149,57 @@ interface TokenStore {
     put: (key: string, value: string) => Promise<string>;
     get: (key: string) => Promise<string>;
 }
+
+/**
+ * Belgian `MedicationProvider`, wrapping SAM's AMP/VMP-group/NMP search + the existing
+ * paginated loaders. `MedicationSearch`'s current three-lane merge (AMP/products,
+ * VMP-group/molecules, NMP/non-medicinal via `mergeLazySortedNamedItems`) is an internal
+ * concern here — callers of `findByLabel` only ever see one merged, sorted `Med` stream.
+ *
+ * `findByLabel` is a genuinely lazy async generator: it fetches one merged page (`loadMore`'s
+ * `limit`) at a time and only asks for the next page once the consumer's `for await` pulls
+ * past what's already been yielded — mirroring the incremental loading `InfiniteScroll`
+ * currently drives by hand.
+ */
+declare class SamMedicationProvider implements MedicationProvider {
+    private readonly sdk;
+    private readonly deliveryEnvironment;
+    constructor(sdk: SamV2Api, deliveryEnvironment: string);
+    findByLabel(label: string): AsyncIterable<Med>;
+    /**
+     * Enriches a selected medication with its full VMP group (incl. standard dosages) ahead of
+     * prescribing — moved here verbatim from `MedicationSearch`'s old `handleAddPrescription`,
+     * which read `sdk` directly before this provider abstraction existed.
+     */
+    enrichForPrescription(medication: MedicationType): Promise<MedicationType>;
+    /**
+     * Loads cheaper alternatives sharing the medication's VMP group — same gating (already-cheap
+     * medications have none) and cheap/cheapest filter as the pre-abstraction implementation.
+     */
+    loadCheapAlternatives(medication: MedicationType): Promise<MedicationType[]>;
+    private searchByLabel;
+    private loadNextPage;
+}
+
+/**
+ * Search for medications matching the given query, using the currently selected language.
+ * @param sdk Instance of the SamV2Api sdk
+ * @param query Medication search query string
+ * @returns Paginated iterators of AMP, VMPGroup, and NMP matches
+ */
+declare const findMedicationsByLabel: (sdk: SamV2Api, query: string) => Promise<[PaginatedListIterator<Amp>, PaginatedListIterator<VmpGroup>, PaginatedListIterator<Nmp>]>;
+/**
+ * Load cheaper alternative medications for a given VMP group code.
+ */
+declare const loadAlternativeMedications: (sdk: SamV2Api, vmpGroupCode: string) => Promise<PaginatedListIterator<Amp>>;
+/**
+ * Load the full VmpGroup (incl. standard dosages) for a given VMP group code.
+ */
+declare const loadVmpGroup: (sdk: SamV2Api, vmpGroupCode: string) => Promise<VmpGroup | undefined>;
+/**
+ * Fetch the current version information for the SAM database.
+ */
+declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
 
 declare const loadCertificateInformation: (hcp_ssin: string) => Promise<{
     salt: ArrayBuffer;
@@ -173,7 +264,7 @@ interface PractitionerCertificate {
 declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
 interface MedicationSearchProps {
-    sdk: SamV2Api;
+    medicationProvider: MedicationProvider;
     deliveryEnvironment: string;
     onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void;
     disableInputEventsTracking: boolean;
@@ -211,4 +302,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type CertificateRecordType, type CertificateValidationResultType, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationProductType, MedicationSearch, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

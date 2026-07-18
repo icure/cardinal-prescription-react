@@ -12,6 +12,7 @@ import {
   PrescriptionList,
   PrescriptionModal,
   PrescriptionPrintModal,
+  SamMedicationProvider,
   sendRecipe,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
@@ -75,6 +76,10 @@ export const App = () => {
   // Token store used to cache the FHC keystore uuid / STS token between
   // certificate validation and prescription sending.
   const tokenStore = useMemo(() => createIndexedDbTokenStore(), [])
+
+  // The `be` MedicationProvider, replacing the raw SAM sdk instance MedicationSearch used to
+  // take directly — memoized so it's only reconstructed when the underlying sdk instance changes.
+  const medicationProvider = useMemo(() => cardinalBeSamInstance && new SamMedicationProvider(cardinalBeSamInstance, 'P'), [cardinalBeSamInstance])
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -253,8 +258,13 @@ export const App = () => {
       </p>
       <div className="dividerApp"></div>
       <div className="element">
-        {cardinalBeSamInstance && isCertificateValid && (
-          <MedicationSearch sdk={cardinalBeSamInstance} deliveryEnvironment="P" onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
+        {medicationProvider && isCertificateValid && (
+          <MedicationSearch
+            medicationProvider={medicationProvider}
+            deliveryEnvironment="P"
+            onAddPrescription={onCreatePrescription}
+            disableInputEventsTracking={isPrescriptionModalOpen}
+          />
         )}
       </div>
       {prescriptions.length !== 0 && (

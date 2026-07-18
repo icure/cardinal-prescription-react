@@ -30,11 +30,16 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   IndexedDbServiceStore: () => IndexedDbServiceStore,
+  MedicationNotFoundError: () => MedicationNotFoundError,
+  MedicationProviderError: () => MedicationProviderError,
+  MedicationProviderUnavailableError: () => MedicationProviderUnavailableError,
   MedicationSearch: () => MedicationSearch,
+  MedicationSearchValidationError: () => MedicationSearchValidationError,
   PractitionerCertificate: () => PractitionerCertificate,
   PrescriptionList: () => PrescriptionList,
   PrescriptionModal: () => PrescriptionModal,
   PrescriptionPrintModal: () => PrescriptionPrintModal,
+  SamMedicationProvider: () => SamMedicationProvider,
   cardinalLanguage: () => cardinalLanguage,
   createFhcCode: () => createFhcCode,
   createIndexedDbTokenStore: () => createIndexedDbTokenStore,
@@ -1100,6 +1105,364 @@ var getSamTextTranslation = (samText) => {
   const lang = cardinalLanguage.getLanguage();
   const fallback = DEFAULT_APP_LANGULAGE;
   return samText[lang] ?? samText[fallback];
+};
+
+// src/internal/services/loaders/medication-loader.ts
+var import_cardinal_be_sam_sdk = require("@icure/cardinal-be-sam-sdk");
+
+// src/internal/utils/string-helpers.ts
+function capitalize(s) {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+function trim(s) {
+  if (!s) return s;
+  return s.replace(/\s+/g, " ").trim();
+}
+function normalizeForSort(s) {
+  if (!s) return s;
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// src/internal/services/loaders/merge-lazy-sorted-named-items.ts
+function isSorted(items) {
+  for (let i = 0; i < items.length - 1; i++) {
+    if (normalizeForSort(items[i].title) > normalizeForSort(items[i + 1].title)) {
+      return false;
+    }
+  }
+  return true;
+}
+async function mergeLazySortedNamedItems(limit, arrays, fetchMissingCallbacks) {
+  if (arrays.length !== fetchMissingCallbacks.length) {
+    throw new Error("Each array must have a corresponding fetch callback.");
+  }
+  const result = [];
+  const pointers = arrays.map(() => 0);
+  let lastPushedName = "";
+  async function loadItemsAtPointer(k, toName) {
+    const p = pointers[k];
+    if (p >= arrays[k].length) {
+      const newItems = await fetchMissingCallbacks[k](lastPushedName, toName);
+      if (!isSorted(newItems)) {
+        throw new Error(`Fetched items for array ${k} are not sorted.`);
+      }
+      if (newItems.length > 0) {
+        arrays[k].splice(p, 0, ...newItems);
+      }
+    }
+  }
+  async function indexOfSmallestFront() {
+    let smallestName = void 0;
+    for (let k = 0; k < arrays.length; k++) {
+      const p = pointers[k];
+      if (p < arrays[k].length) {
+        const candidateName = normalizeForSort(arrays[k][p].title);
+        if (smallestName === void 0 || candidateName < smallestName) {
+          smallestName = candidateName;
+        }
+      }
+    }
+    for (let k = 0; k < arrays.length; k++) {
+      await loadItemsAtPointer(k, smallestName);
+    }
+    let smallestIndex = null;
+    smallestName = void 0;
+    for (let k = 0; k < arrays.length; k++) {
+      const p = pointers[k];
+      if (p < arrays[k].length) {
+        const candidateName = normalizeForSort(arrays[k][p].title);
+        if (smallestName === void 0 || candidateName < smallestName) {
+          smallestIndex = k;
+          smallestName = candidateName;
+        }
+      }
+    }
+    return smallestIndex;
+  }
+  while (result.length < limit) {
+    const si = await indexOfSmallestFront();
+    if (si === null) break;
+    const item = arrays[si][pointers[si]];
+    result.push(item);
+    lastPushedName = normalizeForSort(item.title);
+    pointers[si]++;
+  }
+  return [result, pointers];
+}
+
+// src/internal/services/medication-mapper/map-sam-medication.ts
+var defaultLanguage = "fr";
+function mapSamMedication(amp, ampp, dmpp, index, language, now) {
+  return {
+    id: ampp.ctiExtended,
+    kind: "product",
+    title: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage] ?? ampp.abbreviatedName?.[language] ?? ampp.abbreviatedName?.[defaultLanguage] ?? amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
+    activeIngredient: amp.vmp?.vmpGroup?.name?.[language] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? "",
+    index,
+    regulatory: {
+      be: {
+        ampId: amp.id,
+        vmpGroupId: amp.vmp?.vmpGroup?.id,
+        cnk: dmpp?.code,
+        dmppProductId: dmpp?.productId,
+        vmpTitle: amp.vmp?.name?.[language] ?? amp.vmp?.name?.[defaultLanguage] ?? "",
+        price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
+        cheap: dmpp?.cheap,
+        cheapest: dmpp?.cheapest,
+        crmLink: ampp.crmLink?.[language] ?? ampp.crmLink?.[defaultLanguage],
+        patientInformationLeafletLink: ampp.leafletLink?.[language] ?? ampp.leafletLink?.[defaultLanguage],
+        blackTriangle: amp.blackTriangle,
+        speciallyRegulated: ampp.speciallyRegulated,
+        genericPrescriptionRequired: ampp.genericPrescriptionRequired,
+        intendedName: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage],
+        rmaProfessionalLink: ampp.rmaProfessionalLink?.[language] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
+        spcLink: ampp.spcLink?.[language] ?? ampp.spcLink?.[defaultLanguage],
+        dhpcLink: ampp.dhpcLink?.[language] ?? ampp.dhpcLink?.[defaultLanguage],
+        rmakeyMessages: ampp.rmaKeyMessages?.[language] ?? ampp.rmaKeyMessages?.[defaultLanguage],
+        vmp: amp.vmp,
+        supplyProblems: ampp.supplyProblems,
+        commercializations: ampp?.commercializations,
+        deliveryModusCode: ampp.deliveryModusCode,
+        deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
+        deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
+        deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
+        reimbursements: dmpp?.reimbursements?.find((reimbursement) => reimbursement.from && (!reimbursement.to || reimbursement.to > now))
+      }
+    }
+  };
+}
+function mapSamMedicationProductTitle(amp, language) {
+  return amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "";
+}
+function mapSamMolecule(vmp, language) {
+  return {
+    id: vmp.code,
+    kind: "molecule",
+    title: capitalize(vmp.name?.[language]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? "",
+    regulatory: {
+      be: {
+        vmpGroupId: vmp.id,
+        vmpGroup: vmp
+      }
+    }
+  };
+}
+function mapSamNonMedicinal(nmp, language) {
+  return {
+    id: nmp.code,
+    kind: "nonMedicinal",
+    title: capitalize(nmp.name?.[language]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? "",
+    regulatory: {
+      be: {
+        nmpId: nmp.id
+      }
+    }
+  };
+}
+
+// src/internal/services/loaders/medication-loader.ts
+async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = [], filter = (m) => m) {
+  const language = cardinalLanguage.getLanguage();
+  const now = Date.now();
+  const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
+  const loadedPage = !await medications.hasNext() ? [] : await medications.next(min);
+  const page = loadedPage.map((amp) => {
+    if (amp.to && amp.to < now) {
+      return null;
+    }
+    const activeAmpps = amp.ampps.filter((ampp) => ampp.from && (!ampp.to || ampp.to > now));
+    const authorizedAmpps = activeAmpps.filter((ampp) => ampp.status?.toLowerCase() === import_cardinal_be_sam_sdk.AmpStatus.Authorized.toLowerCase());
+    const commercializedAmpps = authorizedAmpps.filter((ampp) => ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)));
+    const deliverableAmpps = commercializedAmpps.filter(
+      (ampp) => ampp.dmpps?.some((dmpp) => dmpp.from && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() === deliveryEnvironment)
+    );
+    if (deliverableAmpps.length === 0) {
+      return null;
+    }
+    const medications2 = deliverableAmpps.map((ampp, index) => {
+      const dmpp = ampp.dmpps?.find(
+        (dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() === deliveryEnvironment && dmpp2.codeType === import_cardinal_be_sam_sdk.DmppCodeType.Cnk
+      );
+      return mapSamMedication(amp, ampp, dmpp, index, language, now);
+    }).map(filter).filter((m) => !!m).sort((a, b) => {
+      const indexA = a.index ?? 0;
+      const indexB = b.index ?? 0;
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+      return normalizeForSort(a.title).localeCompare(normalizeForSort(b.title));
+    });
+    if (medications2.length === 0) {
+      return null;
+    }
+    return {
+      id: amp.id,
+      title: mapSamMedicationProductTitle(amp, language),
+      medications: medications2
+    };
+  }).filter((mp) => mp !== null);
+  return loadedPage.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications, min, deliveryEnvironment, [...acc, ...page], filter);
+}
+async function loadMoleculesPage(molecules, min, acc = []) {
+  const language = cardinalLanguage.getLanguage();
+  const now = Date.now();
+  const loadedPage = !await molecules.hasNext() ? [] : await molecules.next(min);
+  const page = loadedPage.filter((vmp) => !(vmp.to && vmp.to < now)).map((vmp) => mapSamMolecule(vmp, language));
+  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page]);
+}
+async function loadNonMedicinalPage(products, min, acc = []) {
+  const language = cardinalLanguage.getLanguage();
+  const now = Date.now();
+  const loadedPage = !await products.hasNext() ? [] : await products.next(min);
+  const page = loadedPage.filter((nmp) => !(nmp.to && nmp.to < now)).map((nmp) => mapSamNonMedicinal(nmp, language));
+  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products, min, [...acc, ...page]);
+}
+async function loadUntil(toName, loadPage, limit = 10) {
+  let page = [];
+  if (!toName) {
+    while (page.length < limit) {
+      const newPage = await loadPage();
+      if (!newPage.length) break;
+      page = [...page, ...newPage];
+    }
+    return page;
+  }
+  const lcToName = normalizeForSort(toName);
+  while (page.length === 0 || normalizeForSort(page[page.length - 1].title) < lcToName) {
+    const newPage = await loadPage();
+    if (!newPage.length) break;
+    page = [...page, ...newPage];
+  }
+  return page;
+}
+async function loadMore({
+  untreatedLoadedMedicationProducts,
+  untreatedLoadedMolecules,
+  untreatedLoadNonMedicinals,
+  medicationProductsIterator,
+  moleculesIterator,
+  nonMedicinalesIterator,
+  deliveryEnvironment,
+  limit = 10
+}) {
+  const [result, pointers] = await mergeLazySortedNamedItems(
+    limit,
+    [[...untreatedLoadedMedicationProducts], [...untreatedLoadedMolecules], [...untreatedLoadNonMedicinals]],
+    [
+      async (_, toName) => {
+        const loaded = await loadUntil(
+          toName,
+          () => medicationProductsIterator ? loadMedicationsPage(medicationProductsIterator, limit, deliveryEnvironment) : Promise.resolve([]),
+          limit
+        );
+        untreatedLoadedMedicationProducts.push(...loaded);
+        return loaded;
+      },
+      async (_, toName) => {
+        const loaded = await loadUntil(toName, () => moleculesIterator ? loadMoleculesPage(moleculesIterator, limit) : Promise.resolve([]), limit);
+        untreatedLoadedMolecules.push(...loaded);
+        return loaded;
+      },
+      async (_, toName) => {
+        const loaded = await loadUntil(toName, () => nonMedicinalesIterator ? loadNonMedicinalPage(nonMedicinalesIterator, limit) : Promise.resolve([]), limit);
+        untreatedLoadNonMedicinals.push(...loaded);
+        return loaded;
+      }
+    ]
+  );
+  return {
+    result,
+    updated: {
+      medicationsPage: untreatedLoadedMedicationProducts.slice(pointers[0]),
+      moleculesPage: untreatedLoadedMolecules.slice(pointers[1]),
+      productsPage: untreatedLoadNonMedicinals.slice(pointers[2])
+    }
+  };
+}
+
+// src/shared/types/medication-provider.ts
+var MedicationProviderError = class extends Error {
+  constructor(message, cause) {
+    super(message);
+    this.cause = cause;
+    this.name = new.target.name;
+  }
+};
+var MedicationNotFoundError = class extends MedicationProviderError {
+};
+var MedicationSearchValidationError = class extends MedicationProviderError {
+};
+var MedicationProviderUnavailableError = class extends MedicationProviderError {
+};
+
+// src/shared/services/cardinal-sam/sam-medication-provider.ts
+var SamMedicationProvider = class {
+  constructor(sdk, deliveryEnvironment) {
+    this.sdk = sdk;
+    this.deliveryEnvironment = deliveryEnvironment;
+  }
+  async *findByLabel(label) {
+    const [medicationProductsIterator, moleculesIterator, nonMedicinalesIterator] = await this.searchByLabel(label);
+    let untreatedLoadedMedicationProducts = [];
+    let untreatedLoadedMolecules = [];
+    let untreatedLoadNonMedicinals = [];
+    while (true) {
+      const { result, updated } = await this.loadNextPage({
+        untreatedLoadedMedicationProducts,
+        untreatedLoadedMolecules,
+        untreatedLoadNonMedicinals,
+        medicationProductsIterator,
+        moleculesIterator,
+        nonMedicinalesIterator,
+        label
+      });
+      if (result.length === 0) return;
+      for (const item of result) {
+        yield item;
+      }
+      untreatedLoadedMedicationProducts = updated.medicationsPage;
+      untreatedLoadedMolecules = updated.moleculesPage;
+      untreatedLoadNonMedicinals = updated.productsPage;
+    }
+  }
+  /**
+   * Enriches a selected medication with its full VMP group (incl. standard dosages) ahead of
+   * prescribing — moved here verbatim from `MedicationSearch`'s old `handleAddPrescription`,
+   * which read `sdk` directly before this provider abstraction existed.
+   */
+  async enrichForPrescription(medication) {
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code;
+    if (!vmpGroupCode) return medication;
+    const vmpGroup = await loadVmpGroup(this.sdk, vmpGroupCode);
+    return { ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } };
+  }
+  /**
+   * Loads cheaper alternatives sharing the medication's VMP group — same gating (already-cheap
+   * medications have none) and cheap/cheapest filter as the pre-abstraction implementation.
+   */
+  async loadCheapAlternatives(medication) {
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code;
+    if (medication.regulatory?.be?.cheap || !vmpGroupCode) return [];
+    const ampPage = await loadAlternativeMedications(this.sdk, vmpGroupCode);
+    const products = await loadMedicationsPage(ampPage, 10, this.deliveryEnvironment, [], (mt) => mt.regulatory?.be?.cheap || mt.regulatory?.be?.cheapest ? mt : void 0);
+    return products.flatMap((p) => p.medications);
+  }
+  async searchByLabel(label) {
+    try {
+      return await findMedicationsByLabel(this.sdk, label);
+    } catch (error) {
+      throw new MedicationProviderUnavailableError(`SAM medication search failed for label "${label}"`, error);
+    }
+  }
+  async loadNextPage(args) {
+    const { label, ...loadMoreArgs } = args;
+    try {
+      return await loadMore({ ...loadMoreArgs, deliveryEnvironment: this.deliveryEnvironment });
+    } catch (error) {
+      throw new MedicationProviderUnavailableError(`SAM medication page load failed for label "${label}"`, error);
+    }
+  }
 };
 
 // src/shared/services/cardinal-sam/index.ts
@@ -3272,9 +3635,10 @@ var StyledMedicationInfographics = import_styled_components18.default.div`
 // src/internal/components/medication-elements/MedicationInfographics/index.tsx
 var import_jsx_runtime15 = require("react/jsx-runtime");
 var MedicationInfographics = ({ medication, boundaryBox }) => {
-  const medicationCommercialization = medication.commercializations?.[0];
-  const medicationSupplyProblem = medication.supplyProblems?.[0];
-  const medicationReimbursement = medication.reimbursements;
+  const be = medication.regulatory?.be;
+  const medicationCommercialization = be?.commercializations?.[0];
+  const medicationSupplyProblem = be?.supplyProblems?.[0];
+  const medicationReimbursement = be?.reimbursements;
   const getSpecialRegulation = (code) => {
     switch (code) {
       case 1:
@@ -3286,21 +3650,21 @@ var MedicationInfographics = ({ medication, boundaryBox }) => {
     }
   };
   const ReimbursementIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
-  const DeliveryConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medication.deliveryModusCode }) });
-  const PrescriptionConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: medication.deliveryModusSpecificationCode }) });
+  const DeliveryConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: be?.deliveryModusCode }) });
+  const PrescriptionConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { children: be?.deliveryModusSpecificationCode }) });
   return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: [
     /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medicationInfographics", children: [
-      medication.blackTriangle && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(BlackTriangleIcn, {}), boundaryBox }) }),
-      medication.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+      be?.blackTriangle && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(BlackTriangleIcn, {}), boundaryBox }) }),
+      be?.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
         Tooltip,
         {
-          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(RmaProfessionalLinkContent, { rmaProfessionalLink: medication.rmaProfessionalLink, rmakeyMessages: medication.rmakeyMessages }),
+          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(RmaProfessionalLinkContent, { rmaProfessionalLink: be.rmaProfessionalLink, rmakeyMessages: be.rmakeyMessages }),
           iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(OrangeTriangleIcn, {}),
           boundaryBox
         }
       ) }),
-      medication.speciallyRegulated && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: getSpecialRegulation(medication.speciallyRegulated), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PillsBottleIcn, {}), boundaryBox }) }),
-      medication.genericPrescriptionRequired && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionIcn, {}), boundaryBox }) })
+      be?.speciallyRegulated && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: getSpecialRegulation(be.speciallyRegulated), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PillsBottleIcn, {}), boundaryBox }) }),
+      be?.genericPrescriptionRequired && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionIcn, {}), boundaryBox }) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "medicationAvailabilityInfographics", children: [
       medicationSupplyProblem && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(SupplyProblemsContent, { medicationSupplyProblem }), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(SupplyIcn, {}), boundaryBox }) }),
@@ -3322,32 +3686,19 @@ var MedicationInfographics = ({ medication, boundaryBox }) => {
       ) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "deliveryPrescriptionConditions", children: [
-      medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementsContent, { reimbursement: medication.reimbursements }), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementIcn, {}), boundaryBox }),
-      medication.deliveryModusCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+      medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Tooltip, { contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementsContent, { reimbursement: medicationReimbursement }), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ReimbursementIcn, {}), boundaryBox }),
+      be?.deliveryModusCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
         Tooltip,
         {
-          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
-            DeliveryConditionsContent,
-            {
-              deliveryModus: medication.deliveryModus,
-              deliveryModusSpecification: medication.deliveryModusSpecification,
-              deliveryModusCode: medication.deliveryModusCode
-            }
-          ),
+          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(DeliveryConditionsContent, { deliveryModus: be.deliveryModus, deliveryModusSpecification: be.deliveryModusSpecification, deliveryModusCode: be.deliveryModusCode }),
           iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(DeliveryConditionsIcn, {}),
           boundaryBox
         }
       ),
-      medication.deliveryModusCode && medication.deliveryModusSpecificationCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+      be?.deliveryModusCode && be?.deliveryModusSpecificationCode && /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
         Tooltip,
         {
-          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
-            PrescriptionConditionsContent,
-            {
-              deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
-              deliveryModusSpecification: medication.deliveryModusSpecification
-            }
-          ),
+          contentSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be.deliveryModusSpecificationCode, deliveryModusSpecification: be.deliveryModusSpecification }),
           iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(PrescriptionConditionsIcn, {}),
           boundaryBox
         }
@@ -3360,10 +3711,10 @@ var MedicationInfographics = ({ medication, boundaryBox }) => {
 var import_jsx_runtime16 = require("react/jsx-runtime");
 var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = (0, import_react3.useRef)(null);
-  const medicationReimbursement = medication.reimbursements;
+  const medicationReimbursement = medication.regulatory?.be?.reimbursements;
   const ReimbursementIcn = () => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
-  const DeliveryConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.deliveryModusCode }) });
-  const PrescriptionConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.deliveryModusSpecificationCode }) });
+  const DeliveryConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.regulatory?.be?.deliveryModusCode }) });
+  const PrescriptionConditionsIcn = () => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: medication.regulatory?.be?.deliveryModusSpecificationCode }) });
   const NonApplicableIcn = ({ text, colorGrey }) => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledTextToIcon, { className: "StyledTextToIcon", $color: colorGrey ? "grey" : "green", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { children: text }) });
   return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
     /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
@@ -3379,18 +3730,18 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
         children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content", children: [
           /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__heading", children: [
             /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__heading__title", children: [
-              !subMedication && (medication.ampId ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.nmpId ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.vmpGroupId ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
+              !subMedication && (medication.kind === "product" ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "nonMedicinal" ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "molecule" ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
               /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("h3", { children: medication.title }),
-              medication.cheapest ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.cheap ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
+              medication.regulatory?.be?.cheapest ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.regulatory?.be?.cheap ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
               /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description", children: [
-            medication.price && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
+            medication.regulatory?.be?.price && /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
               /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description__item", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: t("medication.ui.price") }),
-                /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "price", children: medication.price })
+                /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "price", children: medication.regulatory.be.price })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description__item", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("span", { children: [
@@ -3402,11 +3753,11 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description__item", children: [
               /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: t("medication.delivery.title") }),
-              medication.deliveryModusCode ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(DeliveryConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
+              medication.regulatory?.be?.deliveryModusCode ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(DeliveryConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "medication__content__description__item", children: [
               /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { children: t("medication.prescription.title") }),
-              medication.deliveryModusSpecificationCode ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(NonApplicableIcn, { text: t("medication.prescription.free") })
+              medication.regulatory?.be?.deliveryModusSpecificationCode ? /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(NonApplicableIcn, { text: t("medication.prescription.free") })
             ] })
           ] })
         ] })
@@ -3501,50 +3852,38 @@ var StyledExtension = import_styled_components19.default.div`
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
 var import_jsx_runtime17 = require("react/jsx-runtime");
 var Extension = ({ medication }) => {
-  const medicationCommercialization = medication.commercializations?.[0];
-  const medicationSupplyProblem = medication.supplyProblems?.[0];
-  const medicationReimbursement = medication.reimbursements;
+  const be = medication.regulatory?.be;
+  const medicationCommercialization = be?.commercializations?.[0];
+  const medicationSupplyProblem = be?.supplyProblems?.[0];
+  const medicationReimbursement = be?.reimbursements;
   return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(StyledExtension, { className: "StyledExtension", children: [
-    medication.vmp && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp", children: [
-      medication.vmp.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp__item", children: [
+    be?.vmp && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp", children: [
+      be.vmp.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp__item", children: [
         /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { children: "VMP:" }),
-        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { children: medication.vmp.name.fr })
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { children: be.vmp.name.fr })
       ] }),
-      medication.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp__item", children: [
+      be.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "vmp__item", children: [
         /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { children: "VMP-group:" }),
-        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { children: medication.vmp.vmpGroup.name.fr })
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { children: be.vmp.vmpGroup.name.fr })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "divider" }),
     /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "links", children: [
-      medication.crmLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: medication.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
-      medication.patientInformationLeafletLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: medication.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
-      medication.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: medication.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
-      medication.spcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: medication.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
-      medication.dhpcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: medication.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
+      be?.crmLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
+      be?.patientInformationLeafletLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
+      be?.rmaProfessionalLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
+      be?.spcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
+      be?.dhpcLink && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("a", { href: be.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
     ] }),
     medicationReimbursement && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
       /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "divider" }),
-      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ReimbursementsContent, { reimbursement: medication.reimbursements })
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ReimbursementsContent, { reimbursement: medicationReimbursement })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
-      PrescriptionConditionsContent,
-      {
-        deliveryModusSpecificationCode: medication.deliveryModusSpecificationCode,
-        deliveryModusSpecification: medication.deliveryModusSpecification
-      }
-    ),
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be?.deliveryModusSpecificationCode, deliveryModusSpecification: be?.deliveryModusSpecification }),
     /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "divider" }),
-    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
-      DeliveryConditionsContent,
-      {
-        deliveryModus: medication.deliveryModus,
-        deliveryModusSpecification: medication.deliveryModusSpecification,
-        deliveryModusCode: medication.deliveryModusCode
-      }
-    ),
-    medication.supplyProblems && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(DeliveryConditionsContent, { deliveryModus: be?.deliveryModus, deliveryModusSpecification: be?.deliveryModusSpecification, deliveryModusCode: be?.deliveryModusCode }),
+    be?.supplyProblems && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
       /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "divider" }),
       /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(SupplyProblemsContent, { medicationSupplyProblem })
     ] }),
@@ -3694,255 +4033,6 @@ var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
   return /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { ref: infiniteScrollRef, style: { width: 0 } });
 };
 
-// src/internal/services/loaders/medication-loader.ts
-var import_cardinal_be_sam_sdk = require("@icure/cardinal-be-sam-sdk");
-
-// src/internal/utils/string-helpers.ts
-function capitalize(s) {
-  if (!s) return s;
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-}
-function trim(s) {
-  if (!s) return s;
-  return s.replace(/\s+/g, " ").trim();
-}
-function normalizeForSort(s) {
-  if (!s) return s;
-  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-// src/internal/services/loaders/merge-lazy-sorted-named-items.ts
-function isSorted(items) {
-  for (let i = 0; i < items.length - 1; i++) {
-    if (normalizeForSort(items[i].title) > normalizeForSort(items[i + 1].title)) {
-      return false;
-    }
-  }
-  return true;
-}
-async function mergeLazySortedNamedItems(limit, arrays, fetchMissingCallbacks) {
-  if (arrays.length !== fetchMissingCallbacks.length) {
-    throw new Error("Each array must have a corresponding fetch callback.");
-  }
-  const result = [];
-  const pointers = arrays.map(() => 0);
-  let lastPushedName = "";
-  async function loadItemsAtPointer(k, toName) {
-    const p = pointers[k];
-    if (p >= arrays[k].length) {
-      const newItems = await fetchMissingCallbacks[k](lastPushedName, toName);
-      if (!isSorted(newItems)) {
-        throw new Error(`Fetched items for array ${k} are not sorted.`);
-      }
-      if (newItems.length > 0) {
-        arrays[k].splice(p, 0, ...newItems);
-      }
-    }
-  }
-  async function indexOfSmallestFront() {
-    let smallestName = void 0;
-    for (let k = 0; k < arrays.length; k++) {
-      const p = pointers[k];
-      if (p < arrays[k].length) {
-        const candidateName = normalizeForSort(arrays[k][p].title);
-        if (smallestName === void 0 || candidateName < smallestName) {
-          smallestName = candidateName;
-        }
-      }
-    }
-    for (let k = 0; k < arrays.length; k++) {
-      await loadItemsAtPointer(k, smallestName);
-    }
-    let smallestIndex = null;
-    smallestName = void 0;
-    for (let k = 0; k < arrays.length; k++) {
-      const p = pointers[k];
-      if (p < arrays[k].length) {
-        const candidateName = normalizeForSort(arrays[k][p].title);
-        if (smallestName === void 0 || candidateName < smallestName) {
-          smallestIndex = k;
-          smallestName = candidateName;
-        }
-      }
-    }
-    return smallestIndex;
-  }
-  while (result.length < limit) {
-    const si = await indexOfSmallestFront();
-    if (si === null) break;
-    const item = arrays[si][pointers[si]];
-    result.push(item);
-    lastPushedName = normalizeForSort(item.title);
-    pointers[si]++;
-  }
-  return [result, pointers];
-}
-
-// src/internal/services/loaders/medication-loader.ts
-var defaultLanguage = "fr";
-async function loadMedicationsPage(medications, min, deliveryEnvironment, acc = [], filter = (m) => m) {
-  const language = cardinalLanguage.getLanguage();
-  const now = Date.now();
-  const twoYearsAgo = now - 2 * 365 * 24 * 3600 * 1e3;
-  const loadedPage = !await medications.hasNext() ? [] : await medications.next(min);
-  const page = loadedPage.map((amp) => {
-    if (amp.to && amp.to < now) {
-      return null;
-    }
-    const activeAmpps = amp.ampps.filter((ampp) => ampp.from && (!ampp.to || ampp.to > now));
-    const authorizedAmpps = activeAmpps.filter((ampp) => ampp.status?.toLowerCase() === import_cardinal_be_sam_sdk.AmpStatus.Authorized.toLowerCase());
-    const commercializedAmpps = authorizedAmpps.filter((ampp) => ampp.commercializations?.some((c) => !!c.from && (!c.to || c.to > twoYearsAgo)));
-    const deliverableAmpps = commercializedAmpps.filter(
-      (ampp) => ampp.dmpps?.some((dmpp) => dmpp.from && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() === deliveryEnvironment)
-    );
-    if (deliverableAmpps.length === 0) {
-      return null;
-    }
-    const medications2 = deliverableAmpps.map((ampp, index) => {
-      const dmpp = ampp.dmpps?.find(
-        (dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now) && dmpp2.deliveryEnvironment?.toString() === deliveryEnvironment && dmpp2.codeType === import_cardinal_be_sam_sdk.DmppCodeType.Cnk
-      );
-      return {
-        ampId: amp.id,
-        vmpGroupId: amp.vmp?.vmpGroup?.id,
-        id: ampp.ctiExtended,
-        cnk: dmpp?.code,
-        dmppProductId: dmpp?.productId,
-        index,
-        title: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage] ?? ampp.abbreviatedName?.[language] ?? ampp.abbreviatedName?.[defaultLanguage] ?? amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
-        vmpTitle: amp.vmp?.name?.[language] ?? amp.vmp?.name?.[defaultLanguage] ?? "",
-        activeIngredient: amp.vmp?.vmpGroup?.name?.[language] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? "",
-        price: ampp?.exFactoryPrice ? `\u20AC${ampp.exFactoryPrice}` : "",
-        cheap: dmpp?.cheap,
-        cheapest: dmpp?.cheapest,
-        crmLink: ampp.crmLink?.[language] ?? ampp.crmLink?.[defaultLanguage],
-        patientInformationLeafletLink: ampp.leafletLink?.[language] ?? ampp.leafletLink?.[defaultLanguage],
-        blackTriangle: amp.blackTriangle,
-        speciallyRegulated: ampp.speciallyRegulated,
-        genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-        intendedName: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage],
-        rmaProfessionalLink: ampp.rmaProfessionalLink?.[language] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
-        spcLink: ampp.spcLink?.[language] ?? ampp.spcLink?.[defaultLanguage],
-        dhpcLink: ampp.dhpcLink?.[language] ?? ampp.dhpcLink?.[defaultLanguage],
-        rmakeyMessages: ampp.rmaKeyMessages?.[language] ?? ampp.rmaKeyMessages?.[defaultLanguage],
-        vmp: amp.vmp,
-        supplyProblems: ampp.supplyProblems,
-        commercializations: ampp?.commercializations,
-        deliveryModusCode: ampp.deliveryModusCode,
-        deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
-        deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode,
-        deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
-        reimbursements: dmpp?.reimbursements?.find((dmpp2) => dmpp2.from && (!dmpp2.to || dmpp2.to > now))
-      };
-    }).map(filter).filter((m) => !!m).sort((a, b) => {
-      const indexA = a.index ?? 0;
-      const indexB = b.index ?? 0;
-      if (indexA !== indexB) {
-        return indexA - indexB;
-      }
-      return normalizeForSort(a.title).localeCompare(normalizeForSort(b.title));
-    });
-    if (medications2.length === 0) {
-      return null;
-    }
-    return {
-      ampId: amp.id,
-      title: amp.prescriptionName?.[language] ?? amp.prescriptionName?.[defaultLanguage] ?? amp.name?.[language] ?? amp.name?.[defaultLanguage] ?? amp.abbreviatedName?.[language] ?? amp.abbreviatedName?.[defaultLanguage] ?? "",
-      medications: medications2
-    };
-  }).filter((mp) => mp !== null);
-  return loadedPage.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMedicationsPage(medications, min, deliveryEnvironment, [...acc, ...page], filter);
-}
-async function loadMoleculesPage(molecules, min, acc = []) {
-  const language = cardinalLanguage.getLanguage();
-  const now = Date.now();
-  const loadedPage = !await molecules.hasNext() ? [] : await molecules.next(min);
-  const page = loadedPage.filter((vmp) => !(vmp.to && vmp.to < now)).map((vmp) => {
-    return {
-      vmpGroupId: vmp.id,
-      id: vmp.code,
-      title: capitalize(vmp.name?.[language]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? "",
-      vmpGroup: vmp
-    };
-  });
-  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page]);
-}
-async function loadNonMedicinalPage(products, min, acc = []) {
-  const language = cardinalLanguage.getLanguage();
-  const now = Date.now();
-  const loadedPage = !await products.hasNext() ? [] : await products.next(min);
-  const page = loadedPage.filter((nmp) => !(nmp.to && nmp.to < now)).map((nmp) => {
-    return {
-      nmpId: nmp.id,
-      id: nmp.code,
-      title: capitalize(nmp.name?.[language]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? ""
-    };
-  });
-  return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products, min, [...acc, ...page]);
-}
-async function loadUntil(toName, loadPage, limit = 10) {
-  let page = [];
-  if (!toName) {
-    while (page.length < limit) {
-      const newPage = await loadPage();
-      if (!newPage.length) break;
-      page = [...page, ...newPage];
-    }
-    return page;
-  }
-  const lcToName = normalizeForSort(toName);
-  while (page.length === 0 || normalizeForSort(page[page.length - 1].title) < lcToName) {
-    const newPage = await loadPage();
-    if (!newPage.length) break;
-    page = [...page, ...newPage];
-  }
-  return page;
-}
-async function loadMore({
-  untreatedLoadedMedicationProducts,
-  untreatedLoadedMolecules,
-  untreatedLoadNonMedicinals,
-  medicationProductsIterator,
-  moleculesIterator,
-  nonMedicinalesIterator,
-  deliveryEnvironment,
-  limit = 10
-}) {
-  const [result, pointers] = await mergeLazySortedNamedItems(
-    limit,
-    [[...untreatedLoadedMedicationProducts], [...untreatedLoadedMolecules], [...untreatedLoadNonMedicinals]],
-    [
-      async (_, toName) => {
-        const loaded = await loadUntil(
-          toName,
-          () => medicationProductsIterator ? loadMedicationsPage(medicationProductsIterator, limit, deliveryEnvironment) : Promise.resolve([]),
-          limit
-        );
-        untreatedLoadedMedicationProducts.push(...loaded);
-        return loaded;
-      },
-      async (_, toName) => {
-        const loaded = await loadUntil(toName, () => moleculesIterator ? loadMoleculesPage(moleculesIterator, limit) : Promise.resolve([]), limit);
-        untreatedLoadedMolecules.push(...loaded);
-        return loaded;
-      },
-      async (_, toName) => {
-        const loaded = await loadUntil(toName, () => nonMedicinalesIterator ? loadNonMedicinalPage(nonMedicinalesIterator, limit) : Promise.resolve([]), limit);
-        untreatedLoadNonMedicinals.push(...loaded);
-        return loaded;
-      }
-    ]
-  );
-  return {
-    result,
-    updated: {
-      medicationsPage: untreatedLoadedMedicationProducts.slice(pointers[0]),
-      moleculesPage: untreatedLoadedMolecules.slice(pointers[1]),
-      productsPage: untreatedLoadNonMedicinals.slice(pointers[2])
-    }
-  };
-}
-
 // src/shared/components/MedicationSearch/styles.ts
 var import_styled_components22 = __toESM(require("styled-components"));
 var StyledMedicationSearch = import_styled_components22.default.div`
@@ -4063,11 +4153,21 @@ var StyledMedicationSearchDropdown = import_styled_components22.default.div`
 
 // src/shared/components/MedicationSearch/index.tsx
 var import_jsx_runtime21 = require("react/jsx-runtime");
+var PAGE_SIZE = 10;
 var medMapper = (item) => ({
   medications: item.medications ?? [item],
   product: item.medications ? item : void 0
 });
-var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
+var pullNext = async (iterator, size) => {
+  const items = [];
+  while (items.length < size) {
+    const { value, done } = await iterator.next();
+    if (done) break;
+    items.push(value);
+  }
+  return items;
+};
+var MedicationSearch = ({ medicationProvider, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = (0, import_react6.useState)("");
   const searchQueryRef = (0, import_react6.useRef)(searchQuery);
   (0, import_react6.useEffect)(() => {
@@ -4079,51 +4179,23 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableIn
   const [showNoMatchesPlaceholder, setShowNoMatchesPlaceholder] = (0, import_react6.useState)(false);
   const [focusedMedicationIndex, setFocusedMedicationIndex] = (0, import_react6.useState)(0);
   const [focusedSubMedicationIndex, setFocusedSubMedicationIndex] = (0, import_react6.useState)(0);
-  const medicationsIterRef = (0, import_react6.useRef)(void 0);
-  const moleculesIterRef = (0, import_react6.useRef)(void 0);
-  const productsIterRef = (0, import_react6.useRef)(void 0);
-  const medicationsPageRef = (0, import_react6.useRef)([]);
-  const moleculesPageRef = (0, import_react6.useRef)([]);
-  const productsPageRef = (0, import_react6.useRef)([]);
+  const iteratorRef = (0, import_react6.useRef)(void 0);
   const resultRefs = (0, import_react6.useRef)([]);
   (0, import_react6.useEffect)(() => {
     setDropdownDisplayed(!!searchQuery);
   }, [searchQuery]);
   const resetSearch = () => {
-    medicationsIterRef.current = void 0;
-    moleculesIterRef.current = void 0;
-    productsIterRef.current = void 0;
-    medicationsPageRef.current = [];
-    moleculesPageRef.current = [];
-    productsPageRef.current = [];
+    iteratorRef.current = void 0;
     setPages([]);
     setFocusedMedicationIndex(0);
     setFocusedSubMedicationIndex(0);
   };
   const runLoadMore = async () => {
-    const { result, updated } = await loadMore({
-      untreatedLoadedMedicationProducts: [...medicationsPageRef.current],
-      untreatedLoadedMolecules: [...moleculesPageRef.current],
-      untreatedLoadNonMedicinals: [...productsPageRef.current],
-      medicationProductsIterator: medicationsIterRef.current,
-      moleculesIterator: moleculesIterRef.current,
-      nonMedicinalesIterator: productsIterRef.current,
-      deliveryEnvironment
-    });
-    medicationsPageRef.current = updated.medicationsPage;
-    moleculesPageRef.current = updated.moleculesPage;
-    productsPageRef.current = updated.productsPage;
-    return result;
+    const iterator = iteratorRef.current;
+    return iterator ? pullNext(iterator, PAGE_SIZE) : [];
   };
   const doSearch = async (q) => {
-    const [meds, mols, prods] = await findMedicationsByLabel(sdk, q);
-    if (q !== searchQueryRef.current) return;
-    medicationsIterRef.current = meds;
-    moleculesIterRef.current = mols;
-    productsIterRef.current = prods;
-    medicationsPageRef.current = [];
-    moleculesPageRef.current = [];
-    productsPageRef.current = [];
+    iteratorRef.current = medicationProvider.findByLabel(q)[Symbol.asyncIterator]();
     setShowSpinner(true);
     const result = await runLoadMore();
     if (q !== searchQueryRef.current) return;
@@ -4151,7 +4223,7 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableIn
       }
     }, 100);
     return () => clearTimeout(handle);
-  }, [searchQuery, sdk]);
+  }, [searchQuery, medicationProvider]);
   const scrollToFocusedItem = (index) => {
     if (index >= 0 && resultRefs.current[index]) {
       resultRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -4190,11 +4262,8 @@ var MedicationSearch = ({ sdk, deliveryEnvironment, onAddPrescription, disableIn
     }
   };
   const handleAddPrescription = async (med) => {
-    const enriched = {
-      ...med,
-      vmpGroup: med.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, med.vmp.vmpGroup.code) : void 0
-    };
-    const alternatives = med.cheap || !med.vmp?.vmpGroup?.code ? [] : await loadAlternativeMedications(sdk, med.vmp.vmpGroup.code).then((ampPage) => loadMedicationsPage(ampPage, 10, deliveryEnvironment, [], (mt) => mt.cheap || mt.cheapest ? mt : void 0)).then((products) => products.flatMap((p) => p.medications));
+    const enriched = await medicationProvider.enrichForPrescription?.(med) ?? med;
+    const alternatives = await medicationProvider.loadCheapAlternatives?.(med) ?? [];
     onAddPrescription(enriched, alternatives);
     setSearchQuery("");
   };
@@ -5037,8 +5106,9 @@ var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
   }
   const onMedicationClick = async (medication) => {
     setIsCheap(true);
-    const vmpGroup = medication.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, medication.vmp.vmpGroup.code) : void 0;
-    onSelectMedication({ ...medication, vmpGroup });
+    const vmpGroupCode = medication.regulatory?.be?.vmp?.vmpGroup?.code;
+    const vmpGroup = vmpGroupCode ? await loadVmpGroup(sdk, vmpGroupCode) : void 0;
+    onSelectMedication({ ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } });
   };
   return /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledCheapAlternatives, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
@@ -5257,20 +5327,21 @@ var createSinglePrescribedMedication = (prescribedMedication, formValues) => {
   ];
 };
 var determineMedicationData = (medicationToPrescribe) => {
-  if (medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired && medicationToPrescribe.cnk) {
+  const be = medicationToPrescribe?.regulatory?.be;
+  if (be?.ampId && !be.genericPrescriptionRequired && be.cnk) {
     return {
       medicinalProduct: new import_be_fhc_lite_api3.Medicinalproduct({
-        samId: medicationToPrescribe.dmppProductId,
-        intendedcds: [createFhcCode("CD-DRUG-CNK", medicationToPrescribe.cnk)],
-        intendedname: medicationToPrescribe.intendedName
+        samId: be.dmppProductId,
+        intendedcds: [createFhcCode("CD-DRUG-CNK", be.cnk)],
+        intendedname: be.intendedName
       })
     };
-  } else if (medicationToPrescribe?.vmpGroupId) {
+  } else if (be?.vmpGroupId) {
     return {
       substanceProduct: new import_be_fhc_lite_api3.Substanceproduct({
-        samId: medicationToPrescribe.vmpGroupId,
-        intendedcds: [createFhcCode("CD_VMPGROUP", medicationToPrescribe.vmpGroupId)],
-        intendedname: medicationToPrescribe.vmpTitle ?? medicationToPrescribe.title
+        samId: be.vmpGroupId,
+        intendedcds: [createFhcCode("CD_VMPGROUP", be.vmpGroupId)],
+        intendedname: be.vmpTitle ?? medicationToPrescribe.title
       })
     };
   } else {
@@ -5462,7 +5533,7 @@ var PrescriptionModal = ({
     }, 100);
   }, [dosage]);
   const standardDosages = (0, import_react13.useMemo)(
-    () => medication?.vmpGroup ? createPosologyFromStandardDosage(medication.vmpGroup, standardDosageContext ?? {}) : [],
+    () => medication?.regulatory?.be?.vmpGroup ? createPosologyFromStandardDosage(medication.regulatory.be.vmpGroup, standardDosageContext ?? {}) : [],
     [medication, standardDosageContext]
   );
   const onSelectStandardDosage = (item) => {
@@ -6557,11 +6628,16 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   IndexedDbServiceStore,
+  MedicationNotFoundError,
+  MedicationProviderError,
+  MedicationProviderUnavailableError,
   MedicationSearch,
+  MedicationSearchValidationError,
   PractitionerCertificate,
   PrescriptionList,
   PrescriptionModal,
   PrescriptionPrintModal,
+  SamMedicationProvider,
   cardinalLanguage,
   createFhcCode,
   createIndexedDbTokenStore,

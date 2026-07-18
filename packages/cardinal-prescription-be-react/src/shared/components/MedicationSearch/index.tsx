@@ -1,19 +1,21 @@
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { findMedicationsByLabel, loadAlternativeMedications, loadVmpGroup } from '../../services/cardinal-sam'
 import { MedicationCard } from '../../../internal/components/medication-elements/MedicationCard'
 import { MedicationProductTitle } from '../../../internal/components/medication-elements/MedicationProductTitle'
 import { InfiniteScroll } from '../../../internal/components/common/InfiniteScroll'
-import { loadMedicationsPage, loadMore } from '../../../internal/services/loaders/medication-loader'
 
-import { Med, MedicationProductType, MedicationType } from '../../types'
+import { Med, MedicationProductType, MedicationProvider, MedicationType } from '../../types'
 import { SearchIcn, SpinnerIcn } from '../../../internal/components/common/Icons'
 import { StyledLabel, StyledMedicationSearch, StyledMedicationSearchDropdown, StyledMedicationSearchInput } from './styles'
 import { t } from '../../services/i18n'
 import { GlobalStyles } from '../../../styles'
-import { Amp, Nmp, PaginatedListIterator, SamV2Api, VmpGroup } from '@icure/cardinal-be-sam-sdk'
+
+// Matches the `limit` default the loaders used before this component was routed through
+// `MedicationProvider` — keeps the incremental-scroll UX (page size, spinner, append-on-scroll)
+// identical for `be`.
+const PAGE_SIZE = 10
 
 interface MedicationSearchProps {
-  sdk: SamV2Api
+  medicationProvider: MedicationProvider
   deliveryEnvironment: string
   onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void
   disableInputEventsTracking: boolean
@@ -30,7 +32,18 @@ const medMapper = (item: Med): MedOrProduct => ({
   product: (item as MedicationProductType).medications ? (item as MedicationProductType) : undefined,
 })
 
-export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
+/** Pulls up to `size` items out of `iterator`, stopping early once it reports `done`. */
+const pullNext = async (iterator: AsyncIterator<Med>, size: number): Promise<Med[]> => {
+  const items: Med[] = []
+  while (items.length < size) {
+    const { value, done } = await iterator.next()
+    if (done) break
+    items.push(value)
+  }
+  return items
+}
+
+export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationProvider, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchQueryRef = useRef(searchQuery)
   useEffect(() => {
@@ -44,14 +57,10 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
   const [focusedMedicationIndex, setFocusedMedicationIndex] = useState(0)
   const [focusedSubMedicationIndex, setFocusedSubMedicationIndex] = useState(0)
 
-  // Working data used by the loader. Kept in refs so async load-more callbacks
-  // always read/write the latest values without being caught in stale closures.
-  const medicationsIterRef = useRef<PaginatedListIterator<Amp> | undefined>(undefined)
-  const moleculesIterRef = useRef<PaginatedListIterator<VmpGroup> | undefined>(undefined)
-  const productsIterRef = useRef<PaginatedListIterator<Nmp> | undefined>(undefined)
-  const medicationsPageRef = useRef<MedicationProductType[]>([])
-  const moleculesPageRef = useRef<MedicationType[]>([])
-  const productsPageRef = useRef<MedicationType[]>([])
+  // The provider's merged, sorted stream for the in-flight search. Kept in a ref so async
+  // load-more callbacks always read/write the latest iterator without being caught in stale
+  // closures.
+  const iteratorRef = useRef<AsyncIterator<Med> | undefined>(undefined)
 
   const resultRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -60,43 +69,19 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
   }, [searchQuery])
 
   const resetSearch = () => {
-    medicationsIterRef.current = undefined
-    moleculesIterRef.current = undefined
-    productsIterRef.current = undefined
-    medicationsPageRef.current = []
-    moleculesPageRef.current = []
-    productsPageRef.current = []
+    iteratorRef.current = undefined
     setPages([])
     setFocusedMedicationIndex(0)
     setFocusedSubMedicationIndex(0)
   }
 
   const runLoadMore = async (): Promise<Med[]> => {
-    const { result, updated } = await loadMore({
-      untreatedLoadedMedicationProducts: [...medicationsPageRef.current],
-      untreatedLoadedMolecules: [...moleculesPageRef.current],
-      untreatedLoadNonMedicinals: [...productsPageRef.current],
-      medicationProductsIterator: medicationsIterRef.current,
-      moleculesIterator: moleculesIterRef.current,
-      nonMedicinalesIterator: productsIterRef.current,
-      deliveryEnvironment,
-    })
-    medicationsPageRef.current = updated.medicationsPage
-    moleculesPageRef.current = updated.moleculesPage
-    productsPageRef.current = updated.productsPage
-    return result
+    const iterator = iteratorRef.current
+    return iterator ? pullNext(iterator, PAGE_SIZE) : []
   }
 
   const doSearch = async (q: string) => {
-    const [meds, mols, prods] = await findMedicationsByLabel(sdk, q)
-    if (q !== searchQueryRef.current) return
-
-    medicationsIterRef.current = meds
-    moleculesIterRef.current = mols
-    productsIterRef.current = prods
-    medicationsPageRef.current = []
-    moleculesPageRef.current = []
-    productsPageRef.current = []
+    iteratorRef.current = medicationProvider.findByLabel(q)[Symbol.asyncIterator]()
 
     setShowSpinner(true)
 
@@ -133,7 +118,7 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
 
     return () => clearTimeout(handle)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, sdk])
+  }, [searchQuery, medicationProvider])
 
   const scrollToFocusedItem = (index: number) => {
     if (index >= 0 && resultRefs.current[index]) {
@@ -176,17 +161,8 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ sdk, deliver
   }
 
   const handleAddPrescription = async (med: MedicationType) => {
-    const enriched: MedicationType = {
-      ...med,
-      vmpGroup: med.vmp?.vmpGroup?.code ? await loadVmpGroup(sdk, med.vmp.vmpGroup.code) : undefined,
-    }
-
-    const alternatives: MedicationType[] =
-      med.cheap || !med.vmp?.vmpGroup?.code
-        ? []
-        : await loadAlternativeMedications(sdk, med.vmp.vmpGroup.code)
-            .then((ampPage) => loadMedicationsPage(ampPage, 10, deliveryEnvironment, [], (mt) => (mt.cheap || mt.cheapest ? mt : undefined)))
-            .then((products) => products.flatMap((p) => p.medications))
+    const enriched = (await medicationProvider.enrichForPrescription?.(med)) ?? med
+    const alternatives = (await medicationProvider.loadCheapAlternatives?.(med)) ?? []
 
     onAddPrescription(enriched, alternatives)
     setSearchQuery('')
