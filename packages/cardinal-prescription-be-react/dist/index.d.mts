@@ -2,7 +2,7 @@ import { SamText, VmpStub, VmpGroup, SupplyProblem, Commercialization, Reimburse
 export { PaginatedListIterator } from '@icure/cardinal-be-sam-sdk';
 import { MedIndexClient } from '@icure/medindex-sdk';
 import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
-import React from 'react';
+import React, { RefObject, FC } from 'react';
 
 type SamLanguage = keyof SamText;
 declare class CardinalLanguage {
@@ -280,6 +280,19 @@ declare class IndexedDbServiceStore<T> {
  */
 declare const createIndexedDbTokenStore: () => TokenStore;
 
+type RegulatoryBadgePlacement = 'summary' | 'detail';
+interface RegulatoryBadgeProps {
+    medication: MedicationType;
+    boundaryBox?: RefObject<HTMLElement>;
+}
+type RegulatoryBadgeComponent = FC<RegulatoryBadgeProps>;
+interface RegisteredRegulatoryBadge {
+    key: string;
+    Component: RegulatoryBadgeComponent;
+}
+declare function registerRegulatoryBadge(country: string, key: string, Component: RegulatoryBadgeComponent, placement: RegulatoryBadgePlacement): void;
+declare function getRegulatoryBadges(country: string, placement: RegulatoryBadgePlacement): RegisteredRegulatoryBadge[];
+
 interface StandardDosageContext {
     ageInYears?: number;
     weightInKg?: number;
@@ -334,4 +347,4 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

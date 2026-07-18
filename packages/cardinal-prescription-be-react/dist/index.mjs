@@ -1,3 +1,17 @@
+// src/shared/services/regulatory-badges/index.ts
+var registry = /* @__PURE__ */ new Map();
+function registerRegulatoryBadge(country, key, Component, placement) {
+  const byPlacement = registry.get(country) ?? /* @__PURE__ */ new Map();
+  registry.set(country, byPlacement);
+  const byKey = byPlacement.get(placement) ?? /* @__PURE__ */ new Map();
+  byPlacement.set(placement, byKey);
+  byKey.set(key, Component);
+}
+function getRegulatoryBadges(country, placement) {
+  const byKey = registry.get(country)?.get(placement);
+  return byKey ? Array.from(byKey, ([key, Component]) => ({ key, Component })) : [];
+}
+
 // src/internal/translations/components/home.translations.ts
 var homeTranslations = {
   fr: {
@@ -314,6 +328,12 @@ var medicationTranslations = {
       label: "Trouver un m\xE9dicament",
       errorMessage: " Entrez au moins 3 lettres du nom du m\xE9dicament",
       noMatchingPlaceholder: "Aucun m\xE9dicament ne correspond \xE0 vos crit\xE8res de recherche."
+    },
+    swissmedic: {
+      category: "Cat\xE9gorie de remise Swissmedic :",
+      narcotic: "Stup\xE9fiant",
+      coldChain: "N\xE9cessite une cha\xEEne du froid",
+      coldChainAbbreviation: "CF"
     }
   },
   en: {
@@ -406,6 +426,12 @@ var medicationTranslations = {
       label: "Find a medication",
       errorMessage: "Enter at least 3 letters of the medication name",
       noMatchingPlaceholder: "No medications correspond to your search criteria."
+    },
+    swissmedic: {
+      category: "Swissmedic dispensing category:",
+      narcotic: "Narcotic",
+      coldChain: "Requires cold-chain transport",
+      coldChainAbbreviation: "CC"
     }
   },
   nl: {
@@ -498,6 +524,12 @@ var medicationTranslations = {
       label: "Zoek een geneesmiddel",
       errorMessage: "Voer minstens 3 letters van de naam in",
       noMatchingPlaceholder: "Er komen geen medicijnen overeen met uw zoekcriteria."
+    },
+    swissmedic: {
+      category: "Swissmedic-afleveringscategorie:",
+      narcotic: "Verdovend middel",
+      coldChain: "Vereist koelketen transport",
+      coldChainAbbreviation: "CC"
     }
   },
   de: {
@@ -590,6 +622,12 @@ var medicationTranslations = {
       label: "Arzneimittel suchen",
       errorMessage: "Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein",
       noMatchingPlaceholder: "Keine Medikamente entsprechen Ihren Suchkriterien."
+    },
+    swissmedic: {
+      category: "Swissmedic-Abgabekategorie :",
+      narcotic: "Bet\xE4ubungsmittel",
+      coldChain: "Erfordert K\xFChlkette",
+      coldChainAbbreviation: "KK"
     }
   }
 };
@@ -1045,6 +1083,1638 @@ var getSamTextTranslation = (samText) => {
   const fallback = DEFAULT_APP_LANGULAGE;
   return samText[lang] ?? samText[fallback];
 };
+
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
+import styled, { css as css3 } from "styled-components";
+
+// src/styles/reset.ts
+import { createGlobalStyle } from "styled-components";
+var GlobalStyles = createGlobalStyle`
+  /* Reset of the user agent styles */
+
+  * {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    box-sizing: border-box;
+  }
+  
+  // Links
+  a {
+    text-decoration: none;
+
+    &:active,
+    &:hover {
+      outline: 0;
+    }
+  }
+
+  // List
+  ul,
+  li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  // Headlines
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 100%;
+  }
+
+  // Default
+  html,
+  body {
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #fbfdff;
+    font-family: 'Lato', sans-serif;
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
+  :focus {
+    outline: 0;
+  }
+
+  img,
+  audio,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  iframe {
+    border: 0;
+  }
+
+  // Form
+  textarea {
+    resize: none;
+    /*remove the resize handle on the bottom right*/
+    overflow: auto;
+    vertical-align: top;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    outline: none;
+    border: none;
+    font-size: 100%;
+    margin: 0;
+  }
+
+  button,
+  input {
+    line-height: normal;
+  }
+
+  // browser user agent input reset
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: rgb(0, 0, 0);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  // Table
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  td,
+  th {
+    padding: 0;
+    text-align: left;
+  }
+`;
+
+// src/styles/variables.ts
+var colors = {
+  blue: {
+    800: "#084b83",
+    600: "#4b6682",
+    500: "#3d87c5",
+    400: "#add5ff",
+    300: "#eef6fe",
+    200: "#f9fbfe",
+    100: "#dce7f2"
+  },
+  grey: {
+    900: "#1d2235",
+    700: "#7e827f",
+    650: "#9ca8b2",
+    600: "#848482",
+    550: "#cad0d5",
+    300: "#e4e4e7",
+    200: "#f5f5f5",
+    100: "#fcfcfd"
+  },
+  orange: {
+    900: "#ef762f",
+    950: "#e5a613",
+    800: "#ffda83"
+  },
+  green: {
+    600: "#33b96b",
+    500: "#52c41a",
+    400: "#b7eb8f",
+    300: "#f6ffed",
+    200: "#e5fae5"
+  },
+  red: {
+    800: "#FF0000FF",
+    700: "#ee5d59",
+    400: "#ffccc7",
+    300: "#fff1f0"
+  }
+};
+var colorsRgb = {
+  blue: {
+    800: "8, 75, 131",
+    600: "75, 102, 130",
+    500: "61, 135, 197",
+    400: "173, 213, 255",
+    300: "238, 246, 254",
+    200: "249, 251, 254",
+    100: "220, 231, 242"
+  },
+  grey: {
+    900: "29, 34, 53",
+    700: "126, 130, 127",
+    650: "156, 168, 178",
+    600: "132, 132, 130",
+    550: "202, 208, 213",
+    300: "228, 228, 231",
+    200: "245, 245, 245",
+    100: "252, 252, 253"
+  },
+  orange: {
+    900: "239, 118, 47",
+    950: "229, 166, 19",
+    800: "255, 218, 131"
+  },
+  green: {
+    600: "51, 185, 107",
+    400: "183, 235, 143",
+    300: "246, 255, 237",
+    200: "229, 250, 229"
+  },
+  red: {
+    800: "255, 0, 0",
+    700: "238, 93, 89",
+    400: "255, 204, 199",
+    300: "255, 241, 240"
+  }
+};
+
+// src/styles/elements.ts
+import { css } from "styled-components";
+var fieldCommonStyles = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+`;
+var inputCommonStyles = css`
+  width: 100%;
+  display: flex;
+  height: 32px;
+  padding: 5px 12px;
+  align-items: center;
+  gap: 4px;
+  align-self: stretch;
+  cursor: pointer;
+
+  border-radius: 6px;
+  border: 1px solid ${colors.grey[550]};
+  background: #fff;
+
+  color: ${colors.grey[900]};
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+
+  &::placeholder {
+    color: ${colors.grey[650]};
+  }
+
+  &:hover,
+  &:focus {
+    border-color: ${colors.blue[800]};
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+  }
+`;
+var inputCommonStyles_disabled = css`
+  cursor: not-allowed;
+  background-color: ${colors.grey[200]};
+  border-color: ${colors.grey[550]};
+  opacity: 0.7;
+
+  &:hover {
+    border-color: ${colors.grey[550]};
+  }
+`;
+var inputCommonStyles_error = css`
+  border-color: red;
+  color: red;
+
+  &::placeholder {
+    color: rgba(255, 0, 0, 0.5);
+  }
+
+  &:hover {
+    border-color: rgba(255, 0, 0, 0.5);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+  }
+`;
+var labelCommonStyles = css`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  color: ${colors.grey[900]};
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  cursor: pointer;
+
+  span {
+    display: none;
+  }
+`;
+var labelCommonStyles_required = css`
+  span {
+    display: flex;
+    color: red;
+    font-weight: bold;
+  }
+`;
+var labelCommonStyles_error = css`
+  color: red;
+`;
+var errorMessageCommonStyles = css`
+  color: red;
+  font-size: 13px;
+`;
+var infographicElementCommonStyles = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+var infographicElementTitleCommonStyles = css`
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+`;
+var infographicElementTextCommonStyles = css`
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+`;
+var infographicElementContentCommonStyles = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      color: ${colors.blue[600]};
+    }
+
+    p {
+      ${infographicElementTextCommonStyles};
+    }
+
+    a {
+      ${infographicElementTextCommonStyles};
+      color: ${colors.blue[600]};
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+`;
+var infographicElementLinkCommonStyles = css`
+  ${infographicElementTextCommonStyles};
+  color: ${colors.blue[500]};
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+// src/styles/responsive-media-queries.ts
+import { css as css2 } from "styled-components";
+var displayResolution = {
+  xs: 420,
+  s: 576,
+  m: 768,
+  l: 992,
+  xl: 1200,
+  xxl: 1400
+};
+var responsiveMediaQueries = {
+  up: (size) => (first, ...args) => css2`
+      @media (min-width: ${size}px) {
+        ${css2(first, ...args)}
+      }
+    `,
+  down: (size) => (first, ...args) => css2`
+      @media (max-width: ${size}px) {
+        ${css2(first, ...args)}
+      }
+    `,
+  between: (min, max) => (first, ...args) => css2`
+      @media (min-width: ${displayResolution[min]}px) and (max-width: ${displayResolution[max]}px) {
+        ${css2(first, ...args)}
+      }
+    `
+};
+
+// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
+var StyledHeader = styled.div`
+  width: 100%;
+  display: flex;
+  padding: 8px 12px;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  align-self: stretch;
+  background: #fff;
+  border-radius: 6px;
+
+  ${responsiveMediaQueries.down(displayResolution.s)`
+  gap: 4px;
+  `};
+
+  .medication {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ${responsiveMediaQueries.down(displayResolution.s)`
+    gap: 8px;
+  `};
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+
+      &__heading {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        &__title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          h3 {
+            color: ${colors.grey[900]};
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+          }
+        }
+
+        &__activeIngredient {
+          color: ${colors.grey[900]};
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: normal;
+        }
+      }
+
+      &__description {
+        width: 100%;
+        display: flex;
+        gap: 32px;
+        row-gap: 8px;
+        flex-wrap: wrap;
+
+        &__item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          span {
+            font-size: 12px;
+            font-weight: 400;
+            color: ${colors.blue[600]};
+          }
+
+          p {
+            font-size: 14px;
+            font-weight: 400;
+            color: black;
+            font-style: normal;
+            line-height: normal;
+          }
+
+          .price {
+            color: ${colors.orange[900]};
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+`;
+var StyledCheapBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background-color: ${({ $variant }) => $variant === "cheapest" ? colors.green[600] : colors.green[500]};
+`;
+var StyledExpandButton = styled.button`
+  width: 18px;
+  background: none;
+  cursor: pointer;
+
+  ${({ $isExpanded }) => !!$isExpanded && css3`
+      transform: rotate(90deg);
+    `};
+`;
+var StyledTextToIcon = styled.div`
+  height: 22px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-radius: 5px;
+
+  p {
+    font-size: 11px !important;
+    font-weight: 600;
+    color: white !important;
+  }
+
+  ${({ $color }) => $color === "green" && css3`
+      background-color: ${colors.green[600]};
+    `};
+
+  ${({ $color }) => $color === "orange" && css3`
+      background-color: ${colors.orange[950]};
+    `};
+
+  ${({ $color }) => $color === "red" && css3`
+      background-color: ${colors.red[700]};
+    `};
+
+  ${({ $color }) => $color === "grey" && css3`
+      background-color: ${colors.grey[700]};
+    `};
+`;
+
+// src/internal/components/medication-elements/MedicationCard/summary-elements/PriceReimbursementBadge/index.tsx
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+var PriceReimbursementBadge = ({ medication }) => {
+  const be = medication.regulatory?.be;
+  if (!be?.price) return null;
+  const reimbursement = be.reimbursements;
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsxs("div", { className: "medication__content__description__item", children: [
+      /* @__PURE__ */ jsx("span", { children: t("medication.ui.price") }),
+      /* @__PURE__ */ jsx("p", { className: "price", children: be.price })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "medication__content__description__item", children: [
+      /* @__PURE__ */ jsxs("span", { children: [
+        " ",
+        t("medication.reimbursement.title")
+      ] }),
+      reimbursement ? /* @__PURE__ */ jsx(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx("p", { children: reimbursement.reimbursementCriterion?.category }) }) : /* @__PURE__ */ jsx(StyledTextToIcon, { className: "StyledTextToIcon", $color: "grey", children: /* @__PURE__ */ jsx("p", { children: t("medication.reimbursement.non") }) })
+    ] })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/summary-elements/DeliveryConditionsSummaryBadge/index.tsx
+import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+var DeliveryConditionsSummaryBadge = ({ medication }) => {
+  const code = medication.regulatory?.be?.deliveryModusCode;
+  return /* @__PURE__ */ jsxs2("div", { className: "medication__content__description__item", children: [
+    /* @__PURE__ */ jsx2("span", { children: t("medication.delivery.title") }),
+    code ? /* @__PURE__ */ jsx2(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx2("p", { children: code }) }) : /* @__PURE__ */ jsx2(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx2("p", { children: t("medication.delivery.notApplicable") }) })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/summary-elements/PrescriptionConditionsSummaryBadge/index.tsx
+import { jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
+var PrescriptionConditionsSummaryBadge = ({ medication }) => {
+  const code = medication.regulatory?.be?.deliveryModusSpecificationCode;
+  return /* @__PURE__ */ jsxs3("div", { className: "medication__content__description__item", children: [
+    /* @__PURE__ */ jsx3("span", { children: t("medication.prescription.title") }),
+    code ? /* @__PURE__ */ jsx3(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx3("p", { children: code }) }) : /* @__PURE__ */ jsx3(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx3("p", { children: t("medication.prescription.free") }) })
+  ] });
+};
+
+// src/internal/components/common/Tooltip/index.tsx
+import React, { useState } from "react";
+
+// src/internal/components/common/Tooltip/styles.ts
+import styled2, { css as css4 } from "styled-components";
+var tooltipArrow = css4`
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+`;
+var tooltipTopOriented = css4`
+  .chevron {
+    display: none;
+    ${tooltipArrow};
+    border-top: 7px solid ${colors.blue[500]};
+    position: absolute;
+    bottom: 23px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  .popup {
+    bottom: 28px;
+  }
+`;
+var tooltipBottomOriented = css4`
+  .chevron {
+    display: none;
+    ${tooltipArrow};
+    border-bottom: 7px solid ${colors.blue[500]};
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  .popup {
+    top: 30px;
+  }
+`;
+var tooltipRightOriented = css4`
+  .chevron {
+    right: 50%;
+  }
+
+  .popup {
+    // Half width of the chevron
+    right: -7px;
+  }
+`;
+var tooltipLeftOriented = css4`
+  .popup {
+    // Half width of the chevron
+    left: -7px;
+  }
+`;
+var tooltipOrientationStyles = ($tooltipOrientation) => {
+  switch ($tooltipOrientation) {
+    case "tr":
+      return css4`
+        ${tooltipTopOriented};
+        ${tooltipRightOriented};
+      `;
+    case "tl":
+      return css4`
+        ${tooltipTopOriented};
+        ${tooltipLeftOriented};
+      `;
+    case "br":
+      return css4`
+        ${tooltipBottomOriented};
+        ${tooltipRightOriented};
+      `;
+    case "bl":
+      return css4`
+        ${tooltipBottomOriented};
+        ${tooltipLeftOriented};
+      `;
+    default:
+      return null;
+  }
+};
+var StyleTooltip = styled2.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: min-content;
+  cursor: pointer;
+
+  ${({ $tooltipOrientation }) => tooltipOrientationStyles($tooltipOrientation)};
+
+  &:hover {
+    .chevron {
+      display: flex;
+    }
+  }
+
+  .icon {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .popup {
+    display: none;
+    position: absolute;
+    z-index: 15;
+    min-height: 32px;
+    min-width: 300px;
+    padding: 8px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    align-self: stretch;
+    border-radius: 6px;
+    border: 1px solid ${colors.blue[500]};
+    background: #fff;
+
+    &__iconWrap {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      border-bottom: 1px solid ${colors.blue[500]};
+      padding-bottom: 6px;
+    }
+
+    &__icon {
+      display: flex;
+      min-width: 22px;
+      height: 22px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+    }
+
+    p {
+      color: ${colors.grey[900]};
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+
+  ${({ $active }) => !!$active && css4`
+      .popup {
+        display: flex;
+      }
+    `};
+`;
+
+// src/internal/components/common/Tooltip/index.tsx
+import { jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
+var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", boundaryBox }) => {
+  const [active, setActive] = useState(false);
+  const [tooltipOrientation, setTooltipOrientation] = useState(orientation);
+  const tooltipRef = React.useRef(null);
+  const repositionTooltip = (boundaryBox2) => {
+    const tooltipElement = tooltipRef?.current;
+    const boundaryBoxElement = boundaryBox2?.current;
+    if (!tooltipElement || !boundaryBoxElement) return;
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+    const boundaryBoxRect = boundaryBoxElement.getBoundingClientRect();
+    const widthOfTooltipPopUp = 300;
+    if (boundaryBoxRect.right - tooltipRect.right > widthOfTooltipPopUp) {
+      setTooltipOrientation("bl");
+    } else if (boundaryBoxRect.right - tooltipRect.right < widthOfTooltipPopUp || boundaryBoxRect.right - tooltipRect.right === widthOfTooltipPopUp) {
+      setTooltipOrientation("br");
+    }
+  };
+  return /* @__PURE__ */ jsxs4(
+    StyleTooltip,
+    {
+      className: "StyleTooltip",
+      ref: tooltipRef,
+      $tooltipOrientation: tooltipOrientation,
+      $active: active,
+      onMouseEnter: () => {
+        repositionTooltip(boundaryBox);
+        setActive(true);
+      },
+      onMouseLeave: () => setActive(false),
+      children: [
+        /* @__PURE__ */ jsx4("div", { className: "icon", children: iconSnippet }),
+        /* @__PURE__ */ jsx4("div", { className: "chevron" }),
+        /* @__PURE__ */ jsxs4("div", { className: "popup", children: [
+          /* @__PURE__ */ jsx4("div", { className: "popup__iconWrap", children: /* @__PURE__ */ jsx4("div", { className: "popup__icon", children: iconSnippet }) }),
+          !!content && /* @__PURE__ */ jsx4("p", { children: content }),
+          !!contentSnippet && contentSnippet
+        ] })
+      ]
+    }
+  );
+};
+
+// src/internal/components/common/Icons/index.tsx
+import { jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
+function SpinnerIcn({ pathFill = "#000000", size = 12 }) {
+  const sizePx = `${size}px`;
+  return /* @__PURE__ */ jsx5("svg", { style: { width: sizePx, height: sizePx }, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100", preserveAspectRatio: "xMidYMid", width: "24", height: "24", children: /* @__PURE__ */ jsxs5("g", { children: [
+    /* @__PURE__ */ jsx5("circle", { strokeDasharray: "169.64600329384882 58.548667764616276", r: "36", strokeWidth: "12", stroke: pathFill, fill: "none", cy: "50", cx: "50", children: /* @__PURE__ */ jsx5("animateTransform", { keyTimes: "0;1", values: "0 50 50;360 50 50", dur: "1s", repeatCount: "indefinite", type: "rotate", attributeName: "transform" }) }),
+    /* @__PURE__ */ jsx5("g", {})
+  ] }) });
+}
+var StatusSuccessIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "26", height: "26", viewBox: "0 0 26 26", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsx5("g", { clipPath: "url(#clip0_1152_2420)", children: /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M13 0C5.82098 0 0 5.82098 0 13C0 20.179 5.82098 26 13 26C20.179 26 26 20.179 26 13C26 5.82098 20.179 0\n        13 0ZM18.615 8.75469L12.5038 17.2279C12.4184 17.3471 12.3058 17.4443 12.1753 17.5113C12.0449 17.5783 11.9003\n        17.6132 11.7537 17.6132C11.607 17.6132 11.4625 17.5783 11.332 17.5113C11.2016 17.4443 11.089 17.3471 11.0036\n        17.2279L7.38504 12.2136C7.27478 12.0598 7.38504 11.8451 7.57366 11.8451H8.9346C9.23058 11.8451 9.51205 11.9873\n        9.68616 12.231L11.7522 15.098L16.3138 8.7721C16.4879 8.53125 16.7665 8.38616 17.0654 8.38616H18.4263C18.615\n        8.38616 18.7252 8.60089 18.615 8.75469Z",
+      fill: "#52C41A"
+    }
+  ) }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_1152_2420", children: /* @__PURE__ */ jsx5("rect", { width: "26", height: "26", fill: "white" }) }) })
+] });
+var StatusErrorIcn = () => /* @__PURE__ */ jsx5("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M12 0C18.6268 0 24 5.37321 24 12C24 18.6268 18.6268 24 12 24C5.37321 24 0 18.6268 0 12C0 5.37321 5.37321 0\n      12 0ZM15.428 7.36125H15.427L15.4248 7.36286L12 10.7879L8.57518 7.36286C8.57411 7.36152 8.57357 7.36125 8.57304\n      7.36125C8.57242 7.36106 8.57177 7.36106 8.57116 7.36125C8.57036 7.36125 8.56982 7.36152 8.56875 7.36259L7.36286\n      8.56848C7.36221 8.56916 7.36175 8.56999 7.36152 8.57089C7.36133 8.5715 7.36133 8.57216 7.36152\n      8.57277V8.5733C7.36197 8.57392 7.36251 8.57446 7.36313 8.57491L10.7879 12L7.36286 15.4248C7.36152 15.4259\n      7.36125 15.4264 7.36125 15.427C7.36106 15.4276 7.36106 15.4282 7.36125 15.4288C7.36125 15.4296 7.36152 15.4302\n      7.36259 15.4312L8.56848 16.6371C8.56916 16.6378 8.56999 16.6383 8.57089 16.6385C8.5715 16.6387 8.57216 16.6387\n      8.57277 16.6385C8.5733 16.6385 8.57384 16.6382 8.57491 16.6371L12 13.2121L15.4248 16.6371C15.4259 16.6382 15.4264\n      16.6385 15.427 16.6385C15.4276 16.6387 15.4282 16.6387 15.4288 16.6385C15.4296 16.6385 15.4302 16.6382 15.4312\n      16.6371L16.6371 15.4312C16.6378 15.4306 16.6383 15.4297 16.6385 15.4288C16.6387 15.4282 16.6387 15.4276 16.6385\n      15.427V15.4264C16.6381 15.4258 16.6377 15.4253 16.6371 15.4248L13.2121 12L16.6371 8.57518C16.6382 8.57411 16.6385\n      8.57357 16.6385 8.57304C16.6387 8.57242 16.6387 8.57177 16.6385 8.57116C16.6385 8.57036 16.6382 8.56982 16.6371\n      8.56875L15.4312 7.36286C15.4306 7.36221 15.4297 7.36175 15.4288 7.36152C15.4282 7.36133 15.4276 7.36133 15.427\n      7.36152L15.428 7.36125Z",
+    fill: "#FF4D4F"
+  }
+) });
+var BlackTriangleIcn = () => /* @__PURE__ */ jsx5("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
+    fill: "#000000"
+  }
+) });
+var OrangeTriangleIcn = () => /* @__PURE__ */ jsx5("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
+    fill: "#FF5E00"
+  }
+) });
+var ChevronIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "12px", height: "12px", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsx5("g", { clipPath: "url(#clip0_153_633)", children: /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M2.57153 1.018L2.57153 2.02247C2.57153 2.09077 2.60502 2.15505 2.65993 2.19523L7.90457 6.00014L2.65993\n        9.80506C2.60502 9.84523 2.57153 9.90952 2.57153 9.97782L2.57153 10.9823C2.57153 11.0693 2.67064 11.1202 2.74162\n         11.0693L9.25189 6.34702C9.4876 6.17559 9.4876 5.8247 9.25189 5.65461L2.74162 0.932286C2.67064 0.880054 2.57153\n          0.930947 2.57153 1.018Z",
+      fill: "#3D87C5"
+    }
+  ) }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_153_633", children: /* @__PURE__ */ jsx5("rect", { width: "12px", height: "12px", fill: "white", transform: "matrix(0 -1 1 0 0 12)" }) }) })
+] });
+var EndOfCommercialisationIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsxs5("g", { clipPath: "url(#clip0_330_2250)", children: [
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M4.65801 10.3098C4.52446 10.2195 4.36185 10.1662 4.18897 10.1664C4.07385 10.1664 3.96278 10.1899 3.86218\n        10.2325C3.71139 10.2963 3.58384 10.4023 3.49335 10.5362C3.40283 10.6698 3.34991 10.8324 3.3501 11.0052C3.34991\n        11.1204 3.37335 11.2314 3.416 11.3318C3.47997 11.4828 3.58579 11.6104 3.71952 11.7007C3.85328 11.7914 4.01608\n        11.8443 4.18897 11.8443C4.3041 11.8443 4.41496 11.8208 4.51536 11.7782C4.66635 11.7144 4.79408 11.6082 4.88439\n         11.4745C4.97472 11.3409 5.0278 11.1781 5.0278 11.0052C5.0278 10.8901 5.00415 10.7793 4.96171 10.6787C4.89793\n          10.5277 4.79174 10.4002 4.65801 10.3098ZM4.50062 11.1368C4.47503 11.1973 4.43181 11.2495 4.37772\n          11.2859C4.32346 11.3224 4.2599 11.3435 4.18895 11.3437C4.14147 11.3435 4.09745 11.3342 4.05735\n          11.3169C3.99707 11.2917 3.94473 11.2483 3.90829 11.1944C3.87184 11.1399 3.85091 11.0762 3.85054\n          11.0052C3.85072 10.9579 3.86022 10.9141 3.87728 10.8736C3.90247 10.8134 3.9459 10.7612 3.99995\n          10.7246C4.05423 10.6882 4.11798 10.6672 4.18893 10.667C4.23622 10.667 4.28003 10.6766 4.32032\n          10.6936C4.38079 10.719 4.43272 10.7622 4.46938 10.8165C4.50583 10.8708 4.52694 10.9343 4.52694\n          11.0053C4.52699 11.0527 4.51766 11.0966 4.50062 11.1368Z",
+        fill: "#EE1313"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M3.95443 9.20724C3.86373 9.20724 3.77884 9.189 3.70093 9.15623C3.58466 9.10702 3.48425 9.02405 3.41408\n         8.91977C3.34663 8.81956 3.30671 8.70155 3.3036 8.57208C3.30709 8.4176 3.35633 8.28349 3.44277 8.17629C3.48756\n         8.12107 3.54278 8.0726 3.60983 8.03248C3.67611 7.99294 3.75423 7.96156 3.84592 7.94177L9.57245 7.00971C9.9467\n         6.94866 10.2442 6.6626 10.3198 6.29102L11.0203 2.84747V2.84709C11.0284 2.80716 11.0323 2.76645 11.0323\n          2.72616C11.0323 2.58698 10.9846 2.45093 10.895 2.34122C10.7797 2.20013 10.6068 2.11814 10.4243\n          2.11814H2.495L2.22481 1.18997V1.19016C2.10078 0.775195 1.76042 0.460828 1.33714 0.370125L0.367674\n          0.162539C0.203705 0.127266 0.0420336 0.231938 0.00678359 0.396094C-0.0283023 0.56025 0.0761586 0.721899\n          0.240526 0.756985L1.20962 0.964758C1.41601 1.00894 1.58192 1.16205 1.64221 1.36441L3.41371 7.44949C3.37379\n          7.4681 3.33521 7.48826 3.29821 7.51055C3.1071 7.62434 2.95398 7.78404 2.85125 7.97049C2.753 8.14763 2.70085\n          8.34844 2.696 8.55563H2.69502V8.5872H2.69579C2.69968 8.74906 2.73418 8.90431 2.79406 9.04599C2.89002 9.27256\n          3.04932 9.46425 3.25011 9.59991C3.4509 9.73575 3.69472 9.81541 3.95443 9.81523H7.17163C7.17064 9.7852 7.16717\n           9.75593 7.16717 9.7257C7.16717 9.54834 7.18538 9.37526 7.21815 9.20724H3.95443ZM8.28413 3.16263C8.45488\n           3.11302 8.63356 3.2107 8.68318 3.38145L9.33556 5.61441C9.38518 5.78517 9.28728 5.96367 9.11656\n           6.01366C8.94599 6.06349 8.7673 5.96562 8.71749 5.79485L8.06527 3.56187C8.01549 3.39134 8.11337 3.21265\n           8.28413 3.16263ZM6.87643 3.16845C7.04699 3.11843 7.2257 3.21631 7.27548 3.38707L7.99009 5.83418C8.0401\n           6.00476 7.94202 6.18363 7.77146 6.23346C7.60091 6.28324 7.4222 6.18539 7.37218 6.01463L6.65757\n           3.56747C6.60781 3.39696 6.70567 3.21806 6.87643 3.16845ZM5.46835 3.17348C5.6391 3.12387 5.81781 3.22174\n           5.8674 3.39248L6.64074 6.04022C6.69074 6.21099 6.59267 6.38967 6.42212 6.43948C6.25159 6.48931 6.07288\n           6.39143 6.02286 6.22066L5.24952 3.57274C5.19971 3.40219 5.29759 3.22348 5.46835 3.17348ZM4.06046\n           3.17911C4.23123 3.12928 4.40992 3.22718 4.45972 3.39795L5.29332 6.25249C5.34334 6.42324 5.24525 6.60213\n           5.0747 6.65175C4.90414 6.70174 4.72543 6.60368 4.67542 6.43313L3.84163 3.5782C3.79203 3.40763 3.88972\n           3.22891 4.06046 3.17911Z",
+        fill: "#EE1313"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M9.88112 7.60687C8.71086 7.60687 7.7627 8.55541 7.7627 9.72569C7.7627 10.8958 8.71086 11.8443 9.88112\n        11.8443C11.0514 11.8443 11.9999 10.8958 11.9999 9.72569C11.9999 8.55541 11.0514 7.60687 9.88112\n        7.60687ZM11.0917 10.0788H8.67055V9.37235H11.0917V10.0788Z",
+        fill: "#EE1313"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_330_2250", children: /* @__PURE__ */ jsx5("rect", { width: "12", height: "12", fill: "white" }) }) })
+] });
+var LeafIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsxs5("g", { clipPath: "url(#clip0_618_2370)", children: [
+    /* @__PURE__ */ jsx5("mask", { id: "mask0_618_2370", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ jsx5("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
+    /* @__PURE__ */ jsx5("g", { mask: "url(#mask0_618_2370)", children: /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M7.87489 0C4.49192 0 1.74989 2.74203 1.74989 6.125V11.0128L0.256266 12.5064C-0.085422 12.8481 -0.085422\n          13.4019 0.256266 13.7436C0.42711 13.9145 0.65111 14 0.874891 14C1.09867 14 1.32267 13.9145 1.49352\n          13.7436L2.98714 12.25H7.87489C11.2579 12.25 13.9999 9.50797 13.9999 6.125V0H7.87489ZM11.1185 4.11862L8.23627\n          7.00088H9.62489C10.1085 7.00088 10.4999 7.39222 10.4999 7.87588C10.4999 8.35953 10.1085 8.75088 9.62489\n          8.75088H6.48627L5.86852 9.36862C5.69767 9.53947 5.47367 9.625 5.24989 9.625C5.02611 9.625 4.80211 9.53947\n          4.63127 9.36862C4.28958 9.02694 4.28958 8.47306 4.63127 8.13138L5.24989 7.51275V4.375C5.24989 3.89134 5.64124\n           3.5 6.12489 3.5C6.60855 3.5 6.99989 3.89134 6.99989 4.375V5.76275L9.88127 2.88137C10.223 2.53969 10.7768\n           2.53969 11.1185 2.88137C11.4602 3.22306 11.4604 3.77694 11.1185 4.11862Z",
+        fill: "#197437"
+      }
+    ) })
+  ] }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_618_2370", children: /* @__PURE__ */ jsx5("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var MoleculeIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsxs5("g", { clipPath: "url(#clip0_618_936)", children: [
+    /* @__PURE__ */ jsx5("mask", { id: "mask0_618_936", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ jsx5("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
+    /* @__PURE__ */ jsxs5("g", { mask: "url(#mask0_618_936)", children: [
+      /* @__PURE__ */ jsx5(
+        "path",
+        {
+          d: "M10.1245 5.15595V2.10851C10.1245 1.90286 10.016 1.71436 9.84181 1.60869L7.29986 0.0835404C7.11421\n          -0.0278468 6.88572 -0.0278468 6.70008 0.0835404L4.15531 1.60869C3.97824 1.71436 3.87256 1.90286 3.87256\n          2.10851V5.15595C3.87256 5.36159 3.98109 5.55009 4.15531 5.65576L6.70008 7.18091C6.96856 7.33514 7.19133\n          7.25231 7.29986 7.18091L9.84181 5.65576C10.016 5.55009 10.1245 5.36159 10.1245 5.15595Z",
+          fill: "#EFAC2F"
+        }
+      ),
+      /* @__PURE__ */ jsx5(
+        "path",
+        {
+          d: "M5.96922 8.3405L3.4273 6.81532C3.24165 6.70393 3.01317 6.70393 2.82753 6.81532L0.282753 8.3405C0.105675\n          8.44612 0 8.63465 0 8.8403V11.8877C0 12.0934 0.108531 12.2819 0.282753 12.3875L2.82753 13.9127C3.096 14.0669\n          3.31877 13.9841 3.4273 13.9127L5.96922 12.3875C6.1463 12.2819 6.25197 12.0934 6.25197 11.8877V8.8403C6.25197\n          8.63465 6.1463 8.44612 5.96922 8.3405Z",
+          fill: "#EFAC2F"
+        }
+      ),
+      /* @__PURE__ */ jsx5(
+        "path",
+        {
+          d: "M13.7119 8.33763L11.17 6.81248C10.9843 6.7011 10.7559 6.7011 10.5702 6.81248L8.02541 8.33763C7.84831\n          8.44333 7.74268 8.63178 7.74268 8.83743V11.8849C7.74268 12.0906 7.85119 12.279 8.02541 12.3847L10.5673\n          13.9099C10.8358 14.0641 11.0586 13.9813 11.1671 13.9099L13.709 12.3847C13.8861 12.279 13.9918 12.0906\n          13.9918 11.8849V8.83743C13.9946 8.63178 13.8861 8.44333 13.7119 8.33763Z",
+          fill: "#EFAC2F"
+        }
+      )
+    ] })
+  ] }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_618_936", children: /* @__PURE__ */ jsx5("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var PillsBottleIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsx5("g", { clipPath: "url(#clip0_165_1782)", children: /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M7.8751 4.34052C7.86877 4.11591 7.75782 3.91751 7.58907 3.79252C7.40655 3.62106 7.2094 3.46818 7.01846\n        3.26338C6.98683 3.22948 6.96046 3.19954 6.93778 3.17205C6.93517 3.16894 6.93256 3.1658 6.92996 3.16263C6.92681\n        3.1587 6.92397 3.155 6.92093 3.15118L6.91757 3.14688C6.82224 3.02447 6.81289 2.95561 6.81289 2.83826C6.81289\n        2.77897 6.81289 2.65316 6.81289 2.52272H6.9662C7.18556 2.52272 7.3634 2.36418 7.3634 2.16861V1.35413C7.3634\n        1.15854 7.18557 1 6.9662 1H3.03366C2.81429 1 2.63645 1.15854 2.63645 1.35413V2.16859C2.63645 2.36416 2.81429\n        2.5227 3.03366 2.5227H3.18697C3.18697 2.65314 3.18697 2.77896 3.18697 2.83824C3.18697 2.95559 3.17762 3.02446\n        3.08227 3.14687L3.07893 3.15116C3.07589 3.15498 3.07308 3.1587 3.06991 3.16261C3.06734 3.16578 3.06474 3.16891\n        3.06208 3.17203C3.0394 3.19952 3.01303 3.22948 2.98144 3.26336C2.79046 3.46817 2.59332 3.62099 2.41079\n        3.79246C2.24204 3.91746 2.13109 4.11591 2.12476 4.34051C2.12476 4.34635 2.12427 4.35356 2.12427 4.36032C2.12427\n         4.86656 2.12427 7.86047 2.12427 8.24009C2.12427 8.62504 2.40714 9 2.88414 9C3.12245 9 3.82162 9 4.98483\n         9C4.98483 9 4.9887 9 4.99588 9H4.99991H5.00395C5.01113 9 5.015 9 5.015 9C6.17819 9 6.87738 9 7.11569 9C7.59269\n          9 7.87556 8.62504 7.87556 8.24009C7.87556 7.86047 7.87556 4.8673 7.87556 4.36108C7.87556 4.35432 7.8751\n          4.34637 7.8751 4.34052ZM7.08025 6.21274C7.08025 6.43213 6.90241 6.60997 6.68304\n          6.60997H4.99995H3.31686C3.0975 6.60997 2.91965 6.43213 2.91965 6.21274V5.5681C2.91965 5.34872 3.0975 5.17088\n           3.31686 5.17088H6.68304C6.90241 5.17088 7.08025 5.34874 7.08025 5.5681V6.21274Z",
+      fill: "#000000"
+    }
+  ) }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_165_1782", children: /* @__PURE__ */ jsx5("rect", { width: "8", height: "8", fill: "white", transform: "translate(1 1)" }) }) })
+] });
+var PrescriptionIcn = () => /* @__PURE__ */ jsx5("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    d: "M8.56078 8.25L10.3903 6.42047C10.5368 6.27398 10.5368 6.03656 10.3903 5.89008L9.85992 5.35969C9.71344 5.2132\n       9.47602 5.2132 9.32953 5.35969L7.5 7.18922L5.53219 5.22141C6.64008 5.08125 7.5 4.14586 7.5 3C7.5 1.75734 6.49266\n        0.75 5.25 0.75H1.875C1.66781 0.75 1.5 0.917813 1.5 1.125V7.125C1.5 7.33219 1.66781 7.5 1.875 7.5H2.625C2.83219\n         7.5 3 7.33219 3 7.125V5.25H3.43945L6.43945 8.25L4.60992 10.0795C4.46344 10.226 4.46344 10.4634 4.60992\n          10.6099L5.14031 11.1403C5.2868 11.2868 5.52422 11.2868 5.6707 11.1403L7.5 9.31055L9.32953 11.1401C9.47602\n           11.2866 9.71344 11.2866 9.85992 11.1401L10.3903 10.6097C10.5368 10.4632 10.5368 10.2258 10.3903\n           10.0793L8.56078 8.25ZM3 2.25H5.25C5.66344 2.25 6 2.58656 6 3C6 3.41344 5.66344 3.75 5.25 3.75H3V2.25Z",
+    fill: "#000000"
+  }
+) });
+var SolidPillIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsx5("g", { clipPath: "url(#clip0_618_3928)", children: /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M12.5957 9.11825C12.1339 8.62182 11.5084 8.31967 10.8342 8.26742L10.8168 8.26608L3.19964 8.25861C1.71537\n        8.25861 0.507812 9.46617 0.507812 10.9505C0.507812 12.4347 1.71537 13.6423 3.19964 13.6423H3.20011L10.7994\n        13.6348L10.8342 13.6335C11.5083 13.5812 12.1339 13.2791 12.5957 12.7827C13.0601 12.2834 13.3159 11.6327 13.3159\n        10.9505C13.3159 10.2682 13.0601 9.61754 12.5957 9.11825ZM6.98957 12.7251L3.19931 12.7288C2.21893 12.7286\n        1.42131 11.9309 1.42131 10.9505C1.42131 9.96992 2.21907 9.17214 3.19918 9.17214L6.98957\n        9.17586V12.7251ZM1.69844 7.39865C2.15702 7.73348 2.72102 7.91788 3.28648 7.91794H3.28659C3.48032 7.91794\n        3.67493 7.89669 3.86497 7.85477L3.882 7.85103L11.1737 5.64824C12.5941 5.21763 13.3994 3.71168 12.9688\n        2.2912C12.7979 1.72734 12.4566 1.24606 11.9819 0.899316C11.5232 0.564246 10.9591 0.37973 10.3935\n         0.37973C10.1285 0.379872 9.86494 0.419123 9.61137 0.496215L2.34107 2.70811L2.30812 2.71951C1.67812 2.96508\n         1.16713 3.43572 0.869242 4.04475C0.569637 4.65728 0.513664 5.35421 0.711578 6.00713C0.882531 6.5709 1.22378\n         7.05207 1.69844 7.39865ZM9.87685 1.37031C10.0443 1.31935 10.2185 1.29337 10.3935 1.29323C11.1697 1.29323\n         11.8691 1.8126 12.0946 2.55621C12.379 3.49462 11.847 4.48952 10.9091 4.77387L7.28069 5.86997L6.25098\n         2.47344L9.87685 1.37031Z",
+      fill: "#3D87C5"
+    }
+  ) }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_618_3928", children: /* @__PURE__ */ jsx5("rect", { width: "14", height: "14", fill: "white" }) }) })
+] });
+var StartOfCommercialisationIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsxs5("g", { clipPath: "url(#clip0_330_2383)", children: [
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M4.65803 10.3099C4.52448 10.2196 4.36187 10.1663 4.18897 10.1665C4.07385 10.1665 3.96278 10.1899 3.86218\n        10.2326C3.71139 10.2964 3.58384 10.4024 3.49335 10.5363C3.40283 10.6698 3.34991 10.8325 3.3501 11.0054C3.34991\n        11.1205 3.37337 11.2316 3.41601 11.3319C3.47997 11.4829 3.58579 11.6105 3.71952 11.7008C3.85326 11.7915 4.01608\n         11.8444 4.18897 11.8444C4.3041 11.8444 4.41496 11.8209 4.51536 11.7783C4.66635 11.7145 4.79408 11.6083 4.88441\n          11.4746C4.97474 11.341 5.02783 11.1782 5.02783 11.0053C5.02783 10.8902 5.00418 10.7793 4.96173\n          10.6788C4.89796 10.5278 4.79176 10.4002 4.65803 10.3099ZM4.50062 11.1369C4.47503 11.1974 4.43181\n          11.2496 4.37772 11.286C4.32346 11.3224 4.25987 11.3436 4.18895 11.3437C4.14147 11.3436 4.09745 11.3343\n          4.05735 11.317C3.99707 11.2918 3.94473 11.2484 3.90829 11.1945C3.87184 11.14 3.85091 11.0763 3.85054\n          11.0053C3.85075 10.958 3.86024 10.9142 3.8773 10.8737C3.9025 10.8134 3.94593 10.7613 3.99997 10.7247C4.05426\n          10.6882 4.11803 10.6673 4.18895 10.6671C4.23625 10.6671 4.28005 10.6766 4.32036 10.6937C4.38083 10.719\n          4.43277 10.7623 4.46943 10.8165C4.50587 10.8708 4.52699 10.9344 4.52699 11.0053C4.52699 11.0528 4.51768\n          11.0966 4.50062 11.1369Z",
+        fill: "#09853D"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M3.9545 9.20728C3.8638 9.20728 3.77891 9.18907 3.701 9.15631C3.58471 9.10709 3.4843 9.02412 3.41415\n        8.91985C3.3467 8.81965 3.30676 8.7016 3.30367 8.57215C3.30716 8.41765 3.3564 8.28354 3.44284 8.17636C3.4876\n        8.12112 3.54285 8.07267 3.6099 8.03255C3.67618 7.99301 3.75428 7.96163 3.84599 7.94185L9.57261 7.00976C9.94686\n         6.94871 10.2444 6.66263 10.32 6.29107L11.0205 2.84745V2.84707C11.0286 2.80714 11.0325 2.76645 11.0325\n         2.72614C11.0325 2.58696 10.9848 2.45091 10.8952 2.3412C10.7799 2.2001 10.607 2.11812 10.4245\n         2.11812H2.49505L2.22486 1.1899V1.19009C2.10081 0.775128 1.76045 0.460738 1.33714 0.370035L0.367674\n         0.162449C0.203705 0.127175 0.0420336 0.231824 0.00678359 0.396003C-0.0283023 0.56016 0.0761586 0.721808\n          0.240526 0.756894L1.20964 0.964667C1.41606 1.00885 1.58195 1.16196 1.64223 1.36432L3.41375 7.44949C3.37384\n           7.4681 3.33526 7.48826 3.29825 7.51055C3.10714 7.62434 2.95403 7.78404 2.8513 7.97049C2.75305 8.14765 2.7009\n            8.34844 2.69605 8.55565H2.69506V8.58722H2.69584C2.69973 8.74908 2.73423 8.90433 2.79411 9.04601C2.89006\n             9.27258 3.04937 9.46428 3.25016 9.59993C3.45095 9.73577 3.69477 9.81546 3.9545 9.81525H7.17174C7.17076\n              9.78523 7.16729 9.75595 7.16729 9.72572C7.16729 9.54837 7.1855 9.37528 7.21827\n              9.20724H3.9545V9.20728ZM8.28428 3.16259C8.45502 3.11297 8.63373 3.21066 8.68335 3.3814L9.33575\n              5.61441C9.38537 5.78517 9.28749 5.96368 9.11675 6.01367C8.94617 6.0635 8.76749 5.96562 8.71768\n              5.79485L8.06546 3.56185C8.01561 3.39129 8.11351 3.2126 8.28428 3.16259ZM6.87655 3.1684C7.04713 3.11839\n              7.22581 3.21626 7.27562 3.38703L7.99023 5.83418C8.04024 6.00476 7.94216 6.18366 7.7716 6.23346C7.60103\n              6.28327 7.42234 6.18539 7.37232 6.01463L6.65771 3.56745C6.60791 3.39694 6.70578 3.21802 6.87655\n              3.1684ZM5.46845 3.17344C5.63919 3.12382 5.8179 3.2217 5.86752 3.39244L6.64086 6.04022C6.69085 6.21099\n              6.59279 6.3897 6.42224 6.43948C6.25168 6.48931 6.07297 6.39143 6.02296 6.22067L5.24961 3.5727C5.19978\n              3.40214 5.29768 3.22346 5.46845 3.17344ZM4.06053 3.17907C4.2313 3.12924 4.41001 3.22714 4.45982\n              3.3979L5.29344 6.25249C5.34346 6.42324 5.24537 6.60214 5.07481 6.65178C4.90424 6.70177 4.72555 6.60371\n               4.67553 6.43315L3.84172 3.57818C3.79208 3.40758 3.88977 3.22889 4.06053 3.17907Z",
+        fill: "#09853D"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M9.88135 7.6069C8.71107 7.6069 7.7627 8.55547 7.7627 9.72575C7.7627 10.8958 8.71107 11.8444 9.88135\n        11.8444C11.0514 11.8444 12 10.8958 12 9.72575C12 8.55547 11.0514 7.6069 9.88135 7.6069ZM9.76121 10.7154L8.74831\n         9.90502L9.13266 9.42455L9.6583 9.84514L10.5439 8.70664L11.0298 9.0844L9.76121 10.7154Z",
+        fill: "#09853D"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_330_2383", children: /* @__PURE__ */ jsx5("rect", { width: "12", height: "12", fill: "white" }) }) })
+] });
+var SupplyIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsxs5("g", { clipPath: "url(#clip0_329_708)", children: [
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M5.18757 9.96101C4.45959 9.96101 3.86963 10.5508 3.86963 11.2788C3.86963 12.0069 4.45959 12.5966 5.18757\n        12.5966C5.91581 12.5966 6.50562 12.0069 6.50562 11.2788C6.50562 10.5508 5.91581 9.96101 5.18757\n        9.96101ZM5.18757 11.8517C4.87111 11.8517 4.61468 11.5953 4.61468 11.2788C4.61468 10.9622 4.87111 10.7059\n        5.18757 10.7059C5.50406 10.7059 5.76067 10.9622 5.76067 11.2788C5.76067 11.5953 5.50406 11.8517 5.18757 11.8517Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M12.1372 9.96101C11.4093 9.96101 10.8193 10.5508 10.8193 11.2788C10.8193 12.0069 11.4093 12.5966 12.1372\n        12.5966C12.8655 12.5966 13.4553 12.0069 13.4553 11.2788C13.4553 10.5508 12.8655 9.96101 12.1372 9.96101ZM12.1372\n         11.8517C11.8208 11.8517 11.5644 11.5953 11.5644 11.2788C11.5644 10.9622 11.8208 10.7059 12.1372\n         10.7059C12.4538 10.7059 12.7104 10.9622 12.7104 11.2788C12.7104 11.5953 12.4538 11.8517 12.1372 11.8517Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M6.6703 5.9117C6.6703 6.09636 6.51918 6.24744 6.33455 6.24744H1.70143C1.51676 6.24744 1.36572 6.09636 1.36572\n         5.9117V5.71025C1.36572 5.52562 1.5168 5.37454 1.70143 5.37454H6.33455C6.51922 5.37454 6.6703 5.52562 6.6703\n         5.71025V5.9117Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M14.7198 7.87737C14.2365 7.75174 13.96 7.67276 13.7703 7.30629L13.1358 6.02162C12.9459 5.65516 12.4529\n        5.35529 12.0403 5.35529H11.1725C11.1725 5.35529 11.0557 5.35773 11.0557 5.24024C11.0557 4.97087 11.0557\n        4.1628 11.0557 4.1628C11.0557 3.74512 10.8194 3.40337 10.3166 3.40337H3.24371C2.52388 3.40337 2.18213 3.74516\n        2.18213 4.1628V4.83801C2.18213 4.83801 2.18213 5.03883 2.3765 5.03883C3.36599 5.03883 6.33452 5.03883 6.33452\n        5.03883C6.70477 5.03883 7.006 5.34003 7.006 5.71028V5.91173C7.006 6.28199 6.70477 6.58318 6.33452\n        6.58318H2.3765C2.3765 6.58318 2.18213 6.56703 2.18213 6.77685C2.18213 6.88106 2.18213 6.95101 2.18213\n        7.00905C2.18213 7.19372 2.43524 7.19361 2.43524 7.19361H5.09958C5.46984 7.19361 5.77107 7.49483 5.77107\n        7.86506V8.0665C5.77107 8.43676 5.46984 8.73795 5.09958 8.73795H2.47727C2.47727 8.73795 2.18213 8.7325\n        2.18213 8.9675C2.18213 9.37541 2.18213 10.5991 2.18213 10.5991C2.18213 11.0167 2.52388 11.3585 2.94156\n        11.3585C2.94156 11.3585 3.25618 11.3585 3.36105 11.3585C3.45619 11.3585 3.4702 11.3055 3.4702 11.2789C3.4702\n        10.332 4.24066 9.5617 5.1876 9.5617C6.13462 9.5617 6.90504 10.332 6.90504 11.2789C6.90504 11.3056 6.89744\n        11.3585 6.9702 11.3585C7.80172 11.3585 10.3555 11.3585 10.3555 11.3585C10.4226 11.3585 10.4199 11.3019 10.4199\n        11.2789C10.4199 10.332 11.1903 9.5617 12.1373 9.5617C13.0843 9.5617 13.8547 10.332 13.8547 11.2789C13.8547\n        11.3056 13.854 11.3585 13.896 11.3585C14.2773 11.3585 14.7495 11.3585 14.7495 11.3585C15.1624 11.3585 15.5\n        11.0208 15.5 10.6081V9.18233C15.5001 7.98165 15.1209 7.98165 14.7198 7.87737ZM13.2917 7.81059C13.2917 7.81059\n        11.6981 7.81059 11.1557 7.81059C11.0674 7.81059 11.0557 7.72468 11.0557 7.72468V5.94529C11.0557 5.94529 11.0507\n         5.87696 11.164 5.87696C11.3164 5.87696 11.7735 5.87696 11.7735 5.87696C12.1408 5.87696 12.5794 6.14378 12.7483\n          6.46987L13.3129 7.61298C13.3367 7.659 13.3621 7.69986 13.3893 7.73647C13.4094 7.76332 13.3757 7.81059 13.2917\n           7.81059Z",
+        fill: "#FF5E00"
+      }
+    ),
+    /* @__PURE__ */ jsx5(
+      "path",
+      {
+        d: "M5.43524 8.06651C5.43524 8.25118 5.28416 8.40226 5.09953 8.40226H0.835707C0.651039 8.40226 0.5 8.25118 0.5\n        8.06651V7.86506C0.5 7.68043 0.651076 7.52936 0.835707 7.52936H5.09953C5.2842 7.52936 5.43524 7.68043 5.43524\n        7.86506V8.06651Z",
+        fill: "#FF5E00"
+      }
+    )
+  ] }),
+  /* @__PURE__ */ jsx5("defs", { children: /* @__PURE__ */ jsx5("clipPath", { id: "clip0_329_708", children: /* @__PURE__ */ jsx5("rect", { width: "15", height: "15", fill: "white", transform: "translate(0.5 0.5)" }) }) })
+] });
+var SearchIcn = () => /* @__PURE__ */ jsx5("svg", { width: "20px", height: "20px", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5("g", { mask: "url(#mask0_16_247)", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    d: "M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333\n        7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5\n        6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431\n        11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417\n        9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833\n        11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021\n        5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042\n        5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958\n        11.3021 6.875 11.6667 7.91667 11.6667Z",
+    fill: "#9CA8B2"
+  }
+) }) });
+var CloseIcn = () => /* @__PURE__ */ jsx5("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M13.1404 2.32697C13.1407 2.32697 13.1411 2.32732 13.1418 2.32804L14.172 3.3584C14.1727 3.35893 14.1729 3.35929\n       14.1731 3.35982C14.1732 3.36018 14.1732 3.36054 14.1731 3.3609C14.1731 3.36143 14.1727 3.36179 14.172\n       3.3625L9.0345 8.5L14.172 13.6375C14.1727 13.6382 14.1729 13.6386 14.1731 13.6391C14.1732 13.6395 14.1732 13.64\n       14.1731 13.6404C14.1731 13.6407 14.1727 13.6411 14.172 13.6418L13.1416 14.672C13.1411 14.6727 13.1407 14.6729\n       13.1404 14.673C13.14 14.6732 13.1395 14.6732 13.1391 14.673C13.1386 14.673 13.1382 14.6727 13.1375 14.672L8.00003\n        9.53447L2.86253 14.672C2.86182 14.6727 2.86146 14.6729 2.86093 14.673C2.86052 14.6732 2.86008 14.6732 2.85968\n         14.673C2.85932 14.673 2.85896 14.6727 2.85825 14.672L1.82807 13.6416C1.82735 13.6411 1.82718 13.6407 1.827\n         13.6404C1.82687 13.64 1.82687 13.6395 1.827 13.6391C1.827 13.6386 1.82735 13.6382 1.82807 13.6375L6.96557\n         8.5L1.82807 3.3625C1.82735 3.36179 1.82718 3.36143 1.827 3.3609C1.82687 3.36049 1.82687 3.36005 1.827\n         3.35965C1.827 3.35929 1.82735 3.35893 1.82807 3.35822L2.85843 2.32804C2.85896 2.32732 2.85932 2.32715 2.85968\n         2.32697C2.86008 2.32684 2.86052 2.32684 2.86093 2.32697C2.86146 2.32697 2.86182 2.32732 2.86253 2.32804L8.00003\n          7.46554L13.1375 2.32804C13.1382 2.32732 13.1386 2.32715 13.1391 2.32697C13.1395 2.32684 13.14 2.32684 13.1404\n           2.32697Z",
+    fill: "#4B6682"
+  }
+) });
+var EditIcn = () => /* @__PURE__ */ jsx5("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5(
+  "path",
+  {
+    d: "M7.277 9.81458L12.1624 4.92916L11.4041 4.17083L6.51867 9.05625L7.277 9.81458ZM3.47075 11.0833C2.49853 11.0347\n      1.77422 10.8306 1.29784 10.4708C0.821446 10.1111 0.583252 9.59097 0.583252 8.91041C0.583252 8.27847 0.843321\n      7.76562 1.36346 7.37187C1.8836 6.97812 2.60547 6.74236 3.52909 6.66458C3.90825 6.63541 4.19263 6.57465 4.38221\n      6.48229C4.57179 6.38993 4.66659 6.26111 4.66659 6.09583C4.66659 5.84305 4.52318 5.65347 4.23638 5.52708C3.94957\n      5.40069 3.47561 5.30833 2.8145 5.25L2.91659 4.08333C3.91797 4.16111 4.65443 4.36284 5.12596 4.68854C5.59749\n      5.01423 5.83325 5.48333 5.83325 6.09583C5.83325 6.61111 5.6461 7.01458 5.27179 7.30625C4.89749 7.59791 4.34575\n      7.77291 3.61659 7.83125C2.99436 7.87986 2.5277 7.99409 2.21659 8.17396C1.90547 8.35382 1.74992 8.5993 1.74992\n      8.91041C1.74992 9.25069 1.88603 9.49618 2.15825 9.64687C2.43047 9.79757 2.88742 9.8875 3.52909 9.91666L3.47075\n      11.0833ZM7.55409 11.1854L5.14784 8.77916L10.7187 3.20833C10.9131 3.01389 11.144 2.91666 11.4114 2.91666C11.6787\n      2.91666 11.9096 3.01389 12.1041 3.20833L13.1249 4.22916C13.3194 4.42361 13.4166 4.65451 13.4166 4.92187C13.4166\n      5.18923 13.3194 5.42014 13.1249 5.61458L7.55409 11.1854ZM5.23534 11.6667C5.07006 11.7056 4.92422 11.6618 4.79784\n       11.5354C4.67145 11.409 4.6277 11.2632 4.66659 11.0979L5.14784 8.77916L7.55409 11.1854L5.23534 11.6667Z",
+    fill: "#383A3C"
+  }
+) });
+var DeleteIcn = () => /* @__PURE__ */ jsxs5("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+  /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M5.83325 5.25C6.15542 5.25 6.41659 5.51117 6.41659 5.83334V9.625C6.41659 9.94717 6.15542 10.2083 5.83325\n      10.2083C5.51109 10.2083 5.24992 9.94717 5.24992 9.625V5.83334C5.24992 5.51117 5.51109 5.25 5.83325 5.25Z",
+      fill: "#383A3C"
+    }
+  ),
+  /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M8.74992 5.83334C8.74992 5.51117 8.48875 5.25 8.16659 5.25C7.84442 5.25 7.58325 5.51117 7.58325\n      5.83334V9.625C7.58325 9.94717 7.84442 10.2083 8.16659 10.2083C8.48875 10.2083 8.74992 9.94717 8.74992\n      9.625V5.83334Z",
+      fill: "#383A3C"
+    }
+  ),
+  /* @__PURE__ */ jsx5(
+    "path",
+    {
+      fillRule: "evenodd",
+      clipRule: "evenodd",
+      d: "M5.62588 0.583336C5.41285 0.583336 5.21676 0.699465 5.11436 0.88627L4.32112 2.33334H1.16659C0.844419 2.33334\n      0.583252 2.5945 0.583252 2.91667C0.583252 3.23884 0.844419 3.5 1.16659 3.5H2.04159V12.8333C2.04159 13.1555\n      2.30275 13.4167 2.62492 13.4167H11.3749C11.6971 13.4167 11.9583 13.1555 11.9583 12.8333V3.5H12.8333C13.1554\n      3.5 13.4166 3.23884 13.4166 2.91667C13.4166 2.5945 13.1554 2.33334 12.8333 2.33334H9.68208L8.90713\n      0.890634C8.80548 0.701395 8.60805 0.583336 8.39324 0.583336H5.62588ZM8.35775 2.33334L8.04442 1.75H5.97134L5.65158\n       2.33334H8.35775ZM3.20825 3.5V12.25H10.7916V3.5H3.20825Z",
+      fill: "#383A3C"
+    }
+  )
+] });
+var WarningIcn = ({ color = "#3D87C5" }) => /* @__PURE__ */ jsx5("svg", { width: "16px", height: "16px", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx5("path", { d: "M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z", fill: color }) });
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/BlackTriangleBadge/index.tsx
+import { jsx as jsx6 } from "react/jsx-runtime";
+var BlackTriangleBadge = ({ medication, boundaryBox }) => {
+  if (!medication.regulatory?.be?.blackTriangle) return null;
+  return /* @__PURE__ */ jsx6("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ jsx6(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ jsx6(BlackTriangleIcn, {}), boundaryBox }) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
+import styled3 from "styled-components";
+var StyledRmaLink = styled3.div`
+  ${infographicElementCommonStyles};
+
+  .content {
+    ${infographicElementContentCommonStyles};
+
+    p {
+      ${infographicElementTextCommonStyles};
+    }
+
+    a {
+      ${infographicElementLinkCommonStyles};
+    }
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/index.tsx
+import { jsx as jsx7, jsxs as jsxs6 } from "react/jsx-runtime";
+var RmaProfessionalLinkContent = ({ rmaProfessionalLink, rmakeyMessages }) => {
+  return /* @__PURE__ */ jsx7(StyledRmaLink, { className: "StyledRmaLink", children: /* @__PURE__ */ jsxs6("div", { className: "content", children: [
+    !!rmakeyMessages && /* @__PURE__ */ jsx7("p", { children: rmakeyMessages }),
+    /* @__PURE__ */ jsx7("a", { href: rmaProfessionalLink, children: t("medication.links.rma") })
+  ] }) });
+};
+var RmaProfessionalLinkBadge = ({ medication, boundaryBox }) => {
+  const be = medication.regulatory?.be;
+  if (!be?.rmaProfessionalLink) return null;
+  return /* @__PURE__ */ jsx7("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ jsx7(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx7(RmaProfessionalLinkContent, { rmaProfessionalLink: be.rmaProfessionalLink, rmakeyMessages: be.rmakeyMessages }),
+      iconSnippet: /* @__PURE__ */ jsx7(OrangeTriangleIcn, {}),
+      boundaryBox
+    }
+  ) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SpeciallyRegulatedBadge/index.tsx
+import { jsx as jsx8 } from "react/jsx-runtime";
+var getSpecialRegulation = (code) => {
+  switch (code) {
+    case 1:
+      return t("medication.drugSpecialRegulation.noNarcoticRegulation");
+    case 2:
+      return t("medication.drugSpecialRegulation.narcoticRegulation");
+    default:
+      return t("medication.drugSpecialRegulation.noSpecialRegulation");
+  }
+};
+var SpeciallyRegulatedBadge = ({ medication, boundaryBox }) => {
+  const code = medication.regulatory?.be?.speciallyRegulated;
+  if (!code) return null;
+  return /* @__PURE__ */ jsx8("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ jsx8(Tooltip, { content: getSpecialRegulation(code), iconSnippet: /* @__PURE__ */ jsx8(PillsBottleIcn, {}), boundaryBox }) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/GenericPrescriptionRequiredBadge/index.tsx
+import { jsx as jsx9 } from "react/jsx-runtime";
+var GenericPrescriptionRequiredBadge = ({ medication, boundaryBox }) => {
+  if (!medication.regulatory?.be?.genericPrescriptionRequired) return null;
+  return /* @__PURE__ */ jsx9("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ jsx9(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ jsx9(PrescriptionIcn, {}), boundaryBox }) });
+};
+
+// src/internal/utils/date-helpers.ts
+var convertYyyyMmDdNumberToIsoDate = (dateNumber) => {
+  const year = Math.floor(dateNumber / 1e4);
+  const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
+  const day = (dateNumber % 100).toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+var getTreatmentStartDate = (prescribedMedication) => {
+  if (prescribedMedication?.medication.beginMoment) {
+    return convertYyyyMmDdNumberToIsoDate(prescribedMedication?.medication.beginMoment);
+  } else {
+    return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  }
+};
+var getExecutableUntilDate = (prescribedMedication) => {
+  if (prescribedMedication?.medication.endMoment) {
+    return convertYyyyMmDdNumberToIsoDate(prescribedMedication.medication.endMoment);
+  } else {
+    const startDay = /* @__PURE__ */ new Date();
+    const nextYear = new Date(startDay);
+    nextYear.setFullYear(startDay.getFullYear() + 1);
+    return nextYear.toISOString().split("T")[0];
+  }
+};
+var formatTimestamp = (timestamp) => {
+  if (!timestamp) {
+    return void 0;
+  } else {
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+};
+function dateDecode(date) {
+  return date > 9999e4 ? new Date(date / 1e10, date / 1e8 % 100 - 1, date / 1e6 % 100) : new Date(date / 1e4, date / 100 % 100 - 1, date % 100);
+}
+function dateEncode(date) {
+  return date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate();
+}
+function offsetDate(date, offsetInDays) {
+  const result = new Date(dateDecode(date));
+  result.setDate(result.getDate() + offsetInDays);
+  return dateEncode(result);
+}
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/styles.ts
+import styled4 from "styled-components";
+var StyledSupplyProblems = styled4.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.orange[800]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/index.tsx
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
+var SupplyProblemsContent = ({ medicationSupplyProblem }) => {
+  return /* @__PURE__ */ jsxs7(StyledSupplyProblems, { className: "StyledSupplyProblems", children: [
+    /* @__PURE__ */ jsx10("h6", { children: t("medication.supply.issueTitle") }),
+    /* @__PURE__ */ jsxs7("div", { className: "content", children: [
+      medicationSupplyProblem.from && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.startDate") }),
+        /* @__PURE__ */ jsx10("p", { children: formatTimestamp(medicationSupplyProblem.from) })
+      ] }),
+      medicationSupplyProblem.expectedEndOn && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.expectedEndDate") }),
+        /* @__PURE__ */ jsx10("p", { children: formatTimestamp(medicationSupplyProblem.expectedEndOn) })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.reason) && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.reason") }),
+        /* @__PURE__ */ jsx10("p", { children: getSamTextTranslation(medicationSupplyProblem.reason) })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.impact) && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.impact") }),
+        /* @__PURE__ */ jsx10("p", { children: getSamTextTranslation(medicationSupplyProblem.impact) })
+      ] }),
+      medicationSupplyProblem.impact?.fr === "Importation possible par le pharmacien" && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.prescriberNote") }),
+        /* @__PURE__ */ jsx10("a", { target: "_blank", rel: "noopener noreferrer", href: "https://www.afmps.be/sites/default/files/content/INSP/NARC/declaration-medecin.pdf", children: t("medication.supply.downloadPdf") })
+      ] }),
+      getSamTextTranslation(medicationSupplyProblem.additionalInformation) && /* @__PURE__ */ jsxs7("div", { children: [
+        /* @__PURE__ */ jsx10("span", { children: t("medication.supply.extraInfo") }),
+        getSamTextTranslation(medicationSupplyProblem.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ jsx10("p", { children: line }, idx))
+      ] })
+    ] })
+  ] });
+};
+var SupplyProblemsBadge = ({ medication, boundaryBox }) => {
+  const medicationSupplyProblem = medication.regulatory?.be?.supplyProblems?.[0];
+  if (!medicationSupplyProblem) return null;
+  return /* @__PURE__ */ jsx10("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--orange", children: /* @__PURE__ */ jsx10(Tooltip, { contentSnippet: /* @__PURE__ */ jsx10(SupplyProblemsContent, { medicationSupplyProblem }), iconSnippet: /* @__PURE__ */ jsx10(SupplyIcn, {}), boundaryBox }) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
+import styled5 from "styled-components";
+var StyledEndCommercialization = styled5.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.red[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/index.tsx
+import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
+var EndOfCommercialisationContent = ({ medicationCommercialization }) => {
+  return /* @__PURE__ */ jsxs8(StyledEndCommercialization, { className: "StyledEndCommercialization", children: [
+    /* @__PURE__ */ jsx11("h6", { children: t("medication.commercialization.end") }),
+    /* @__PURE__ */ jsxs8("div", { className: "content", children: [
+      medicationCommercialization.from && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.limitedAvailabilityFrom") }),
+        /* @__PURE__ */ jsx11("p", { children: formatTimestamp(medicationCommercialization.from) })
+      ] }),
+      medicationCommercialization.to && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.end") }),
+        /* @__PURE__ */ jsx11("p", { children: formatTimestamp(medicationCommercialization.to) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.endOfComercialization) && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.unavailableFrom") }),
+        /* @__PURE__ */ jsx11("p", { children: getSamTextTranslation(medicationCommercialization.endOfComercialization) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.reason) && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.endReason") }),
+        /* @__PURE__ */ jsx11("p", { children: getSamTextTranslation(medicationCommercialization.reason) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.impact) && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.endImpact") }),
+        /* @__PURE__ */ jsx11("p", { children: getSamTextTranslation(medicationCommercialization.impact) })
+      ] }),
+      getSamTextTranslation(medicationCommercialization.additionalInformation) && /* @__PURE__ */ jsxs8("div", { children: [
+        /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.endAdditionalInformation") }),
+        getSamTextTranslation(medicationCommercialization.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ jsx11("p", { children: line }, idx))
+      ] })
+    ] })
+  ] });
+};
+var EndOfCommercialisationBadge = ({ medication, boundaryBox }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0];
+  if (!medicationCommercialization?.endOfComercialization) return null;
+  return /* @__PURE__ */ jsx11("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ jsx11(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx11(EndOfCommercialisationContent, { medicationCommercialization }),
+      iconSnippet: /* @__PURE__ */ jsx11(EndOfCommercialisationIcn, {}),
+      boundaryBox
+    }
+  ) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
+import styled6 from "styled-components";
+var StyledStartCommercialization = styled6.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/index.tsx
+import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
+var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
+  return /* @__PURE__ */ jsxs9(StyledStartCommercialization, { className: "StyledStartCommercialization", children: [
+    /* @__PURE__ */ jsx12("h6", { children: t("medication.commercialization.start") }),
+    /* @__PURE__ */ jsx12("div", { className: "content", children: medicationCommercialization.from && /* @__PURE__ */ jsxs9("div", { children: [
+      /* @__PURE__ */ jsx12("span", { children: t("medication.commercialization.startAvailableFrom") }),
+      /* @__PURE__ */ jsx12("p", { children: formatTimestamp(medicationCommercialization.from) })
+    ] }) })
+  ] });
+};
+var StartOfCommercialisationBadge = ({ medication, boundaryBox }) => {
+  const medicationCommercialization = medication.regulatory?.be?.commercializations?.[0];
+  if (!medicationCommercialization || medicationCommercialization.endOfComercialization) return null;
+  return /* @__PURE__ */ jsx12("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--green", children: /* @__PURE__ */ jsx12(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx12(StartOfCommercialisationContent, { medicationCommercialization }),
+      iconSnippet: /* @__PURE__ */ jsx12(StartOfCommercialisationIcn, {}),
+      boundaryBox
+    }
+  ) });
+};
+
+// src/internal/utils/reimbursement-helpers.ts
+import { Medication } from "@icure/be-fhc-lite-api";
+var getReimbursementOptions = () => [
+  {
+    value: null,
+    label: t("reimbursementHelper.practitionerSelectionOptions.none")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.PAYINGTHIRDPARTY,
+    label: t("reimbursementHelper.practitionerSelectionOptions.PAYINGTHIRDPARTY")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.FIRSTDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.FIRSTDOSE")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.SECONDDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.SECONDDOSE")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.THIRDDOSE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.THIRDDOSE")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.CHRONICKINDEYDISEASE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.CHRONICKINDEYDISEASE")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.DIABETESTREATMENT,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESTREATMENT")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.DIABETESCONVENTION,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESCONVENTION")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.NOTREIMBURSABLE,
+    label: t("reimbursementHelper.practitionerSelectionOptions.NOTREIMBURSABLE")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.EXPLAINMEDICATION,
+    label: t("reimbursementHelper.practitionerSelectionOptions.EXPLAINMEDICATION")
+  },
+  {
+    value: Medication.InstructionsForReimbursementEnum.DIABETESSTARTPATH,
+    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESSTARTPATH")
+  }
+];
+function getCategoryLabelForReimbursement(code) {
+  if (!code) return "";
+  return t(`reimbursementHelper.categoryOptions.${code}`) || code;
+}
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/styles.ts
+import styled7 from "styled-components";
+var StyledReimbursement = styled7.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/index.tsx
+import { Fragment as Fragment2, jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
+var ReimbursementsContent = ({ reimbursement }) => {
+  const computeFeeAmount = (fee) => Math.round(+fee * 100) / 100 + "\u20AC";
+  return reimbursement ? /* @__PURE__ */ jsxs10(StyledReimbursement, { className: "StyledReimbursement", children: [
+    /* @__PURE__ */ jsxs10("h6", { children: [
+      " ",
+      t("medication.reimbursement.title")
+    ] }),
+    /* @__PURE__ */ jsxs10("div", { className: "content", children: [
+      reimbursement.reimbursementCriterion?.category && /* @__PURE__ */ jsxs10(Fragment2, { children: [
+        /* @__PURE__ */ jsxs10("div", { children: [
+          /* @__PURE__ */ jsx13("span", { children: t("medication.reimbursement.category") }),
+          /* @__PURE__ */ jsx13("p", { children: reimbursement.reimbursementCriterion?.category })
+        ] }),
+        /* @__PURE__ */ jsxs10("div", { children: [
+          /* @__PURE__ */ jsx13("span", { children: t("medication.reimbursement.categoryLabel") }),
+          /* @__PURE__ */ jsx13("p", { children: getCategoryLabelForReimbursement(reimbursement.reimbursementCriterion?.category) })
+        ] })
+      ] }),
+      reimbursement.copayments && reimbursement.copayments.map((el, index) => {
+        return /* @__PURE__ */ jsxs10("div", { children: [
+          el.regimeType === 1 && /* @__PURE__ */ jsxs10("span", { children: [
+            t("medication.reimbursement.copay"),
+            /* @__PURE__ */ jsx13("strong", { children: t("medication.reimbursement.copayPreferential") })
+          ] }),
+          el.regimeType === 2 && /* @__PURE__ */ jsxs10("span", { children: [
+            t("medication.reimbursement.copay"),
+            " ",
+            /* @__PURE__ */ jsx13("strong", { children: t("medication.reimbursement.copayActive") })
+          ] }),
+          el.feeAmount && /* @__PURE__ */ jsx13("p", { className: "feeAmount", children: computeFeeAmount(el.feeAmount) })
+        ] }, index);
+      }),
+      reimbursement.temporary && /* @__PURE__ */ jsxs10("div", { children: [
+        /* @__PURE__ */ jsx13("span", { children: t("medication.reimbursement.temporary") }),
+        /* @__PURE__ */ jsx13("p", { className: "textRed", children: reimbursement.temporary })
+      ] }),
+      getSamTextTranslation(reimbursement.reimbursementCriterion?.description) && /* @__PURE__ */ jsxs10("div", { children: [
+        /* @__PURE__ */ jsx13("span", { children: t("medication.reimbursement.chapter") }),
+        /* @__PURE__ */ jsx13("p", { children: getSamTextTranslation(reimbursement.reimbursementCriterion?.description) })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ jsxs10("div", { className: "supplyProblemsTooltip", children: [
+    /* @__PURE__ */ jsx13("p", { className: " title  title--green", children: "Conditions de prescription" }),
+    /* @__PURE__ */ jsx13("div", { className: " content", children: /* @__PURE__ */ jsx13("div", { children: /* @__PURE__ */ jsx13("p", { children: "Not applicable" }) }) })
+  ] });
+};
+var ReimbursementsBadge = ({ medication, boundaryBox }) => {
+  const reimbursement = medication.regulatory?.be?.reimbursements;
+  if (!reimbursement) return null;
+  return /* @__PURE__ */ jsx13(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx13(ReimbursementsContent, { reimbursement }),
+      iconSnippet: /* @__PURE__ */ jsx13(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx13("p", { children: reimbursement.reimbursementCriterion?.category }) }),
+      boundaryBox
+    }
+  );
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
+import styled8 from "styled-components";
+var StyledDeliveryConditions = styled8.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.orange[800]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+var StyledDeliveryConditionsNotApplicable = styled8.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/index.tsx
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
+var DeliveryConditionsContent = ({ deliveryModusCode, deliveryModus, deliveryModusSpecification }) => {
+  return deliveryModusCode ? /* @__PURE__ */ jsxs11(StyledDeliveryConditions, { className: "StyledDeliveryConditions", children: [
+    /* @__PURE__ */ jsx14("h6", { children: t("medication.delivery.title") }),
+    /* @__PURE__ */ jsxs11("div", { className: "content", children: [
+      deliveryModusCode && /* @__PURE__ */ jsxs11("div", { children: [
+        /* @__PURE__ */ jsx14("span", { children: t("medication.delivery.code") }),
+        /* @__PURE__ */ jsx14("p", { children: deliveryModusCode })
+      ] }),
+      deliveryModus && /* @__PURE__ */ jsxs11("div", { children: [
+        /* @__PURE__ */ jsx14("span", { children: t("medication.delivery.modus") }),
+        /* @__PURE__ */ jsx14("p", { children: deliveryModus })
+      ] }),
+      deliveryModusSpecification && /* @__PURE__ */ jsxs11("div", { children: [
+        /* @__PURE__ */ jsx14("span", { children: t("medication.delivery.specification") }),
+        /* @__PURE__ */ jsx14("p", { children: deliveryModusSpecification })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ jsxs11(StyledDeliveryConditionsNotApplicable, { className: "StyledDeliveryConditionsNotApplicable", children: [
+    /* @__PURE__ */ jsx14("h6", { children: t("medication.delivery.title") }),
+    /* @__PURE__ */ jsx14("div", { className: "content", children: /* @__PURE__ */ jsx14("div", { children: /* @__PURE__ */ jsx14("p", { children: t("medication.delivery.notApplicable") }) }) })
+  ] });
+};
+var DeliveryConditionsBadge = ({ medication, boundaryBox }) => {
+  const be = medication.regulatory?.be;
+  if (!be?.deliveryModusCode) return null;
+  return /* @__PURE__ */ jsx14(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx14(DeliveryConditionsContent, { deliveryModus: be.deliveryModus, deliveryModusSpecification: be.deliveryModusSpecification, deliveryModusCode: be.deliveryModusCode }),
+      iconSnippet: /* @__PURE__ */ jsx14(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx14("p", { children: be.deliveryModusCode }) }),
+      boundaryBox
+    }
+  );
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
+import styled9 from "styled-components";
+var StyledPrescriptionConditions = styled9.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.red[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+var StyledPrescriptionConditionsNotApplicable = styled9.div`
+  ${infographicElementCommonStyles};
+
+  h6 {
+    ${infographicElementTitleCommonStyles};
+    background-color: ${colors.green[400]};
+  }
+
+  .content {
+    ${infographicElementContentCommonStyles}
+  }
+`;
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/index.tsx
+import { jsx as jsx15, jsxs as jsxs12 } from "react/jsx-runtime";
+var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryModusSpecification }) => {
+  return deliveryModusSpecificationCode ? /* @__PURE__ */ jsxs12(StyledPrescriptionConditions, { className: "StyledPrescriptionConditions", children: [
+    /* @__PURE__ */ jsx15("h6", { children: t("medication.prescription.title") }),
+    /* @__PURE__ */ jsxs12("div", { className: "content", children: [
+      /* @__PURE__ */ jsxs12("div", { children: [
+        /* @__PURE__ */ jsx15("span", { children: t("medication.delivery.code") }),
+        /* @__PURE__ */ jsx15("p", { children: deliveryModusSpecificationCode })
+      ] }),
+      deliveryModusSpecification && /* @__PURE__ */ jsxs12("div", { children: [
+        /* @__PURE__ */ jsx15("span", { children: t("medication.delivery.specification") }),
+        /* @__PURE__ */ jsx15("p", { children: deliveryModusSpecification })
+      ] })
+    ] })
+  ] }) : /* @__PURE__ */ jsxs12(StyledPrescriptionConditionsNotApplicable, { className: "StyledPrescriptionConditionsNotApplicable", children: [
+    /* @__PURE__ */ jsx15("h6", { children: t("medication.prescription.title") }),
+    /* @__PURE__ */ jsx15("div", { className: "content", children: /* @__PURE__ */ jsx15("div", { children: /* @__PURE__ */ jsx15("p", { children: t("medication.delivery.notApplicable") }) }) })
+  ] });
+};
+var PrescriptionConditionsBadge = ({ medication, boundaryBox }) => {
+  const be = medication.regulatory?.be;
+  if (!be?.deliveryModusCode || !be?.deliveryModusSpecificationCode) return null;
+  return /* @__PURE__ */ jsx15(
+    Tooltip,
+    {
+      contentSnippet: /* @__PURE__ */ jsx15(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be.deliveryModusSpecificationCode, deliveryModusSpecification: be.deliveryModusSpecification }),
+      iconSnippet: /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx15("p", { children: be.deliveryModusSpecificationCode }) }),
+      boundaryBox
+    }
+  );
+};
+
+// src/internal/components/medication-elements/register-be-badges.ts
+registerRegulatoryBadge("be", "price", PriceReimbursementBadge, "summary");
+registerRegulatoryBadge("be", "deliveryConditions", DeliveryConditionsSummaryBadge, "summary");
+registerRegulatoryBadge("be", "prescriptionConditions", PrescriptionConditionsSummaryBadge, "summary");
+registerRegulatoryBadge("be", "blackTriangle", BlackTriangleBadge, "detail");
+registerRegulatoryBadge("be", "rmaProfessionalLink", RmaProfessionalLinkBadge, "detail");
+registerRegulatoryBadge("be", "speciallyRegulated", SpeciallyRegulatedBadge, "detail");
+registerRegulatoryBadge("be", "genericPrescriptionRequired", GenericPrescriptionRequiredBadge, "detail");
+registerRegulatoryBadge("be", "supplyProblems", SupplyProblemsBadge, "detail");
+registerRegulatoryBadge("be", "endOfCommercialisation", EndOfCommercialisationBadge, "detail");
+registerRegulatoryBadge("be", "startOfCommercialisation", StartOfCommercialisationBadge, "detail");
+registerRegulatoryBadge("be", "reimbursement", ReimbursementsBadge, "detail");
+registerRegulatoryBadge("be", "deliveryConditions", DeliveryConditionsBadge, "detail");
+registerRegulatoryBadge("be", "prescriptionConditions", PrescriptionConditionsBadge, "detail");
+
+// src/internal/components/medication-elements/MedicationCard/summary-elements/ChPriceBadge/index.tsx
+import { jsx as jsx16, jsxs as jsxs13 } from "react/jsx-runtime";
+var ChPriceBadge = ({ medication }) => {
+  const price = medication.regulatory?.ch?.price;
+  if (!price) return null;
+  return /* @__PURE__ */ jsxs13("div", { className: "medication__content__description__item", children: [
+    /* @__PURE__ */ jsx16("span", { children: t("medication.ui.price") }),
+    /* @__PURE__ */ jsx16("p", { className: "price", children: `${price.currency} ${price.amount.toFixed(2)}` })
+  ] });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/SwissmedicCategoryContent/index.tsx
+import { jsx as jsx17 } from "react/jsx-runtime";
+var SwissmedicCategoryBadge = ({ medication, boundaryBox }) => {
+  const category = medication.regulatory?.ch?.swissmedicCategory;
+  if (!category) return null;
+  return /* @__PURE__ */ jsx17("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--outline", children: /* @__PURE__ */ jsx17(Tooltip, { content: `${t("medication.swissmedic.category")} ${category}`, iconSnippet: /* @__PURE__ */ jsx17(PillsBottleIcn, {}), boundaryBox }) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/NarcoticContent/index.tsx
+import { jsx as jsx18 } from "react/jsx-runtime";
+var NarcoticBadge = ({ medication, boundaryBox }) => {
+  if (!medication.regulatory?.ch?.narcotic) return null;
+  return /* @__PURE__ */ jsx18("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ jsx18(Tooltip, { content: t("medication.swissmedic.narcotic"), iconSnippet: /* @__PURE__ */ jsx18(WarningIcn, { color: "#EE1313" }), boundaryBox }) });
+};
+
+// src/internal/components/medication-elements/MedicationCard/infographic-elements/ColdChainContent/index.tsx
+import { jsx as jsx19 } from "react/jsx-runtime";
+var ColdChainBadge = ({ medication, boundaryBox }) => {
+  if (!medication.regulatory?.ch?.coldChain) return null;
+  return /* @__PURE__ */ jsx19(
+    Tooltip,
+    {
+      content: t("medication.swissmedic.coldChain"),
+      iconSnippet: /* @__PURE__ */ jsx19(StyledTextToIcon, { className: "StyledTextToIcon", $color: "grey", children: /* @__PURE__ */ jsx19("p", { children: t("medication.swissmedic.coldChainAbbreviation") }) }),
+      boundaryBox
+    }
+  );
+};
+
+// src/internal/components/medication-elements/register-ch-badges.ts
+registerRegulatoryBadge("ch", "price", ChPriceBadge, "summary");
+registerRegulatoryBadge("ch", "swissmedicCategory", SwissmedicCategoryBadge, "detail");
+registerRegulatoryBadge("ch", "narcotic", NarcoticBadge, "detail");
+registerRegulatoryBadge("ch", "coldChain", ColdChainBadge, "detail");
 
 // src/internal/services/loaders/medication-loader.ts
 import { AmpStatus, DmppCodeType } from "@icure/cardinal-be-sam-sdk";
@@ -1715,55 +3385,6 @@ var deleteCertificate = async (hcp_ssin) => {
 
 // src/shared/services/fhc/index.ts
 import { Code as FhcCode, fhcRecipeApi, fhcStsApi, PrescriptionRequest } from "@icure/be-fhc-lite-api";
-
-// src/internal/utils/date-helpers.ts
-var convertYyyyMmDdNumberToIsoDate = (dateNumber) => {
-  const year = Math.floor(dateNumber / 1e4);
-  const month = Math.floor(dateNumber % 1e4 / 100).toString().padStart(2, "0");
-  const day = (dateNumber % 100).toString().padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-var getTreatmentStartDate = (prescribedMedication) => {
-  if (prescribedMedication?.medication.beginMoment) {
-    return convertYyyyMmDdNumberToIsoDate(prescribedMedication?.medication.beginMoment);
-  } else {
-    return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-  }
-};
-var getExecutableUntilDate = (prescribedMedication) => {
-  if (prescribedMedication?.medication.endMoment) {
-    return convertYyyyMmDdNumberToIsoDate(prescribedMedication.medication.endMoment);
-  } else {
-    const startDay = /* @__PURE__ */ new Date();
-    const nextYear = new Date(startDay);
-    nextYear.setFullYear(startDay.getFullYear() + 1);
-    return nextYear.toISOString().split("T")[0];
-  }
-};
-var formatTimestamp = (timestamp) => {
-  if (!timestamp) {
-    return void 0;
-  } else {
-    const date = new Date(timestamp);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-};
-function dateDecode(date) {
-  return date > 9999e4 ? new Date(date / 1e10, date / 1e8 % 100 - 1, date / 1e6 % 100) : new Date(date / 1e4, date / 100 % 100 - 1, date % 100);
-}
-function dateEncode(date) {
-  return date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate();
-}
-function offsetDate(date, offsetInDays) {
-  const result = new Date(dateDecode(date));
-  result.setDate(result.getDate() + offsetInDays);
-  return dateEncode(result);
-}
-
-// src/shared/services/fhc/index.ts
 var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new PrescriptionRequest({
   medications: [prescribedMedication.medication],
   patient: {
@@ -1884,396 +3505,8 @@ var validateDecryptedCertificate = async (hcp, passphrase, cache, fhc_url) => {
 };
 
 // src/internal/components/common/Alert/styles.ts
-import styled, { css as css3 } from "styled-components";
-
-// src/styles/reset.ts
-import { createGlobalStyle } from "styled-components";
-var GlobalStyles = createGlobalStyle`
-  /* Reset of the user agent styles */
-
-  * {
-    margin: 0;
-    padding: 0;
-    font-size: 100%;
-    box-sizing: border-box;
-  }
-  
-  // Links
-  a {
-    text-decoration: none;
-
-    &:active,
-    &:hover {
-      outline: 0;
-    }
-  }
-
-  // List
-  ul,
-  li {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  // Headlines
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: 100%;
-  }
-
-  // Default
-  html,
-  body {
-    box-sizing: border-box;
-    font-size: 16px;
-    background-color: #fbfdff;
-    font-family: 'Lato', sans-serif;
-  }
-
-  *,
-  *:before,
-  *:after {
-    box-sizing: border-box;
-  }
-
-  :focus {
-    outline: 0;
-  }
-
-  img,
-  audio,
-  video {
-    max-width: 100%;
-    height: auto;
-  }
-
-  iframe {
-    border: 0;
-  }
-
-  // Form
-  textarea {
-    resize: none;
-    /*remove the resize handle on the bottom right*/
-    overflow: auto;
-    vertical-align: top;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-  }
-
-  input,
-  textarea,
-  select,
-  button {
-    outline: none;
-    border: none;
-    font-size: 100%;
-    margin: 0;
-  }
-
-  button,
-  input {
-    line-height: normal;
-  }
-
-  // browser user agent input reset
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  select:-webkit-autofill:focus {
-    -webkit-text-fill-color: rgb(0, 0, 0);
-    transition: background-color 5000s ease-in-out 0s;
-  }
-
-  // Table
-  table {
-    border-collapse: collapse;
-    border-spacing: 0;
-  }
-
-  td,
-  th {
-    padding: 0;
-    text-align: left;
-  }
-`;
-
-// src/styles/variables.ts
-var colors = {
-  blue: {
-    800: "#084b83",
-    600: "#4b6682",
-    500: "#3d87c5",
-    400: "#add5ff",
-    300: "#eef6fe",
-    200: "#f9fbfe",
-    100: "#dce7f2"
-  },
-  grey: {
-    900: "#1d2235",
-    700: "#7e827f",
-    650: "#9ca8b2",
-    600: "#848482",
-    550: "#cad0d5",
-    300: "#e4e4e7",
-    200: "#f5f5f5",
-    100: "#fcfcfd"
-  },
-  orange: {
-    900: "#ef762f",
-    950: "#e5a613",
-    800: "#ffda83"
-  },
-  green: {
-    600: "#33b96b",
-    500: "#52c41a",
-    400: "#b7eb8f",
-    300: "#f6ffed",
-    200: "#e5fae5"
-  },
-  red: {
-    800: "#FF0000FF",
-    700: "#ee5d59",
-    400: "#ffccc7",
-    300: "#fff1f0"
-  }
-};
-var colorsRgb = {
-  blue: {
-    800: "8, 75, 131",
-    600: "75, 102, 130",
-    500: "61, 135, 197",
-    400: "173, 213, 255",
-    300: "238, 246, 254",
-    200: "249, 251, 254",
-    100: "220, 231, 242"
-  },
-  grey: {
-    900: "29, 34, 53",
-    700: "126, 130, 127",
-    650: "156, 168, 178",
-    600: "132, 132, 130",
-    550: "202, 208, 213",
-    300: "228, 228, 231",
-    200: "245, 245, 245",
-    100: "252, 252, 253"
-  },
-  orange: {
-    900: "239, 118, 47",
-    950: "229, 166, 19",
-    800: "255, 218, 131"
-  },
-  green: {
-    600: "51, 185, 107",
-    400: "183, 235, 143",
-    300: "246, 255, 237",
-    200: "229, 250, 229"
-  },
-  red: {
-    800: "255, 0, 0",
-    700: "238, 93, 89",
-    400: "255, 204, 199",
-    300: "255, 241, 240"
-  }
-};
-
-// src/styles/elements.ts
-import { css } from "styled-components";
-var fieldCommonStyles = css`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  align-self: stretch;
-`;
-var inputCommonStyles = css`
-  width: 100%;
-  display: flex;
-  height: 32px;
-  padding: 5px 12px;
-  align-items: center;
-  gap: 4px;
-  align-self: stretch;
-  cursor: pointer;
-
-  border-radius: 6px;
-  border: 1px solid ${colors.grey[550]};
-  background: #fff;
-
-  color: ${colors.grey[900]};
-  font-family: 'Inter Variable', sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-
-  &::placeholder {
-    color: ${colors.grey[650]};
-  }
-
-  &:hover,
-  &:focus {
-    border-color: ${colors.blue[800]};
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-  }
-`;
-var inputCommonStyles_disabled = css`
-  cursor: not-allowed;
-  background-color: ${colors.grey[200]};
-  border-color: ${colors.grey[550]};
-  opacity: 0.7;
-
-  &:hover {
-    border-color: ${colors.grey[550]};
-  }
-`;
-var inputCommonStyles_error = css`
-  border-color: red;
-  color: red;
-
-  &::placeholder {
-    color: rgba(255, 0, 0, 0.5);
-  }
-
-  &:hover {
-    border-color: rgba(255, 0, 0, 0.5);
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
-  }
-`;
-var labelCommonStyles = css`
-  width: 100%;
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  color: ${colors.grey[900]};
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  cursor: pointer;
-
-  span {
-    display: none;
-  }
-`;
-var labelCommonStyles_required = css`
-  span {
-    display: flex;
-    color: red;
-    font-weight: bold;
-  }
-`;
-var labelCommonStyles_error = css`
-  color: red;
-`;
-var errorMessageCommonStyles = css`
-  color: red;
-  font-size: 13px;
-`;
-var infographicElementCommonStyles = css`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-var infographicElementTitleCommonStyles = css`
-  width: 100%;
-  font-size: 14px;
-  font-weight: 500;
-`;
-var infographicElementTextCommonStyles = css`
-  font-size: 14px;
-  font-weight: 400;
-  color: black;
-`;
-var infographicElementContentCommonStyles = css`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  div {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    span {
-      font-size: 12px;
-      font-weight: 400;
-      color: ${colors.blue[600]};
-    }
-
-    p {
-      ${infographicElementTextCommonStyles};
-    }
-
-    a {
-      ${infographicElementTextCommonStyles};
-      color: ${colors.blue[600]};
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-`;
-var infographicElementLinkCommonStyles = css`
-  ${infographicElementTextCommonStyles};
-  color: ${colors.blue[500]};
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-// src/styles/responsive-media-queries.ts
-import { css as css2 } from "styled-components";
-var displayResolution = {
-  xs: 420,
-  s: 576,
-  m: 768,
-  l: 992,
-  xl: 1200,
-  xxl: 1400
-};
-var responsiveMediaQueries = {
-  up: (size) => (first, ...args) => css2`
-      @media (min-width: ${size}px) {
-        ${css2(first, ...args)}
-      }
-    `,
-  down: (size) => (first, ...args) => css2`
-      @media (max-width: ${size}px) {
-        ${css2(first, ...args)}
-      }
-    `,
-  between: (min, max) => (first, ...args) => css2`
-      @media (min-width: ${displayResolution[min]}px) and (max-width: ${displayResolution[max]}px) {
-        ${css2(first, ...args)}
-      }
-    `
-};
-
-// src/internal/components/common/Alert/styles.ts
-var StyledAlert = styled.div`
+import styled10, { css as css5 } from "styled-components";
+var StyledAlert = styled10.div`
   width: 100%;
   display: flex;
   padding: 20px 24px;
@@ -2312,294 +3545,27 @@ var StyledAlert = styled.div`
     line-height: 22px;
   }
 
-  ${({ $error }) => !!$error && css3`
+  ${({ $error }) => !!$error && css5`
       border-color: ${colors.red[400]};
       background: ${colors.red[300]};
     `};
 
-  ${({ $success }) => !!$success && css3`
+  ${({ $success }) => !!$success && css5`
       border-color: ${colors.green[400]};
       background: ${colors.green[300]};
     `};
 `;
 
-// src/internal/components/common/Icons/index.tsx
-import { jsx, jsxs } from "react/jsx-runtime";
-function SpinnerIcn({ pathFill = "#000000", size = 12 }) {
-  const sizePx = `${size}px`;
-  return /* @__PURE__ */ jsx("svg", { style: { width: sizePx, height: sizePx }, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100", preserveAspectRatio: "xMidYMid", width: "24", height: "24", children: /* @__PURE__ */ jsxs("g", { children: [
-    /* @__PURE__ */ jsx("circle", { strokeDasharray: "169.64600329384882 58.548667764616276", r: "36", strokeWidth: "12", stroke: pathFill, fill: "none", cy: "50", cx: "50", children: /* @__PURE__ */ jsx("animateTransform", { keyTimes: "0;1", values: "0 50 50;360 50 50", dur: "1s", repeatCount: "indefinite", type: "rotate", attributeName: "transform" }) }),
-    /* @__PURE__ */ jsx("g", {})
-  ] }) });
-}
-var StatusSuccessIcn = () => /* @__PURE__ */ jsxs("svg", { width: "26", height: "26", viewBox: "0 0 26 26", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_1152_2420)", children: /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M13 0C5.82098 0 0 5.82098 0 13C0 20.179 5.82098 26 13 26C20.179 26 26 20.179 26 13C26 5.82098 20.179 0\n        13 0ZM18.615 8.75469L12.5038 17.2279C12.4184 17.3471 12.3058 17.4443 12.1753 17.5113C12.0449 17.5783 11.9003\n        17.6132 11.7537 17.6132C11.607 17.6132 11.4625 17.5783 11.332 17.5113C11.2016 17.4443 11.089 17.3471 11.0036\n        17.2279L7.38504 12.2136C7.27478 12.0598 7.38504 11.8451 7.57366 11.8451H8.9346C9.23058 11.8451 9.51205 11.9873\n        9.68616 12.231L11.7522 15.098L16.3138 8.7721C16.4879 8.53125 16.7665 8.38616 17.0654 8.38616H18.4263C18.615\n        8.38616 18.7252 8.60089 18.615 8.75469Z",
-      fill: "#52C41A"
-    }
-  ) }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_1152_2420", children: /* @__PURE__ */ jsx("rect", { width: "26", height: "26", fill: "white" }) }) })
-] });
-var StatusErrorIcn = () => /* @__PURE__ */ jsx("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M12 0C18.6268 0 24 5.37321 24 12C24 18.6268 18.6268 24 12 24C5.37321 24 0 18.6268 0 12C0 5.37321 5.37321 0\n      12 0ZM15.428 7.36125H15.427L15.4248 7.36286L12 10.7879L8.57518 7.36286C8.57411 7.36152 8.57357 7.36125 8.57304\n      7.36125C8.57242 7.36106 8.57177 7.36106 8.57116 7.36125C8.57036 7.36125 8.56982 7.36152 8.56875 7.36259L7.36286\n      8.56848C7.36221 8.56916 7.36175 8.56999 7.36152 8.57089C7.36133 8.5715 7.36133 8.57216 7.36152\n      8.57277V8.5733C7.36197 8.57392 7.36251 8.57446 7.36313 8.57491L10.7879 12L7.36286 15.4248C7.36152 15.4259\n      7.36125 15.4264 7.36125 15.427C7.36106 15.4276 7.36106 15.4282 7.36125 15.4288C7.36125 15.4296 7.36152 15.4302\n      7.36259 15.4312L8.56848 16.6371C8.56916 16.6378 8.56999 16.6383 8.57089 16.6385C8.5715 16.6387 8.57216 16.6387\n      8.57277 16.6385C8.5733 16.6385 8.57384 16.6382 8.57491 16.6371L12 13.2121L15.4248 16.6371C15.4259 16.6382 15.4264\n      16.6385 15.427 16.6385C15.4276 16.6387 15.4282 16.6387 15.4288 16.6385C15.4296 16.6385 15.4302 16.6382 15.4312\n      16.6371L16.6371 15.4312C16.6378 15.4306 16.6383 15.4297 16.6385 15.4288C16.6387 15.4282 16.6387 15.4276 16.6385\n      15.427V15.4264C16.6381 15.4258 16.6377 15.4253 16.6371 15.4248L13.2121 12L16.6371 8.57518C16.6382 8.57411 16.6385\n      8.57357 16.6385 8.57304C16.6387 8.57242 16.6387 8.57177 16.6385 8.57116C16.6385 8.57036 16.6382 8.56982 16.6371\n      8.56875L15.4312 7.36286C15.4306 7.36221 15.4297 7.36175 15.4288 7.36152C15.4282 7.36133 15.4276 7.36133 15.427\n      7.36152L15.428 7.36125Z",
-    fill: "#FF4D4F"
-  }
-) });
-var BlackTriangleIcn = () => /* @__PURE__ */ jsx("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
-    fill: "#000000"
-  }
-) });
-var OrangeTriangleIcn = () => /* @__PURE__ */ jsx("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
-    fill: "#FF5E00"
-  }
-) });
-var ChevronIcn = () => /* @__PURE__ */ jsxs("svg", { width: "12px", height: "12px", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_153_633)", children: /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M2.57153 1.018L2.57153 2.02247C2.57153 2.09077 2.60502 2.15505 2.65993 2.19523L7.90457 6.00014L2.65993\n        9.80506C2.60502 9.84523 2.57153 9.90952 2.57153 9.97782L2.57153 10.9823C2.57153 11.0693 2.67064 11.1202 2.74162\n         11.0693L9.25189 6.34702C9.4876 6.17559 9.4876 5.8247 9.25189 5.65461L2.74162 0.932286C2.67064 0.880054 2.57153\n          0.930947 2.57153 1.018Z",
-      fill: "#3D87C5"
-    }
-  ) }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_153_633", children: /* @__PURE__ */ jsx("rect", { width: "12px", height: "12px", fill: "white", transform: "matrix(0 -1 1 0 0 12)" }) }) })
-] });
-var EndOfCommercialisationIcn = () => /* @__PURE__ */ jsxs("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsxs("g", { clipPath: "url(#clip0_330_2250)", children: [
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M4.65801 10.3098C4.52446 10.2195 4.36185 10.1662 4.18897 10.1664C4.07385 10.1664 3.96278 10.1899 3.86218\n        10.2325C3.71139 10.2963 3.58384 10.4023 3.49335 10.5362C3.40283 10.6698 3.34991 10.8324 3.3501 11.0052C3.34991\n        11.1204 3.37335 11.2314 3.416 11.3318C3.47997 11.4828 3.58579 11.6104 3.71952 11.7007C3.85328 11.7914 4.01608\n        11.8443 4.18897 11.8443C4.3041 11.8443 4.41496 11.8208 4.51536 11.7782C4.66635 11.7144 4.79408 11.6082 4.88439\n         11.4745C4.97472 11.3409 5.0278 11.1781 5.0278 11.0052C5.0278 10.8901 5.00415 10.7793 4.96171 10.6787C4.89793\n          10.5277 4.79174 10.4002 4.65801 10.3098ZM4.50062 11.1368C4.47503 11.1973 4.43181 11.2495 4.37772\n          11.2859C4.32346 11.3224 4.2599 11.3435 4.18895 11.3437C4.14147 11.3435 4.09745 11.3342 4.05735\n          11.3169C3.99707 11.2917 3.94473 11.2483 3.90829 11.1944C3.87184 11.1399 3.85091 11.0762 3.85054\n          11.0052C3.85072 10.9579 3.86022 10.9141 3.87728 10.8736C3.90247 10.8134 3.9459 10.7612 3.99995\n          10.7246C4.05423 10.6882 4.11798 10.6672 4.18893 10.667C4.23622 10.667 4.28003 10.6766 4.32032\n          10.6936C4.38079 10.719 4.43272 10.7622 4.46938 10.8165C4.50583 10.8708 4.52694 10.9343 4.52694\n          11.0053C4.52699 11.0527 4.51766 11.0966 4.50062 11.1368Z",
-        fill: "#EE1313"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M3.95443 9.20724C3.86373 9.20724 3.77884 9.189 3.70093 9.15623C3.58466 9.10702 3.48425 9.02405 3.41408\n         8.91977C3.34663 8.81956 3.30671 8.70155 3.3036 8.57208C3.30709 8.4176 3.35633 8.28349 3.44277 8.17629C3.48756\n         8.12107 3.54278 8.0726 3.60983 8.03248C3.67611 7.99294 3.75423 7.96156 3.84592 7.94177L9.57245 7.00971C9.9467\n         6.94866 10.2442 6.6626 10.3198 6.29102L11.0203 2.84747V2.84709C11.0284 2.80716 11.0323 2.76645 11.0323\n          2.72616C11.0323 2.58698 10.9846 2.45093 10.895 2.34122C10.7797 2.20013 10.6068 2.11814 10.4243\n          2.11814H2.495L2.22481 1.18997V1.19016C2.10078 0.775195 1.76042 0.460828 1.33714 0.370125L0.367674\n          0.162539C0.203705 0.127266 0.0420336 0.231938 0.00678359 0.396094C-0.0283023 0.56025 0.0761586 0.721899\n          0.240526 0.756985L1.20962 0.964758C1.41601 1.00894 1.58192 1.16205 1.64221 1.36441L3.41371 7.44949C3.37379\n          7.4681 3.33521 7.48826 3.29821 7.51055C3.1071 7.62434 2.95398 7.78404 2.85125 7.97049C2.753 8.14763 2.70085\n          8.34844 2.696 8.55563H2.69502V8.5872H2.69579C2.69968 8.74906 2.73418 8.90431 2.79406 9.04599C2.89002 9.27256\n          3.04932 9.46425 3.25011 9.59991C3.4509 9.73575 3.69472 9.81541 3.95443 9.81523H7.17163C7.17064 9.7852 7.16717\n           9.75593 7.16717 9.7257C7.16717 9.54834 7.18538 9.37526 7.21815 9.20724H3.95443ZM8.28413 3.16263C8.45488\n           3.11302 8.63356 3.2107 8.68318 3.38145L9.33556 5.61441C9.38518 5.78517 9.28728 5.96367 9.11656\n           6.01366C8.94599 6.06349 8.7673 5.96562 8.71749 5.79485L8.06527 3.56187C8.01549 3.39134 8.11337 3.21265\n           8.28413 3.16263ZM6.87643 3.16845C7.04699 3.11843 7.2257 3.21631 7.27548 3.38707L7.99009 5.83418C8.0401\n           6.00476 7.94202 6.18363 7.77146 6.23346C7.60091 6.28324 7.4222 6.18539 7.37218 6.01463L6.65757\n           3.56747C6.60781 3.39696 6.70567 3.21806 6.87643 3.16845ZM5.46835 3.17348C5.6391 3.12387 5.81781 3.22174\n           5.8674 3.39248L6.64074 6.04022C6.69074 6.21099 6.59267 6.38967 6.42212 6.43948C6.25159 6.48931 6.07288\n           6.39143 6.02286 6.22066L5.24952 3.57274C5.19971 3.40219 5.29759 3.22348 5.46835 3.17348ZM4.06046\n           3.17911C4.23123 3.12928 4.40992 3.22718 4.45972 3.39795L5.29332 6.25249C5.34334 6.42324 5.24525 6.60213\n           5.0747 6.65175C4.90414 6.70174 4.72543 6.60368 4.67542 6.43313L3.84163 3.5782C3.79203 3.40763 3.88972\n           3.22891 4.06046 3.17911Z",
-        fill: "#EE1313"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M9.88112 7.60687C8.71086 7.60687 7.7627 8.55541 7.7627 9.72569C7.7627 10.8958 8.71086 11.8443 9.88112\n        11.8443C11.0514 11.8443 11.9999 10.8958 11.9999 9.72569C11.9999 8.55541 11.0514 7.60687 9.88112\n        7.60687ZM11.0917 10.0788H8.67055V9.37235H11.0917V10.0788Z",
-        fill: "#EE1313"
-      }
-    )
-  ] }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_330_2250", children: /* @__PURE__ */ jsx("rect", { width: "12", height: "12", fill: "white" }) }) })
-] });
-var LeafIcn = () => /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsxs("g", { clipPath: "url(#clip0_618_2370)", children: [
-    /* @__PURE__ */ jsx("mask", { id: "mask0_618_2370", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ jsx("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
-    /* @__PURE__ */ jsx("g", { mask: "url(#mask0_618_2370)", children: /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M7.87489 0C4.49192 0 1.74989 2.74203 1.74989 6.125V11.0128L0.256266 12.5064C-0.085422 12.8481 -0.085422\n          13.4019 0.256266 13.7436C0.42711 13.9145 0.65111 14 0.874891 14C1.09867 14 1.32267 13.9145 1.49352\n          13.7436L2.98714 12.25H7.87489C11.2579 12.25 13.9999 9.50797 13.9999 6.125V0H7.87489ZM11.1185 4.11862L8.23627\n          7.00088H9.62489C10.1085 7.00088 10.4999 7.39222 10.4999 7.87588C10.4999 8.35953 10.1085 8.75088 9.62489\n          8.75088H6.48627L5.86852 9.36862C5.69767 9.53947 5.47367 9.625 5.24989 9.625C5.02611 9.625 4.80211 9.53947\n          4.63127 9.36862C4.28958 9.02694 4.28958 8.47306 4.63127 8.13138L5.24989 7.51275V4.375C5.24989 3.89134 5.64124\n           3.5 6.12489 3.5C6.60855 3.5 6.99989 3.89134 6.99989 4.375V5.76275L9.88127 2.88137C10.223 2.53969 10.7768\n           2.53969 11.1185 2.88137C11.4602 3.22306 11.4604 3.77694 11.1185 4.11862Z",
-        fill: "#197437"
-      }
-    ) })
-  ] }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_618_2370", children: /* @__PURE__ */ jsx("rect", { width: "14", height: "14", fill: "white" }) }) })
-] });
-var MoleculeIcn = () => /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsxs("g", { clipPath: "url(#clip0_618_936)", children: [
-    /* @__PURE__ */ jsx("mask", { id: "mask0_618_936", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ jsx("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
-    /* @__PURE__ */ jsxs("g", { mask: "url(#mask0_618_936)", children: [
-      /* @__PURE__ */ jsx(
-        "path",
-        {
-          d: "M10.1245 5.15595V2.10851C10.1245 1.90286 10.016 1.71436 9.84181 1.60869L7.29986 0.0835404C7.11421\n          -0.0278468 6.88572 -0.0278468 6.70008 0.0835404L4.15531 1.60869C3.97824 1.71436 3.87256 1.90286 3.87256\n          2.10851V5.15595C3.87256 5.36159 3.98109 5.55009 4.15531 5.65576L6.70008 7.18091C6.96856 7.33514 7.19133\n          7.25231 7.29986 7.18091L9.84181 5.65576C10.016 5.55009 10.1245 5.36159 10.1245 5.15595Z",
-          fill: "#EFAC2F"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        "path",
-        {
-          d: "M5.96922 8.3405L3.4273 6.81532C3.24165 6.70393 3.01317 6.70393 2.82753 6.81532L0.282753 8.3405C0.105675\n          8.44612 0 8.63465 0 8.8403V11.8877C0 12.0934 0.108531 12.2819 0.282753 12.3875L2.82753 13.9127C3.096 14.0669\n          3.31877 13.9841 3.4273 13.9127L5.96922 12.3875C6.1463 12.2819 6.25197 12.0934 6.25197 11.8877V8.8403C6.25197\n          8.63465 6.1463 8.44612 5.96922 8.3405Z",
-          fill: "#EFAC2F"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        "path",
-        {
-          d: "M13.7119 8.33763L11.17 6.81248C10.9843 6.7011 10.7559 6.7011 10.5702 6.81248L8.02541 8.33763C7.84831\n          8.44333 7.74268 8.63178 7.74268 8.83743V11.8849C7.74268 12.0906 7.85119 12.279 8.02541 12.3847L10.5673\n          13.9099C10.8358 14.0641 11.0586 13.9813 11.1671 13.9099L13.709 12.3847C13.8861 12.279 13.9918 12.0906\n          13.9918 11.8849V8.83743C13.9946 8.63178 13.8861 8.44333 13.7119 8.33763Z",
-          fill: "#EFAC2F"
-        }
-      )
-    ] })
-  ] }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_618_936", children: /* @__PURE__ */ jsx("rect", { width: "14", height: "14", fill: "white" }) }) })
-] });
-var PillsBottleIcn = () => /* @__PURE__ */ jsxs("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_165_1782)", children: /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M7.8751 4.34052C7.86877 4.11591 7.75782 3.91751 7.58907 3.79252C7.40655 3.62106 7.2094 3.46818 7.01846\n        3.26338C6.98683 3.22948 6.96046 3.19954 6.93778 3.17205C6.93517 3.16894 6.93256 3.1658 6.92996 3.16263C6.92681\n        3.1587 6.92397 3.155 6.92093 3.15118L6.91757 3.14688C6.82224 3.02447 6.81289 2.95561 6.81289 2.83826C6.81289\n        2.77897 6.81289 2.65316 6.81289 2.52272H6.9662C7.18556 2.52272 7.3634 2.36418 7.3634 2.16861V1.35413C7.3634\n        1.15854 7.18557 1 6.9662 1H3.03366C2.81429 1 2.63645 1.15854 2.63645 1.35413V2.16859C2.63645 2.36416 2.81429\n        2.5227 3.03366 2.5227H3.18697C3.18697 2.65314 3.18697 2.77896 3.18697 2.83824C3.18697 2.95559 3.17762 3.02446\n        3.08227 3.14687L3.07893 3.15116C3.07589 3.15498 3.07308 3.1587 3.06991 3.16261C3.06734 3.16578 3.06474 3.16891\n        3.06208 3.17203C3.0394 3.19952 3.01303 3.22948 2.98144 3.26336C2.79046 3.46817 2.59332 3.62099 2.41079\n        3.79246C2.24204 3.91746 2.13109 4.11591 2.12476 4.34051C2.12476 4.34635 2.12427 4.35356 2.12427 4.36032C2.12427\n         4.86656 2.12427 7.86047 2.12427 8.24009C2.12427 8.62504 2.40714 9 2.88414 9C3.12245 9 3.82162 9 4.98483\n         9C4.98483 9 4.9887 9 4.99588 9H4.99991H5.00395C5.01113 9 5.015 9 5.015 9C6.17819 9 6.87738 9 7.11569 9C7.59269\n          9 7.87556 8.62504 7.87556 8.24009C7.87556 7.86047 7.87556 4.8673 7.87556 4.36108C7.87556 4.35432 7.8751\n          4.34637 7.8751 4.34052ZM7.08025 6.21274C7.08025 6.43213 6.90241 6.60997 6.68304\n          6.60997H4.99995H3.31686C3.0975 6.60997 2.91965 6.43213 2.91965 6.21274V5.5681C2.91965 5.34872 3.0975 5.17088\n           3.31686 5.17088H6.68304C6.90241 5.17088 7.08025 5.34874 7.08025 5.5681V6.21274Z",
-      fill: "#000000"
-    }
-  ) }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_165_1782", children: /* @__PURE__ */ jsx("rect", { width: "8", height: "8", fill: "white", transform: "translate(1 1)" }) }) })
-] });
-var PrescriptionIcn = () => /* @__PURE__ */ jsx("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    d: "M8.56078 8.25L10.3903 6.42047C10.5368 6.27398 10.5368 6.03656 10.3903 5.89008L9.85992 5.35969C9.71344 5.2132\n       9.47602 5.2132 9.32953 5.35969L7.5 7.18922L5.53219 5.22141C6.64008 5.08125 7.5 4.14586 7.5 3C7.5 1.75734 6.49266\n        0.75 5.25 0.75H1.875C1.66781 0.75 1.5 0.917813 1.5 1.125V7.125C1.5 7.33219 1.66781 7.5 1.875 7.5H2.625C2.83219\n         7.5 3 7.33219 3 7.125V5.25H3.43945L6.43945 8.25L4.60992 10.0795C4.46344 10.226 4.46344 10.4634 4.60992\n          10.6099L5.14031 11.1403C5.2868 11.2868 5.52422 11.2868 5.6707 11.1403L7.5 9.31055L9.32953 11.1401C9.47602\n           11.2866 9.71344 11.2866 9.85992 11.1401L10.3903 10.6097C10.5368 10.4632 10.5368 10.2258 10.3903\n           10.0793L8.56078 8.25ZM3 2.25H5.25C5.66344 2.25 6 2.58656 6 3C6 3.41344 5.66344 3.75 5.25 3.75H3V2.25Z",
-    fill: "#000000"
-  }
-) });
-var SolidPillIcn = () => /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_618_3928)", children: /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M12.5957 9.11825C12.1339 8.62182 11.5084 8.31967 10.8342 8.26742L10.8168 8.26608L3.19964 8.25861C1.71537\n        8.25861 0.507812 9.46617 0.507812 10.9505C0.507812 12.4347 1.71537 13.6423 3.19964 13.6423H3.20011L10.7994\n        13.6348L10.8342 13.6335C11.5083 13.5812 12.1339 13.2791 12.5957 12.7827C13.0601 12.2834 13.3159 11.6327 13.3159\n        10.9505C13.3159 10.2682 13.0601 9.61754 12.5957 9.11825ZM6.98957 12.7251L3.19931 12.7288C2.21893 12.7286\n        1.42131 11.9309 1.42131 10.9505C1.42131 9.96992 2.21907 9.17214 3.19918 9.17214L6.98957\n        9.17586V12.7251ZM1.69844 7.39865C2.15702 7.73348 2.72102 7.91788 3.28648 7.91794H3.28659C3.48032 7.91794\n        3.67493 7.89669 3.86497 7.85477L3.882 7.85103L11.1737 5.64824C12.5941 5.21763 13.3994 3.71168 12.9688\n        2.2912C12.7979 1.72734 12.4566 1.24606 11.9819 0.899316C11.5232 0.564246 10.9591 0.37973 10.3935\n         0.37973C10.1285 0.379872 9.86494 0.419123 9.61137 0.496215L2.34107 2.70811L2.30812 2.71951C1.67812 2.96508\n         1.16713 3.43572 0.869242 4.04475C0.569637 4.65728 0.513664 5.35421 0.711578 6.00713C0.882531 6.5709 1.22378\n         7.05207 1.69844 7.39865ZM9.87685 1.37031C10.0443 1.31935 10.2185 1.29337 10.3935 1.29323C11.1697 1.29323\n         11.8691 1.8126 12.0946 2.55621C12.379 3.49462 11.847 4.48952 10.9091 4.77387L7.28069 5.86997L6.25098\n         2.47344L9.87685 1.37031Z",
-      fill: "#3D87C5"
-    }
-  ) }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_618_3928", children: /* @__PURE__ */ jsx("rect", { width: "14", height: "14", fill: "white" }) }) })
-] });
-var StartOfCommercialisationIcn = () => /* @__PURE__ */ jsxs("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsxs("g", { clipPath: "url(#clip0_330_2383)", children: [
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M4.65803 10.3099C4.52448 10.2196 4.36187 10.1663 4.18897 10.1665C4.07385 10.1665 3.96278 10.1899 3.86218\n        10.2326C3.71139 10.2964 3.58384 10.4024 3.49335 10.5363C3.40283 10.6698 3.34991 10.8325 3.3501 11.0054C3.34991\n        11.1205 3.37337 11.2316 3.41601 11.3319C3.47997 11.4829 3.58579 11.6105 3.71952 11.7008C3.85326 11.7915 4.01608\n         11.8444 4.18897 11.8444C4.3041 11.8444 4.41496 11.8209 4.51536 11.7783C4.66635 11.7145 4.79408 11.6083 4.88441\n          11.4746C4.97474 11.341 5.02783 11.1782 5.02783 11.0053C5.02783 10.8902 5.00418 10.7793 4.96173\n          10.6788C4.89796 10.5278 4.79176 10.4002 4.65803 10.3099ZM4.50062 11.1369C4.47503 11.1974 4.43181\n          11.2496 4.37772 11.286C4.32346 11.3224 4.25987 11.3436 4.18895 11.3437C4.14147 11.3436 4.09745 11.3343\n          4.05735 11.317C3.99707 11.2918 3.94473 11.2484 3.90829 11.1945C3.87184 11.14 3.85091 11.0763 3.85054\n          11.0053C3.85075 10.958 3.86024 10.9142 3.8773 10.8737C3.9025 10.8134 3.94593 10.7613 3.99997 10.7247C4.05426\n          10.6882 4.11803 10.6673 4.18895 10.6671C4.23625 10.6671 4.28005 10.6766 4.32036 10.6937C4.38083 10.719\n          4.43277 10.7623 4.46943 10.8165C4.50587 10.8708 4.52699 10.9344 4.52699 11.0053C4.52699 11.0528 4.51768\n          11.0966 4.50062 11.1369Z",
-        fill: "#09853D"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M3.9545 9.20728C3.8638 9.20728 3.77891 9.18907 3.701 9.15631C3.58471 9.10709 3.4843 9.02412 3.41415\n        8.91985C3.3467 8.81965 3.30676 8.7016 3.30367 8.57215C3.30716 8.41765 3.3564 8.28354 3.44284 8.17636C3.4876\n        8.12112 3.54285 8.07267 3.6099 8.03255C3.67618 7.99301 3.75428 7.96163 3.84599 7.94185L9.57261 7.00976C9.94686\n         6.94871 10.2444 6.66263 10.32 6.29107L11.0205 2.84745V2.84707C11.0286 2.80714 11.0325 2.76645 11.0325\n         2.72614C11.0325 2.58696 10.9848 2.45091 10.8952 2.3412C10.7799 2.2001 10.607 2.11812 10.4245\n         2.11812H2.49505L2.22486 1.1899V1.19009C2.10081 0.775128 1.76045 0.460738 1.33714 0.370035L0.367674\n         0.162449C0.203705 0.127175 0.0420336 0.231824 0.00678359 0.396003C-0.0283023 0.56016 0.0761586 0.721808\n          0.240526 0.756894L1.20964 0.964667C1.41606 1.00885 1.58195 1.16196 1.64223 1.36432L3.41375 7.44949C3.37384\n           7.4681 3.33526 7.48826 3.29825 7.51055C3.10714 7.62434 2.95403 7.78404 2.8513 7.97049C2.75305 8.14765 2.7009\n            8.34844 2.69605 8.55565H2.69506V8.58722H2.69584C2.69973 8.74908 2.73423 8.90433 2.79411 9.04601C2.89006\n             9.27258 3.04937 9.46428 3.25016 9.59993C3.45095 9.73577 3.69477 9.81546 3.9545 9.81525H7.17174C7.17076\n              9.78523 7.16729 9.75595 7.16729 9.72572C7.16729 9.54837 7.1855 9.37528 7.21827\n              9.20724H3.9545V9.20728ZM8.28428 3.16259C8.45502 3.11297 8.63373 3.21066 8.68335 3.3814L9.33575\n              5.61441C9.38537 5.78517 9.28749 5.96368 9.11675 6.01367C8.94617 6.0635 8.76749 5.96562 8.71768\n              5.79485L8.06546 3.56185C8.01561 3.39129 8.11351 3.2126 8.28428 3.16259ZM6.87655 3.1684C7.04713 3.11839\n              7.22581 3.21626 7.27562 3.38703L7.99023 5.83418C8.04024 6.00476 7.94216 6.18366 7.7716 6.23346C7.60103\n              6.28327 7.42234 6.18539 7.37232 6.01463L6.65771 3.56745C6.60791 3.39694 6.70578 3.21802 6.87655\n              3.1684ZM5.46845 3.17344C5.63919 3.12382 5.8179 3.2217 5.86752 3.39244L6.64086 6.04022C6.69085 6.21099\n              6.59279 6.3897 6.42224 6.43948C6.25168 6.48931 6.07297 6.39143 6.02296 6.22067L5.24961 3.5727C5.19978\n              3.40214 5.29768 3.22346 5.46845 3.17344ZM4.06053 3.17907C4.2313 3.12924 4.41001 3.22714 4.45982\n              3.3979L5.29344 6.25249C5.34346 6.42324 5.24537 6.60214 5.07481 6.65178C4.90424 6.70177 4.72555 6.60371\n               4.67553 6.43315L3.84172 3.57818C3.79208 3.40758 3.88977 3.22889 4.06053 3.17907Z",
-        fill: "#09853D"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M9.88135 7.6069C8.71107 7.6069 7.7627 8.55547 7.7627 9.72575C7.7627 10.8958 8.71107 11.8444 9.88135\n        11.8444C11.0514 11.8444 12 10.8958 12 9.72575C12 8.55547 11.0514 7.6069 9.88135 7.6069ZM9.76121 10.7154L8.74831\n         9.90502L9.13266 9.42455L9.6583 9.84514L10.5439 8.70664L11.0298 9.0844L9.76121 10.7154Z",
-        fill: "#09853D"
-      }
-    )
-  ] }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_330_2383", children: /* @__PURE__ */ jsx("rect", { width: "12", height: "12", fill: "white" }) }) })
-] });
-var SupplyIcn = () => /* @__PURE__ */ jsxs("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsxs("g", { clipPath: "url(#clip0_329_708)", children: [
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M5.18757 9.96101C4.45959 9.96101 3.86963 10.5508 3.86963 11.2788C3.86963 12.0069 4.45959 12.5966 5.18757\n        12.5966C5.91581 12.5966 6.50562 12.0069 6.50562 11.2788C6.50562 10.5508 5.91581 9.96101 5.18757\n        9.96101ZM5.18757 11.8517C4.87111 11.8517 4.61468 11.5953 4.61468 11.2788C4.61468 10.9622 4.87111 10.7059\n        5.18757 10.7059C5.50406 10.7059 5.76067 10.9622 5.76067 11.2788C5.76067 11.5953 5.50406 11.8517 5.18757 11.8517Z",
-        fill: "#FF5E00"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M12.1372 9.96101C11.4093 9.96101 10.8193 10.5508 10.8193 11.2788C10.8193 12.0069 11.4093 12.5966 12.1372\n        12.5966C12.8655 12.5966 13.4553 12.0069 13.4553 11.2788C13.4553 10.5508 12.8655 9.96101 12.1372 9.96101ZM12.1372\n         11.8517C11.8208 11.8517 11.5644 11.5953 11.5644 11.2788C11.5644 10.9622 11.8208 10.7059 12.1372\n         10.7059C12.4538 10.7059 12.7104 10.9622 12.7104 11.2788C12.7104 11.5953 12.4538 11.8517 12.1372 11.8517Z",
-        fill: "#FF5E00"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M6.6703 5.9117C6.6703 6.09636 6.51918 6.24744 6.33455 6.24744H1.70143C1.51676 6.24744 1.36572 6.09636 1.36572\n         5.9117V5.71025C1.36572 5.52562 1.5168 5.37454 1.70143 5.37454H6.33455C6.51922 5.37454 6.6703 5.52562 6.6703\n         5.71025V5.9117Z",
-        fill: "#FF5E00"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M14.7198 7.87737C14.2365 7.75174 13.96 7.67276 13.7703 7.30629L13.1358 6.02162C12.9459 5.65516 12.4529\n        5.35529 12.0403 5.35529H11.1725C11.1725 5.35529 11.0557 5.35773 11.0557 5.24024C11.0557 4.97087 11.0557\n        4.1628 11.0557 4.1628C11.0557 3.74512 10.8194 3.40337 10.3166 3.40337H3.24371C2.52388 3.40337 2.18213 3.74516\n        2.18213 4.1628V4.83801C2.18213 4.83801 2.18213 5.03883 2.3765 5.03883C3.36599 5.03883 6.33452 5.03883 6.33452\n        5.03883C6.70477 5.03883 7.006 5.34003 7.006 5.71028V5.91173C7.006 6.28199 6.70477 6.58318 6.33452\n        6.58318H2.3765C2.3765 6.58318 2.18213 6.56703 2.18213 6.77685C2.18213 6.88106 2.18213 6.95101 2.18213\n        7.00905C2.18213 7.19372 2.43524 7.19361 2.43524 7.19361H5.09958C5.46984 7.19361 5.77107 7.49483 5.77107\n        7.86506V8.0665C5.77107 8.43676 5.46984 8.73795 5.09958 8.73795H2.47727C2.47727 8.73795 2.18213 8.7325\n        2.18213 8.9675C2.18213 9.37541 2.18213 10.5991 2.18213 10.5991C2.18213 11.0167 2.52388 11.3585 2.94156\n        11.3585C2.94156 11.3585 3.25618 11.3585 3.36105 11.3585C3.45619 11.3585 3.4702 11.3055 3.4702 11.2789C3.4702\n        10.332 4.24066 9.5617 5.1876 9.5617C6.13462 9.5617 6.90504 10.332 6.90504 11.2789C6.90504 11.3056 6.89744\n        11.3585 6.9702 11.3585C7.80172 11.3585 10.3555 11.3585 10.3555 11.3585C10.4226 11.3585 10.4199 11.3019 10.4199\n        11.2789C10.4199 10.332 11.1903 9.5617 12.1373 9.5617C13.0843 9.5617 13.8547 10.332 13.8547 11.2789C13.8547\n        11.3056 13.854 11.3585 13.896 11.3585C14.2773 11.3585 14.7495 11.3585 14.7495 11.3585C15.1624 11.3585 15.5\n        11.0208 15.5 10.6081V9.18233C15.5001 7.98165 15.1209 7.98165 14.7198 7.87737ZM13.2917 7.81059C13.2917 7.81059\n        11.6981 7.81059 11.1557 7.81059C11.0674 7.81059 11.0557 7.72468 11.0557 7.72468V5.94529C11.0557 5.94529 11.0507\n         5.87696 11.164 5.87696C11.3164 5.87696 11.7735 5.87696 11.7735 5.87696C12.1408 5.87696 12.5794 6.14378 12.7483\n          6.46987L13.3129 7.61298C13.3367 7.659 13.3621 7.69986 13.3893 7.73647C13.4094 7.76332 13.3757 7.81059 13.2917\n           7.81059Z",
-        fill: "#FF5E00"
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "path",
-      {
-        d: "M5.43524 8.06651C5.43524 8.25118 5.28416 8.40226 5.09953 8.40226H0.835707C0.651039 8.40226 0.5 8.25118 0.5\n        8.06651V7.86506C0.5 7.68043 0.651076 7.52936 0.835707 7.52936H5.09953C5.2842 7.52936 5.43524 7.68043 5.43524\n        7.86506V8.06651Z",
-        fill: "#FF5E00"
-      }
-    )
-  ] }),
-  /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_329_708", children: /* @__PURE__ */ jsx("rect", { width: "15", height: "15", fill: "white", transform: "translate(0.5 0.5)" }) }) })
-] });
-var SearchIcn = () => /* @__PURE__ */ jsx("svg", { width: "20px", height: "20px", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx("g", { mask: "url(#mask0_16_247)", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    d: "M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333\n        7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5\n        6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431\n        11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417\n        9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833\n        11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021\n        5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042\n        5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958\n        11.3021 6.875 11.6667 7.91667 11.6667Z",
-    fill: "#9CA8B2"
-  }
-) }) });
-var CloseIcn = () => /* @__PURE__ */ jsx("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M13.1404 2.32697C13.1407 2.32697 13.1411 2.32732 13.1418 2.32804L14.172 3.3584C14.1727 3.35893 14.1729 3.35929\n       14.1731 3.35982C14.1732 3.36018 14.1732 3.36054 14.1731 3.3609C14.1731 3.36143 14.1727 3.36179 14.172\n       3.3625L9.0345 8.5L14.172 13.6375C14.1727 13.6382 14.1729 13.6386 14.1731 13.6391C14.1732 13.6395 14.1732 13.64\n       14.1731 13.6404C14.1731 13.6407 14.1727 13.6411 14.172 13.6418L13.1416 14.672C13.1411 14.6727 13.1407 14.6729\n       13.1404 14.673C13.14 14.6732 13.1395 14.6732 13.1391 14.673C13.1386 14.673 13.1382 14.6727 13.1375 14.672L8.00003\n        9.53447L2.86253 14.672C2.86182 14.6727 2.86146 14.6729 2.86093 14.673C2.86052 14.6732 2.86008 14.6732 2.85968\n         14.673C2.85932 14.673 2.85896 14.6727 2.85825 14.672L1.82807 13.6416C1.82735 13.6411 1.82718 13.6407 1.827\n         13.6404C1.82687 13.64 1.82687 13.6395 1.827 13.6391C1.827 13.6386 1.82735 13.6382 1.82807 13.6375L6.96557\n         8.5L1.82807 3.3625C1.82735 3.36179 1.82718 3.36143 1.827 3.3609C1.82687 3.36049 1.82687 3.36005 1.827\n         3.35965C1.827 3.35929 1.82735 3.35893 1.82807 3.35822L2.85843 2.32804C2.85896 2.32732 2.85932 2.32715 2.85968\n         2.32697C2.86008 2.32684 2.86052 2.32684 2.86093 2.32697C2.86146 2.32697 2.86182 2.32732 2.86253 2.32804L8.00003\n          7.46554L13.1375 2.32804C13.1382 2.32732 13.1386 2.32715 13.1391 2.32697C13.1395 2.32684 13.14 2.32684 13.1404\n           2.32697Z",
-    fill: "#4B6682"
-  }
-) });
-var EditIcn = () => /* @__PURE__ */ jsx("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx(
-  "path",
-  {
-    d: "M7.277 9.81458L12.1624 4.92916L11.4041 4.17083L6.51867 9.05625L7.277 9.81458ZM3.47075 11.0833C2.49853 11.0347\n      1.77422 10.8306 1.29784 10.4708C0.821446 10.1111 0.583252 9.59097 0.583252 8.91041C0.583252 8.27847 0.843321\n      7.76562 1.36346 7.37187C1.8836 6.97812 2.60547 6.74236 3.52909 6.66458C3.90825 6.63541 4.19263 6.57465 4.38221\n      6.48229C4.57179 6.38993 4.66659 6.26111 4.66659 6.09583C4.66659 5.84305 4.52318 5.65347 4.23638 5.52708C3.94957\n      5.40069 3.47561 5.30833 2.8145 5.25L2.91659 4.08333C3.91797 4.16111 4.65443 4.36284 5.12596 4.68854C5.59749\n      5.01423 5.83325 5.48333 5.83325 6.09583C5.83325 6.61111 5.6461 7.01458 5.27179 7.30625C4.89749 7.59791 4.34575\n      7.77291 3.61659 7.83125C2.99436 7.87986 2.5277 7.99409 2.21659 8.17396C1.90547 8.35382 1.74992 8.5993 1.74992\n      8.91041C1.74992 9.25069 1.88603 9.49618 2.15825 9.64687C2.43047 9.79757 2.88742 9.8875 3.52909 9.91666L3.47075\n      11.0833ZM7.55409 11.1854L5.14784 8.77916L10.7187 3.20833C10.9131 3.01389 11.144 2.91666 11.4114 2.91666C11.6787\n      2.91666 11.9096 3.01389 12.1041 3.20833L13.1249 4.22916C13.3194 4.42361 13.4166 4.65451 13.4166 4.92187C13.4166\n      5.18923 13.3194 5.42014 13.1249 5.61458L7.55409 11.1854ZM5.23534 11.6667C5.07006 11.7056 4.92422 11.6618 4.79784\n       11.5354C4.67145 11.409 4.6277 11.2632 4.66659 11.0979L5.14784 8.77916L7.55409 11.1854L5.23534 11.6667Z",
-    fill: "#383A3C"
-  }
-) });
-var DeleteIcn = () => /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-  /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M5.83325 5.25C6.15542 5.25 6.41659 5.51117 6.41659 5.83334V9.625C6.41659 9.94717 6.15542 10.2083 5.83325\n      10.2083C5.51109 10.2083 5.24992 9.94717 5.24992 9.625V5.83334C5.24992 5.51117 5.51109 5.25 5.83325 5.25Z",
-      fill: "#383A3C"
-    }
-  ),
-  /* @__PURE__ */ jsx(
-    "path",
-    {
-      d: "M8.74992 5.83334C8.74992 5.51117 8.48875 5.25 8.16659 5.25C7.84442 5.25 7.58325 5.51117 7.58325\n      5.83334V9.625C7.58325 9.94717 7.84442 10.2083 8.16659 10.2083C8.48875 10.2083 8.74992 9.94717 8.74992\n      9.625V5.83334Z",
-      fill: "#383A3C"
-    }
-  ),
-  /* @__PURE__ */ jsx(
-    "path",
-    {
-      fillRule: "evenodd",
-      clipRule: "evenodd",
-      d: "M5.62588 0.583336C5.41285 0.583336 5.21676 0.699465 5.11436 0.88627L4.32112 2.33334H1.16659C0.844419 2.33334\n      0.583252 2.5945 0.583252 2.91667C0.583252 3.23884 0.844419 3.5 1.16659 3.5H2.04159V12.8333C2.04159 13.1555\n      2.30275 13.4167 2.62492 13.4167H11.3749C11.6971 13.4167 11.9583 13.1555 11.9583 12.8333V3.5H12.8333C13.1554\n      3.5 13.4166 3.23884 13.4166 2.91667C13.4166 2.5945 13.1554 2.33334 12.8333 2.33334H9.68208L8.90713\n      0.890634C8.80548 0.701395 8.60805 0.583336 8.39324 0.583336H5.62588ZM8.35775 2.33334L8.04442 1.75H5.97134L5.65158\n       2.33334H8.35775ZM3.20825 3.5V12.25H10.7916V3.5H3.20825Z",
-      fill: "#383A3C"
-    }
-  )
-] });
-var WarningIcn = ({ color = "#3D87C5" }) => /* @__PURE__ */ jsx("svg", { width: "16px", height: "16px", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ jsx("path", { d: "M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z", fill: color }) });
-
 // src/internal/components/common/Alert/index.tsx
-import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx20, jsxs as jsxs14 } from "react/jsx-runtime";
 var Alert = ({ status, title, description }) => {
-  return /* @__PURE__ */ jsxs2(StyledAlert, { className: "StyledAlert", $success: status === "success", $error: status === "error", children: [
-    /* @__PURE__ */ jsxs2("div", { className: "heading", children: [
-      status === "success" && /* @__PURE__ */ jsx2(StatusSuccessIcn, {}),
-      status === "error" && /* @__PURE__ */ jsx2(StatusErrorIcn, {}),
-      /* @__PURE__ */ jsx2("h4", { children: title })
+  return /* @__PURE__ */ jsxs14(StyledAlert, { className: "StyledAlert", $success: status === "success", $error: status === "error", children: [
+    /* @__PURE__ */ jsxs14("div", { className: "heading", children: [
+      status === "success" && /* @__PURE__ */ jsx20(StatusSuccessIcn, {}),
+      status === "error" && /* @__PURE__ */ jsx20(StatusErrorIcn, {}),
+      /* @__PURE__ */ jsx20("h4", { children: title })
     ] }),
-    /* @__PURE__ */ jsx2("p", { children: description })
+    /* @__PURE__ */ jsx20("p", { children: description })
   ] });
 };
 
@@ -2617,11 +3583,11 @@ var readFileAsArrayBuffer = (file) => {
 };
 
 // src/internal/components/form-elements/Button/styles.ts
-import styled2, { css as css4 } from "styled-components";
+import styled11, { css as css6 } from "styled-components";
 var viewStyles = ($view) => {
   switch ($view) {
     case "primary":
-      return css4`
+      return css6`
         background: ${colors.blue[800]};
         color: #ffffff;
 
@@ -2630,7 +3596,7 @@ var viewStyles = ($view) => {
         }
       `;
     case "outlined":
-      return css4`
+      return css6`
         border-radius: 6px;
         border-color: ${colors.grey[550]};
         background: ${colors.grey[100]};
@@ -2641,7 +3607,7 @@ var viewStyles = ($view) => {
         }
       `;
     case "withSpinner":
-      return css4`
+      return css6`
         border-radius: 6px;
         border-color: ${colors.grey[550]};
         background: ${colors.grey[100]};
@@ -2652,7 +3618,7 @@ var viewStyles = ($view) => {
       return null;
   }
 };
-var StyledButton = styled2.button`
+var StyledButton = styled11.button`
   display: flex;
   height: 32px;
   padding: 0 16px;
@@ -2678,33 +3644,33 @@ var StyledButton = styled2.button`
 `;
 
 // src/internal/components/form-elements/Button/index.tsx
-import { jsx as jsx3 } from "react/jsx-runtime";
+import { jsx as jsx21 } from "react/jsx-runtime";
 var Button = ({ title, view = "primary", handleClick, type = "button", ...rest }) => {
-  return /* @__PURE__ */ jsx3(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
+  return /* @__PURE__ */ jsx21(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
 };
 
 // src/internal/components/form-elements/TextInput/index.tsx
 import { forwardRef, useEffect, useRef } from "react";
 
 // src/internal/components/form-elements/TextInput/styles.ts
-import styled3, { css as css5 } from "styled-components";
-var StyledTextInputLabel = styled3.label`
+import styled12, { css as css7 } from "styled-components";
+var StyledTextInputLabel = styled12.label`
   ${labelCommonStyles};
-  ${({ $error }) => !!$error && css5`
+  ${({ $error }) => !!$error && css7`
       ${labelCommonStyles_error}
     `};
-  ${({ $required }) => !!$required && css5`
+  ${({ $required }) => !!$required && css7`
       ${labelCommonStyles_required}
     `};
 `;
-var StyledTextInput = styled3.div`
+var StyledTextInput = styled12.div`
   ${fieldCommonStyles};
 
   .error {
     ${errorMessageCommonStyles}
   }
 `;
-var StyledInput = styled3.input`
+var StyledInput = styled12.input`
   ${inputCommonStyles};
 
   &::file-selector-button {
@@ -2720,20 +3686,20 @@ var StyledInput = styled3.input`
     color: ${colors.grey[650]};
   }
 
-  ${({ $error }) => !!$error && css5`
+  ${({ $error }) => !!$error && css7`
       ${inputCommonStyles_error}
       &::file-selector-button {
         color: rgba(255, 0, 0, 0.5);
         border-color: red;
       }
     `};
-  ${({ $disabled }) => !!$disabled && css5`
+  ${({ $disabled }) => !!$disabled && css7`
       ${inputCommonStyles_disabled}
     `};
 `;
 
 // src/internal/components/form-elements/TextInput/index.tsx
-import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx22, jsxs as jsxs15 } from "react/jsx-runtime";
 var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disabled, autoFocus, ...rest }, ref) => {
   const localRef = useRef(null);
   useEffect(() => {
@@ -2741,12 +3707,12 @@ var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disa
       localRef.current.focus();
     }
   }, [autoFocus]);
-  return /* @__PURE__ */ jsxs3(StyledTextInput, { className: "StyledTextInput", children: [
-    /* @__PURE__ */ jsxs3(StyledTextInputLabel, { className: "StyledTextInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx4("span", { children: "*" }),
+  return /* @__PURE__ */ jsxs15(StyledTextInput, { className: "StyledTextInput", children: [
+    /* @__PURE__ */ jsxs15(StyledTextInputLabel, { className: "StyledTextInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ jsx22("span", { children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ jsx4(
+    /* @__PURE__ */ jsx22(
       StyledInput,
       {
         className: "StyledInput",
@@ -2768,14 +3734,14 @@ var TextInput = forwardRef(({ label, min, type, id, required, errorMessage, disa
         $error: !!errorMessage
       }
     ),
-    errorMessage && /* @__PURE__ */ jsx4("p", { className: "error", children: errorMessage })
+    errorMessage && /* @__PURE__ */ jsx22("p", { className: "error", children: errorMessage })
   ] });
 });
 TextInput.displayName = "TextInput";
 
 // src/internal/components/certificate-elements/CertificateUploadForm/styles.ts
-import styled4 from "styled-components";
-var StyledCertificateUpload = styled4.div`
+import styled13 from "styled-components";
+var StyledCertificateUpload = styled13.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -2783,7 +3749,7 @@ var StyledCertificateUpload = styled4.div`
   align-self: stretch;
   gap: 12px;
 `;
-var StyledCertificateForm = styled4.form`
+var StyledCertificateForm = styled13.form`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -2817,7 +3783,7 @@ var StyledCertificateForm = styled4.form`
 `;
 
 // src/internal/components/certificate-elements/CertificateUploadForm/index.tsx
-import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx23, jsxs as jsxs16 } from "react/jsx-runtime";
 var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
   const {
     register,
@@ -2837,11 +3803,11 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
     onResetCertificate();
     reset();
   };
-  return /* @__PURE__ */ jsxs4(StyledCertificateUpload, { className: "StyledCertificateUpload", children: [
-    /* @__PURE__ */ jsxs4(StyledCertificateForm, { className: "StyledCertificateForm", onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
-      /* @__PURE__ */ jsx5("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
-      /* @__PURE__ */ jsxs4("div", { className: "StyledCertificateUpload__inputs", children: [
-        !certificateAlreadyUploaded && /* @__PURE__ */ jsx5(
+  return /* @__PURE__ */ jsxs16(StyledCertificateUpload, { className: "StyledCertificateUpload", children: [
+    /* @__PURE__ */ jsxs16(StyledCertificateForm, { className: "StyledCertificateForm", onSubmit: handleSubmit(handleFormSubmit), id: "uploadCertificateForm", children: [
+      /* @__PURE__ */ jsx23("h3", { children: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.titleUpload") : t("practitioner.certificateUpload.titlePassword") }),
+      /* @__PURE__ */ jsxs16("div", { className: "StyledCertificateUpload__inputs", children: [
+        !certificateAlreadyUploaded && /* @__PURE__ */ jsx23(
           TextInput,
           {
             label: t("practitioner.certificateUpload.fileLabel"),
@@ -2855,7 +3821,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
             errorMessage: certificateFormError["certificate"]?.message
           }
         ),
-        /* @__PURE__ */ jsx5(
+        /* @__PURE__ */ jsx23(
           TextInput,
           {
             label: t("practitioner.certificateUpload.passwordLabel"),
@@ -2869,7 +3835,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
           }
         )
       ] }),
-      /* @__PURE__ */ jsx5(
+      /* @__PURE__ */ jsx23(
         Button,
         {
           title: !certificateAlreadyUploaded ? t("practitioner.certificateUpload.submitButtonUpload") : t("practitioner.certificateUpload.submitButtonPassword"),
@@ -2878,13 +3844,13 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
         }
       )
     ] }),
-    certificateAlreadyUploaded && /* @__PURE__ */ jsx5(Button, { title: t("practitioner.certificateUpload.resetButton"), type: "reset", view: "outlined", form: "uploadCertificateForm", handleClick: onUploadedAnotherCertificate })
+    certificateAlreadyUploaded && /* @__PURE__ */ jsx23(Button, { title: t("practitioner.certificateUpload.resetButton"), type: "reset", view: "outlined", form: "uploadCertificateForm", handleClick: onUploadedAnotherCertificate })
   ] });
 };
 
 // src/shared/components/PractitionerCertificate/styles.ts
-import styled5 from "styled-components";
-var StyledPractitionerCertificate = styled5.div`
+import styled14 from "styled-components";
+var StyledPractitionerCertificate = styled14.div`
   width: 100%;
 
   display: flex;
@@ -2898,7 +3864,7 @@ var StyledPractitionerCertificate = styled5.div`
 `;
 
 // src/shared/components/PractitionerCertificate/index.tsx
-import { Fragment, jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx24, jsxs as jsxs17 } from "react/jsx-runtime";
 var PractitionerCertificate = ({
   certificateValid,
   onUploadCertificate,
@@ -2907,14 +3873,14 @@ var PractitionerCertificate = ({
   certificateUploaded,
   errorWhileVerifyingCertificate
 }) => {
-  return /* @__PURE__ */ jsxs5(Fragment, { children: [
-    /* @__PURE__ */ jsx6(GlobalStyles, {}),
-    /* @__PURE__ */ jsxs5(StyledPractitionerCertificate, { className: "StyledPractitionerCertificate", children: [
-      certificateValid && certificateUploaded && /* @__PURE__ */ jsx6(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
-      !certificateValid && !certificateUploaded && /* @__PURE__ */ jsx6(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
-      errorWhileVerifyingCertificate && /* @__PURE__ */ jsx6(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
-      certificateUploaded && !certificateValid && /* @__PURE__ */ jsx6(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
-      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ jsx6(
+  return /* @__PURE__ */ jsxs17(Fragment3, { children: [
+    /* @__PURE__ */ jsx24(GlobalStyles, {}),
+    /* @__PURE__ */ jsxs17(StyledPractitionerCertificate, { className: "StyledPractitionerCertificate", children: [
+      certificateValid && certificateUploaded && /* @__PURE__ */ jsx24(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
+      !certificateValid && !certificateUploaded && /* @__PURE__ */ jsx24(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
+      errorWhileVerifyingCertificate && /* @__PURE__ */ jsx24(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
+      certificateUploaded && !certificateValid && /* @__PURE__ */ jsx24(Alert, { status: "error", title: t("practitioner.certificateUpload.passwordMissingTitle"), description: t("practitioner.certificateUpload.passwordMissingDescription") }),
+      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ jsx24(
         CertificateUploadForm,
         {
           onUploadCertificate,
@@ -2933,867 +3899,61 @@ import { useEffect as useEffect3, useRef as useRef4, useState as useState3 } fro
 // src/internal/components/medication-elements/MedicationCard/index.tsx
 import { useState as useState2 } from "react";
 
-// src/internal/components/common/Tooltip/index.tsx
-import React2, { useState } from "react";
-
-// src/internal/components/common/Tooltip/styles.ts
-import styled6, { css as css6 } from "styled-components";
-var tooltipArrow = css6`
-  content: '';
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-`;
-var tooltipTopOriented = css6`
-  .chevron {
-    display: none;
-    ${tooltipArrow};
-    border-top: 7px solid ${colors.blue[500]};
-    position: absolute;
-    bottom: 23px;
-    left: 50%;
-    transform: translate(-50%, 0);
-  }
-
-  .popup {
-    bottom: 28px;
-  }
-`;
-var tooltipBottomOriented = css6`
-  .chevron {
-    display: none;
-    ${tooltipArrow};
-    border-bottom: 7px solid ${colors.blue[500]};
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translate(-50%, 0);
-  }
-
-  .popup {
-    top: 30px;
-  }
-`;
-var tooltipRightOriented = css6`
-  .chevron {
-    right: 50%;
-  }
-
-  .popup {
-    // Half width of the chevron
-    right: -7px;
-  }
-`;
-var tooltipLeftOriented = css6`
-  .popup {
-    // Half width of the chevron
-    left: -7px;
-  }
-`;
-var tooltipOrientationStyles = ($tooltipOrientation) => {
-  switch ($tooltipOrientation) {
-    case "tr":
-      return css6`
-        ${tooltipTopOriented};
-        ${tooltipRightOriented};
-      `;
-    case "tl":
-      return css6`
-        ${tooltipTopOriented};
-        ${tooltipLeftOriented};
-      `;
-    case "br":
-      return css6`
-        ${tooltipBottomOriented};
-        ${tooltipRightOriented};
-      `;
-    case "bl":
-      return css6`
-        ${tooltipBottomOriented};
-        ${tooltipLeftOriented};
-      `;
-    default:
-      return null;
-  }
-};
-var StyleTooltip = styled6.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: min-content;
-  cursor: pointer;
-
-  ${({ $tooltipOrientation }) => tooltipOrientationStyles($tooltipOrientation)};
-
-  &:hover {
-    .chevron {
-      display: flex;
-    }
-  }
-
-  .icon {
-    height: 22px;
-    display: flex;
-    align-items: center;
-    z-index: 10;
-  }
-
-  .popup {
-    display: none;
-    position: absolute;
-    z-index: 15;
-    min-height: 32px;
-    min-width: 300px;
-    padding: 8px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 6px;
-    align-self: stretch;
-    border-radius: 6px;
-    border: 1px solid ${colors.blue[500]};
-    background: #fff;
-
-    &__iconWrap {
-      width: 100%;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      border-bottom: 1px solid ${colors.blue[500]};
-      padding-bottom: 6px;
-    }
-
-    &__icon {
-      display: flex;
-      min-width: 22px;
-      height: 22px;
-      justify-content: center;
-      align-items: center;
-      border-radius: 16px;
-    }
-
-    p {
-      color: ${colors.grey[900]};
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-  }
-
-  ${({ $active }) => !!$active && css6`
-      .popup {
-        display: flex;
-      }
-    `};
-`;
-
-// src/internal/components/common/Tooltip/index.tsx
-import { jsx as jsx7, jsxs as jsxs6 } from "react/jsx-runtime";
-var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", boundaryBox }) => {
-  const [active, setActive] = useState(false);
-  const [tooltipOrientation, setTooltipOrientation] = useState(orientation);
-  const tooltipRef = React2.useRef(null);
-  const repositionTooltip = (boundaryBox2) => {
-    const tooltipElement = tooltipRef?.current;
-    const boundaryBoxElement = boundaryBox2?.current;
-    if (!tooltipElement || !boundaryBoxElement) return;
-    const tooltipRect = tooltipElement.getBoundingClientRect();
-    const boundaryBoxRect = boundaryBoxElement.getBoundingClientRect();
-    const widthOfTooltipPopUp = 300;
-    if (boundaryBoxRect.right - tooltipRect.right > widthOfTooltipPopUp) {
-      setTooltipOrientation("bl");
-    } else if (boundaryBoxRect.right - tooltipRect.right < widthOfTooltipPopUp || boundaryBoxRect.right - tooltipRect.right === widthOfTooltipPopUp) {
-      setTooltipOrientation("br");
-    }
-  };
-  return /* @__PURE__ */ jsxs6(
-    StyleTooltip,
-    {
-      className: "StyleTooltip",
-      ref: tooltipRef,
-      $tooltipOrientation: tooltipOrientation,
-      $active: active,
-      onMouseEnter: () => {
-        repositionTooltip(boundaryBox);
-        setActive(true);
-      },
-      onMouseLeave: () => setActive(false),
-      children: [
-        /* @__PURE__ */ jsx7("div", { className: "icon", children: iconSnippet }),
-        /* @__PURE__ */ jsx7("div", { className: "chevron" }),
-        /* @__PURE__ */ jsxs6("div", { className: "popup", children: [
-          /* @__PURE__ */ jsx7("div", { className: "popup__iconWrap", children: /* @__PURE__ */ jsx7("div", { className: "popup__icon", children: iconSnippet }) }),
-          !!content && /* @__PURE__ */ jsx7("p", { children: content }),
-          !!contentSnippet && contentSnippet
-        ] })
-      ]
-    }
-  );
-};
-
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
 import { useRef as useRef2 } from "react";
 
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/styles.ts
-import styled7 from "styled-components";
-var StyledRmaLink = styled7.div`
-  ${infographicElementCommonStyles};
-
-  .content {
-    ${infographicElementContentCommonStyles};
-
-    p {
-      ${infographicElementTextCommonStyles};
-    }
-
-    a {
-      ${infographicElementLinkCommonStyles};
-    }
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/RmaProfessionalLinkContent/index.tsx
-import { jsx as jsx8, jsxs as jsxs7 } from "react/jsx-runtime";
-var RmaProfessionalLinkContent = ({ rmaProfessionalLink, rmakeyMessages }) => {
-  return /* @__PURE__ */ jsx8(StyledRmaLink, { className: "StyledRmaLink", children: /* @__PURE__ */ jsxs7("div", { className: "content", children: [
-    !!rmakeyMessages && /* @__PURE__ */ jsx8("p", { children: rmakeyMessages }),
-    /* @__PURE__ */ jsx8("a", { href: rmaProfessionalLink, children: t("medication.links.rma") })
-  ] }) });
+// src/internal/components/common/RegulatoryBadges/index.tsx
+import { Fragment as Fragment4, jsx as jsx25 } from "react/jsx-runtime";
+var RegulatoryBadges = ({ medication, placement, boundaryBox }) => {
+  const countries = Object.keys(medication.regulatory ?? {});
+  return /* @__PURE__ */ jsx25(Fragment4, { children: countries.flatMap(
+    (country) => getRegulatoryBadges(country, placement).map(({ key, Component }) => /* @__PURE__ */ jsx25(Component, { medication, boundaryBox }, `${country}.${key}`))
+  ) });
 };
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/styles.ts
-import styled8 from "styled-components";
-var StyledSupplyProblems = styled8.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[800]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/SupplyProblemsContent/index.tsx
-import { jsx as jsx9, jsxs as jsxs8 } from "react/jsx-runtime";
-var SupplyProblemsContent = ({ medicationSupplyProblem }) => {
-  return /* @__PURE__ */ jsxs8(StyledSupplyProblems, { className: "StyledSupplyProblems", children: [
-    /* @__PURE__ */ jsx9("h6", { children: t("medication.supply.issueTitle") }),
-    /* @__PURE__ */ jsxs8("div", { className: "content", children: [
-      medicationSupplyProblem.from && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.startDate") }),
-        /* @__PURE__ */ jsx9("p", { children: formatTimestamp(medicationSupplyProblem.from) })
-      ] }),
-      medicationSupplyProblem.expectedEndOn && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.expectedEndDate") }),
-        /* @__PURE__ */ jsx9("p", { children: formatTimestamp(medicationSupplyProblem.expectedEndOn) })
-      ] }),
-      getSamTextTranslation(medicationSupplyProblem.reason) && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.reason") }),
-        /* @__PURE__ */ jsx9("p", { children: getSamTextTranslation(medicationSupplyProblem.reason) })
-      ] }),
-      getSamTextTranslation(medicationSupplyProblem.impact) && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.impact") }),
-        /* @__PURE__ */ jsx9("p", { children: getSamTextTranslation(medicationSupplyProblem.impact) })
-      ] }),
-      medicationSupplyProblem.impact?.fr === "Importation possible par le pharmacien" && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.prescriberNote") }),
-        /* @__PURE__ */ jsx9("a", { target: "_blank", rel: "noopener noreferrer", href: "https://www.afmps.be/sites/default/files/content/INSP/NARC/declaration-medecin.pdf", children: t("medication.supply.downloadPdf") })
-      ] }),
-      getSamTextTranslation(medicationSupplyProblem.additionalInformation) && /* @__PURE__ */ jsxs8("div", { children: [
-        /* @__PURE__ */ jsx9("span", { children: t("medication.supply.extraInfo") }),
-        getSamTextTranslation(medicationSupplyProblem.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ jsx9("p", { children: line }, idx))
-      ] })
-    ] })
-  ] });
-};
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/styles.ts
-import styled9 from "styled-components";
-var StyledEndCommercialization = styled9.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.red[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/EndOfCommercialisationContent/index.tsx
-import { jsx as jsx10, jsxs as jsxs9 } from "react/jsx-runtime";
-var EndOfCommercialisationContent = ({ medicationCommercialization }) => {
-  return /* @__PURE__ */ jsxs9(StyledEndCommercialization, { className: "StyledEndCommercialization", children: [
-    /* @__PURE__ */ jsx10("h6", { children: t("medication.commercialization.end") }),
-    /* @__PURE__ */ jsxs9("div", { className: "content", children: [
-      medicationCommercialization.from && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.limitedAvailabilityFrom") }),
-        /* @__PURE__ */ jsx10("p", { children: formatTimestamp(medicationCommercialization.from) })
-      ] }),
-      medicationCommercialization.to && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.end") }),
-        /* @__PURE__ */ jsx10("p", { children: formatTimestamp(medicationCommercialization.to) })
-      ] }),
-      getSamTextTranslation(medicationCommercialization.endOfComercialization) && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.unavailableFrom") }),
-        /* @__PURE__ */ jsx10("p", { children: getSamTextTranslation(medicationCommercialization.endOfComercialization) })
-      ] }),
-      getSamTextTranslation(medicationCommercialization.reason) && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.endReason") }),
-        /* @__PURE__ */ jsx10("p", { children: getSamTextTranslation(medicationCommercialization.reason) })
-      ] }),
-      getSamTextTranslation(medicationCommercialization.impact) && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.endImpact") }),
-        /* @__PURE__ */ jsx10("p", { children: getSamTextTranslation(medicationCommercialization.impact) })
-      ] }),
-      getSamTextTranslation(medicationCommercialization.additionalInformation) && /* @__PURE__ */ jsxs9("div", { children: [
-        /* @__PURE__ */ jsx10("span", { children: t("medication.commercialization.endAdditionalInformation") }),
-        getSamTextTranslation(medicationCommercialization.additionalInformation).split("\n").map((line, idx) => /* @__PURE__ */ jsx10("p", { children: line }, idx))
-      ] })
-    ] })
-  ] });
-};
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/styles.ts
-import styled10 from "styled-components";
-var StyledStartCommercialization = styled10.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/StartOfCommercialisationContent/index.tsx
-import { jsx as jsx11, jsxs as jsxs10 } from "react/jsx-runtime";
-var StartOfCommercialisationContent = ({ medicationCommercialization }) => {
-  return /* @__PURE__ */ jsxs10(StyledStartCommercialization, { className: "StyledStartCommercialization", children: [
-    /* @__PURE__ */ jsx11("h6", { children: t("medication.commercialization.start") }),
-    /* @__PURE__ */ jsx11("div", { className: "content", children: medicationCommercialization.from && /* @__PURE__ */ jsxs10("div", { children: [
-      /* @__PURE__ */ jsx11("span", { children: t("medication.commercialization.startAvailableFrom") }),
-      /* @__PURE__ */ jsx11("p", { children: formatTimestamp(medicationCommercialization.from) })
-    ] }) })
-  ] });
-};
-
-// src/internal/utils/reimbursement-helpers.ts
-import { Medication } from "@icure/be-fhc-lite-api";
-var getReimbursementOptions = () => [
-  {
-    value: null,
-    label: t("reimbursementHelper.practitionerSelectionOptions.none")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.PAYINGTHIRDPARTY,
-    label: t("reimbursementHelper.practitionerSelectionOptions.PAYINGTHIRDPARTY")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.FIRSTDOSE,
-    label: t("reimbursementHelper.practitionerSelectionOptions.FIRSTDOSE")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.SECONDDOSE,
-    label: t("reimbursementHelper.practitionerSelectionOptions.SECONDDOSE")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.THIRDDOSE,
-    label: t("reimbursementHelper.practitionerSelectionOptions.THIRDDOSE")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.CHRONICKINDEYDISEASE,
-    label: t("reimbursementHelper.practitionerSelectionOptions.CHRONICKINDEYDISEASE")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.DIABETESTREATMENT,
-    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESTREATMENT")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.DIABETESCONVENTION,
-    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESCONVENTION")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.NOTREIMBURSABLE,
-    label: t("reimbursementHelper.practitionerSelectionOptions.NOTREIMBURSABLE")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.EXPLAINMEDICATION,
-    label: t("reimbursementHelper.practitionerSelectionOptions.EXPLAINMEDICATION")
-  },
-  {
-    value: Medication.InstructionsForReimbursementEnum.DIABETESSTARTPATH,
-    label: t("reimbursementHelper.practitionerSelectionOptions.DIABETESSTARTPATH")
-  }
-];
-function getCategoryLabelForReimbursement(code) {
-  if (!code) return "";
-  return t(`reimbursementHelper.categoryOptions.${code}`) || code;
-}
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/styles.ts
-import styled11 from "styled-components";
-var StyledReimbursement = styled11.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/ReimbursementsContent/index.tsx
-import { Fragment as Fragment2, jsx as jsx12, jsxs as jsxs11 } from "react/jsx-runtime";
-var ReimbursementsContent = ({ reimbursement }) => {
-  const computeFeeAmount = (fee) => Math.round(+fee * 100) / 100 + "\u20AC";
-  return reimbursement ? /* @__PURE__ */ jsxs11(StyledReimbursement, { className: "StyledReimbursement", children: [
-    /* @__PURE__ */ jsxs11("h6", { children: [
-      " ",
-      t("medication.reimbursement.title")
-    ] }),
-    /* @__PURE__ */ jsxs11("div", { className: "content", children: [
-      reimbursement.reimbursementCriterion?.category && /* @__PURE__ */ jsxs11(Fragment2, { children: [
-        /* @__PURE__ */ jsxs11("div", { children: [
-          /* @__PURE__ */ jsx12("span", { children: t("medication.reimbursement.category") }),
-          /* @__PURE__ */ jsx12("p", { children: reimbursement.reimbursementCriterion?.category })
-        ] }),
-        /* @__PURE__ */ jsxs11("div", { children: [
-          /* @__PURE__ */ jsx12("span", { children: t("medication.reimbursement.categoryLabel") }),
-          /* @__PURE__ */ jsx12("p", { children: getCategoryLabelForReimbursement(reimbursement.reimbursementCriterion?.category) })
-        ] })
-      ] }),
-      reimbursement.copayments && reimbursement.copayments.map((el, index) => {
-        return /* @__PURE__ */ jsxs11("div", { children: [
-          el.regimeType === 1 && /* @__PURE__ */ jsxs11("span", { children: [
-            t("medication.reimbursement.copay"),
-            /* @__PURE__ */ jsx12("strong", { children: t("medication.reimbursement.copayPreferential") })
-          ] }),
-          el.regimeType === 2 && /* @__PURE__ */ jsxs11("span", { children: [
-            t("medication.reimbursement.copay"),
-            " ",
-            /* @__PURE__ */ jsx12("strong", { children: t("medication.reimbursement.copayActive") })
-          ] }),
-          el.feeAmount && /* @__PURE__ */ jsx12("p", { className: "feeAmount", children: computeFeeAmount(el.feeAmount) })
-        ] }, index);
-      }),
-      reimbursement.temporary && /* @__PURE__ */ jsxs11("div", { children: [
-        /* @__PURE__ */ jsx12("span", { children: t("medication.reimbursement.temporary") }),
-        /* @__PURE__ */ jsx12("p", { className: "textRed", children: reimbursement.temporary })
-      ] }),
-      getSamTextTranslation(reimbursement.reimbursementCriterion?.description) && /* @__PURE__ */ jsxs11("div", { children: [
-        /* @__PURE__ */ jsx12("span", { children: t("medication.reimbursement.chapter") }),
-        /* @__PURE__ */ jsx12("p", { children: getSamTextTranslation(reimbursement.reimbursementCriterion?.description) })
-      ] })
-    ] })
-  ] }) : /* @__PURE__ */ jsxs11("div", { className: "supplyProblemsTooltip", children: [
-    /* @__PURE__ */ jsx12("p", { className: " title  title--green", children: "Conditions de prescription" }),
-    /* @__PURE__ */ jsx12("div", { className: " content", children: /* @__PURE__ */ jsx12("div", { children: /* @__PURE__ */ jsx12("p", { children: "Not applicable" }) }) })
-  ] });
-};
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/styles.ts
-import styled12 from "styled-components";
-var StyledDeliveryConditions = styled12.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[800]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-var StyledDeliveryConditionsNotApplicable = styled12.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/DeliveryConditionsContent/index.tsx
-import { jsx as jsx13, jsxs as jsxs12 } from "react/jsx-runtime";
-var DeliveryConditionsContent = ({ deliveryModusCode, deliveryModus, deliveryModusSpecification }) => {
-  return deliveryModusCode ? /* @__PURE__ */ jsxs12(StyledDeliveryConditions, { className: "StyledDeliveryConditions", children: [
-    /* @__PURE__ */ jsx13("h6", { children: t("medication.delivery.title") }),
-    /* @__PURE__ */ jsxs12("div", { className: "content", children: [
-      deliveryModusCode && /* @__PURE__ */ jsxs12("div", { children: [
-        /* @__PURE__ */ jsx13("span", { children: t("medication.delivery.code") }),
-        /* @__PURE__ */ jsx13("p", { children: deliveryModusCode })
-      ] }),
-      deliveryModus && /* @__PURE__ */ jsxs12("div", { children: [
-        /* @__PURE__ */ jsx13("span", { children: t("medication.delivery.modus") }),
-        /* @__PURE__ */ jsx13("p", { children: deliveryModus })
-      ] }),
-      deliveryModusSpecification && /* @__PURE__ */ jsxs12("div", { children: [
-        /* @__PURE__ */ jsx13("span", { children: t("medication.delivery.specification") }),
-        /* @__PURE__ */ jsx13("p", { children: deliveryModusSpecification })
-      ] })
-    ] })
-  ] }) : /* @__PURE__ */ jsxs12(StyledDeliveryConditionsNotApplicable, { className: "StyledDeliveryConditionsNotApplicable", children: [
-    /* @__PURE__ */ jsx13("h6", { children: t("medication.delivery.title") }),
-    /* @__PURE__ */ jsx13("div", { className: "content", children: /* @__PURE__ */ jsx13("div", { children: /* @__PURE__ */ jsx13("p", { children: t("medication.delivery.notApplicable") }) }) })
-  ] });
-};
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/styles.ts
-import styled13 from "styled-components";
-var StyledPrescriptionConditions = styled13.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.red[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-var StyledPrescriptionConditionsNotApplicable = styled13.div`
-  ${infographicElementCommonStyles};
-
-  h6 {
-    ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
-  }
-
-  .content {
-    ${infographicElementContentCommonStyles}
-  }
-`;
-
-// src/internal/components/medication-elements/MedicationCard/infographic-elements/PrescriptionConditionsContent/index.tsx
-import { jsx as jsx14, jsxs as jsxs13 } from "react/jsx-runtime";
-var PrescriptionConditionsContent = ({ deliveryModusSpecificationCode, deliveryModusSpecification }) => {
-  return deliveryModusSpecificationCode ? /* @__PURE__ */ jsxs13(StyledPrescriptionConditions, { className: "StyledPrescriptionConditions", children: [
-    /* @__PURE__ */ jsx14("h6", { children: t("medication.prescription.title") }),
-    /* @__PURE__ */ jsxs13("div", { className: "content", children: [
-      /* @__PURE__ */ jsxs13("div", { children: [
-        /* @__PURE__ */ jsx14("span", { children: t("medication.delivery.code") }),
-        /* @__PURE__ */ jsx14("p", { children: deliveryModusSpecificationCode })
-      ] }),
-      deliveryModusSpecification && /* @__PURE__ */ jsxs13("div", { children: [
-        /* @__PURE__ */ jsx14("span", { children: t("medication.delivery.specification") }),
-        /* @__PURE__ */ jsx14("p", { children: deliveryModusSpecification })
-      ] })
-    ] })
-  ] }) : /* @__PURE__ */ jsxs13(StyledPrescriptionConditionsNotApplicable, { className: "StyledPrescriptionConditionsNotApplicable", children: [
-    /* @__PURE__ */ jsx14("h6", { children: t("medication.prescription.title") }),
-    /* @__PURE__ */ jsx14("div", { className: "content", children: /* @__PURE__ */ jsx14("div", { children: /* @__PURE__ */ jsx14("p", { children: t("medication.delivery.notApplicable") }) }) })
-  ] });
-};
-
-// src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
-import styled14, { css as css7 } from "styled-components";
-var StyledHeader = styled14.div`
-  width: 100%;
-  display: flex;
-  padding: 8px 12px;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  align-self: stretch;
-  background: #fff;
-  border-radius: 6px;
-
-  ${responsiveMediaQueries.down(displayResolution.s)`
-  gap: 4px;
-  `};
-
-  .medication {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    ${responsiveMediaQueries.down(displayResolution.s)`
-    gap: 8px;
-  `};
-
-    &__content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 12px;
-
-      &__heading {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-
-        &__title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-
-          h3 {
-            color: ${colors.grey[900]};
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 500;
-          }
-        }
-
-        &__activeIngredient {
-          color: ${colors.grey[900]};
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 300;
-          line-height: normal;
-        }
-      }
-
-      &__description {
-        width: 100%;
-        display: flex;
-        gap: 32px;
-        row-gap: 8px;
-        flex-wrap: wrap;
-
-        &__item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-
-          span {
-            font-size: 12px;
-            font-weight: 400;
-            color: ${colors.blue[600]};
-          }
-
-          p {
-            font-size: 14px;
-            font-weight: 400;
-            color: black;
-            font-style: normal;
-            line-height: normal;
-          }
-
-          .price {
-            color: ${colors.orange[900]};
-            font-weight: 600;
-          }
-        }
-      }
-    }
-  }
-`;
-var StyledCheapBadge = styled14.span`
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: #fff;
-  background-color: ${({ $variant }) => $variant === "cheapest" ? colors.green[600] : colors.green[500]};
-`;
-var StyledExpandButton = styled14.button`
-  width: 18px;
-  background: none;
-  cursor: pointer;
-
-  ${({ $isExpanded }) => !!$isExpanded && css7`
-      transform: rotate(90deg);
-    `};
-`;
-var StyledTextToIcon = styled14.div`
-  height: 22px;
-  width: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  border-radius: 5px;
-
-  p {
-    font-size: 11px !important;
-    font-weight: 600;
-    color: white !important;
-  }
-
-  ${({ $color }) => $color === "green" && css7`
-      background-color: ${colors.green[600]};
-    `};
-
-  ${({ $color }) => $color === "orange" && css7`
-      background-color: ${colors.orange[950]};
-    `};
-
-  ${({ $color }) => $color === "red" && css7`
-      background-color: ${colors.red[700]};
-    `};
-
-  ${({ $color }) => $color === "grey" && css7`
-      background-color: ${colors.grey[700]};
-    `};
-`;
 
 // src/internal/components/medication-elements/MedicationInfographics/styles.ts
 import styled15 from "styled-components";
 var StyledMedicationInfographics = styled15.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
 
-  .medicationInfographics,
-  .medicationAvailabilityInfographics,
-  .deliveryPrescriptionConditions {
+  .regulatoryBadgeIcon {
     display: flex;
+    width: 22px;
+    height: 22px;
+    justify-content: center;
     align-items: center;
-    gap: 2px;
-  }
+    border-radius: 5px;
 
-  .medicationInfographics {
-    &__item {
-      display: flex;
-      width: 22px;
-      height: 22px;
-      justify-content: center;
-      align-items: center;
-
-      border-radius: 5px;
+    &--outline {
       border: 1px solid ${colors.blue[400]};
     }
-  }
 
-  .medicationAvailabilityInfographics {
-    &__item {
-      display: flex;
-      width: 22px;
-      height: 22px;
-      justify-content: center;
-      align-items: center;
+    &--red {
+      background-color: ${colors.red[400]};
+    }
 
-      border-radius: 5px;
+    &--orange {
+      background-color: ${colors.orange[800]};
+    }
 
-      &--red {
-        background-color: ${colors.red[400]};
-      }
-
-      &--orange {
-        background-color: ${colors.orange[800]};
-      }
-
-      &--green {
-        background-color: ${colors.green[400]};
-      }
+    &--green {
+      background-color: ${colors.green[400]};
     }
   }
 `;
 
 // src/internal/components/medication-elements/MedicationInfographics/index.tsx
-import { jsx as jsx15, jsxs as jsxs14 } from "react/jsx-runtime";
-var MedicationInfographics = ({ medication, boundaryBox }) => {
-  const be = medication.regulatory?.be;
-  const medicationCommercialization = be?.commercializations?.[0];
-  const medicationSupplyProblem = be?.supplyProblems?.[0];
-  const medicationReimbursement = be?.reimbursements;
-  const getSpecialRegulation = (code) => {
-    switch (code) {
-      case 1:
-        return t("medication.drugSpecialRegulation.noNarcoticRegulation");
-      case 2:
-        return t("medication.drugSpecialRegulation.narcoticRegulation");
-      default:
-        return t("medication.drugSpecialRegulation.noSpecialRegulation");
-    }
-  };
-  const ReimbursementIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx15("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
-  const DeliveryConditionsIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx15("p", { children: be?.deliveryModusCode }) });
-  const PrescriptionConditionsIcn = () => /* @__PURE__ */ jsx15(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx15("p", { children: be?.deliveryModusSpecificationCode }) });
-  return /* @__PURE__ */ jsxs14(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: [
-    /* @__PURE__ */ jsxs14("div", { className: "medicationInfographics", children: [
-      be?.blackTriangle && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.blackTriangle"), iconSnippet: /* @__PURE__ */ jsx15(BlackTriangleIcn, {}), boundaryBox }) }),
-      be?.rmaProfessionalLink && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(
-        Tooltip,
-        {
-          contentSnippet: /* @__PURE__ */ jsx15(RmaProfessionalLinkContent, { rmaProfessionalLink: be.rmaProfessionalLink, rmakeyMessages: be.rmakeyMessages }),
-          iconSnippet: /* @__PURE__ */ jsx15(OrangeTriangleIcn, {}),
-          boundaryBox
-        }
-      ) }),
-      be?.speciallyRegulated && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: getSpecialRegulation(be.speciallyRegulated), iconSnippet: /* @__PURE__ */ jsx15(PillsBottleIcn, {}), boundaryBox }) }),
-      be?.genericPrescriptionRequired && /* @__PURE__ */ jsx15("div", { className: "medicationInfographics__item", children: /* @__PURE__ */ jsx15(Tooltip, { content: t("medication.drugInfographic.genericPrescriptionRequired"), iconSnippet: /* @__PURE__ */ jsx15(PrescriptionIcn, {}), boundaryBox }) })
-    ] }),
-    /* @__PURE__ */ jsxs14("div", { className: "medicationAvailabilityInfographics", children: [
-      medicationSupplyProblem && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--orange", children: /* @__PURE__ */ jsx15(Tooltip, { contentSnippet: /* @__PURE__ */ jsx15(SupplyProblemsContent, { medicationSupplyProblem }), iconSnippet: /* @__PURE__ */ jsx15(SupplyIcn, {}), boundaryBox }) }),
-      medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--red", children: /* @__PURE__ */ jsx15(
-        Tooltip,
-        {
-          contentSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationContent, { medicationCommercialization }),
-          iconSnippet: /* @__PURE__ */ jsx15(EndOfCommercialisationIcn, {}),
-          boundaryBox
-        }
-      ) }),
-      medicationCommercialization && !medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsx15("div", { className: "medicationAvailabilityInfographics__item medicationAvailabilityInfographics__item--green", children: /* @__PURE__ */ jsx15(
-        Tooltip,
-        {
-          contentSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationContent, { medicationCommercialization }),
-          iconSnippet: /* @__PURE__ */ jsx15(StartOfCommercialisationIcn, {}),
-          boundaryBox
-        }
-      ) })
-    ] }),
-    /* @__PURE__ */ jsxs14("div", { className: "deliveryPrescriptionConditions", children: [
-      medicationReimbursement && /* @__PURE__ */ jsx15(Tooltip, { contentSnippet: /* @__PURE__ */ jsx15(ReimbursementsContent, { reimbursement: medicationReimbursement }), iconSnippet: /* @__PURE__ */ jsx15(ReimbursementIcn, {}), boundaryBox }),
-      be?.deliveryModusCode && /* @__PURE__ */ jsx15(
-        Tooltip,
-        {
-          contentSnippet: /* @__PURE__ */ jsx15(DeliveryConditionsContent, { deliveryModus: be.deliveryModus, deliveryModusSpecification: be.deliveryModusSpecification, deliveryModusCode: be.deliveryModusCode }),
-          iconSnippet: /* @__PURE__ */ jsx15(DeliveryConditionsIcn, {}),
-          boundaryBox
-        }
-      ),
-      be?.deliveryModusCode && be?.deliveryModusSpecificationCode && /* @__PURE__ */ jsx15(
-        Tooltip,
-        {
-          contentSnippet: /* @__PURE__ */ jsx15(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be.deliveryModusSpecificationCode, deliveryModusSpecification: be.deliveryModusSpecification }),
-          iconSnippet: /* @__PURE__ */ jsx15(PrescriptionConditionsIcn, {}),
-          boundaryBox
-        }
-      )
-    ] })
-  ] });
-};
+import { jsx as jsx26 } from "react/jsx-runtime";
+var MedicationInfographics = ({ medication, boundaryBox }) => /* @__PURE__ */ jsx26(StyledMedicationInfographics, { className: "StyledMedicationInfographics", children: /* @__PURE__ */ jsx26(RegulatoryBadges, { medication, placement: "detail", boundaryBox }) });
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/index.tsx
-import { Fragment as Fragment3, jsx as jsx16, jsxs as jsxs15 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs18 } from "react/jsx-runtime";
 var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
   const medicationCardRef = useRef2(null);
-  const medicationReimbursement = medication.regulatory?.be?.reimbursements;
-  const ReimbursementIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "green", children: /* @__PURE__ */ jsx16("p", { children: medicationReimbursement?.reimbursementCriterion?.category }) });
-  const DeliveryConditionsIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "orange", children: /* @__PURE__ */ jsx16("p", { children: medication.regulatory?.be?.deliveryModusCode }) });
-  const PrescriptionConditionsIcn = () => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: "red", children: /* @__PURE__ */ jsx16("p", { children: medication.regulatory?.be?.deliveryModusSpecificationCode }) });
-  const NonApplicableIcn = ({ text, colorGrey }) => /* @__PURE__ */ jsx16(StyledTextToIcon, { className: "StyledTextToIcon", $color: colorGrey ? "grey" : "green", children: /* @__PURE__ */ jsx16("p", { children: text }) });
-  return /* @__PURE__ */ jsxs15(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
-    /* @__PURE__ */ jsx16(
+  return /* @__PURE__ */ jsxs18(StyledHeader, { className: "StyledHeader", ref: medicationCardRef, children: [
+    /* @__PURE__ */ jsx27(
       "div",
       {
         className: "medication",
@@ -3803,43 +3963,21 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
         onKeyDown: (event) => {
           if (event.key === "Enter") handleAddPrescription();
         },
-        children: /* @__PURE__ */ jsxs15("div", { className: "medication__content", children: [
-          /* @__PURE__ */ jsxs15("div", { className: "medication__content__heading", children: [
-            /* @__PURE__ */ jsxs15("div", { className: "medication__content__heading__title", children: [
-              !subMedication && (medication.kind === "product" ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx16(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "nonMedicinal" ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ jsx16(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "molecule" ? /* @__PURE__ */ jsx16(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ jsx16(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
-              /* @__PURE__ */ jsx16("h3", { children: medication.title }),
-              medication.regulatory?.be?.cheapest ? /* @__PURE__ */ jsx16(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.regulatory?.be?.cheap ? /* @__PURE__ */ jsx16(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
-              /* @__PURE__ */ jsx16(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
+        children: /* @__PURE__ */ jsxs18("div", { className: "medication__content", children: [
+          /* @__PURE__ */ jsxs18("div", { className: "medication__content__heading", children: [
+            /* @__PURE__ */ jsxs18("div", { className: "medication__content__heading__title", children: [
+              !subMedication && (medication.kind === "product" ? /* @__PURE__ */ jsx27(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx27(SolidPillIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "nonMedicinal" ? /* @__PURE__ */ jsx27(Tooltip, { content: t("medication.drugType.homologation"), iconSnippet: /* @__PURE__ */ jsx27(LeafIcn, {}), boundaryBox: medicationCardRef }) : medication.kind === "molecule" ? /* @__PURE__ */ jsx27(Tooltip, { content: t("medication.drugType.molecule"), iconSnippet: /* @__PURE__ */ jsx27(MoleculeIcn, {}), boundaryBox: medicationCardRef }) : null),
+              /* @__PURE__ */ jsx27("h3", { children: medication.title }),
+              medication.regulatory?.be?.cheapest ? /* @__PURE__ */ jsx27(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheapest", children: t("medication.drugInfographic.cheapest") }) : medication.regulatory?.be?.cheap ? /* @__PURE__ */ jsx27(StyledCheapBadge, { className: "StyledCheapBadge", $variant: "cheap", children: t("medication.drugInfographic.cheap") }) : null,
+              /* @__PURE__ */ jsx27(MedicationInfographics, { medication, boundaryBox: medicationCardRef })
             ] }),
-            /* @__PURE__ */ jsx16("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
+            /* @__PURE__ */ jsx27("p", { className: "medication__content__heading__activeIngredient", children: medication.activeIngredient })
           ] }),
-          /* @__PURE__ */ jsxs15("div", { className: "medication__content__description", children: [
-            medication.regulatory?.be?.price && /* @__PURE__ */ jsxs15(Fragment3, { children: [
-              /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
-                /* @__PURE__ */ jsx16("span", { children: t("medication.ui.price") }),
-                /* @__PURE__ */ jsx16("p", { className: "price", children: medication.regulatory.be.price })
-              ] }),
-              /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
-                /* @__PURE__ */ jsxs15("span", { children: [
-                  " ",
-                  t("medication.reimbursement.title")
-                ] }),
-                medicationReimbursement ? /* @__PURE__ */ jsx16(ReimbursementIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.reimbursement.non"), colorGrey: true })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
-              /* @__PURE__ */ jsx16("span", { children: t("medication.delivery.title") }),
-              medication.regulatory?.be?.deliveryModusCode ? /* @__PURE__ */ jsx16(DeliveryConditionsIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.delivery.notApplicable") })
-            ] }),
-            /* @__PURE__ */ jsxs15("div", { className: "medication__content__description__item", children: [
-              /* @__PURE__ */ jsx16("span", { children: t("medication.prescription.title") }),
-              medication.regulatory?.be?.deliveryModusSpecificationCode ? /* @__PURE__ */ jsx16(PrescriptionConditionsIcn, {}) : /* @__PURE__ */ jsx16(NonApplicableIcn, { text: t("medication.prescription.free") })
-            ] })
-          ] })
+          /* @__PURE__ */ jsx27("div", { className: "medication__content__description", children: /* @__PURE__ */ jsx27(RegulatoryBadges, { medication, placement: "summary", boundaryBox: medicationCardRef }) })
         ] })
       }
     ),
-    /* @__PURE__ */ jsx16(
+    /* @__PURE__ */ jsx27(
       StyledExpandButton,
       {
         className: "StyledExpandButton",
@@ -3849,7 +3987,7 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
           setMedicationCardExpanded(!isMedicationCardExpanded);
         },
         type: "button",
-        children: /* @__PURE__ */ jsx16(ChevronIcn, {})
+        children: /* @__PURE__ */ jsx27(ChevronIcn, {})
       }
     )
   ] });
@@ -3926,50 +4064,50 @@ var StyledExtension = styled16.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Extension/index.tsx
-import { Fragment as Fragment4, jsx as jsx17, jsxs as jsxs16 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx28, jsxs as jsxs19 } from "react/jsx-runtime";
 var Extension = ({ medication }) => {
   const be = medication.regulatory?.be;
   const medicationCommercialization = be?.commercializations?.[0];
   const medicationSupplyProblem = be?.supplyProblems?.[0];
   const medicationReimbursement = be?.reimbursements;
-  return /* @__PURE__ */ jsxs16(StyledExtension, { className: "StyledExtension", children: [
-    be?.vmp && /* @__PURE__ */ jsxs16("div", { className: "vmp", children: [
-      be.vmp.name?.fr && /* @__PURE__ */ jsxs16("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ jsx17("span", { children: "VMP:" }),
-        /* @__PURE__ */ jsx17("p", { children: be.vmp.name.fr })
+  return /* @__PURE__ */ jsxs19(StyledExtension, { className: "StyledExtension", children: [
+    be?.vmp && /* @__PURE__ */ jsxs19("div", { className: "vmp", children: [
+      be.vmp.name?.fr && /* @__PURE__ */ jsxs19("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ jsx28("span", { children: "VMP:" }),
+        /* @__PURE__ */ jsx28("p", { children: be.vmp.name.fr })
       ] }),
-      be.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ jsxs16("div", { className: "vmp__item", children: [
-        /* @__PURE__ */ jsx17("span", { children: "VMP-group:" }),
-        /* @__PURE__ */ jsx17("p", { children: be.vmp.vmpGroup.name.fr })
+      be.vmp.vmpGroup?.name?.fr && /* @__PURE__ */ jsxs19("div", { className: "vmp__item", children: [
+        /* @__PURE__ */ jsx28("span", { children: "VMP-group:" }),
+        /* @__PURE__ */ jsx28("p", { children: be.vmp.vmpGroup.name.fr })
       ] })
     ] }),
-    /* @__PURE__ */ jsx17("div", { className: "divider" }),
-    /* @__PURE__ */ jsxs16("div", { className: "links", children: [
-      be?.crmLink && /* @__PURE__ */ jsx17("a", { href: be.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
-      be?.patientInformationLeafletLink && /* @__PURE__ */ jsx17("a", { href: be.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
-      be?.rmaProfessionalLink && /* @__PURE__ */ jsx17("a", { href: be.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
-      be?.spcLink && /* @__PURE__ */ jsx17("a", { href: be.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
-      be?.dhpcLink && /* @__PURE__ */ jsx17("a", { href: be.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
+    /* @__PURE__ */ jsx28("div", { className: "divider" }),
+    /* @__PURE__ */ jsxs19("div", { className: "links", children: [
+      be?.crmLink && /* @__PURE__ */ jsx28("a", { href: be.crmLink, target: "_blank", rel: "noopener noreferrer", children: "Commented Medicines Directory (CBIP)" }),
+      be?.patientInformationLeafletLink && /* @__PURE__ */ jsx28("a", { href: be.patientInformationLeafletLink, target: "_blank", rel: "noopener noreferrer", children: "Patient information leaflet" }),
+      be?.rmaProfessionalLink && /* @__PURE__ */ jsx28("a", { href: be.rmaProfessionalLink, target: "_blank", rel: "noopener noreferrer", children: "Risk Minimisation Activities (RMA)" }),
+      be?.spcLink && /* @__PURE__ */ jsx28("a", { href: be.spcLink, target: "_blank", rel: "noopener noreferrer", children: "Summary of Product Characteristics (SPC)" }),
+      be?.dhpcLink && /* @__PURE__ */ jsx28("a", { href: be.dhpcLink, target: "_blank", rel: "noopener noreferrer", children: "Direct Healthcare Professional Communication (DHPC)" })
     ] }),
-    medicationReimbursement && /* @__PURE__ */ jsxs16(Fragment4, { children: [
-      /* @__PURE__ */ jsx17("div", { className: "divider" }),
-      /* @__PURE__ */ jsx17(ReimbursementsContent, { reimbursement: medicationReimbursement })
+    medicationReimbursement && /* @__PURE__ */ jsxs19(Fragment5, { children: [
+      /* @__PURE__ */ jsx28("div", { className: "divider" }),
+      /* @__PURE__ */ jsx28(ReimbursementsContent, { reimbursement: medicationReimbursement })
     ] }),
-    /* @__PURE__ */ jsx17("div", { className: "divider" }),
-    /* @__PURE__ */ jsx17(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be?.deliveryModusSpecificationCode, deliveryModusSpecification: be?.deliveryModusSpecification }),
-    /* @__PURE__ */ jsx17("div", { className: "divider" }),
-    /* @__PURE__ */ jsx17(DeliveryConditionsContent, { deliveryModus: be?.deliveryModus, deliveryModusSpecification: be?.deliveryModusSpecification, deliveryModusCode: be?.deliveryModusCode }),
-    be?.supplyProblems && /* @__PURE__ */ jsxs16(Fragment4, { children: [
-      /* @__PURE__ */ jsx17("div", { className: "divider" }),
-      /* @__PURE__ */ jsx17(SupplyProblemsContent, { medicationSupplyProblem })
+    /* @__PURE__ */ jsx28("div", { className: "divider" }),
+    /* @__PURE__ */ jsx28(PrescriptionConditionsContent, { deliveryModusSpecificationCode: be?.deliveryModusSpecificationCode, deliveryModusSpecification: be?.deliveryModusSpecification }),
+    /* @__PURE__ */ jsx28("div", { className: "divider" }),
+    /* @__PURE__ */ jsx28(DeliveryConditionsContent, { deliveryModus: be?.deliveryModus, deliveryModusSpecification: be?.deliveryModusSpecification, deliveryModusCode: be?.deliveryModusCode }),
+    be?.supplyProblems && /* @__PURE__ */ jsxs19(Fragment5, { children: [
+      /* @__PURE__ */ jsx28("div", { className: "divider" }),
+      /* @__PURE__ */ jsx28(SupplyProblemsContent, { medicationSupplyProblem })
     ] }),
-    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsxs16(Fragment4, { children: [
-      /* @__PURE__ */ jsx17("div", { className: "divider" }),
-      /* @__PURE__ */ jsx17(EndOfCommercialisationContent, { medicationCommercialization })
+    medicationCommercialization?.endOfComercialization && /* @__PURE__ */ jsxs19(Fragment5, { children: [
+      /* @__PURE__ */ jsx28("div", { className: "divider" }),
+      /* @__PURE__ */ jsx28(EndOfCommercialisationContent, { medicationCommercialization })
     ] }),
-    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ jsxs16(Fragment4, { children: [
-      /* @__PURE__ */ jsx17("div", { className: "divider" }),
-      /* @__PURE__ */ jsx17(StartOfCommercialisationContent, { medicationCommercialization })
+    medicationCommercialization && !medicationCommercialization.endOfComercialization && /* @__PURE__ */ jsxs19(Fragment5, { children: [
+      /* @__PURE__ */ jsx28("div", { className: "divider" }),
+      /* @__PURE__ */ jsx28(StartOfCommercialisationContent, { medicationCommercialization })
     ] })
   ] });
 };
@@ -4031,11 +4169,11 @@ var StyledMedicationCard = styled17.div`
 `;
 
 // src/internal/components/medication-elements/MedicationCard/index.tsx
-import { jsx as jsx18, jsxs as jsxs17 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs20 } from "react/jsx-runtime";
 var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication }) => {
   const [isExpanded, setIsExpanded] = useState2(false);
-  return /* @__PURE__ */ jsxs17(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, $subMedication: subMedication, id, children: [
-    /* @__PURE__ */ jsx18(
+  return /* @__PURE__ */ jsxs20(StyledMedicationCard, { className: "StyledMedicationCard", $focused: focused, $isExpanded: isExpanded, $disableHover: disableHover, $subMedication: subMedication, id, children: [
+    /* @__PURE__ */ jsx29(
       Header,
       {
         handleAddPrescription: () => handleAddPrescription(medication),
@@ -4045,7 +4183,7 @@ var MedicationCard = ({ medication, handleAddPrescription, id, focused, disableH
         subMedication
       }
     ),
-    isExpanded && /* @__PURE__ */ jsx18(Extension, { medication })
+    isExpanded && /* @__PURE__ */ jsx29(Extension, { medication })
   ] });
 };
 
@@ -4070,17 +4208,17 @@ var StyledMedicationProductTitle = styled18.div`
 `;
 
 // src/internal/components/medication-elements/MedicationProductTitle/index.tsx
-import { jsx as jsx19, jsxs as jsxs18 } from "react/jsx-runtime";
+import { jsx as jsx30, jsxs as jsxs21 } from "react/jsx-runtime";
 var MedicationProductTitle = ({ productTitle }) => {
-  return /* @__PURE__ */ jsxs18(StyledMedicationProductTitle, { className: "StyledMedicationProductTitle", children: [
-    /* @__PURE__ */ jsx19(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx19(SolidPillIcn, {}) }),
-    /* @__PURE__ */ jsx19("h3", { children: productTitle })
+  return /* @__PURE__ */ jsxs21(StyledMedicationProductTitle, { className: "StyledMedicationProductTitle", children: [
+    /* @__PURE__ */ jsx30(Tooltip, { content: t("medication.drugType.medication"), iconSnippet: /* @__PURE__ */ jsx30(SolidPillIcn, {}) }),
+    /* @__PURE__ */ jsx30("h3", { children: productTitle })
   ] });
 };
 
 // src/internal/components/common/InfiniteScroll/index.tsx
 import { useEffect as useEffect2, useRef as useRef3 } from "react";
-import { jsx as jsx20 } from "react/jsx-runtime";
+import { jsx as jsx31 } from "react/jsx-runtime";
 var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
   const infiniteScrollRef = useRef3(null);
   const isLoadMore = useRef3(false);
@@ -4106,7 +4244,7 @@ var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
       element.removeEventListener("resize", onScroll);
     };
   }, [threshold, loadMore2]);
-  return /* @__PURE__ */ jsx20("div", { ref: infiniteScrollRef, style: { width: 0 } });
+  return /* @__PURE__ */ jsx31("div", { ref: infiniteScrollRef, style: { width: 0 } });
 };
 
 // src/shared/components/MedicationSearch/styles.ts
@@ -4228,7 +4366,7 @@ var StyledMedicationSearchDropdown = styled19.div`
 `;
 
 // src/shared/components/MedicationSearch/index.tsx
-import { Fragment as Fragment5, jsx as jsx21, jsxs as jsxs19 } from "react/jsx-runtime";
+import { Fragment as Fragment6, jsx as jsx32, jsxs as jsxs22 } from "react/jsx-runtime";
 var PAGE_SIZE2 = 10;
 var medMapper = (item) => ({
   medications: item.medications ?? [item],
@@ -4348,16 +4486,16 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
     return !!value && value.length < 3;
   };
   const isFocused = (medicationIndex, subMedicationIndex) => focusedMedicationIndex === medicationIndex && focusedSubMedicationIndex === subMedicationIndex;
-  return /* @__PURE__ */ jsxs19(Fragment5, { children: [
-    /* @__PURE__ */ jsx21(GlobalStyles, {}),
-    /* @__PURE__ */ jsxs19(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
-      /* @__PURE__ */ jsxs19(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
-        /* @__PURE__ */ jsxs19("p", { children: [
+  return /* @__PURE__ */ jsxs22(Fragment6, { children: [
+    /* @__PURE__ */ jsx32(GlobalStyles, {}),
+    /* @__PURE__ */ jsxs22(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
+      /* @__PURE__ */ jsxs22(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
+        /* @__PURE__ */ jsxs22("p", { children: [
           t("medication.search.label"),
           ":"
         ] }),
-        /* @__PURE__ */ jsxs19(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
-          /* @__PURE__ */ jsx21(
+        /* @__PURE__ */ jsxs22(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
+          /* @__PURE__ */ jsx32(
             "input",
             {
               id: "searchMedications",
@@ -4369,15 +4507,15 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
               onChange: (e) => setSearchQuery(e.target.value)
             }
           ),
-          /* @__PURE__ */ jsx21(SearchIcn, {})
+          /* @__PURE__ */ jsx32(SearchIcn, {})
         ] }),
-        showSearchError() && /* @__PURE__ */ jsx21("p", { className: "error", children: t("medication.search.errorMessage") })
+        showSearchError() && /* @__PURE__ */ jsx32("p", { className: "error", children: t("medication.search.errorMessage") })
       ] }),
-      showSpinner && /* @__PURE__ */ jsx21("div", { className: "spinner", children: /* @__PURE__ */ jsx21(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
-      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ jsxs19(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
-        pages.map((entry, i) => /* @__PURE__ */ jsx21("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ jsxs19(Fragment5, { children: [
-          /* @__PURE__ */ jsx21(MedicationProductTitle, { productTitle: entry.product.title }),
-          entry.medications.map((smed, j) => /* @__PURE__ */ jsx21("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ jsx21(
+      showSpinner && /* @__PURE__ */ jsx32("div", { className: "spinner", children: /* @__PURE__ */ jsx32(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
+      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ jsxs22(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
+        pages.map((entry, i) => /* @__PURE__ */ jsx32("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ jsxs22(Fragment6, { children: [
+          /* @__PURE__ */ jsx32(MedicationProductTitle, { productTitle: entry.product.title }),
+          entry.medications.map((smed, j) => /* @__PURE__ */ jsx32("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ jsx32(
             MedicationCard,
             {
               medication: smed,
@@ -4388,7 +4526,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
               short
             }
           ) }, j))
-        ] }) : /* @__PURE__ */ jsx21("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ jsx21(
+        ] }) : /* @__PURE__ */ jsx32("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ jsx32(
           MedicationCard,
           {
             medication: entry.medications[0],
@@ -4399,7 +4537,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
             short
           }
         ) }) }, i)),
-        /* @__PURE__ */ jsx21(
+        /* @__PURE__ */ jsx32(
           InfiniteScroll,
           {
             threshold: 50,
@@ -4409,7 +4547,7 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
           }
         )
       ] }),
-      showNoMatchesPlaceholder && /* @__PURE__ */ jsx21("div", { className: "placeholder", children: /* @__PURE__ */ jsx21("p", { children: t("medication.search.noMatchingPlaceholder") }) })
+      showNoMatchesPlaceholder && /* @__PURE__ */ jsx32("div", { className: "placeholder", children: /* @__PURE__ */ jsx32("p", { children: t("medication.search.noMatchingPlaceholder") }) })
     ] })
   ] });
 };
@@ -4546,14 +4684,14 @@ var StyledSelectDropdown = styled20.select`
 `;
 
 // src/internal/components/form-elements/SelectInput/index.tsx
-import { jsx as jsx22, jsxs as jsxs20 } from "react/jsx-runtime";
-var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs20(StyledSelectInput, { className: "StyledSelectInput", children: [
-  /* @__PURE__ */ jsxs20(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ jsx22("span", { children: "*" }),
+import { jsx as jsx33, jsxs as jsxs23 } from "react/jsx-runtime";
+var SelectInput = forwardRef2(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs23(StyledSelectInput, { className: "StyledSelectInput", children: [
+  /* @__PURE__ */ jsxs23(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx33("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ jsx22(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ jsx22("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
-  !!errorMessage && /* @__PURE__ */ jsx22("p", { className: "error", children: errorMessage })
+  /* @__PURE__ */ jsx33(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ jsx33("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
+  !!errorMessage && /* @__PURE__ */ jsx33("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/internal/components/form-elements/RadioInput/index.tsx
@@ -4676,15 +4814,15 @@ var StyledRadioInput = styled21.div`
 `;
 
 // src/internal/components/form-elements/RadioInput/index.tsx
-import { jsx as jsx23, jsxs as jsxs21 } from "react/jsx-runtime";
+import { jsx as jsx34, jsxs as jsxs24 } from "react/jsx-runtime";
 var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
-  return /* @__PURE__ */ jsxs21(StyledRadioInput, { className: "StyledRadioInput", children: [
-    /* @__PURE__ */ jsxs21(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx23("span", { children: "*" }),
+  return /* @__PURE__ */ jsxs24(StyledRadioInput, { className: "StyledRadioInput", children: [
+    /* @__PURE__ */ jsxs24(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ jsx34("span", { children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ jsx23("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ jsxs21(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
-      /* @__PURE__ */ jsx23(
+    /* @__PURE__ */ jsx34("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ jsxs24(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
+      /* @__PURE__ */ jsx34(
         "input",
         {
           id: option.id,
@@ -4697,10 +4835,10 @@ var RadioInput = forwardRef3(({ label, name, options, required, errorMessage, va
           ref
         }
       ),
-      /* @__PURE__ */ jsx23(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ jsx23(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
-      /* @__PURE__ */ jsx23(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
+      /* @__PURE__ */ jsx34(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ jsx34(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
+      /* @__PURE__ */ jsx34(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
     ] }, option.id)) }),
-    !!errorMessage && /* @__PURE__ */ jsx23("p", { className: "error", children: errorMessage })
+    !!errorMessage && /* @__PURE__ */ jsx34("p", { className: "error", children: errorMessage })
   ] });
 });
 RadioInput.displayName = "RadioInput";
@@ -4792,16 +4930,16 @@ var StyledSwitch = styled22.div`
 `;
 
 // src/internal/components/form-elements/ToggleSwitch/index.tsx
-import { jsx as jsx24, jsxs as jsxs22 } from "react/jsx-runtime";
+import { jsx as jsx35, jsxs as jsxs25 } from "react/jsx-runtime";
 var ToggleSwitch = forwardRef4(({ id, value, label, onChange, checked }, ref) => {
-  return /* @__PURE__ */ jsxs22(StyledSwitch, { className: "StyledSwitch", children: [
-    label && /* @__PURE__ */ jsx24("p", { className: "toggleSwitchLabel", children: label }),
-    /* @__PURE__ */ jsxs22("div", { className: "toggleWrapper", children: [
-      /* @__PURE__ */ jsxs22("label", { htmlFor: id, className: "toggle", children: [
-        /* @__PURE__ */ jsx24("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
-        /* @__PURE__ */ jsx24("span", { className: "slider" })
+  return /* @__PURE__ */ jsxs25(StyledSwitch, { className: "StyledSwitch", children: [
+    label && /* @__PURE__ */ jsx35("p", { className: "toggleSwitchLabel", children: label }),
+    /* @__PURE__ */ jsxs25("div", { className: "toggleWrapper", children: [
+      /* @__PURE__ */ jsxs25("label", { htmlFor: id, className: "toggle", children: [
+        /* @__PURE__ */ jsx35("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
+        /* @__PURE__ */ jsx35("span", { className: "slider" })
       ] }),
-      /* @__PURE__ */ jsx24("p", { children: value })
+      /* @__PURE__ */ jsx35("p", { children: value })
     ] })
   ] });
 });
@@ -4841,13 +4979,13 @@ var StyledTextarea = styled23.textarea`
 `;
 
 // src/internal/components/form-elements/TextareaInput/index.tsx
-import { jsx as jsx25, jsxs as jsxs23 } from "react/jsx-runtime";
-var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs23(StyledTextareaInput, { className: "StyledTextareaInput", children: [
-  /* @__PURE__ */ jsxs23(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ jsx25("span", { children: "*" }),
+import { jsx as jsx36, jsxs as jsxs26 } from "react/jsx-runtime";
+var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ jsxs26(StyledTextareaInput, { className: "StyledTextareaInput", children: [
+  /* @__PURE__ */ jsxs26(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
+    /* @__PURE__ */ jsx36("span", { children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ jsx25(
+  /* @__PURE__ */ jsx36(
     StyledTextarea,
     {
       className: "StyledTextarea",
@@ -4862,7 +5000,7 @@ var TextareaInput = React10.forwardRef(({ label, id, required, disabled, errorMe
       ...rest
     }
   ),
-  errorMessage && /* @__PURE__ */ jsx25("p", { className: "error", children: errorMessage })
+  errorMessage && /* @__PURE__ */ jsx36("p", { className: "error", children: errorMessage })
 ] }));
 
 // src/shared/components/PrescriptionModal/styles.ts
@@ -5173,7 +5311,7 @@ var StyledCheapAlternativesItem = styled25.li`
 `;
 
 // src/internal/components/medication-elements/CheapAlternatives/index.tsx
-import { jsx as jsx26, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx37, jsxs as jsxs27 } from "react/jsx-runtime";
 var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
   const [isExpanded, setIsExpanded] = useState4(false);
   const [isCheap, setIsCheap] = useState4(false);
@@ -5186,15 +5324,15 @@ var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
     const vmpGroup = vmpGroupCode ? await loadVmpGroup(sdk, vmpGroupCode) : void 0;
     onSelectMedication({ ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } });
   };
-  return /* @__PURE__ */ jsxs24(StyledCheapAlternatives, { children: [
-    /* @__PURE__ */ jsxs24(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
-      /* @__PURE__ */ jsxs24(StyledCheapAlternativesHeaderContent, { children: [
-        /* @__PURE__ */ jsx26(WarningIcn, { color: "#3D87C5" }),
-        /* @__PURE__ */ jsx26("span", { children: isCheap ? t("medication.drugInfographic.otherCheapAlternativesMessage") : t("medication.drugInfographic.cheapAlternativesMessage") })
+  return /* @__PURE__ */ jsxs27(StyledCheapAlternatives, { children: [
+    /* @__PURE__ */ jsxs27(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+      /* @__PURE__ */ jsxs27(StyledCheapAlternativesHeaderContent, { children: [
+        /* @__PURE__ */ jsx37(WarningIcn, { color: "#3D87C5" }),
+        /* @__PURE__ */ jsx37("span", { children: isCheap ? t("medication.drugInfographic.otherCheapAlternativesMessage") : t("medication.drugInfographic.cheapAlternativesMessage") })
       ] }),
-      /* @__PURE__ */ jsx26(StyledCheapAlternativesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ jsx26(ChevronIcn, {}) })
+      /* @__PURE__ */ jsx37(StyledCheapAlternativesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ jsx37(ChevronIcn, {}) })
     ] }),
-    isExpanded && /* @__PURE__ */ jsx26(StyledCheapAlternativesContent, { children: medications.map((medication, index) => /* @__PURE__ */ jsx26(StyledCheapAlternativesItem, { children: /* @__PURE__ */ jsx26("button", { type: "button", onClick: () => onMedicationClick(medication), children: medication.title }) }, medication.id ?? index)) })
+    isExpanded && /* @__PURE__ */ jsx37(StyledCheapAlternativesContent, { children: medications.map((medication, index) => /* @__PURE__ */ jsx37(StyledCheapAlternativesItem, { children: /* @__PURE__ */ jsx37("button", { type: "button", onClick: () => onMedicationClick(medication), children: medication.title }) }, medication.id ?? index)) })
   ] });
 };
 
@@ -5256,21 +5394,21 @@ var StyledStandardDosagesItem = styled26.li`
 `;
 
 // src/internal/components/medication-elements/StandardDosages/index.tsx
-import { jsx as jsx27, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx38, jsxs as jsxs28 } from "react/jsx-runtime";
 var StandardDosages = ({ dosages, language, onSelectDosage }) => {
   const [isExpanded, setIsExpanded] = useState5(false);
   if (!dosages || dosages.length === 0) {
     return null;
   }
-  return /* @__PURE__ */ jsxs25(StyledStandardDosages, { children: [
-    /* @__PURE__ */ jsxs25(StyledStandardDosagesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
-      /* @__PURE__ */ jsxs25(StyledStandardDosagesHeaderContent, { children: [
-        /* @__PURE__ */ jsx27(WarningIcn, { color: "#3D87C5" }),
+  return /* @__PURE__ */ jsxs28(StyledStandardDosages, { children: [
+    /* @__PURE__ */ jsxs28(StyledStandardDosagesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+      /* @__PURE__ */ jsxs28(StyledStandardDosagesHeaderContent, { children: [
+        /* @__PURE__ */ jsx38(WarningIcn, { color: "#3D87C5" }),
         t("medication.drugInfographic.standardDosagesMessage")
       ] }),
-      /* @__PURE__ */ jsx27(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ jsx27(ChevronIcn, {}) })
+      /* @__PURE__ */ jsx38(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ jsx38(ChevronIcn, {}) })
     ] }),
-    isExpanded && /* @__PURE__ */ jsx27(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ jsx27(StyledStandardDosagesItem, { children: /* @__PURE__ */ jsx27("button", { type: "button", onClick: () => onSelectDosage(dosage), children: marshal(dosage, language) }) }, index)) })
+    isExpanded && /* @__PURE__ */ jsx38(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ jsx38(StyledStandardDosagesItem, { children: /* @__PURE__ */ jsx38("button", { type: "button", onClick: () => onSelectDosage(dosage), children: marshal(dosage, language) }) }, index)) })
   ] });
 };
 
@@ -5538,7 +5676,7 @@ var createPosologyFromStandardDosage = (group, context) => {
 };
 
 // src/shared/components/PrescriptionModal/index.tsx
-import { Fragment as Fragment6, jsx as jsx28, jsxs as jsxs26 } from "react/jsx-runtime";
+import { Fragment as Fragment7, jsx as jsx39, jsxs as jsxs29 } from "react/jsx-runtime";
 var PrescriptionModal = ({
   sdk,
   medicationToPrescribe,
@@ -5685,14 +5823,14 @@ var PrescriptionModal = ({
       setFocusedDosageIndex(1);
     }
   };
-  return /* @__PURE__ */ jsxs26(Fragment6, { children: [
-    /* @__PURE__ */ jsx28(GlobalStyles, {}),
-    /* @__PURE__ */ jsx28(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ jsx28("div", { className: "content", children: /* @__PURE__ */ jsxs26("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
-      /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__header", children: [
-        /* @__PURE__ */ jsx28("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
-        /* @__PURE__ */ jsx28("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ jsx28(CloseIcn, {}) })
+  return /* @__PURE__ */ jsxs29(Fragment7, { children: [
+    /* @__PURE__ */ jsx39(GlobalStyles, {}),
+    /* @__PURE__ */ jsx39(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ jsx39("div", { className: "content", children: /* @__PURE__ */ jsxs29("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
+      /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__header", children: [
+        /* @__PURE__ */ jsx39("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
+        /* @__PURE__ */ jsx39("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ jsx39(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ jsxs26(
+      /* @__PURE__ */ jsxs29(
         "div",
         {
           className: "addMedicationForm__body",
@@ -5701,8 +5839,8 @@ var PrescriptionModal = ({
           tabIndex: 0,
           "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
           children: [
-            /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ jsx28(
+            /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ jsx39(
                 TextInput,
                 {
                   label: t("prescription.form.medicationTitle"),
@@ -5715,9 +5853,9 @@ var PrescriptionModal = ({
                   errorMessage: prescriptionFormErrors["medicationTitle"]?.message
                 }
               ),
-              alternatives.length > 0 && /* @__PURE__ */ jsx28(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication }),
-              /* @__PURE__ */ jsxs26(StyledDosageInput, { className: "StyledDosageInput", children: [
-                /* @__PURE__ */ jsx28(
+              alternatives.length > 0 && /* @__PURE__ */ jsx39(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication }),
+              /* @__PURE__ */ jsxs29(StyledDosageInput, { className: "StyledDosageInput", children: [
+                /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.dosage"),
@@ -5730,14 +5868,14 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["dosage"]?.message
                   }
                 ),
-                posologySuggestions.length !== 0 && /* @__PURE__ */ jsx28("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ jsx28(
+                posologySuggestions.length !== 0 && /* @__PURE__ */ jsx39("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ jsx39(
                   StyledSuggestionItem,
                   {
                     id: `posology-${index}`,
                     $disableHover: disableHover,
                     $focused: focusedDosageIndex === index,
                     className: "StyledSuggestionItem",
-                    children: /* @__PURE__ */ jsx28(
+                    children: /* @__PURE__ */ jsx39(
                       "button",
                       {
                         onClick: (e) => {
@@ -5751,9 +5889,9 @@ var PrescriptionModal = ({
                   index
                 )) })
               ] }),
-              standardDosages.length > 0 && /* @__PURE__ */ jsx28(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
-              /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx28(
+              standardDosages.length > 0 && /* @__PURE__ */ jsx39(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
+              /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.duration"),
@@ -5767,13 +5905,13 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["duration"]?.message
                   }
                 ),
-                /* @__PURE__ */ jsx28(
+                /* @__PURE__ */ jsx39(
                   Controller,
                   {
                     name: "durationTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ jsx28(
+                    render: ({ field }) => /* @__PURE__ */ jsx39(
                       SelectInput,
                       {
                         ...field,
@@ -5787,8 +5925,8 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx28(
+              /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.treatmentStartDate"),
@@ -5801,7 +5939,7 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
                   }
                 ),
-                /* @__PURE__ */ jsx28(
+                /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.executableUntil"),
@@ -5815,8 +5953,8 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              !prescriptionToModify && /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ jsx28(
+              !prescriptionToModify && /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+                /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.prescriptionsNumber"),
@@ -5831,13 +5969,13 @@ var PrescriptionModal = ({
                     errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
                   }
                 ),
-                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ jsx28(
+                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ jsx39(
                   Controller,
                   {
                     name: "periodicityTimeUnit",
                     control,
                     rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ jsx28(
+                    render: ({ field }) => /* @__PURE__ */ jsx39(
                       SelectInput,
                       {
                         ...field,
@@ -5850,7 +5988,7 @@ var PrescriptionModal = ({
                     )
                   }
                 ),
-                periodicityTimeUnit === "1" && /* @__PURE__ */ jsx28(
+                periodicityTimeUnit === "1" && /* @__PURE__ */ jsx39(
                   TextInput,
                   {
                     label: t("prescription.form.periodicityDaysNumber"),
@@ -5865,12 +6003,12 @@ var PrescriptionModal = ({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsx28("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ jsx28(
+              /* @__PURE__ */ jsx39("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ jsx39(
                 Controller,
                 {
                   name: "substitutionAllowed",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx28(
+                  render: ({ field }) => /* @__PURE__ */ jsx39(
                     RadioInput,
                     {
                       ...field,
@@ -5888,55 +6026,55 @@ var PrescriptionModal = ({
                 }
               ) })
             ] }),
-            /* @__PURE__ */ jsx28(
+            /* @__PURE__ */ jsx39(
               Controller,
               {
                 name: "showExtraFields",
                 control,
-                render: ({ field }) => /* @__PURE__ */ jsx28(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
+                render: ({ field }) => /* @__PURE__ */ jsx39(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
               }
             ),
-            !showExtraFields ? /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
-              /* @__PURE__ */ jsxs26("p", { children: [
-                /* @__PURE__ */ jsxs26("span", { children: [
+            !showExtraFields ? /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
+              /* @__PURE__ */ jsxs29("p", { children: [
+                /* @__PURE__ */ jsxs29("span", { children: [
                   t("prescription.form.patientInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx28("i", { children: /* @__PURE__ */ jsx28("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ jsx39("i", { children: /* @__PURE__ */ jsx39("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ jsxs26("p", { children: [
-                /* @__PURE__ */ jsxs26("span", { children: [
+              /* @__PURE__ */ jsxs29("p", { children: [
+                /* @__PURE__ */ jsxs29("span", { children: [
                   t("prescription.form.reimbursementInstructions"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx28("i", { children: /* @__PURE__ */ jsx28("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
+                /* @__PURE__ */ jsx39("i", { children: /* @__PURE__ */ jsx39("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
               ] }),
-              /* @__PURE__ */ jsxs26("p", { children: [
-                /* @__PURE__ */ jsxs26("span", { children: [
+              /* @__PURE__ */ jsxs29("p", { children: [
+                /* @__PURE__ */ jsxs29("span", { children: [
                   t("prescription.form.prescriberVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx28("i", { children: /* @__PURE__ */ jsx28("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
+                /* @__PURE__ */ jsx39("i", { children: /* @__PURE__ */ jsx39("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
               ] }),
-              /* @__PURE__ */ jsxs26("p", { children: [
-                /* @__PURE__ */ jsxs26("span", { children: [
+              /* @__PURE__ */ jsxs29("p", { children: [
+                /* @__PURE__ */ jsxs29("span", { children: [
                   t("prescription.form.pharmacistVisibility"),
                   " :"
                 ] }),
                 " ",
-                /* @__PURE__ */ jsx28("i", { children: /* @__PURE__ */ jsx28("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
+                /* @__PURE__ */ jsx39("i", { children: /* @__PURE__ */ jsx39("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
               ] })
-            ] }) : /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ jsx28(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
-              /* @__PURE__ */ jsx28(
+            ] }) : /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__body__content", children: [
+              /* @__PURE__ */ jsx39(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
+              /* @__PURE__ */ jsx39(
                 Controller,
                 {
                   name: "instructionsForReimbursement",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx28(
+                  render: ({ field }) => /* @__PURE__ */ jsx39(
                     SelectInput,
                     {
                       ...field,
@@ -5952,20 +6090,20 @@ var PrescriptionModal = ({
                   )
                 }
               ),
-              /* @__PURE__ */ jsx28(
+              /* @__PURE__ */ jsx39(
                 Controller,
                 {
                   name: "prescriberVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx28(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
+                  render: ({ field }) => /* @__PURE__ */ jsx39(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
                 }
               ),
-              /* @__PURE__ */ jsx28(
+              /* @__PURE__ */ jsx39(
                 Controller,
                 {
                   name: "pharmacistVisibility",
                   control,
-                  render: ({ field }) => /* @__PURE__ */ jsx28(
+                  render: ({ field }) => /* @__PURE__ */ jsx39(
                     SelectInput,
                     {
                       ...field,
@@ -5985,9 +6123,9 @@ var PrescriptionModal = ({
           ]
         }
       ),
-      /* @__PURE__ */ jsxs26("div", { className: "addMedicationForm__footer", children: [
-        /* @__PURE__ */ jsx28(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
-        /* @__PURE__ */ jsx28(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+      /* @__PURE__ */ jsxs29("div", { className: "addMedicationForm__footer", children: [
+        /* @__PURE__ */ jsx39(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
+        /* @__PURE__ */ jsx39(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
       ] })
     ] }) }) })
   ] });
@@ -6136,17 +6274,17 @@ var StyledPrescriptionCard = styled27.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionCard/index.tsx
-import { jsx as jsx29, jsxs as jsxs27 } from "react/jsx-runtime";
+import { jsx as jsx40, jsxs as jsxs30 } from "react/jsx-runtime";
 var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handleDeletePrescription }) => {
-  return /* @__PURE__ */ jsxs27(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
-    /* @__PURE__ */ jsx29("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ jsx29("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ jsxs27("div", { className: "prescriptionCardHeader__prescription__content", children: [
-      /* @__PURE__ */ jsx29("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ jsx29("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
-      /* @__PURE__ */ jsx29("p", { children: prescribedMedication.medication.instructionForPatient })
+  return /* @__PURE__ */ jsxs30(StyledPrescriptionCard, { className: "StyledPrescriptionCard", $prescribed: !!prescribedMedication.rid, children: [
+    /* @__PURE__ */ jsx40("div", { className: "prescriptionCardHeader", children: /* @__PURE__ */ jsx40("div", { className: "prescriptionCardHeader__prescription", children: /* @__PURE__ */ jsxs30("div", { className: "prescriptionCardHeader__prescription__content", children: [
+      /* @__PURE__ */ jsx40("div", { className: "prescriptionCardHeader__prescription__content__title", children: /* @__PURE__ */ jsx40("h3", { children: prescribedMedication.medication.medicinalProduct?.intendedname ?? prescribedMedication.medication.substanceProduct?.intendedname ?? prescribedMedication.medication.compoundPrescription }) }),
+      /* @__PURE__ */ jsx40("p", { children: prescribedMedication.medication.instructionForPatient })
     ] }) }) }),
-    !prescribedMedication.rid ? /* @__PURE__ */ jsxs27("div", { className: "actions", children: [
-      /* @__PURE__ */ jsx29("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ jsx29(EditIcn, {}) }),
-      /* @__PURE__ */ jsx29("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ jsx29(DeleteIcn, {}) })
-    ] }) : /* @__PURE__ */ jsx29("div", { className: "rid", children: prescribedMedication.rid })
+    !prescribedMedication.rid ? /* @__PURE__ */ jsxs30("div", { className: "actions", children: [
+      /* @__PURE__ */ jsx40("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ jsx40(EditIcn, {}) }),
+      /* @__PURE__ */ jsx40("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ jsx40(DeleteIcn, {}) })
+    ] }) : /* @__PURE__ */ jsx40("div", { className: "rid", children: prescribedMedication.rid })
   ] });
 };
 
@@ -6200,7 +6338,7 @@ var StyledPrescriptionList = styled28.div`
 `;
 
 // src/shared/components/PrescriptionList/index.tsx
-import { Fragment as Fragment7, jsx as jsx30, jsxs as jsxs28 } from "react/jsx-runtime";
+import { Fragment as Fragment8, jsx as jsx41, jsxs as jsxs31 } from "react/jsx-runtime";
 var PrescriptionList = ({
   handleModifyPrescription,
   handleDeletePrescription,
@@ -6228,12 +6366,12 @@ var PrescriptionList = ({
     return prescribedMedications.filter((item) => !item.rid);
   };
   if (!prescribedMedications) return null;
-  return /* @__PURE__ */ jsxs28(Fragment7, { children: [
-    /* @__PURE__ */ jsx30(GlobalStyles, {}),
-    /* @__PURE__ */ jsxs28(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
-      sentPrescriptions().length !== 0 && /* @__PURE__ */ jsxs28("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ jsx30("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
-        /* @__PURE__ */ jsx30("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx30(
+  return /* @__PURE__ */ jsxs31(Fragment8, { children: [
+    /* @__PURE__ */ jsx41(GlobalStyles, {}),
+    /* @__PURE__ */ jsxs31(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
+      sentPrescriptions().length !== 0 && /* @__PURE__ */ jsxs31("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ jsx41("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+        /* @__PURE__ */ jsx41("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx41(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -6242,7 +6380,7 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        handlePrintPrescriptions && /* @__PURE__ */ jsx30("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ jsx30(
+        handlePrintPrescriptions && /* @__PURE__ */ jsx41("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ jsx41(
           Button,
           {
             disabled: sending,
@@ -6253,12 +6391,12 @@ var PrescriptionList = ({
           }
         ) })
       ] }),
-      pendingPrescriptions().length !== 0 && /* @__PURE__ */ jsxs28("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ jsxs28("p", { className: "cardinal-prescriptions__title", children: [
+      pendingPrescriptions().length !== 0 && /* @__PURE__ */ jsxs31("div", { className: "cardinal-prescriptions", children: [
+        !hideSectionsTitles && /* @__PURE__ */ jsxs31("p", { className: "cardinal-prescriptions__title", children: [
           " ",
           t("prescription.list.pendingTitle")
         ] }),
-        /* @__PURE__ */ jsx30("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx30(
+        /* @__PURE__ */ jsx41("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ jsx41(
           PrescriptionCard,
           {
             prescribedMedication: medication,
@@ -6267,8 +6405,8 @@ var PrescriptionList = ({
           },
           medication.uuid || idx
         )) }),
-        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ jsxs28("div", { className: "cardinal-prescriptions__footer", children: [
-          handlePrintPrescriptions && /* @__PURE__ */ jsx30(
+        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ jsxs31("div", { className: "cardinal-prescriptions__footer", children: [
+          handlePrintPrescriptions && /* @__PURE__ */ jsx41(
             Button,
             {
               disabled: sending,
@@ -6279,7 +6417,7 @@ var PrescriptionList = ({
               form: "prescriptionForm"
             }
           ),
-          handleSendPrescriptions && /* @__PURE__ */ jsx30(
+          handleSendPrescriptions && /* @__PURE__ */ jsx41(
             Button,
             {
               disabled: printing,
@@ -6404,7 +6542,7 @@ var StyledPrescriptionDocument = styled29.div`
 `;
 
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
-import { jsx as jsx31, jsxs as jsxs29 } from "react/jsx-runtime";
+import { jsx as jsx42, jsxs as jsxs32 } from "react/jsx-runtime";
 function chunk(arr, chunkSize = 1, cache = []) {
   const tmp = [...arr];
   if (chunkSize <= 0) return cache;
@@ -6430,24 +6568,24 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
   const formatDate = (date) => {
     return (date && dateDecode(date)?.toLocaleDateString()) ?? "-";
   };
-  return /* @__PURE__ */ jsx31(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ jsxs29("div", { className: "prescription-document", children: [
-    /* @__PURE__ */ jsxs29("div", { className: "prescription-document__header", children: [
-      /* @__PURE__ */ jsx31("h1", { children: t("prescription.pdf.title") }),
-      /* @__PURE__ */ jsx31("p", { children: t("prescription.pdf.instructions") })
+  return /* @__PURE__ */ jsx42(StyledPrescriptionDocument, { className: "StyledPrescriptionDocument", children: prescribedMedications?.length ? chunks.map((chunk2, chunkIndex) => /* @__PURE__ */ jsxs32("div", { className: "prescription-document", children: [
+    /* @__PURE__ */ jsxs32("div", { className: "prescription-document__header", children: [
+      /* @__PURE__ */ jsx42("h1", { children: t("prescription.pdf.title") }),
+      /* @__PURE__ */ jsx42("p", { children: t("prescription.pdf.instructions") })
     ] }),
-    /* @__PURE__ */ jsx31("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ jsxs29("div", { className: "prescription-document__options", children: [
-      /* @__PURE__ */ jsx31("h5", { children: /* @__PURE__ */ jsx31("strong", { children: t("prescription.pdf.options.title") }) }),
-      /* @__PURE__ */ jsxs29("ol", { children: [
-        /* @__PURE__ */ jsx31("li", { children: t("prescription.pdf.options.option1") }),
-        /* @__PURE__ */ jsx31("li", { children: t("prescription.pdf.options.option2") })
+    /* @__PURE__ */ jsx42("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ jsxs32("div", { className: "prescription-document__options", children: [
+      /* @__PURE__ */ jsx42("h5", { children: /* @__PURE__ */ jsx42("strong", { children: t("prescription.pdf.options.title") }) }),
+      /* @__PURE__ */ jsxs32("ol", { children: [
+        /* @__PURE__ */ jsx42("li", { children: t("prescription.pdf.options.option1") }),
+        /* @__PURE__ */ jsx42("li", { children: t("prescription.pdf.options.option2") })
       ] })
     ] }),
-    /* @__PURE__ */ jsx31("div", { className: "prescription-document__divider" }),
-    /* @__PURE__ */ jsxs29("div", { className: "prescription-section", children: [
-      /* @__PURE__ */ jsxs29("div", { className: "prescription-section__persons", children: [
-        /* @__PURE__ */ jsxs29("p", { children: [
-          /* @__PURE__ */ jsxs29("strong", { children: [
+    /* @__PURE__ */ jsx42("div", { className: "prescription-document__divider" }),
+    /* @__PURE__ */ jsxs32("div", { className: "prescription-section", children: [
+      /* @__PURE__ */ jsxs32("div", { className: "prescription-section__persons", children: [
+        /* @__PURE__ */ jsxs32("p", { children: [
+          /* @__PURE__ */ jsxs32("strong", { children: [
             t("prescription.pdf.prescriber"),
             ": "
           ] }),
@@ -6457,8 +6595,8 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           " ",
           prescriber.nihii
         ] }),
-        /* @__PURE__ */ jsxs29("p", { children: [
-          /* @__PURE__ */ jsxs29("strong", { children: [
+        /* @__PURE__ */ jsxs32("p", { children: [
+          /* @__PURE__ */ jsxs32("strong", { children: [
             t("prescription.pdf.patient"),
             ": "
           ] }),
@@ -6469,39 +6607,39 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
           patient.ssin
         ] })
       ] }),
-      /* @__PURE__ */ jsx31("h3", { children: t("prescription.pdf.electronicContent") }),
-      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ jsxs29("div", { className: "prescription-item", children: [
-        /* @__PURE__ */ jsxs29("div", { className: "prescription-item__block", children: [
-          /* @__PURE__ */ jsxs29("p", { children: [
+      /* @__PURE__ */ jsx42("h3", { children: t("prescription.pdf.electronicContent") }),
+      chunk2.map((prescription, prescriptionIndex) => /* @__PURE__ */ jsxs32("div", { className: "prescription-item", children: [
+        /* @__PURE__ */ jsxs32("div", { className: "prescription-item__block", children: [
+          /* @__PURE__ */ jsxs32("p", { children: [
             t("prescription.pdf.product"),
             " ",
             "",
-            /* @__PURE__ */ jsx31("strong", { children: trim(
+            /* @__PURE__ */ jsx42("strong", { children: trim(
               prescription.medication.medicinalProduct?.intendedname ?? prescription.medication?.substanceProduct?.intendedname ?? prescription.medication?.compoundPrescription ?? ""
             ) })
           ] }),
-          /* @__PURE__ */ jsxs29("p", { children: [
+          /* @__PURE__ */ jsxs32("p", { children: [
             t("prescription.pdf.dosage"),
             " ",
             prescription.medication.instructionForPatient
           ] }),
-          /* @__PURE__ */ jsxs29("p", { children: [
+          /* @__PURE__ */ jsxs32("p", { children: [
             t("prescription.pdf.date"),
             " ",
             formatDate(prescription.medication.beginMoment)
           ] }),
-          /* @__PURE__ */ jsxs29("p", { children: [
+          /* @__PURE__ */ jsxs32("p", { children: [
             t("prescription.pdf.validUntil"),
             " ",
             prescription.medication.endMoment ? formatDate(prescription.medication.endMoment) : "-"
           ] })
         ] }),
-        /* @__PURE__ */ jsxs29("div", { className: "prescription-item__block prescription-item__block--right", children: [
-          /* @__PURE__ */ jsxs29("strong", { className: "ridTitle", children: [
+        /* @__PURE__ */ jsxs32("div", { className: "prescription-item__block prescription-item__block--right", children: [
+          /* @__PURE__ */ jsxs32("strong", { className: "ridTitle", children: [
             "RID ",
             prescriptionIndex + 1
           ] }),
-          /* @__PURE__ */ jsx31("div", { className: "barcode", children: /* @__PURE__ */ jsx31("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
+          /* @__PURE__ */ jsx42("div", { className: "barcode", children: /* @__PURE__ */ jsx42("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
         ] })
       ] }, prescriptionIndex))
     ] })
@@ -6656,7 +6794,7 @@ var StyledPrescriptionPrintModal = styled30.div`
 `;
 
 // src/shared/components/PrescriptionPrintModal/index.tsx
-import { Fragment as Fragment8, jsx as jsx32, jsxs as jsxs30 } from "react/jsx-runtime";
+import { Fragment as Fragment9, jsx as jsx43, jsxs as jsxs33 } from "react/jsx-runtime";
 var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, patient }) => {
   const print = () => {
     const div = document.getElementById("print-container");
@@ -6686,17 +6824,17 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
       document.body.appendChild(hideFrame);
     }
   };
-  return /* @__PURE__ */ jsxs30(Fragment8, { children: [
-    /* @__PURE__ */ jsx32(GlobalStyles, {}),
-    /* @__PURE__ */ jsx32(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ jsx32("div", { className: "contentWrap", children: /* @__PURE__ */ jsxs30("div", { className: "content", children: [
-      /* @__PURE__ */ jsxs30("div", { className: "content__header", children: [
-        /* @__PURE__ */ jsx32("h3", { children: t("practitioner.printModal.title") }),
-        /* @__PURE__ */ jsx32("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ jsx32(CloseIcn, {}) })
+  return /* @__PURE__ */ jsxs33(Fragment9, { children: [
+    /* @__PURE__ */ jsx43(GlobalStyles, {}),
+    /* @__PURE__ */ jsx43(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ jsx43("div", { className: "contentWrap", children: /* @__PURE__ */ jsxs33("div", { className: "content", children: [
+      /* @__PURE__ */ jsxs33("div", { className: "content__header", children: [
+        /* @__PURE__ */ jsx43("h3", { children: t("practitioner.printModal.title") }),
+        /* @__PURE__ */ jsx43("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ jsx43(CloseIcn, {}) })
       ] }),
-      /* @__PURE__ */ jsx32("div", { className: "content__body", children: /* @__PURE__ */ jsx32("div", { id: "print-container", children: /* @__PURE__ */ jsx32(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
-      /* @__PURE__ */ jsxs30("div", { className: "content__footer", children: [
-        /* @__PURE__ */ jsx32(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
-        /* @__PURE__ */ jsx32(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
+      /* @__PURE__ */ jsx43("div", { className: "content__body", children: /* @__PURE__ */ jsx43("div", { id: "print-container", children: /* @__PURE__ */ jsx43(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
+      /* @__PURE__ */ jsxs33("div", { className: "content__footer", children: [
+        /* @__PURE__ */ jsx43(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
+        /* @__PURE__ */ jsx43(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
       ] })
     ] }) }) })
   ] });
@@ -6720,11 +6858,13 @@ export {
   deleteCertificate,
   fetchSamVersion,
   findMedicationsByLabel,
+  getRegulatoryBadges,
   getSamTextTranslation,
   loadAlternativeMedications,
   loadAndDecryptCertificate,
   loadCertificateInformation,
   loadVmpGroup,
+  registerRegulatoryBadge,
   sendRecipe,
   t,
   uploadAndEncryptCertificate,
