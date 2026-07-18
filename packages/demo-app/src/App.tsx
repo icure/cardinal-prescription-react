@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import {
   cardinalLanguage,
   createIndexedDbTokenStore,
+  createMedicationProvider,
   deleteCertificate,
   fetchSamVersion,
   loadCertificateInformation,
@@ -20,7 +21,8 @@ import {
 import './index.css'
 import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
-import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE } from './config'
+import { MedIndexClient } from '@icure/medindex-sdk'
+import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE, MEDINDEX_URL } from './config'
 
 const patient: Patient = {
   firstName: 'Antoine',
@@ -80,6 +82,23 @@ export const App = () => {
   // The `be` MedicationProvider, replacing the raw SAM sdk instance MedicationSearch used to
   // take directly — memoized so it's only reconstructed when the underlying sdk instance changes.
   const medicationProvider = useMemo(() => cardinalBeSamInstance && new SamMedicationProvider(cardinalBeSamInstance, 'P'), [cardinalBeSamInstance])
+
+  // The `ch` (Switzerland/medINDEX) MedicationProvider — independent of the `be` certificate/auth
+  // gating above, since medINDEX is public reference data with no auth. Unlike the `be` SAM sdk,
+  // `MedIndexClient` needs no async initialization, so this can be built synchronously on mount
+  // with `useMemo` alone, no `useEffect` required.
+  //
+  // `fetch: window.fetch.bind(window)` works around a bug in `@icure/medindex-sdk` (confirmed via
+  // live testing): its `MedIndexHttpClient` defaults to the bare global `fetch` reference, which
+  // browsers call detached from `window`, throwing `TypeError: Failed to execute 'fetch' on
+  // 'Window': Illegal invocation`. Passing an explicitly bound `fetch` avoids this without
+  // touching the SDK or the library.
+  const chMedicationProvider = useMemo(
+    () => createMedicationProvider({ country: 'ch', client: new MedIndexClient({ baseUrl: MEDINDEX_URL, fetch: window.fetch.bind(window) }) }),
+    [],
+  )
+  const [selectedChMedication, setSelectedChMedication] = useState<MedicationType>()
+  const onAddChMedication = (medication: MedicationType) => setSelectedChMedication(medication)
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
@@ -241,6 +260,7 @@ export const App = () => {
     <div className="App">
       <h1>Hello from the Demo App</h1>
       <div className="dividerApp"></div>
+      <h2>Belgium (SAM)</h2>
       <div className="element">
         <PractitionerCertificate
           certificateValid={isCertificateValid}
@@ -276,6 +296,31 @@ export const App = () => {
             />
           </div>
         </>
+      )}
+
+      {/*
+        Switzerland (medINDEX) — independent of the `be` certificate/auth gating above: `ch` is a
+        medication-source swap only this phase, with no prescription-transmission equivalent yet
+        (see docs/plan.md's "ch scope this phase" decision), so it needs no certificate/passphrase
+        and doesn't route through PrescriptionModal (a `be`-only component requiring `sdk: SamV2Api`).
+      */}
+      <div className="dividerApp"></div>
+      <h2>Switzerland (medINDEX)</h2>
+      <div className="element">
+        <MedicationSearch medicationProvider={chMedicationProvider} onAddPrescription={onAddChMedication} disableInputEventsTracking={false} />
+      </div>
+      {selectedChMedication && (
+        <div className="element">
+          <h3>Selected medication</h3>
+          <p>{selectedChMedication.title}</p>
+          <ul>
+            {Object.entries(selectedChMedication.regulatory?.ch ?? {}).map(([key, value]) => (
+              <li key={key}>
+                <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {prescriptionModalMode === 'create' && cardinalBeSamInstance && (

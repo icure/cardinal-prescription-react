@@ -26,3 +26,7 @@ export const practitionerCredentials = {
 export const ICURE_URL = import.meta.env.VITE_ICURE_URL ?? 'https://nightly.icure.cloud'
 export const FHC_URL = import.meta.env.VITE_FHC_URL ?? 'https://fhcacc.icure.cloud'
 export const CARDINAL_PRESCRIPTION_LANGUAGE = (import.meta.env.VITE_CARDINAL_LANGUAGE ?? 'fr') as 'fr' | 'nl' | 'de' | 'en'
+
+// medINDEX (Switzerland) standalone server — public reference data, no auth required, so unlike
+// the SAM credentials above this has a workable local-dev default and isn't run through `required()`.
+export const MEDINDEX_URL = import.meta.env.VITE_MEDINDEX_URL ?? 'http://localhost:8080/rest/v2/medindex'

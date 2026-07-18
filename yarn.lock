@@ -2365,6 +2365,7 @@ __metadata:
     "@icure/be-fhc-lite-api": "npm:0.6.6"
     "@icure/cardinal-be-sam-sdk": "npm:^0.0.1"
     "@icure/cardinal-prescription-be-react": "npm:*"
+    "@icure/medindex-sdk": "npm:^0.1.4"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
     "@vitejs/plugin-react": "npm:^4.6.0"
