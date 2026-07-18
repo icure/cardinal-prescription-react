@@ -45,6 +45,7 @@
     "@icure/be-fhc-lite-api": "0.6.6",
     "@icure/cardinal-be-sam-sdk": "^0.0.1",
     "@icure/medication-sdk": "0.0.22",
+    "@icure/medindex-sdk": "^0.1.4",
     "jsbarcode": "^3.12.1",
     "react-hook-form": "^7.60.0",
     "styled-components": "^6.0.0",

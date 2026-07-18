@@ -858,6 +858,7 @@ __metadata:
     "@icure/be-fhc-lite-api": "npm:0.6.6"
     "@icure/cardinal-be-sam-sdk": "npm:^0.0.1"
     "@icure/medication-sdk": "npm:0.0.22"
+    "@icure/medindex-sdk": "npm:^0.1.4"
     "@testing-library/jest-dom": "npm:^6.6.0"
     "@testing-library/react": "npm:^16.3.0"
     "@testing-library/user-event": "npm:^14.6.0"
@@ -884,6 +885,13 @@ __metadata:
   dependencies:
     chevrotain: "npm:^11.0.3"
   checksum: 10c0/fb6077ae107f7b18e5233d21ba98a85a0e1c6576c180fa0b215fe9a5b7cfc55c2009813cb8032340cf2072e331a1d1efe3f500efdf9d0e78536e7fed26aed3f2
+  languageName: node
+  linkType: hard
+
+"@icure/medindex-sdk@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@icure/medindex-sdk@npm:0.1.4"
+  checksum: 10c0/2a91aa31ceca746f6c37a4afaa0a0a785c87de4255c57bc22b0576b276447b8da0b149600eccadc4e6545354c77ef06f6c2ad933bb95435eecfa9eade6fca137
   languageName: node
   linkType: hard
 
