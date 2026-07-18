@@ -4106,7 +4106,7 @@ var pullNext = async (iterator, size) => {
   }
   return items;
 };
-var MedicationSearch = ({ medicationProvider, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
+var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState3("");
   const searchQueryRef = useRef4(searchQuery);
   useEffect3(() => {

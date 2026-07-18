@@ -4167,7 +4167,7 @@ var pullNext = async (iterator, size) => {
   }
   return items;
 };
-var MedicationSearch = ({ medicationProvider, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
+var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = (0, import_react6.useState)("");
   const searchQueryRef = (0, import_react6.useRef)(searchQuery);
   (0, import_react6.useEffect)(() => {

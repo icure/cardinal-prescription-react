@@ -265,7 +265,6 @@ declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
 interface MedicationSearchProps {
     medicationProvider: MedicationProvider;
-    deliveryEnvironment: string;
     onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void;
     disableInputEventsTracking: boolean;
     short?: boolean;

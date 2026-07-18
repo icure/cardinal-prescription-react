@@ -259,12 +259,7 @@ export const App = () => {
       <div className="dividerApp"></div>
       <div className="element">
         {medicationProvider && isCertificateValid && (
-          <MedicationSearch
-            medicationProvider={medicationProvider}
-            deliveryEnvironment="P"
-            onAddPrescription={onCreatePrescription}
-            disableInputEventsTracking={isPrescriptionModalOpen}
-          />
+          <MedicationSearch medicationProvider={medicationProvider} onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
         )}
       </div>
       {prescriptions.length !== 0 && (

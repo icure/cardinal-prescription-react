@@ -16,7 +16,6 @@ const PAGE_SIZE = 10
 
 interface MedicationSearchProps {
   medicationProvider: MedicationProvider
-  deliveryEnvironment: string
   onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void
   disableInputEventsTracking: boolean
   short?: boolean
@@ -43,7 +42,7 @@ const pullNext = async (iterator: AsyncIterator<Med>, size: number): Promise<Med
   return items
 }
 
-export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationProvider, deliveryEnvironment, onAddPrescription, disableInputEventsTracking, short = false }) => {
+export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationProvider, onAddPrescription, disableInputEventsTracking, short = false }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchQueryRef = useRef(searchQuery)
   useEffect(() => {
