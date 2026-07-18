@@ -22,3 +22,146 @@
     min-width: 100%;
   }
 }
+
+.tab-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-bar button {
+  padding: 8px 16px;
+  border: 1px solid #d6dfe8;
+  border-radius: 4px;
+  background: #f4f7fa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tab-bar button.active {
+  background: #3d87c5;
+  border-color: #3d87c5;
+  color: #fff;
+  font-weight: bold;
+}
+
+.ch-prescription-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ch-prescription-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid #d6dfe8;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.ch-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ch-modal {
+  background: #fff;
+  border-radius: 4px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ch-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ch-modal textarea,
+.ch-modal input,
+.ch-modal select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid #d6dfe8;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.ch-form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ch-form-row > div {
+  flex: 1;
+}
+
+.ch-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ch-print-view {
+  background: #fff;
+  border-radius: 4px;
+  padding: 24px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ch-print-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ch-print-item {
+  border-bottom: 1px dashed #d6dfe8;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+/* Print-only view: hide everything on the page except the `.ch-print-view` block (and none of
+   its `.ch-no-print` children, e.g. the Print/Close buttons) — the conventional "print a single
+   element" trick for a plain React app with no dedicated print component to lean on. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .ch-print-view,
+  .ch-print-view * {
+    visibility: visible;
+  }
+
+  .ch-no-print,
+  .ch-no-print * {
+    display: none !important;
+  }
+
+  .ch-print-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+  }
+}

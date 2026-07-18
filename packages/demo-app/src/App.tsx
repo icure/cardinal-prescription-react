@@ -1,352 +1,40 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import {
-  cardinalLanguage,
-  createIndexedDbTokenStore,
-  createMedicationProvider,
-  deleteCertificate,
-  fetchSamVersion,
-  loadCertificateInformation,
-  MedicationSearch,
-  MedicationType,
-  PractitionerCertificate,
-  PrescribedMedicationType,
-  PrescriptionList,
-  PrescriptionModal,
-  PrescriptionPrintModal,
-  SamMedicationProvider,
-  sendRecipe,
-  uploadAndEncryptCertificate,
-  validateDecryptedCertificate,
-} from '@icure/cardinal-prescription-be-react'
+import React, { useState } from 'react'
+import { cardinalLanguage } from '@icure/cardinal-prescription-be-react'
 import './index.css'
-import { Address, HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
-import { CardinalBeSamSdk, Credentials, SamV2Api, SamVersion } from '@icure/cardinal-be-sam-sdk'
-import { MedIndexClient } from '@icure/medindex-sdk'
-import { practitionerCredentials, ICURE_URL, FHC_URL, CARDINAL_PRESCRIPTION_LANGUAGE, MEDINDEX_URL } from './config'
+import { CARDINAL_PRESCRIPTION_LANGUAGE } from './config'
+import { BelgiumTab } from './tabs/BelgiumTab'
+import { SwitzerlandTab } from './tabs/SwitzerlandTab'
 
-const patient: Patient = {
-  firstName: 'Antoine',
-  lastName: 'Duchâteau',
-  ssin: '74010414733',
-  dateOfBirth: 19740104,
-}
-const hcp: HealthcareParty = {
-  firstName: 'Fabien',
-  lastName: 'Zimer',
-  ssin: '84100212104',
-  nihii: '10104133000',
-  addresses: [
-    new Address({
-      addressType: Address.AddressTypeEnum.Clinic,
-      street: 'Rue de la Loi',
-      houseNumber: '16',
-      postalCode: '1000',
-      city: 'Bruxelles',
-      country: 'Belgique',
-    }),
-  ],
-}
-const vendor = {
-  vendorName: 'vendorName',
-  vendorEmail: 'support@test.be',
-  vendorPhone: '+3200000000',
-}
-const samPackage = {
-  packageName: 'test[test/1.0]-freehealth-connector',
-  packageVersion: '1.0]-freehealth-connector',
-}
-
-// Credentials and environment URLs come from environment variables — see config.ts
-// and .env.example. Copy .env.example to .env.local and fill in your own values.
+type Country = 'be' | 'ch'
 
 export const App = () => {
-  // Service instance refs
-  const [certificateUploaded, setCertificateUploaded] = useState(false)
-  const [isCertificateValid, setIsCertificateValid] = useState(false)
-  const [errorWhileVerifyingCertificate, setErrorWhileVerifyingCertificate] = useState<string | undefined>()
-  const [samVersion, setSamVersion] = useState<SamVersion | undefined>()
-  const [passphrase, setPassphrase] = useState<string | undefined>()
-  const [cardinalBeSamInstance, setCardinalBeSamInstance] = useState<SamV2Api | undefined>(undefined)
-  const [isPrescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
-  const [medicationToPrescribe, setMedicationToPrescribe] = useState<MedicationType>()
-  const [alternativeCheapMedications, setAlternativeCheapMedications] = useState<MedicationType[]>([])
-  const [prescriptionToModify, setPrescriptionToModify] = useState<PrescribedMedicationType>()
-  const [prescriptionModalMode, setPrescriptionModalMode] = useState<'create' | 'modify' | null>(null)
-  const [prescriptions, setPrescriptions] = useState<PrescribedMedicationType[]>([])
-  const [isPrescriptionPrintModalOpen, setPrescriptionPrintModalOpen] = useState(false)
-
-  // Token store used to cache the FHC keystore uuid / STS token between
-  // certificate validation and prescription sending.
-  const tokenStore = useMemo(() => createIndexedDbTokenStore(), [])
-
-  // The `be` MedicationProvider, replacing the raw SAM sdk instance MedicationSearch used to
-  // take directly — memoized so it's only reconstructed when the underlying sdk instance changes.
-  const medicationProvider = useMemo(() => cardinalBeSamInstance && new SamMedicationProvider(cardinalBeSamInstance, 'P'), [cardinalBeSamInstance])
-
-  // The `ch` (Switzerland/medINDEX) MedicationProvider — independent of the `be` certificate/auth
-  // gating above, since medINDEX is public reference data with no auth. Unlike the `be` SAM sdk,
-  // `MedIndexClient` needs no async initialization, so this can be built synchronously on mount
-  // with `useMemo` alone, no `useEffect` required.
-  //
-  // `fetch: window.fetch.bind(window)` works around a bug in `@icure/medindex-sdk` (confirmed via
-  // live testing): its `MedIndexHttpClient` defaults to the bare global `fetch` reference, which
-  // browsers call detached from `window`, throwing `TypeError: Failed to execute 'fetch' on
-  // 'Window': Illegal invocation`. Passing an explicitly bound `fetch` avoids this without
-  // touching the SDK or the library.
-  const chMedicationProvider = useMemo(
-    () => createMedicationProvider({ country: 'ch', client: new MedIndexClient({ baseUrl: MEDINDEX_URL, fetch: window.fetch.bind(window) }) }),
-    [],
-  )
-  const [selectedChMedication, setSelectedChMedication] = useState<MedicationType>()
-  const onAddChMedication = (medication: MedicationType) => setSelectedChMedication(medication)
+  const [selectedCountry, setSelectedCountry] = useState<Country>('be')
 
   cardinalLanguage.setLanguage(CARDINAL_PRESCRIPTION_LANGUAGE)
 
-  // Initialize all backend services on mount
-  useEffect(() => {
-    const initializeAll = async () => {
-      try {
-        // Initialize Cardinal Be Sam (SAM)
-        const cardinalBeSamApi = await CardinalBeSamSdk.initialize(
-          undefined,
-          ICURE_URL,
-          new Credentials.UsernamePassword(practitionerCredentials.username, practitionerCredentials.password),
-        )
-        setCardinalBeSamInstance(cardinalBeSamApi.sam)
-        setSamVersion(await fetchSamVersion(cardinalBeSamApi.sam))
-
-        try {
-          if (hcp.ssin) {
-            const res = await loadCertificateInformation(hcp.ssin)
-            setCertificateUploaded(!!res)
-          }
-        } catch {
-          setCertificateUploaded(false)
-        }
-      } catch (error) {
-        console.error('Initialization error:', error)
-        setErrorWhileVerifyingCertificate('Initialization failed')
-      }
-    }
-    initializeAll()
-  }, [])
-
-  const validateCertificate = async (passphrase: string) => {
-    try {
-      const res = await validateDecryptedCertificate(hcp, passphrase, tokenStore, FHC_URL)
-
-      setIsCertificateValid(res.status)
-      setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
-      setCertificateUploaded(!res.error)
-    } catch (error) {
-      setIsCertificateValid(false)
-      setErrorWhileVerifyingCertificate('Unexpected error')
-      setCertificateUploaded(false)
-
-      console.error('Error while validating certificate from the Demo App:', error)
-    }
-  }
-
-  useEffect(() => {
-    if (certificateUploaded && passphrase) {
-      validateCertificate(passphrase).catch(console.error)
-    } else {
-      setIsCertificateValid(false)
-      setErrorWhileVerifyingCertificate(undefined)
-    }
-  }, [passphrase, certificateUploaded])
-
-  // We do this if the certificate is uploaded, but the passphrase is not set
-  const onDecryptCertificate = (passphrase: string) => {
-    setPassphrase(passphrase)
-  }
-  // We do this if no certificate is uploaded
-  const onUploadCertificate = async (certificateData: ArrayBuffer, passphrase: string) => {
-    if (!hcp.ssin) return
-
-    try {
-      await uploadAndEncryptCertificate(hcp.ssin, passphrase, certificateData)
-
-      onDecryptCertificate(passphrase)
-      setCertificateUploaded(true)
-    } catch (error) {
-      setCertificateUploaded(false)
-      console.error('Error while uploading certificate from the Demo App:', error)
-    }
-  }
-  const onResetCertificate = async (): Promise<void> => {
-    if (!hcp.ssin) return
-    await deleteCertificate(hcp.ssin)
-    setPassphrase(undefined)
-    setCertificateUploaded(false)
-    setIsCertificateValid(false)
-    setErrorWhileVerifyingCertificate(undefined)
-  }
-
-  const onCreatePrescription = (medication: MedicationType, cheapAlternatives: MedicationType[]) => {
-    setPrescriptionModalOpen(true)
-    setPrescriptionModalMode('create')
-    setMedicationToPrescribe(medication)
-    // Held in state for a later phase where the PrescriptionModal will surface cheaper alternatives.
-    setAlternativeCheapMedications(cheapAlternatives)
-  }
-  const onClosePrescriptionModal = () => {
-    setPrescriptionModalMode(null)
-    setMedicationToPrescribe(undefined)
-    setPrescriptionToModify(undefined)
-    setPrescriptionModalOpen(false)
-  }
-  const onSubmitCreatePrescription = (newPrescriptions: PrescribedMedicationType[]) => {
-    console.log(newPrescriptions)
-    setPrescriptions((prev) => [...prev, ...newPrescriptions])
-    onClosePrescriptionModal()
-  }
-  const onSubmitModifyPrescription = (prescriptionsToModify: PrescribedMedicationType[]) => {
-    setPrescriptions((prev) => prev?.map((item) => (item.uuid === prescriptionsToModify[0].uuid ? prescriptionsToModify[0] : item)))
-    onClosePrescriptionModal()
-  }
-  const onModifyPrescription = (prescription: PrescribedMedicationType) => {
-    setPrescriptionModalOpen(true)
-    setPrescriptionModalMode('modify')
-    setPrescriptionToModify(prescription)
-  }
-  const onDeletePrescription = (prescription: PrescribedMedicationType) => {
-    setPrescriptions((prev) => prev?.filter((item) => item.uuid !== prescription.uuid))
-  }
-  const onClosePrescriptionPrintModal = () => setPrescriptionPrintModalOpen(false)
-  const handleSendPrescriptions = async () => {
-    await Promise.all(
-      prescriptions
-        .filter((m) => !m.rid)
-        .map(async (med) => {
-          try {
-            if (!!samVersion?.version && !!passphrase) {
-              const res = await sendRecipe(
-                {
-                  vendor,
-                  samPackage,
-                },
-                samVersion.version,
-                hcp,
-                patient,
-                med,
-                passphrase,
-                FHC_URL,
-                tokenStore,
-              )
-              setPrescriptions((prev) =>
-                prev.map((item) =>
-                  item.uuid === med.uuid
-                    ? {
-                        ...item,
-                        rid: res[0]?.rid,
-                      }
-                    : item,
-                ),
-              )
-            }
-          } catch (e) {
-            console.error('Error while sending prescription from the Demo App:', e)
-          }
-        }),
-    )
-  }
-  const handlePrintPrescriptions = async () => {
-    await handleSendPrescriptions()
-    setPrescriptionPrintModalOpen(true)
-  }
-
   return (
     <div className="App">
-      <h1>Hello from the Demo App</h1>
-      <div className="dividerApp"></div>
-      <h2>Belgium (SAM)</h2>
-      <div className="element">
-        <PractitionerCertificate
-          certificateValid={isCertificateValid}
-          certificateUploaded={certificateUploaded}
-          errorWhileVerifyingCertificate={errorWhileVerifyingCertificate}
-          onResetCertificate={onResetCertificate}
-          onUploadCertificate={onUploadCertificate}
-          onDecryptCertificate={onDecryptCertificate}
-        />
+      <div className="tab-bar">
+        <button type="button" className={selectedCountry === 'be' ? 'active' : ''} onClick={() => setSelectedCountry('be')}>
+          Belgium
+        </button>
+        <button type="button" className={selectedCountry === 'ch' ? 'active' : ''} onClick={() => setSelectedCountry('ch')}>
+          Switzerland
+        </button>
       </div>
       <div className="dividerApp"></div>
-      <p>
-        SamVersion:
-        <strong>{samVersion?.version}</strong>
-      </p>
-      <div className="dividerApp"></div>
-      <div className="element">
-        {medicationProvider && isCertificateValid && (
-          <MedicationSearch medicationProvider={medicationProvider} onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
-        )}
-      </div>
-      {prescriptions.length !== 0 && (
-        <>
-          <div className="home__dividerApp"></div>
-          <div className="element">
-            <PrescriptionList
-              handleDeletePrescription={onDeletePrescription}
-              handleModifyPrescription={onModifyPrescription}
-              prescribedMedications={prescriptions}
-              handleSendPrescriptions={handleSendPrescriptions}
-              handlePrintPrescriptions={handlePrintPrescriptions}
-              hideSectionsTitles={true}
-            />
-          </div>
-        </>
-      )}
 
       {/*
-        Switzerland (medINDEX) — independent of the `be` certificate/auth gating above: `ch` is a
-        medication-source swap only this phase, with no prescription-transmission equivalent yet
-        (see docs/plan.md's "ch scope this phase" decision), so it needs no certificate/passphrase
-        and doesn't route through PrescriptionModal (a `be`-only component requiring `sdk: SamV2Api`).
+        Both tabs stay mounted across switches (hidden via CSS rather than unmounted) so each
+        country's local state — SAM/certificate init, search results, drafted `ch` prescriptions —
+        survives switching tabs back and forth, for a nicer demo UX.
       */}
-      <div className="dividerApp"></div>
-      <h2>Switzerland (medINDEX)</h2>
-      <div className="element">
-        <MedicationSearch medicationProvider={chMedicationProvider} onAddPrescription={onAddChMedication} disableInputEventsTracking={false} />
+      <div style={{ display: selectedCountry === 'be' ? 'block' : 'none' }}>
+        <BelgiumTab />
       </div>
-      {selectedChMedication && (
-        <div className="element">
-          <h3>Selected medication</h3>
-          <p>{selectedChMedication.title}</p>
-          <ul>
-            {Object.entries(selectedChMedication.regulatory?.ch ?? {}).map(([key, value]) => (
-              <li key={key}>
-                <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {prescriptionModalMode === 'create' && cardinalBeSamInstance && (
-        <PrescriptionModal
-          sdk={cardinalBeSamInstance}
-          onClose={onClosePrescriptionModal}
-          onSubmit={onSubmitCreatePrescription}
-          modalMood={prescriptionModalMode}
-          medicationToPrescribe={medicationToPrescribe}
-          alternativeCheapMedications={alternativeCheapMedications}
-          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
-        />
-      )}
-      {prescriptionModalMode === 'modify' && cardinalBeSamInstance && (
-        <PrescriptionModal
-          sdk={cardinalBeSamInstance}
-          onClose={onClosePrescriptionModal}
-          onSubmit={onSubmitModifyPrescription}
-          modalMood={prescriptionModalMode}
-          prescriptionToModify={prescriptionToModify}
-          standardDosageContext={{ ageInYears: 30, weightInKg: 70 }}
-        />
-      )}
-      {isPrescriptionPrintModalOpen && (
-        <PrescriptionPrintModal prescribedMedications={prescriptions} prescriber={hcp} patient={patient} closeModal={onClosePrescriptionPrintModal} />
-      )}
+      <div style={{ display: selectedCountry === 'ch' ? 'block' : 'none' }}>
+        <SwitzerlandTab />
+      </div>
     </div>
   )
 }
