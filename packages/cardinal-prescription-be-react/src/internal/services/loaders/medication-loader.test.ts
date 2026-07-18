@@ -153,7 +153,7 @@ describe('medication-loader - loadMedicationsPage', () => {
 
       // Verify each loaded product corresponds to an amp
       allLoadedProducts.forEach((product) => {
-        expect(validAmpIds.has(product.ampId), `MedicationProduct with ampId "${product.ampId}" not found in iterator data`).toBe(true)
+        expect(validAmpIds.has(product.id), `MedicationProduct with id "${product.id}" not found in iterator data`).toBe(true)
 
         // Verify each medication within the product corresponds to an ampp
         product.medications.forEach((med) => {
@@ -262,7 +262,7 @@ describe('medication-loader - loadMedicationsPage', () => {
       ]
       const mockIterator = PaginatedListIteratorMockFactory.create(testData)
 
-      const filterFn = (mt: MedicationType) => (mt.cheap || mt.cheapest ? mt : undefined)
+      const filterFn = (mt: MedicationType) => (mt.regulatory?.be?.cheap || mt.regulatory?.be?.cheapest ? mt : undefined)
 
       // Act
       const result = await loadMedicationsPage(mockIterator, 10, 'A', [], filterFn)
@@ -273,7 +273,7 @@ describe('medication-loader - loadMedicationsPage', () => {
       // All medications within products should be cheap or cheapest
       const allMedications = result.flatMap((p) => p.medications)
       expect(allMedications.length).toBe(2)
-      expect(allMedications.every((med) => med.cheap || med.cheapest)).toBe(true)
+      expect(allMedications.every((med) => med.regulatory?.be?.cheap || med.regulatory?.be?.cheapest)).toBe(true)
     })
 
     it('should filter by cheap property (as used in handleAddPrescription)', async () => {
@@ -302,16 +302,16 @@ describe('medication-loader - loadMedicationsPage', () => {
       ]
       const mockIterator = PaginatedListIteratorMockFactory.create(testData)
 
-      const cheapAlternativesFilter = (mt: MedicationType) => (mt.cheap || mt.cheapest ? mt : undefined)
+      const cheapAlternativesFilter = (mt: MedicationType) => (mt.regulatory?.be?.cheap || mt.regulatory?.be?.cheapest ? mt : undefined)
 
       // Act
       const result = await loadMedicationsPage(mockIterator, 10, 'A', [], cheapAlternativesFilter)
 
       // Assert - Should have 1 product with 1 cheap medication
       expect(result.length).toBe(1)
-      expect(result[0].ampId).toBe('test-cheap-amp')
+      expect(result[0].id).toBe('test-cheap-amp')
       expect(result[0].medications.length).toBe(1)
-      expect(result[0].medications[0].cheap).toBe(true)
+      expect(result[0].medications[0].regulatory?.be?.cheap).toBe(true)
     })
   })
 
@@ -338,8 +338,8 @@ describe('medication-loader - loadMedicationsPage', () => {
       const result = await loadMedicationsPage(mockIterator, 10, 'A')
 
       // Assert - Expired AMP should not be in results
-      expect(result.every((product) => product.ampId !== 'expired-amp')).toBe(true)
-      expect(result.some((product) => product.ampId === 'active-amp')).toBe(true)
+      expect(result.every((product) => product.id !== 'expired-amp')).toBe(true)
+      expect(result.some((product) => product.id === 'active-amp')).toBe(true)
     })
 
     it('should only include AMPPs with active commercialization dates', async () => {
@@ -401,10 +401,10 @@ describe('medication-loader - loadMedicationsPage', () => {
 
       // Assert
       expect(result.length).toBe(1)
-      expect(result[0].ampId).toBe('be-amp')
+      expect(result[0].id).toBe('be-amp')
       expect(result[0].medications.length).toBe(1)
       expect(result[0].medications[0].id).toBe('be-ampp')
-      expect(result.every((product) => product.ampId !== 'fr-amp')).toBe(true)
+      expect(result.every((product) => product.id !== 'fr-amp')).toBe(true)
     })
 
     it('should handle different delivery environments', async () => {
@@ -428,7 +428,7 @@ describe('medication-loader - loadMedicationsPage', () => {
 
       // Assert
       expect(resultFr.length).toBe(1)
-      expect(resultFr[0].ampId).toBe('fr-amp')
+      expect(resultFr[0].id).toBe('fr-amp')
       expect(resultFr[0].medications[0].id).toBe('fr-ampp')
     })
   })
@@ -519,8 +519,8 @@ describe('medication-loader - loadMedicationsPage', () => {
       // Assert
       expect(result.length).toBe(1)
       expect(result[0].medications.length).toBe(1)
-      expect(result[0].medications[0].cnk).toBe('1234567')
-      expect(result[0].medications[0].dmppProductId).toBe('prod-cnk')
+      expect(result[0].medications[0].regulatory?.be?.cnk).toBe('1234567')
+      expect(result[0].medications[0].regulatory?.be?.dmppProductId).toBe('prod-cnk')
     })
   })
 
@@ -582,7 +582,7 @@ describe('medication-loader - loadMedicationsPage', () => {
 
       // Assert - Check product structure
       expect(result.length).toBe(1)
-      expect(result[0].ampId).toBe('amp-1')
+      expect(result[0].id).toBe('amp-1')
       expect(result[0].title).toBe('Aspirin')
       expect(result[0].medications.length).toBe(1)
 
@@ -590,25 +590,29 @@ describe('medication-loader - loadMedicationsPage', () => {
       const medication = result[0].medications[0]
       expect(medication).toEqual(
         expect.objectContaining({
-          ampId: 'amp-1',
-          vmpGroupId: 'vmp-group-1',
           id: 'ampp-1',
           title: 'Aspirin 500mg',
-          vmpTitle: 'Pain Relief',
-          price: '€1.5',
-          blackTriangle: true,
-          speciallyRegulated: 1,
-          genericPrescriptionRequired: true,
-          crmLink: 'http://crm.com',
-          patientInformationLeafletLink: 'http://leaflet.com',
-          rmaProfessionalLink: 'http://rma.com',
-          spcLink: 'http://spc.com',
-          dhpcLink: 'http://dhpc.com',
-          deliveryModusCode: 'MOD1',
-          deliveryModus: 'Standard',
-          deliveryModusSpecificationCode: 'Sp',
-          deliveryModusSpecification: 'Specification',
-          // Note: rmakeyMessages returns the entire SamText object, not just the string
+          regulatory: expect.objectContaining({
+            be: expect.objectContaining({
+              ampId: 'amp-1',
+              vmpGroupId: 'vmp-group-1',
+              vmpTitle: 'Pain Relief',
+              price: '€1.5',
+              blackTriangle: true,
+              speciallyRegulated: 1,
+              genericPrescriptionRequired: true,
+              crmLink: 'http://crm.com',
+              patientInformationLeafletLink: 'http://leaflet.com',
+              rmaProfessionalLink: 'http://rma.com',
+              spcLink: 'http://spc.com',
+              dhpcLink: 'http://dhpc.com',
+              deliveryModusCode: 'MOD1',
+              deliveryModus: 'Standard',
+              deliveryModusSpecificationCode: 'Sp',
+              deliveryModusSpecification: 'Specification',
+              // Note: rmakeyMessages returns the entire SamText object, not just the string
+            }),
+          }),
         }),
       )
     })
@@ -634,7 +638,7 @@ describe('medication-loader - loadMedicationsPage', () => {
     it('should use provided accumulator', async () => {
       // Arrange
       const existingProduct: MedicationProductType = {
-        ampId: 'existing-amp',
+        id: 'existing-amp',
         title: 'Existing Med',
         medications: [
           {

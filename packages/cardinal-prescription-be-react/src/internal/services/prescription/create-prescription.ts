@@ -164,20 +164,21 @@ const createSinglePrescribedMedication = (prescribedMedication: PrescribedMedica
 }
 
 const determineMedicationData = (medicationToPrescribe: MedicationType) => {
-  if (medicationToPrescribe?.ampId && !medicationToPrescribe.genericPrescriptionRequired && medicationToPrescribe.cnk) {
+  const be = medicationToPrescribe?.regulatory?.be
+  if (be?.ampId && !be.genericPrescriptionRequired && be.cnk) {
     return {
       medicinalProduct: new Medicinalproduct({
-        samId: medicationToPrescribe.dmppProductId,
-        intendedcds: [createFhcCode('CD-DRUG-CNK', medicationToPrescribe.cnk)],
-        intendedname: medicationToPrescribe.intendedName,
+        samId: be.dmppProductId,
+        intendedcds: [createFhcCode('CD-DRUG-CNK', be.cnk)],
+        intendedname: be.intendedName,
       }),
     }
-  } else if (medicationToPrescribe?.vmpGroupId) {
+  } else if (be?.vmpGroupId) {
     return {
       substanceProduct: new Substanceproduct({
-        samId: medicationToPrescribe.vmpGroupId,
-        intendedcds: [createFhcCode('CD_VMPGROUP', medicationToPrescribe.vmpGroupId)],
-        intendedname: medicationToPrescribe.vmpTitle ?? medicationToPrescribe.title,
+        samId: be.vmpGroupId,
+        intendedcds: [createFhcCode('CD_VMPGROUP', be.vmpGroupId)],
+        intendedname: be.vmpTitle ?? medicationToPrescribe.title,
       }),
     }
   } else {

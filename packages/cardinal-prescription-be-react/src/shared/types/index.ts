@@ -1,4 +1,5 @@
 export * from './medication'
+export * from './medication-provider'
 export * from './certificate'
 export * from './indexedDbStore'
 export * from './visibility'

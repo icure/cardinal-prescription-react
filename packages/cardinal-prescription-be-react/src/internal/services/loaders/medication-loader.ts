@@ -1,10 +1,9 @@
 import { Amp, AmpStatus, DmppCodeType, Nmp, PaginatedListIterator, VmpGroup, SamText } from '@icure/cardinal-be-sam-sdk'
-import { MedicationType, MedicationProductType, Med, DeliveryModusSpecificationCodeType } from '../../../shared/types'
-import { capitalize, normalizeForSort } from '../../utils/string-helpers'
+import { MedicationType, MedicationProductType, Med } from '../../../shared/types'
+import { normalizeForSort } from '../../utils/string-helpers'
 import { mergeLazySortedNamedItems } from './merge-lazy-sorted-named-items'
 import { cardinalLanguage } from '../../../shared/services/i18n'
-
-const defaultLanguage: keyof SamText = 'fr'
+import { mapSamMedication, mapSamMedicationProductTitle, mapSamMolecule, mapSamNonMedicinal } from '../medication-mapper/map-sam-medication'
 
 export async function loadMedicationsPage(
   medications: PaginatedListIterator<Amp>,
@@ -42,56 +41,14 @@ export async function loadMedicationsPage(
             (dmpp) => dmpp.from && (!dmpp.to || dmpp.to > now) && dmpp.deliveryEnvironment?.toString() === deliveryEnvironment && dmpp.codeType === DmppCodeType.Cnk,
           )
 
-          return {
-            ampId: amp.id,
-            vmpGroupId: amp.vmp?.vmpGroup?.id,
-            id: ampp.ctiExtended,
-            cnk: dmpp?.code,
-            dmppProductId: dmpp?.productId,
-            index: index,
-            title:
-              ampp.prescriptionName?.[language] ??
-              ampp.prescriptionName?.[defaultLanguage] ??
-              ampp.abbreviatedName?.[language] ??
-              ampp.abbreviatedName?.[defaultLanguage] ??
-              amp.prescriptionName?.[language] ??
-              amp.prescriptionName?.[defaultLanguage] ??
-              amp.name?.[language] ??
-              amp.name?.[defaultLanguage] ??
-              amp.abbreviatedName?.[language] ??
-              amp.abbreviatedName?.[defaultLanguage] ??
-              '',
-            vmpTitle: amp.vmp?.name?.[language] ?? amp.vmp?.name?.[defaultLanguage] ?? '',
-            activeIngredient: amp.vmp?.vmpGroup?.name?.[language] ?? amp.vmp?.vmpGroup?.name?.[defaultLanguage] ?? '',
-            price: ampp?.exFactoryPrice ? `€${ampp.exFactoryPrice}` : '',
-            cheap: dmpp?.cheap,
-            cheapest: dmpp?.cheapest,
-            crmLink: ampp.crmLink?.[language] ?? ampp.crmLink?.[defaultLanguage],
-            patientInformationLeafletLink: ampp.leafletLink?.[language] ?? ampp.leafletLink?.[defaultLanguage],
-            blackTriangle: amp.blackTriangle,
-            speciallyRegulated: ampp.speciallyRegulated,
-            genericPrescriptionRequired: ampp.genericPrescriptionRequired,
-            intendedName: ampp.prescriptionName?.[language] ?? ampp.prescriptionName?.[defaultLanguage],
-            rmaProfessionalLink: ampp.rmaProfessionalLink?.[language] ?? ampp.rmaProfessionalLink?.[defaultLanguage],
-            spcLink: ampp.spcLink?.[language] ?? ampp.spcLink?.[defaultLanguage],
-            dhpcLink: ampp.dhpcLink?.[language] ?? ampp.dhpcLink?.[defaultLanguage],
-            rmakeyMessages: ampp.rmaKeyMessages?.[language] ?? ampp.rmaKeyMessages?.[defaultLanguage],
-            vmp: amp.vmp,
-            supplyProblems: ampp.supplyProblems,
-            commercializations: ampp?.commercializations,
-            deliveryModusCode: ampp.deliveryModusCode,
-            deliveryModus: ampp.deliveryModus?.[language] ?? ampp.deliveryModus?.[defaultLanguage],
-            deliveryModusSpecificationCode: ampp.deliveryModusSpecificationCode as DeliveryModusSpecificationCodeType,
-            deliveryModusSpecification: ampp.deliveryModusSpecification?.[language] ?? ampp.deliveryModusSpecification?.[defaultLanguage],
-            reimbursements: dmpp?.reimbursements?.find((dmpp) => dmpp.from && (!dmpp.to || dmpp.to > now)),
-          } as MedicationType
+          return mapSamMedication(amp, ampp, dmpp, index, language, now)
         })
         .map(filter)
         .filter((m): m is MedicationType => !!m)
         .sort((a, b) => {
           // Sort by index first, then by title
-          const indexA = (a as any).index ?? 0
-          const indexB = (b as any).index ?? 0
+          const indexA = a.index ?? 0
+          const indexB = b.index ?? 0
           if (indexA !== indexB) {
             return indexA - indexB
           }
@@ -103,15 +60,8 @@ export async function loadMedicationsPage(
       }
 
       return {
-        ampId: amp.id!,
-        title:
-          amp.prescriptionName?.[language] ??
-          amp.prescriptionName?.[defaultLanguage] ??
-          amp.name?.[language] ??
-          amp.name?.[defaultLanguage] ??
-          amp.abbreviatedName?.[language] ??
-          amp.abbreviatedName?.[defaultLanguage] ??
-          '',
+        id: amp.id!,
+        title: mapSamMedicationProductTitle(amp, language),
         medications: medications,
       } as MedicationProductType
     })
@@ -126,16 +76,7 @@ export async function loadMoleculesPage(molecules: PaginatedListIterator<VmpGrou
   const language: keyof SamText = cardinalLanguage.getLanguage()
   const now = Date.now()
   const loadedPage = !(await molecules.hasNext()) ? [] : await molecules.next(min)
-  const page: MedicationType[] = loadedPage
-    .filter((vmp: VmpGroup) => !(vmp.to && vmp.to < now))
-    .map((vmp) => {
-      return {
-        vmpGroupId: vmp.id,
-        id: vmp.code,
-        title: capitalize(vmp.name?.[language]) ?? capitalize(vmp.name?.[defaultLanguage]) ?? '',
-        vmpGroup: vmp,
-      }
-    })
+  const page: MedicationType[] = loadedPage.filter((vmp: VmpGroup) => !(vmp.to && vmp.to < now)).map((vmp) => mapSamMolecule(vmp, language))
 
   return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadMoleculesPage(molecules, min, [...acc, ...page])
 }
@@ -144,15 +85,7 @@ export async function loadNonMedicinalPage(products: PaginatedListIterator<Nmp>,
   const language: keyof SamText = cardinalLanguage.getLanguage()
   const now = Date.now()
   const loadedPage = !(await products.hasNext()) ? [] : await products.next(min)
-  const page: MedicationType[] = loadedPage
-    .filter((nmp: Nmp) => !(nmp.to && nmp.to < now))
-    .map((nmp) => {
-      return {
-        nmpId: nmp.id,
-        id: nmp.code,
-        title: capitalize(nmp.name?.[language]) ?? capitalize(nmp.name?.[defaultLanguage]) ?? '',
-      }
-    })
+  const page: MedicationType[] = loadedPage.filter((nmp: Nmp) => !(nmp.to && nmp.to < now)).map((nmp) => mapSamNonMedicinal(nmp, language))
 
   return page.length < min || page.length + acc.length >= min ? [...acc, ...page] : await loadNonMedicinalPage(products, min, [...acc, ...page])
 }

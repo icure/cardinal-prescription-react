@@ -87,10 +87,14 @@ describe('createPrescribedMedication', () => {
   it('multiple path: creates one prescription per prescriptionsNumber with generated uuids', () => {
     const medication: MedicationType = {
       title: 'Aspirin 500mg',
-      ampId: 'amp-1',
-      cnk: '1234567',
-      dmppProductId: 'prod-1',
-      intendedName: 'Aspirin',
+      regulatory: {
+        be: {
+          ampId: 'amp-1',
+          cnk: '1234567',
+          dmppProductId: 'prod-1',
+          intendedName: 'Aspirin',
+        },
+      },
     }
     const result = createPrescribedMedication({ ...baseForm, prescriptionsNumber: 3 }, undefined, medication)
     expect(result).toHaveLength(3)
