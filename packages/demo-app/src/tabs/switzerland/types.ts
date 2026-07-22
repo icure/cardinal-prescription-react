@@ -15,3 +15,23 @@ export interface ChPrescriptionDraft {
   durationUnit: ChDurationUnit
   startDate: string
 }
+
+// Demo-app-local identification blocks for the Swiss ordonnance print layout. GLN is the Swiss
+// GS1 identifier every prescriber carries; RCC (registre des codes-créanciers, a.k.a. ZSR) is the
+// insurers' billing number — both are printed on every Swiss prescription.
+export interface ChPrescriber {
+  name: string
+  specialty: string
+  street: string
+  postalCode: string
+  city: string
+  phone: string
+  gln: string
+  rcc: string
+}
+
+export interface ChPatient {
+  name: string
+  dateOfBirth: string
+  address: string
+}

@@ -1,0 +1,37 @@
+{
+  "create-form": {
+    "title": "DAFALGAN cpr pell 1 g 16 pce",
+    "fields": {
+      "ch-posology": {
+        "tag": "textarea",
+        "type": "textarea",
+        "value": ""
+      },
+      "ch-quantity": {
+        "tag": "input",
+        "type": "number",
+        "value": "1"
+      },
+      "ch-duration-unit": {
+        "tag": "select",
+        "selected": "Days",
+        "options": [
+          "Days",
+          "Weeks",
+          "Months"
+        ]
+      },
+      "ch-start-date": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»"
+      }
+    }
+  },
+  "posology-suggestions": [
+    "jour",
+    "semaine"
+  ],
+  "posology-completed-value": "3 x par jour",
+  "posology-keyboard-completed-value": "3 x par semaine"
+}

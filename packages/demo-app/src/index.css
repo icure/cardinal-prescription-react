@@ -63,6 +63,11 @@
   padding: 12px;
 }
 
+.ch-prescription-list__actions {
+  display: flex;
+  gap: 8px;
+}
+
 .ch-modal-overlay {
   position: fixed;
   inset: 0;
@@ -73,25 +78,114 @@
   z-index: 1000;
 }
 
-.ch-modal {
-  background: #fff;
-  border-radius: 4px;
-  padding: 24px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+/* The prescription form's overlay: same dimmed backdrop, but the content is a full-height panel
+   docked to the right edge — the same presentation as the library's PrescriptionModal. */
+.ch-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  z-index: 1000;
 }
 
-.ch-modal form {
+.ch-panel {
+  background: #fff;
+  width: 900px;
+  max-width: 100%;
+  height: 100%;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.ch-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #d6dfe8;
+}
+
+.ch-panel__header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.ch-panel__header button {
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.ch-panel form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.ch-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.ch-modal textarea,
-.ch-modal input,
-.ch-modal select {
+.ch-panel__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #d6dfe8;
+}
+
+/* Posology completion dropdown, anchored under the textarea. */
+.ch-posology-wrap {
+  position: relative;
+}
+
+.ch-posology-wrap .suggestionsDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #d6dfe8;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.ch-posology-wrap .suggestionsDropdown button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ch-posology-wrap .suggestionsDropdown button:hover,
+.ch-posology-wrap .suggestionsDropdown li.focused button {
+  background: #f4f7fa;
+}
+
+.ch-panel textarea,
+.ch-panel input,
+.ch-panel select {
   width: 100%;
   box-sizing: border-box;
   padding: 6px 8px;
@@ -136,6 +230,37 @@
   border-bottom: 1px dashed #d6dfe8;
   padding-bottom: 12px;
   margin-bottom: 12px;
+}
+
+/* Swiss ordonnance layout */
+.ch-ordonnance__parties {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.ch-ordonnance__parties p {
+  margin: 2px 0;
+}
+
+.ch-ordonnance__patient {
+  text-align: right;
+}
+
+.ch-ordonnance__place-date {
+  margin-bottom: 16px;
+}
+
+.ch-ordonnance__signature {
+  margin-top: 48px;
+  width: 250px;
+  margin-left: auto;
+}
+
+.ch-ordonnance__signature-line {
+  border-bottom: 1px solid #333;
+  height: 32px;
 }
 
 /* Print-only view: hide everything on the page except the `.ch-print-view` block (and none of

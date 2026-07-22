@@ -4,7 +4,26 @@ import { MedIndexClient } from '@icure/medindex-sdk'
 import { MEDINDEX_URL } from '../config'
 import { ChPrescriptionForm } from './switzerland/ChPrescriptionForm'
 import { ChPrescriptionPrintView } from './switzerland/ChPrescriptionPrintView'
-import { ChPrescriptionDraft } from './switzerland/types'
+import { ChPatient, ChPrescriber, ChPrescriptionDraft } from './switzerland/types'
+
+// Demo identification data for the Swiss ordonnance print layout — the ch counterpart of the
+// `hcp`/`patient` constants in BelgiumTab. GLN/RCC are plausibly-shaped placeholders, not real
+// registry entries.
+const prescriber: ChPrescriber = {
+  name: 'Dr méd. Antoine Duchâteau',
+  specialty: 'Médecine interne générale',
+  street: 'Rue du Rhône 118',
+  postalCode: '1204',
+  city: 'Genève',
+  phone: '+41 22 000 00 00',
+  gln: '7601000000001',
+  rcc: 'A000001',
+}
+const patient: ChPatient = {
+  name: 'Antoine Duchâteau',
+  dateOfBirth: '04.01.1974',
+  address: 'Rue du Rhône 118, 1204 Genève',
+}
 
 // Switzerland (medINDEX) — independent of Belgium's certificate/auth gating: `ch` is a
 // medication-*source* swap only this phase, with no prescription-transmission equivalent yet
@@ -12,7 +31,8 @@ import { ChPrescriptionDraft } from './switzerland/types'
 // and doesn't route through `PrescriptionModal`/`PrescriptionList`/`PrescriptionPrintModal` (all
 // `be`-only components built around `PrescribedMedicationType` and a hard `sdk: SamV2Api` prop —
 // see CONTEXT.md). Medication edition, the drafted-prescriptions list, and printing are all
-// demo-app-local implementations instead.
+// demo-app-local implementations instead, mirroring the Belgium UX: the edit form presents as a
+// right-side panel like `PrescriptionModal`, and printing uses the Swiss ordonnance layout.
 export const SwitzerlandTab = () => {
   // The `ch` (Switzerland/medINDEX) MedicationProvider — independent of the `be` certificate/auth
   // gating, since medINDEX is public reference data with no auth. Unlike the `be` SAM sdk,
@@ -29,14 +49,17 @@ export const SwitzerlandTab = () => {
     [],
   )
 
-  const [medicationBeingAdded, setMedicationBeingAdded] = useState<MedicationType>()
+  // The form edits either a fresh medication (create) or an existing draft (modify) — the ch
+  // counterpart of BelgiumTab's create/modify PrescriptionModal moods.
+  const [formState, setFormState] = useState<{ medication: MedicationType; draftToModify?: ChPrescriptionDraft }>()
   const [drafts, setDrafts] = useState<ChPrescriptionDraft[]>([])
   const [isPrintViewOpen, setPrintViewOpen] = useState(false)
 
-  const onAddChMedication = (medication: MedicationType) => setMedicationBeingAdded(medication)
-  const onCloseForm = () => setMedicationBeingAdded(undefined)
+  const onAddChMedication = (medication: MedicationType) => setFormState({ medication })
+  const onModifyDraft = (draft: ChPrescriptionDraft) => setFormState({ medication: draft.medication, draftToModify: draft })
+  const onCloseForm = () => setFormState(undefined)
   const onSubmitDraft = (draft: ChPrescriptionDraft) => {
-    setDrafts((prev) => [...prev, draft])
+    setDrafts((prev) => (prev.some((existing) => existing.id === draft.id) ? prev.map((existing) => (existing.id === draft.id ? draft : existing)) : [...prev, draft]))
     onCloseForm()
   }
   const onDeleteDraft = (id: string) => setDrafts((prev) => prev.filter((draft) => draft.id !== id))
@@ -45,7 +68,7 @@ export const SwitzerlandTab = () => {
     <div>
       <h2>Switzerland (medINDEX)</h2>
       <div className="element">
-        <MedicationSearch medicationProvider={chMedicationProvider} onAddPrescription={onAddChMedication} disableInputEventsTracking={!!medicationBeingAdded} />
+        <MedicationSearch medicationProvider={chMedicationProvider} onAddPrescription={onAddChMedication} disableInputEventsTracking={!!formState} />
       </div>
 
       {drafts.length !== 0 && (
@@ -63,9 +86,14 @@ export const SwitzerlandTab = () => {
                       {draft.quantity} {draft.durationUnit} — starting {draft.startDate}
                     </p>
                   </div>
-                  <button type="button" onClick={() => onDeleteDraft(draft.id)}>
-                    Delete
-                  </button>
+                  <div className="ch-prescription-list__actions">
+                    <button type="button" onClick={() => onModifyDraft(draft)}>
+                      Modify
+                    </button>
+                    <button type="button" onClick={() => onDeleteDraft(draft.id)}>
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -76,8 +104,10 @@ export const SwitzerlandTab = () => {
         </>
       )}
 
-      {medicationBeingAdded && <ChPrescriptionForm medication={medicationBeingAdded} onClose={onCloseForm} onSubmit={onSubmitDraft} />}
-      {isPrintViewOpen && <ChPrescriptionPrintView drafts={drafts} onClose={() => setPrintViewOpen(false)} />}
+      {formState && (
+        <ChPrescriptionForm medication={formState.medication} draftToModify={formState.draftToModify} onClose={onCloseForm} onSubmit={onSubmitDraft} />
+      )}
+      {isPrintViewOpen && <ChPrescriptionPrintView drafts={drafts} prescriber={prescriber} patient={patient} onClose={() => setPrintViewOpen(false)} />}
     </div>
   )
 }

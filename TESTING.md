@@ -48,6 +48,24 @@ yarn workspace @icure/cardinal-prescription-be-react test:watch
 - `internal/translations/translations.test.ts` — asserts all four languages
   (fr/nl/de/en) expose an identical set of translation keys.
 
+## End-to-end tests
+
+`yarn test:e2e` runs the Playwright suite against the demo app (started
+automatically on port 3000). It contains two independent groups:
+
+- `e2e/*.spec.ts` — the Belgium angular/react **parity** suite: spec files are
+  byte-identical with the `cardinal-prescription-angular` repo and fixtures are
+  harvested from the angular app (see `docs/angular-react-parity.md`). Requires
+  the demo credentials in `packages/demo-app/.env.local` and hits the real
+  SAM/FHC acceptance backends.
+- `e2e/ch/*.spec.ts` — the Switzerland (medINDEX) suite, **react-only**: it
+  mirrors the shape of the Belgium specs (smoke, search, prescription form,
+  list, print) but is not copied to the angular repo. It needs a medINDEX
+  server (default `http://localhost:8080/rest/v2/medindex`, see
+  `VITE_MEDINDEX_URL`) and no certificate/credentials. Its fixtures are
+  self-harvested from this app by running with `UPDATE_CH_FIXTURE=1`; run
+  `yarn test:e2e e2e/ch` to run only this group.
+
 ## Coverage
 
 `vitest.config.ts` enables V8 coverage with thresholds (statements 60,
