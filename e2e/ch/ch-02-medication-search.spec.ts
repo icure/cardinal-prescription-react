@@ -44,6 +44,27 @@ test.describe('ch medication search', () => {
     })
   }
 
+  // The unified search's extra lanes. Only 4 products are *named* "acetylsalicyl…", so the first
+  // page can only fill up with brand products (Alka Seltzer, Aspirine, ...) surfaced via
+  // /product/bySubstance — name matches first, substance matches after, per the sequential merge.
+  // "n02be01" is paracetamol's ATC code, only reachable via /product/byAtc; queried lowercase to
+  // exercise the provider's uppercasing end-to-end.
+  test('searching a substance name surfaces brand products containing that substance', async () => {
+    await app.searchMedication('acetylsalicyl')
+    await app.waitForSearchSettled()
+    await expect(app.resultCards().first()).toBeVisible()
+
+    compareOrHarvest(FIXTURE, 'substanceQuery:acetylsalicyl', await app.extractResults())
+  })
+
+  test('searching an ATC code surfaces the products of that ATC class', async () => {
+    await app.searchMedication('n02be01')
+    await app.waitForSearchSettled()
+    await expect(app.resultCards().first()).toBeVisible()
+
+    compareOrHarvest(FIXTURE, 'atcQuery:n02be01', await app.extractResults())
+  })
+
   test('scrolling the dropdown loads a further page of results (infinite scroll)', async () => {
     await app.searchMedication('Dafalgan')
     await app.waitForSearchSettled()

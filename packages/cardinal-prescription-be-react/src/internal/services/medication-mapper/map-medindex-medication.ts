@@ -54,8 +54,8 @@ export function mapMedIndexMedication(product: MedicationProductDto, pkg: Medica
     kind: 'product',
     title: resolveLocalized(pkg.name, language) || resolveLocalized(product.names, language),
     activeIngredient: product.composition
-      .map((line) => line.substance?.name)
-      .filter((name): name is string => !!name)
+      .map((line) => (line.substance ? resolveLocalized(line.substance.name, language) : ''))
+      .filter((name) => !!name)
       .join(', '),
     regulatory: {
       ch: {

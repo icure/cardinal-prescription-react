@@ -1,4 +1,4 @@
-import { describe, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { MedIndexClient, MedicationPackageDto, MedicationProductDto } from '@icure/medindex-sdk'
 import { MedIndexMedicationProvider } from './medindex-medication-provider'
 import { runMedicationProviderContractTests } from '../medication-provider.contract-test'
@@ -20,7 +20,7 @@ function makeProductDto(overrides: Partial<MedicationProductDto> = {}): Medicati
     names: { de: 'Aspirin', fr: 'Aspirine', it: 'Aspirina' },
     brandName: { de: 'Aspirin', fr: 'Aspirine', it: 'Aspirina' },
     galenicForm: { de: 'Tabletten', fr: 'comprimés' },
-    composition: [{ substance: { name: 'Acetylsalicylsäure' } }],
+    composition: [{ substance: { name: { de: 'Acetylsalicylsäure', fr: 'Acide acétylsalicylique' } } }],
     interactions: [],
     active: true,
     ...overrides,
@@ -45,25 +45,43 @@ function makePackageDto(overrides: Partial<MedicationPackageDto> = {}): Medicati
 }
 
 /**
- * Mock `fetch` serving `/product` (label search, cursor-paginated per `PaginatedResponse`'s
- * `{rows, nextKeyPair}` shape — see `@icure/medindex-sdk`'s `pagination.ts`) and
- * `/package/byProductIds` (flat array response). `httpPageSize` is deliberately smaller than the
- * provider's own `PAGE_SIZE` (10) so a single provider-level page requires more than one HTTP
- * round trip — needed to make the laziness assertion meaningful.
+ * Mock `fetch` serving the three product-search lanes (`/product` label search,
+ * `/product/bySubstance`, `/product/byAtc/{code}` — each cursor-paginated per
+ * `PaginatedResponse`'s `{rows, nextKeyPair}` shape, see `@icure/medindex-sdk`'s
+ * `pagination.ts`) and `/package/byProductIds` (flat array response). `httpPageSize` is
+ * deliberately smaller than the provider's own `PAGE_SIZE` (10) so a single provider-level page
+ * requires more than one HTTP round trip — needed to make the laziness assertion meaningful.
  */
-function makeSearchFetchMock(products: MedicationProductDto[], packagesByProductId: Map<string, MedicationPackageDto[]>, httpPageSize = 5) {
-  let productPageIndex = 0
+function makeSearchFetchMock(
+  products: MedicationProductDto[],
+  packagesByProductId: Map<string, MedicationPackageDto[]>,
+  httpPageSize = 5,
+  { substanceProducts = [] as MedicationProductDto[], atcProducts = [] as MedicationProductDto[] } = {},
+) {
+  const pageIndexes = { label: 0, substance: 0, atc: 0 }
+
+  const servePage = (lane: keyof typeof pageIndexes, laneProducts: MedicationProductDto[], nextKey: unknown) => {
+    const start = pageIndexes[lane] * httpPageSize
+    const rows = laneProducts.slice(start, start + httpPageSize)
+    pageIndexes[lane] += 1
+    const isLast = start + httpPageSize >= laneProducts.length
+    return jsonResponse(200, { rows, nextKeyPair: isLast ? undefined : { startKey: nextKey, startKeyDocId: `${lane}-cursor-${pageIndexes[lane]}` } })
+  }
 
   return vi.fn(async (url: URL | string, init?: RequestInit): Promise<Response> => {
     const parsedUrl = typeof url === 'string' ? new URL(url) : url
     const method = init?.method ?? 'GET'
 
     if (parsedUrl.pathname.endsWith('/product') && method === 'GET') {
-      const start = productPageIndex * httpPageSize
-      const rows = products.slice(start, start + httpPageSize)
-      productPageIndex += 1
-      const isLast = start + httpPageSize >= products.length
-      return jsonResponse(200, { rows, nextKeyPair: isLast ? undefined : { startKey: ['de', 'cursor'], startKeyDocId: `cursor-${productPageIndex}` } })
+      return servePage('label', products, ['de', 'cursor'])
+    }
+
+    if (parsedUrl.pathname.endsWith('/product/bySubstance') && method === 'GET') {
+      return servePage('substance', substanceProducts, ['de', 'cursor'])
+    }
+
+    if (parsedUrl.pathname.includes('/product/byAtc/') && method === 'GET') {
+      return servePage('atc', atcProducts, 'cursor')
     }
 
     if (parsedUrl.pathname.endsWith('/package/byProductIds') && method === 'POST') {
@@ -120,5 +138,93 @@ describe('MedIndexMedicationProvider', () => {
       label: 'ab',
       provider: new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: vi.fn() })),
     },
+  })
+})
+
+/** Product + its one active package, wired into the given map so the product survives the
+ * provider's "no active packages → filtered out" rule. */
+function seedProduct(id: string, name: string, packagesByProductId: Map<string, MedicationPackageDto[]>): MedicationProductDto {
+  const product = makeProductDto({ id, names: { de: name, fr: name, it: name } })
+  packagesByProductId.set(id, [makePackageDto({ id: `medpkg:${id}`, product: { id, name } })])
+  return product
+}
+
+async function collectIds(provider: MedIndexMedicationProvider, label: string): Promise<string[]> {
+  const ids: string[] = []
+  for await (const item of provider.findByLabel(label)) {
+    ids.push(item.id)
+  }
+  return ids
+}
+
+describe('MedIndexMedicationProvider unified search lanes', () => {
+  it('merges the substance lane after the name lane, deduplicating by product id (first lane wins)', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const p1 = seedProduct('medprod:1', 'Dafalgan', packagesByProductId)
+    const p2 = seedProduct('medprod:2', 'Panadol', packagesByProductId)
+    const p3 = seedProduct('medprod:3', 'Tylenol', packagesByProductId)
+
+    const fetchMock = makeSearchFetchMock([p1, p2], packagesByProductId, 5, { substanceProducts: [p1, p3] })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    expect(await collectIds(provider, 'paracetamol')).toEqual(['medprod:1', 'medprod:2', 'medprod:3'])
+  })
+
+  it('queries the ATC lane last, uppercased, when the query is shaped like an ATC code', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const p1 = seedProduct('medprod:1', 'N02-named product', packagesByProductId)
+    const p2 = seedProduct('medprod:2', 'Dafalgan', packagesByProductId)
+
+    const fetchMock = makeSearchFetchMock([p1], packagesByProductId, 5, { atcProducts: [p1, p2] })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    expect(await collectIds(provider, 'n02be01')).toEqual(['medprod:1', 'medprod:2'])
+    const atcCall = fetchMock.mock.calls.find(([url]) => (url as URL).pathname.includes('/product/byAtc/'))
+    expect((atcCall?.[0] as URL).pathname.endsWith('/product/byAtc/N02BE01')).toBe(true)
+  })
+
+  it('does not query the ATC lane when the query is not shaped like an ATC code', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const p1 = seedProduct('medprod:1', 'Aspirin', packagesByProductId)
+
+    const fetchMock = makeSearchFetchMock([p1], packagesByProductId)
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    await collectIds(provider, 'aspirin')
+    expect(fetchMock.mock.calls.some(([url]) => (url as URL).pathname.includes('/product/byAtc/'))).toBe(false)
+  })
+
+  it('still yields the name-lane results when an old server 404s on the new lanes', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const p1 = seedProduct('medprod:1', 'Dafalgan', packagesByProductId)
+
+    const upgraded = makeSearchFetchMock([p1], packagesByProductId)
+    const fetchMock = vi.fn(async (url: URL | string, init?: RequestInit): Promise<Response> => {
+      const pathname = (typeof url === 'string' ? new URL(url) : url).pathname
+      if (pathname.endsWith('/product/bySubstance') || pathname.includes('/product/byAtc/')) {
+        return new Response(null, { status: 404 })
+      }
+      return upgraded(url, init)
+    })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    expect(await collectIds(provider, 'n02be01')).toEqual(['medprod:1'])
+  })
+
+  it('translates a substance-lane server failure into MedicationProviderUnavailableError', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const p1 = seedProduct('medprod:1', 'Dafalgan', packagesByProductId)
+
+    const upgraded = makeSearchFetchMock([p1], packagesByProductId)
+    const fetchMock = vi.fn(async (url: URL | string, init?: RequestInit): Promise<Response> => {
+      const pathname = (typeof url === 'string' ? new URL(url) : url).pathname
+      if (pathname.endsWith('/product/bySubstance')) {
+        return new Response(null, { status: 500 })
+      }
+      return upgraded(url, init)
+    })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    await expect(collectIds(provider, 'paracetamol')).rejects.toBeInstanceOf(MedicationProviderUnavailableError)
   })
 })

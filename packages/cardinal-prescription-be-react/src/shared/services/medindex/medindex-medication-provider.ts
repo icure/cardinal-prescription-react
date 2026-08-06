@@ -39,10 +39,52 @@ async function pullNext<T>(iterator: AsyncIterator<T>, size: number): Promise<T[
 }
 
 /**
- * Swiss `MedicationProvider`, wrapping medINDEX's single product search stream. Unlike SAM's
- * three-lane AMP/VMP-group/NMP merge, medINDEX has only one product-level concept — `findByLabel`
- * adapts one already-ordered source stream instead of merging several, trusting the SDK's own
- * ordering the same way `SamMedicationProvider` trusts each of its three SAM lanes.
+ * Drains the lanes one after the other into a single product stream, skipping products already
+ * yielded by an earlier lane (first lane wins). The dedupe must happen here, before
+ * `loadNextPage` chunks the stream — it treats a short chunk as "source exhausted", so a
+ * post-chunk filter would end the search early whenever a full chunk contained duplicates.
+ *
+ * Errors are deliberately NOT translated here: they propagate raw through `pullProducts`'s
+ * existing try/catch so `translateError`'s `instanceof` checks still see the SDK's native types.
+ * The one exception is a `MedIndexNotFoundError` on an `optional` lane — an old server that
+ * doesn't expose that endpoint yet — which degrades to an empty lane.
+ */
+async function* mergeLanes(lanes: SearchLane[]): AsyncGenerator<MedicationProductDto> {
+  const seen = new Set<string>()
+  for (const lane of lanes) {
+    try {
+      for await (const product of lane.iterable) {
+        if (seen.has(product.id)) continue
+        seen.add(product.id)
+        yield product
+      }
+    } catch (error) {
+      if (!(lane.optional && error instanceof MedIndexNotFoundError)) throw error
+    }
+  }
+}
+
+/**
+ * Matches an ATC code or class prefix at levels 2–5 (`N02`, `N02B`, `N02BE`, `N02BE01`). The
+ * level-1 single letter is deliberately excluded: it falls below the search's own 3-character
+ * minimum, and a one-letter query is far likelier to be the start of a name than an ATC class.
+ */
+const ATC_PATTERN = /^[A-Za-z]\d\d([A-Za-z]([A-Za-z](\d\d)?)?)?$/
+
+/** One source stream of the unified search. `optional` marks the lanes only an upgraded
+ * medINDEX server exposes — a 404 on those degrades to an empty lane instead of failing. */
+interface SearchLane {
+  iterable: AsyncIterable<MedicationProductDto>
+  optional: boolean
+}
+
+/**
+ * Swiss `MedicationProvider`, wrapping medINDEX's product search. `findByLabel` is a unified
+ * search over up to three server-side lanes — product/brand names, substance names in the
+ * composition, and (when the query is shaped like an ATC code) ATC code/class prefix —
+ * deduplicated by product id and drained sequentially in that order, so exact-name matches
+ * always rank first. Within each lane the SDK's own ordering is trusted, the same way
+ * `SamMedicationProvider` trusts each of its three SAM lanes.
  *
  * `enrichForPrescription`/`loadCheapAlternatives` are intentionally left unimplemented: there is
  * no Swiss prescription-transmission or reimbursement-driven cheap-alternatives concept this
@@ -53,16 +95,26 @@ export class MedIndexMedicationProvider implements MedicationProvider {
   constructor(private readonly client: MedIndexClient) {}
 
   async *findByLabel(label: string): AsyncIterable<Med> {
-    // `iterateByLabel` throws `MedIndexValidationError` synchronously (client-side, for labels
-    // under the SDK's own minimum length) before returning an iterable at all — outside the
-    // try/catch inside `pullProducts`, so it needs its own translation here or it would leak the
-    // SDK's native error type instead of the shared `MedicationSearchValidationError`.
-    let iterator: AsyncIterator<MedicationProductDto>
+    // The `iterate*` calls throw `MedIndexValidationError` synchronously (client-side, for
+    // labels under the SDK's own minimum length) before returning an iterable at all — outside
+    // the try/catch inside `pullProducts`, so they need their own translation here or they would
+    // leak the SDK's native error type instead of the shared `MedicationSearchValidationError`.
+    let lanes: SearchLane[]
+    const trimmed = label.trim()
+    const language = toMedIndexLanguage(cardinalLanguage.getLanguage())
     try {
-      iterator = this.client.product.iterateByLabel(label, toMedIndexLanguage(cardinalLanguage.getLanguage()))[Symbol.asyncIterator]()
+      lanes = [
+        { iterable: this.client.product.iterateByLabel(trimmed, language), optional: false },
+        { iterable: this.client.product.iterateBySubstance(trimmed, language), optional: true },
+        // The ATC index is uppercase, and `iterateByAtc` deliberately passes the code through
+        // literally — normalize here so a lowercase query still hits.
+        ...(ATC_PATTERN.test(trimmed) ? [{ iterable: this.client.product.iterateByAtc(trimmed.toUpperCase()), optional: true }] : []),
+      ]
     } catch (error) {
       throw this.translateError(error, `medINDEX product search failed for label "${label}"`)
     }
+
+    const iterator = mergeLanes(lanes)
 
     while (true) {
       const page = await this.loadNextPage(iterator, label)

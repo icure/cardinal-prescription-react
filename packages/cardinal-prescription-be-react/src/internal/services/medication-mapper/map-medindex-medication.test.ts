@@ -75,19 +75,29 @@ describe('mapMedIndexMedication - title fallback chain', () => {
 })
 
 describe('mapMedIndexMedication - activeIngredient', () => {
-  it('joins composition substance names, skipping lines with a missing or null substance name', () => {
+  it('joins localized composition substance names, skipping lines with a missing substance or empty name map', () => {
     const product = buildProduct({
       composition: [
-        { substance: { name: 'Paracetamol' }, quantity: 500, unit: 'mg' },
+        { substance: { name: { de: 'Paracetamol', fr: 'Paracétamol' } }, quantity: 500, unit: 'mg' },
         { substance: null, quantity: 10, unit: 'mg' },
-        { substance: { name: 'Caffeine' }, quantity: 50, unit: 'mg' },
-        { substance: { name: null }, quantity: 1, unit: 'mg' },
+        { substance: { name: { de: 'Coffein', fr: 'Caféine' } }, quantity: 50, unit: 'mg' },
+        { substance: { name: {} }, quantity: 1, unit: 'mg' },
       ],
     })
 
     const result = mapMedIndexMedication(product, buildPackage(), 'fr')
 
-    expect(result.activeIngredient).toBe('Paracetamol, Caffeine')
+    expect(result.activeIngredient).toBe('Paracétamol, Caféine')
+  })
+
+  it("falls back to the substance's 'de' name when the active language is missing from the map", () => {
+    const product = buildProduct({
+      composition: [{ substance: { name: { de: 'Ibuprofen', la: 'Ibuprofenum' } }, quantity: 200, unit: 'mg' }],
+    })
+
+    const result = mapMedIndexMedication(product, buildPackage(), 'fr')
+
+    expect(result.activeIngredient).toBe('Ibuprofen')
   })
 })
 
