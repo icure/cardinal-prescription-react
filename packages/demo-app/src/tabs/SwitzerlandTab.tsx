@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { createMedicationProvider, MedicationSearch, MedicationType } from '@icure/cardinal-prescription-be-react'
+import { createMedicationProvider, MedicationSearch, MedicationType, t } from '@icure/cardinal-prescription-be-react'
 import { MedIndexClient } from '@icure/medindex-sdk'
 import { MEDINDEX_URL } from '../config'
 import { ChPrescriptionForm } from './switzerland/ChPrescriptionForm'
@@ -68,7 +68,12 @@ export const SwitzerlandTab = () => {
     <div>
       <h2>Switzerland (medINDEX)</h2>
       <div className="element">
-        <MedicationSearch medicationProvider={chMedicationProvider} onAddPrescription={onAddChMedication} disableInputEventsTracking={!!formState} />
+        <MedicationSearch
+          medicationProvider={chMedicationProvider}
+          onAddPrescription={onAddChMedication}
+          disableInputEventsTracking={!!formState}
+          searchPlaceholder={t('medication.search.unifiedLabel')}
+        />
       </div>
 
       {drafts.length !== 0 && (

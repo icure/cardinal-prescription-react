@@ -87,6 +87,7 @@ export const medicationTranslations = {
     },
     search: {
       label: 'Trouver un médicament',
+      unifiedLabel: 'Trouver un médicament — nom, substance ou code ATC',
       errorMessage: ' Entrez au moins 3 lettres du nom du médicament',
       noMatchingPlaceholder: 'Aucun médicament ne correspond à vos critères de recherche.',
     },
@@ -187,6 +188,7 @@ export const medicationTranslations = {
     },
     search: {
       label: 'Find a medication',
+      unifiedLabel: 'Find a medication — name, substance or ATC code',
       errorMessage: 'Enter at least 3 letters of the medication name',
       noMatchingPlaceholder: 'No medications correspond to your search criteria.',
     },
@@ -287,6 +289,7 @@ export const medicationTranslations = {
     },
     search: {
       label: 'Zoek een geneesmiddel',
+      unifiedLabel: 'Zoek een geneesmiddel — naam, stof of ATC-code',
       errorMessage: 'Voer minstens 3 letters van de naam in',
       noMatchingPlaceholder: 'Er komen geen medicijnen overeen met uw zoekcriteria.',
     },
@@ -387,6 +390,7 @@ export const medicationTranslations = {
     },
     search: {
       label: 'Arzneimittel suchen',
+      unifiedLabel: 'Arzneimittel suchen — Name, Wirkstoff oder ATC-Code',
       errorMessage: 'Geben Sie mindestens 3 Buchstaben des Arzneimittelnamens ein',
       noMatchingPlaceholder: 'Keine Medikamente entsprechen Ihren Suchkriterien.',
     },

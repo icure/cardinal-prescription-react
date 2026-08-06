@@ -14,6 +14,12 @@ test.describe('ch smoke', () => {
     await expect(app.medicationSearchInput()).toBeVisible()
   })
 
+  test('the search input advertises the unified name/substance/ATC search', async ({ page }) => {
+    const app = new ChAppDriver(page)
+    await app.goto()
+    await expect(app.medicationSearchInput()).toHaveAttribute('placeholder', 'Trouver un médicament — nom, substance ou code ATC')
+  })
+
   test('the Switzerland tab has no certificate step', async ({ page }) => {
     const app = new ChAppDriver(page)
     await app.goto()

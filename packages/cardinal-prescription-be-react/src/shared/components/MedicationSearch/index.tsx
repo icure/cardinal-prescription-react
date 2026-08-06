@@ -19,6 +19,13 @@ interface MedicationSearchProps {
   onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void
   disableInputEventsTracking: boolean
   short?: boolean
+  /**
+   * Input placeholder override. What a query can match is a property of the provider (e.g. the
+   * `ch` provider searches names, substances and ATC codes at once), so the host names the
+   * capability — e.g. `t('medication.search.unifiedLabel')`. Defaults to the generic
+   * `medication.search.label` text.
+   */
+  searchPlaceholder?: string
 }
 
 interface MedOrProduct {
@@ -42,7 +49,7 @@ const pullNext = async (iterator: AsyncIterator<Med>, size: number): Promise<Med
   return items
 }
 
-export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationProvider, onAddPrescription, disableInputEventsTracking, short = false }) => {
+export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationProvider, onAddPrescription, disableInputEventsTracking, short = false, searchPlaceholder }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchQueryRef = useRef(searchQuery)
   useEffect(() => {
@@ -184,7 +191,7 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationPr
             <input
               id="searchMedications"
               type="text"
-              placeholder={t('medication.search.label')}
+              placeholder={searchPlaceholder ?? t('medication.search.label')}
               autoComplete="off"
               autoCapitalize="off"
               value={searchQuery}
