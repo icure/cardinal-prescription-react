@@ -1,6 +1,6 @@
-import { MedicationPackageDto, MedicationPriceRefDto, MedicationProductDto } from '@icure/medindex-sdk'
+import { MedicationPackageDto, MedicationPriceRefDto, MedicationProductDto, RawInteractionDto } from '@icure/medindex-sdk'
 import { cardinalLanguage } from '../../../shared/services/i18n'
-import { ChPriceType, MedicationType } from '../../../shared/types'
+import { ChCompositionLineType, ChInteractionType, ChPriceType, MedicationType } from '../../../shared/types'
 
 export type MedIndexLanguage = 'de' | 'fr' | 'it'
 
@@ -41,6 +41,43 @@ function selectDisplayPrice(prices: MedicationPriceRefDto[]): ChPriceType | unde
   return undefined
 }
 
+function mapComposition(product: MedicationProductDto, language: MedIndexLanguage): ChCompositionLineType[] | undefined {
+  const lines = product.composition
+    .map((line): ChCompositionLineType | null => {
+      const substanceName = line.substance ? resolveLocalized(line.substance.name, language) : ''
+      if (!substanceName) return null
+      return {
+        substanceName,
+        quantity: line.quantity ?? undefined,
+        unit: line.unit ?? undefined,
+        isActiveSubstance: line.isActiveSubstance,
+      }
+    })
+    .filter((line): line is ChCompositionLineType => line !== null)
+  return lines.length ? lines : undefined
+}
+
+/**
+ * The product's interaction refs only carry `id`+`relevance`; the localized title/effect/measures
+ * live on the full `RawInteraction` documents the provider batch-resolves per search page and
+ * hands in via `interactionsById`. Refs whose id is missing from the map (old server without the
+ * /interaction endpoint, or a dangling ref) degrade to a ref-only entry rather than being dropped
+ * — the badge can still show that interactions exist and how relevant they are.
+ */
+function mapInteractions(product: MedicationProductDto, language: MedIndexLanguage, interactionsById?: Map<string, RawInteractionDto>): ChInteractionType[] | undefined {
+  const interactions = product.interactions.map((ref): ChInteractionType => {
+    const resolved = ref.id ? interactionsById?.get(ref.id) : undefined
+    return {
+      id: ref.id ?? undefined,
+      relevance: ref.relevance ?? resolved?.relevance ?? undefined,
+      title: resolved ? resolveLocalized(resolved.titles, language) || undefined : undefined,
+      effect: resolved ? resolveLocalized(resolved.effect, language) || undefined : undefined,
+      measures: resolved ? resolveLocalized(resolved.measuresText, language) || undefined : undefined,
+    }
+  })
+  return interactions.length ? interactions : undefined
+}
+
 /**
  * Maps one medINDEX product together with one of its packages into this library's normalized
  * `MedicationType`. medINDEX splits product-level facts (composition, ATC, generic group) from
@@ -48,12 +85,21 @@ function selectDisplayPrice(prices: MedicationPriceRefDto[]): ChPriceType | unde
  * DTOs, exactly mirroring SAM's AMP/AMPP split — this pairs one of each, the same role
  * `mapSamMedication` plays for `amp`+`ampp`. Pure and side-effect free, same as `mapSamMedication`.
  */
-export function mapMedIndexMedication(product: MedicationProductDto, pkg: MedicationPackageDto, language: MedIndexLanguage): MedicationType {
+export function mapMedIndexMedication(
+  product: MedicationProductDto,
+  pkg: MedicationPackageDto,
+  language: MedIndexLanguage,
+  interactionsById?: Map<string, RawInteractionDto>,
+): MedicationType {
   return {
     id: pkg.id,
     kind: 'product',
     title: resolveLocalized(pkg.name, language) || resolveLocalized(product.names, language),
-    activeIngredient: product.composition
+    // Only the substances medINDEX marks as active (`WHK` = "W"): the full composition —
+    // excipients included — is surfaced by the composition badge instead of being dumped into
+    // this one summary line. Products whose source data marks no line as active (defensive —
+    // not observed in the wild) fall back to every named substance rather than showing nothing.
+    activeIngredient: (product.composition.some((line) => line.isActiveSubstance) ? product.composition.filter((line) => line.isActiveSubstance) : product.composition)
       .map((line) => (line.substance ? resolveLocalized(line.substance.name, language) : ''))
       .filter((name) => !!name)
       .join(', '),
@@ -66,6 +112,8 @@ export function mapMedIndexMedication(product: MedicationProductDto, pkg: Medica
         coldChain: pkg.coldChain,
         genericGroup: product.genericGroup ?? undefined,
         price: selectDisplayPrice(pkg.prices),
+        composition: mapComposition(product, language),
+        interactions: mapInteractions(product, language, interactionsById),
       },
     },
   }

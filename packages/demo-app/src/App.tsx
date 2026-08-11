@@ -29,10 +29,10 @@ export const App = () => {
         country's local state — SAM/certificate init, search results, drafted `ch` prescriptions —
         survives switching tabs back and forth, for a nicer demo UX.
       */}
-      <div style={{ display: selectedCountry === 'be' ? 'block' : 'none' }}>
+      <div className="tab-content tab-content--be" style={{ display: selectedCountry === 'be' ? 'block' : 'none' }}>
         <BelgiumTab />
       </div>
-      <div style={{ display: selectedCountry === 'ch' ? 'block' : 'none' }}>
+      <div className="tab-content tab-content--ch" style={{ display: selectedCountry === 'ch' ? 'block' : 'none' }}>
         <SwitzerlandTab />
       </div>
     </div>

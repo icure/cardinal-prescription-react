@@ -99,6 +99,16 @@ export const medicationTranslations = {
       gtin: 'Codes GTIN :',
       genericGroup: 'Groupe générique :',
     },
+    chComposition: {
+      title: 'Composition',
+      activeSubstances: 'Principes actifs',
+      otherIngredients: 'Autres composants',
+    },
+    chInteractions: {
+      title: 'Interactions médicamenteuses',
+      relevance: 'Pertinence clinique :',
+      more: 'autres interactions',
+    },
   },
   en: {
     yes: 'Yes',
@@ -199,6 +209,16 @@ export const medicationTranslations = {
       coldChainAbbreviation: 'CC',
       gtin: 'GTIN codes:',
       genericGroup: 'Generic group:',
+    },
+    chComposition: {
+      title: 'Composition',
+      activeSubstances: 'Active substances',
+      otherIngredients: 'Other ingredients',
+    },
+    chInteractions: {
+      title: 'Drug interactions',
+      relevance: 'Clinical relevance:',
+      more: 'more interactions',
     },
   },
   nl: {
@@ -301,6 +321,16 @@ export const medicationTranslations = {
       gtin: 'GTIN-codes:',
       genericGroup: 'Generieke groep:',
     },
+    chComposition: {
+      title: 'Samenstelling',
+      activeSubstances: 'Werkzame stoffen',
+      otherIngredients: 'Overige bestanddelen',
+    },
+    chInteractions: {
+      title: 'Geneesmiddelinteracties',
+      relevance: 'Klinische relevantie:',
+      more: 'meer interacties',
+    },
   },
   de: {
     yes: 'Ja',
@@ -401,6 +431,16 @@ export const medicationTranslations = {
       coldChainAbbreviation: 'KK',
       gtin: 'GTIN-Codes:',
       genericGroup: 'Generische Gruppe:',
+    },
+    chComposition: {
+      title: 'Zusammensetzung',
+      activeSubstances: 'Wirkstoffe',
+      otherIngredients: 'Hilfsstoffe',
+    },
+    chInteractions: {
+      title: 'Wechselwirkungen',
+      relevance: 'Klinische Relevanz:',
+      more: 'weitere Wechselwirkungen',
     },
   },
 }

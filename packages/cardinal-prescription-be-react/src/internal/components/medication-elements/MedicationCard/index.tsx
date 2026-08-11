@@ -12,9 +12,12 @@ interface MedicationCardProps {
   disableHover?: boolean
   short?: boolean
   subMedication?: boolean
+  // Read-only rendering (used in the prescription modal, like the angular implementation):
+  // not clickable, no summary badges, no expand arrow, never expandable.
+  readOnly?: boolean
 }
 
-export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication }) => {
+export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, handleAddPrescription, id, focused, disableHover, subMedication, readOnly }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
@@ -25,8 +28,9 @@ export const MedicationCard: React.FC<MedicationCardProps> = ({ medication, hand
         isMedicationCardExpanded={isExpanded}
         setMedicationCardExpanded={(status: boolean) => setIsExpanded(status)}
         subMedication={subMedication}
+        readOnly={readOnly}
       />
-      {isExpanded && <Extension medication={medication} />}
+      {isExpanded && !readOnly && <Extension medication={medication} />}
     </StyledMedicationCard>
   )
 }

@@ -28,6 +28,16 @@
   gap: 8px;
 }
 
+/* The library's global reset (`* { margin: 0; padding: 0; }`, see
+   cardinal-prescription-be-react/src/styles/reset.ts) zeroes out the browser's default block
+   margins, so a plain stacked `<div>` of tab content collapses to zero vertical spacing between
+   its children. Every tab root uses this class to restore rhythm between its top-level sections. */
+.tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .tab-bar button {
   padding: 8px 16px;
   border: 1px solid #d6dfe8;
@@ -66,6 +76,30 @@
 .ch-prescription-list__actions {
   display: flex;
   gap: 8px;
+}
+
+/* The read-only MedicationCard inside a draft row / the form panel header already sits in a
+   bordered container — strip the card's own border and hover affordances so it reads as static
+   content (its badges stay hoverable/clickable). */
+.ch-prescription-list__medication {
+  flex: 1;
+  min-width: 0;
+}
+
+.ch-prescription-list__medication .StyledMedicationCard,
+.ch-panel__header .StyledMedicationCard {
+  border: none;
+  cursor: default;
+}
+
+.ch-prescription-list__medication .StyledMedicationCard:hover,
+.ch-panel__header .StyledMedicationCard:hover {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ch-prescription-list__medication > p {
+  margin: 4px 12px 0;
 }
 
 .ch-modal-overlay {

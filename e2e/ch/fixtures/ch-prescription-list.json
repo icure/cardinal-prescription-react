@@ -1,7 +1,7 @@
 {
   "initial-rows": [
-    "DAFALGAN cpr pell 1 g 16 pce 1 comprimé par jour 1 days — starting «date» Modify Delete",
-    "DAFALGAN cpr pell 1 g 16 pce 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
+    "DAFALGAN cpr pell 1 g 16 pce 25 IX Paracétamol 1 comprimé par jour 1 days — starting «date» Modify Delete",
+    "DAFALGAN cpr pell 1 g 16 pce 25 IX Paracétamol 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
   ],
   "modify-form": {
     "title": "DAFALGAN cpr pell 1 g 16 pce",
@@ -33,10 +33,10 @@
     }
   },
   "rows-after-modify": [
-    "DAFALGAN cpr pell 1 g 16 pce 3 comprimés par jour pendant le repas 1 days — starting «date» Modify Delete",
-    "DAFALGAN cpr pell 1 g 16 pce 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
+    "DAFALGAN cpr pell 1 g 16 pce 25 IX Paracétamol 3 comprimés par jour pendant le repas 1 days — starting «date» Modify Delete",
+    "DAFALGAN cpr pell 1 g 16 pce 25 IX Paracétamol 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
   ],
   "rows-after-delete": [
-    "DAFALGAN cpr pell 1 g 16 pce 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
+    "DAFALGAN cpr pell 1 g 16 pce 25 IX Paracétamol 2 comprimés matin et soir 1 days — starting «date» Modify Delete"
   ]
 }

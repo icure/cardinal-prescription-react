@@ -21,3 +21,11 @@ export * from './shared/components/MedicationSearch'
 export * from './shared/components/PrescriptionModal'
 export * from './shared/components/PrescriptionList'
 export * from './shared/components/PrescriptionPrintModal'
+
+// Display atoms for host apps building their own country-specific flows (e.g. the Swiss demo
+// tab, which has no PrescriptionModal/PrescriptionList equivalent): the library's standard
+// button, and the medication card used in search results / the prescription modal — in
+// `readOnly` mode it renders a medication with its regulatory badges without any card actions.
+export { Button } from './internal/components/form-elements/Button'
+export type { ButtonViewType } from './internal/components/form-elements/Button'
+export { MedicationCard } from './internal/components/medication-elements/MedicationCard'

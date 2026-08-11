@@ -3,6 +3,8 @@ import { ChPriceBadge } from './MedicationCard/summary-elements/ChPriceBadge'
 import { SwissmedicCategoryBadge } from './MedicationCard/infographic-elements/SwissmedicCategoryContent'
 import { NarcoticBadge } from './MedicationCard/infographic-elements/NarcoticContent'
 import { ColdChainBadge } from './MedicationCard/infographic-elements/ColdChainContent'
+import { CompositionBadge } from './MedicationCard/infographic-elements/CompositionContent'
+import { InteractionsBadge } from './MedicationCard/infographic-elements/InteractionsContent'
 import { GtinBadge } from './MedicationCard/expanded-elements/GtinBadge'
 import { GenericGroupBadge } from './MedicationCard/expanded-elements/GenericGroupBadge'
 
@@ -15,6 +17,8 @@ registerRegulatoryBadge('ch', 'price', ChPriceBadge, 'summary')
 registerRegulatoryBadge('ch', 'swissmedicCategory', SwissmedicCategoryBadge, 'detail')
 registerRegulatoryBadge('ch', 'narcotic', NarcoticBadge, 'detail')
 registerRegulatoryBadge('ch', 'coldChain', ColdChainBadge, 'detail')
+registerRegulatoryBadge('ch', 'composition', CompositionBadge, 'detail')
+registerRegulatoryBadge('ch', 'interactions', InteractionsBadge, 'detail')
 
 // `expanded` placement — MedicationCard's Extension panel. `ch` has no VMP/links/reimbursement/
 // commercialisation equivalent (see `ChRegulatoryFields`), so only the two fields not already

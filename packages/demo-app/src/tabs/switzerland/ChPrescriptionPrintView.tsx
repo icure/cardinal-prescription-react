@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from '@icure/cardinal-prescription-be-react'
 import { ChPatient, ChPrescriber, ChPrescriptionDraft } from './types'
 
 interface ChPrescriptionPrintViewProps {
@@ -20,12 +21,8 @@ export const ChPrescriptionPrintView: React.FC<ChPrescriptionPrintViewProps> = (
     <div className="ch-modal-overlay">
       <div className="ch-print-view">
         <div className="ch-print-actions ch-no-print">
-          <button type="button" onClick={() => window.print()}>
-            Print
-          </button>
-          <button type="button" onClick={onClose}>
-            Close
-          </button>
+          <Button title="Print" view="primary" handleClick={() => window.print()} />
+          <Button title="Close" view="outlined" handleClick={onClose} />
         </div>
 
         <div className="ch-ordonnance__parties">

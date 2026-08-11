@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { MedicationPackageDto, MedicationPriceRefDto, MedicationProductDto } from '@icure/medindex-sdk'
+import { MedicationPackageDto, MedicationPriceRefDto, MedicationProductDto, RawInteractionDto } from '@icure/medindex-sdk'
 import { mapMedIndexMedication, mapMedIndexProductTitle, toMedIndexLanguage } from './map-medindex-medication'
 
 // medINDEX has no `MedicationProductDto`/`MedicationPackageDto` mock factory anywhere in this repo
@@ -78,10 +78,10 @@ describe('mapMedIndexMedication - activeIngredient', () => {
   it('joins localized composition substance names, skipping lines with a missing substance or empty name map', () => {
     const product = buildProduct({
       composition: [
-        { substance: { name: { de: 'Paracetamol', fr: 'Paracétamol' } }, quantity: 500, unit: 'mg' },
-        { substance: null, quantity: 10, unit: 'mg' },
-        { substance: { name: { de: 'Coffein', fr: 'Caféine' } }, quantity: 50, unit: 'mg' },
-        { substance: { name: {} }, quantity: 1, unit: 'mg' },
+        { substance: { name: { de: 'Paracetamol', fr: 'Paracétamol' } }, quantity: 500, unit: 'mg', isActiveSubstance: false },
+        { substance: null, quantity: 10, unit: 'mg', isActiveSubstance: false },
+        { substance: { name: { de: 'Coffein', fr: 'Caféine' } }, quantity: 50, unit: 'mg', isActiveSubstance: false },
+        { substance: { name: {} }, quantity: 1, unit: 'mg', isActiveSubstance: false },
       ],
     })
 
@@ -90,14 +90,98 @@ describe('mapMedIndexMedication - activeIngredient', () => {
     expect(result.activeIngredient).toBe('Paracétamol, Caféine')
   })
 
+  it('only names the substances marked active once any composition line carries the active flag', () => {
+    const product = buildProduct({
+      composition: [
+        { substance: { name: { de: 'Paracetamol', fr: 'Paracétamol' } }, quantity: 500, unit: 'mg', isActiveSubstance: true },
+        { substance: { name: { de: 'Lactose-1-Wasser', fr: 'Lactose monohydraté' } }, quantity: 67.65, unit: 'mg', isActiveSubstance: false },
+      ],
+    })
+
+    const result = mapMedIndexMedication(product, buildPackage(), 'fr')
+
+    expect(result.activeIngredient).toBe('Paracétamol')
+  })
+
   it("falls back to the substance's 'de' name when the active language is missing from the map", () => {
     const product = buildProduct({
-      composition: [{ substance: { name: { de: 'Ibuprofen', la: 'Ibuprofenum' } }, quantity: 200, unit: 'mg' }],
+      composition: [{ substance: { name: { de: 'Ibuprofen', la: 'Ibuprofenum' } }, quantity: 200, unit: 'mg', isActiveSubstance: true }],
     })
 
     const result = mapMedIndexMedication(product, buildPackage(), 'fr')
 
     expect(result.activeIngredient).toBe('Ibuprofen')
+  })
+})
+
+describe('mapMedIndexMedication - regulatory.ch.composition', () => {
+  it('maps every named composition line with its quantity/unit and active flag, dropping unnamed ones', () => {
+    const product = buildProduct({
+      composition: [
+        { substance: { name: { de: 'Lorazepam', fr: 'Lorazépam' } }, quantity: 1, unit: 'mg', isActiveSubstance: true },
+        { substance: null, quantity: 10, unit: 'mg', isActiveSubstance: false },
+        { substance: { name: { de: 'Lactose-1-Wasser', fr: 'Lactose monohydraté' } }, quantity: 67.65, unit: 'mg', isActiveSubstance: false },
+        { substance: { name: { de: 'Cellulose' } }, isActiveSubstance: false },
+      ],
+    })
+
+    const result = mapMedIndexMedication(product, buildPackage(), 'fr')
+
+    expect(result.regulatory?.ch?.composition).toEqual([
+      { substanceName: 'Lorazépam', quantity: 1, unit: 'mg', isActiveSubstance: true },
+      { substanceName: 'Lactose monohydraté', quantity: 67.65, unit: 'mg', isActiveSubstance: false },
+      { substanceName: 'Cellulose', quantity: undefined, unit: undefined, isActiveSubstance: false },
+    ])
+  })
+
+  it('leaves composition undefined when the product has no usable composition line', () => {
+    const result = mapMedIndexMedication(buildProduct({ composition: [] }), buildPackage(), 'fr')
+
+    expect(result.regulatory?.ch?.composition).toBeUndefined()
+  })
+})
+
+describe('mapMedIndexMedication - regulatory.ch.interactions', () => {
+  const interaction: RawInteractionDto = {
+    id: 'ix:42',
+    ixno: 42,
+    titles: { de: 'Benzodiazepine - Alkohol', fr: 'Benzodiazépines - Alcool' },
+    group1: { de: 'Benzodiazepine' },
+    group2: { de: 'Alkohol' },
+    effect: { de: 'Verstärkte Sedierung', fr: 'Sédation renforcée' },
+    relevance: '3',
+    effectText: {},
+    mechanismText: {},
+    measuresText: { fr: 'Éviter la co-administration' },
+    remarks: {},
+    mechanisms: [],
+  }
+
+  it('resolves title/effect/measures in the active language from the interactions map', () => {
+    const product = buildProduct({ interactions: [{ id: 'ix:42', relevance: '3' }] })
+
+    const result = mapMedIndexMedication(product, buildPackage(), 'fr', new Map([['ix:42', interaction]]))
+
+    expect(result.regulatory?.ch?.interactions).toEqual([
+      { id: 'ix:42', relevance: '3', title: 'Benzodiazépines - Alcool', effect: 'Sédation renforcée', measures: 'Éviter la co-administration' },
+    ])
+  })
+
+  it('degrades to a ref-only entry when the interaction id is missing from the map or no map is given', () => {
+    const product = buildProduct({ interactions: [{ id: 'ix:42', relevance: '3' }] })
+
+    const withEmptyMap = mapMedIndexMedication(product, buildPackage(), 'fr', new Map())
+    const withoutMap = mapMedIndexMedication(product, buildPackage(), 'fr')
+
+    for (const result of [withEmptyMap, withoutMap]) {
+      expect(result.regulatory?.ch?.interactions).toEqual([{ id: 'ix:42', relevance: '3', title: undefined, effect: undefined, measures: undefined }])
+    }
+  })
+
+  it('leaves interactions undefined when the product references none', () => {
+    const result = mapMedIndexMedication(buildProduct({ interactions: [] }), buildPackage(), 'fr')
+
+    expect(result.regulatory?.ch?.interactions).toBeUndefined()
   })
 })
 

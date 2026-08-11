@@ -6,6 +6,7 @@ import {
   MedIndexValidationError,
   MedicationPackageDto,
   MedicationProductDto,
+  RawInteractionDto,
 } from '@icure/medindex-sdk'
 import { cardinalLanguage } from '../i18n'
 import { mapMedIndexMedication, mapMedIndexProductTitle, MedIndexLanguage, toMedIndexLanguage } from '../../../internal/services/medication-mapper/map-medindex-medication'
@@ -139,11 +140,13 @@ export class MedIndexMedicationProvider implements MedicationProvider {
     // Filtering before fetching packages avoids paying for package lookups on products the
     // source itself already considers gone.
     const activeProducts = products.filter((product) => product.active)
-    const packagesByProductId = activeProducts.length ? await this.fetchPackagesByProduct(activeProducts, label) : new Map<string, MedicationPackageDto[]>()
+    const [packagesByProductId, interactionsById] = activeProducts.length
+      ? await Promise.all([this.fetchPackagesByProduct(activeProducts, label), this.fetchInteractionsById(activeProducts)])
+      : [new Map<string, MedicationPackageDto[]>(), new Map<string, RawInteractionDto>()]
     const language = toMedIndexLanguage(cardinalLanguage.getLanguage())
 
     const page = activeProducts
-      .map((product) => this.toMedicationProductType(product, packagesByProductId.get(product.id) ?? [], language))
+      .map((product) => this.toMedicationProductType(product, packagesByProductId.get(product.id) ?? [], language, interactionsById))
       .filter((product): product is MedicationProductType => product !== null)
 
     const combined = [...acc, ...page]
@@ -152,14 +155,19 @@ export class MedIndexMedicationProvider implements MedicationProvider {
 
   /** Returns `null` (filtered out) once none of a product's packages are active — mirroring how
    * `loadMedicationsPage` returns `null` for an AMP whose AMPPs are all undeliverable. */
-  private toMedicationProductType(product: MedicationProductDto, packages: MedicationPackageDto[], language: MedIndexLanguage): MedicationProductType | null {
+  private toMedicationProductType(
+    product: MedicationProductDto,
+    packages: MedicationPackageDto[],
+    language: MedIndexLanguage,
+    interactionsById: Map<string, RawInteractionDto>,
+  ): MedicationProductType | null {
     const activePackages = packages.filter((pkg) => pkg.active)
     if (activePackages.length === 0) return null
 
     return {
       id: product.id,
       title: mapMedIndexProductTitle(product, language),
-      medications: activePackages.map((pkg) => mapMedIndexMedication(product, pkg, language)),
+      medications: activePackages.map((pkg) => mapMedIndexMedication(product, pkg, language, interactionsById)),
     }
   }
 
@@ -168,6 +176,27 @@ export class MedIndexMedicationProvider implements MedicationProvider {
       return await pullNext(iterator, PAGE_SIZE)
     } catch (error) {
       throw this.translateError(error, `medINDEX product search failed for label "${label}"`)
+    }
+  }
+
+  /**
+   * One batched `interaction.byIds` call per chunk, resolving the full `RawInteraction` documents
+   * behind every product's interaction refs so `mapMedIndexMedication` can embed localized
+   * titles/effects. Enrichment only — a `MedIndexNotFoundError` (an older medINDEX server without
+   * the /interaction endpoint) degrades to an empty map, same as the optional search lanes, and
+   * the mapper falls back to ref-only entries. Any other error still propagates: it signals the
+   * same source unavailability a package lookup failure would.
+   */
+  private async fetchInteractionsById(products: MedicationProductDto[]): Promise<Map<string, RawInteractionDto>> {
+    const ids = Array.from(new Set(products.flatMap((product) => product.interactions.map((ref) => ref.id)).filter((id): id is string => !!id)))
+    if (ids.length === 0) return new Map()
+
+    try {
+      const interactions = await this.client.interaction.byIds(ids)
+      return new Map(interactions.map((interaction) => [interaction.id, interaction]))
+    } catch (error) {
+      if (error instanceof MedIndexNotFoundError) return new Map()
+      throw this.translateError(error, 'medINDEX interaction lookup failed')
     }
   }
 

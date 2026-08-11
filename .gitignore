@@ -43,3 +43,8 @@ index.css.map
 
 # demo-app Vite build output
 packages/demo-app/dist/
+
+# Playwright e2e outputs
+test-results/
+e2e-results.json
+.playwright-mcp/

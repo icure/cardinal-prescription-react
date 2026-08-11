@@ -5,7 +5,7 @@ import type { MedicationType } from '../../../../../../shared/types'
 import { t } from '../../../../../../shared/services/i18n'
 import { MedicationInfographics } from '../../../MedicationInfographics'
 import { RegulatoryBadges } from '../../../../common/RegulatoryBadges'
-import { StyledCheapBadge, StyledExpandButton, StyledHeader } from './styles'
+import { StyledExpandButton, StyledHeader } from './styles'
 
 interface Props {
   handleAddPrescription: () => void
@@ -13,20 +13,23 @@ interface Props {
   isMedicationCardExpanded: boolean
   setMedicationCardExpanded: (status: boolean) => void
   subMedication?: boolean
+  // Read-only rendering (used in the prescription modal, like the angular implementation):
+  // not clickable, no summary badges, no expand arrow.
+  readOnly?: boolean
 }
 
-export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication }) => {
+export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicationCardExpanded, setMedicationCardExpanded, subMedication, readOnly }) => {
   const medicationCardRef = useRef<HTMLDivElement>(null)
 
   return (
     <StyledHeader className="StyledHeader" ref={medicationCardRef}>
       <div
         className="medication"
-        onClick={handleAddPrescription}
+        onClick={readOnly ? undefined : handleAddPrescription}
         role="button"
-        tabIndex={0}
+        tabIndex={readOnly ? -1 : 0}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') handleAddPrescription()
+          if (event.key === 'Enter' && !readOnly) handleAddPrescription()
         }}
       >
         <div className="medication__content">
@@ -43,38 +46,32 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
 
               <h3>{medication.title}</h3>
 
-              {medication.regulatory?.be?.cheapest ? (
-                <StyledCheapBadge className="StyledCheapBadge" $variant="cheapest">
-                  {t('medication.drugInfographic.cheapest')}
-                </StyledCheapBadge>
-              ) : medication.regulatory?.be?.cheap ? (
-                <StyledCheapBadge className="StyledCheapBadge" $variant="cheap">
-                  {t('medication.drugInfographic.cheap')}
-                </StyledCheapBadge>
-              ) : null}
-
               <MedicationInfographics medication={medication} boundaryBox={medicationCardRef} />
             </div>
 
             <p className="medication__content__heading__activeIngredient">{medication.activeIngredient}</p>
           </div>
-          <div className="medication__content__description">
-            <RegulatoryBadges medication={medication} placement="summary" boundaryBox={medicationCardRef} />
-          </div>
+          {!readOnly && (
+            <div className="medication__content__description">
+              <RegulatoryBadges medication={medication} placement="summary" boundaryBox={medicationCardRef} />
+            </div>
+          )}
         </div>
       </div>
 
-      <StyledExpandButton
-        className="StyledExpandButton"
-        $isExpanded={isMedicationCardExpanded}
-        onClick={(e) => {
-          e.stopPropagation()
-          setMedicationCardExpanded(!isMedicationCardExpanded)
-        }}
-        type="button"
-      >
-        <ChevronIcn />
-      </StyledExpandButton>
+      {!readOnly && (
+        <StyledExpandButton
+          className="StyledExpandButton"
+          $isExpanded={isMedicationCardExpanded}
+          onClick={(e) => {
+            e.stopPropagation()
+            setMedicationCardExpanded(!isMedicationCardExpanded)
+          }}
+          type="button"
+        >
+          <ChevronIcn />
+        </StyledExpandButton>
+      )}
     </StyledHeader>
   )
 }

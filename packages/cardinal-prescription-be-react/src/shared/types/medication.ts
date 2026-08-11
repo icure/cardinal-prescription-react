@@ -54,6 +54,28 @@ export interface ChPriceType {
   currency: 'CHF'
 }
 
+// One line of a product's composition — substance name resolved to the active display
+// language at mapping time (like every other localized medINDEX field), plus the raw
+// quantity/unit so the badge renderer can format "500 mg" itself.
+export interface ChCompositionLineType {
+  substanceName: string
+  quantity?: number
+  unit?: string
+  isActiveSubstance: boolean
+}
+
+// One known drug interaction involving a product's composition. `id`/`relevance` come from the
+// product's own interaction refs; `title`/`effect`/`measures` only when the provider could
+// resolve the full `RawInteraction` (an older medINDEX server without the /interaction endpoint
+// degrades to refs-only entries).
+export interface ChInteractionType {
+  id?: string
+  relevance?: string
+  title?: string
+  effect?: string
+  measures?: string
+}
+
 // medINDEX regulatory fields — additive-only and all optional: only what medINDEX's
 // MedicationProductDto/MedicationPackageDto are known to supply, nothing speculative.
 export interface ChRegulatoryFields {
@@ -64,6 +86,8 @@ export interface ChRegulatoryFields {
   narcotic?: boolean
   coldChain?: boolean
   genericGroup?: string
+  composition?: ChCompositionLineType[]
+  interactions?: ChInteractionType[]
 }
 
 export interface MedicationType {

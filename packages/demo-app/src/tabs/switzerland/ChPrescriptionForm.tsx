@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { cardinalLanguage, MedicationType } from '@icure/cardinal-prescription-be-react'
+import { Button, cardinalLanguage, MedicationCard, MedicationType } from '@icure/cardinal-prescription-be-react'
 import { makeParser } from '@icure/medication-sdk'
 import { ChDurationUnit, ChPrescriptionDraft } from './types'
 
@@ -134,7 +134,9 @@ export const ChPrescriptionForm: React.FC<ChPrescriptionFormProps> = ({ medicati
     <div className="ch-panel-overlay">
       <div className="ch-panel" id="chPrescriptionForm">
         <div className="ch-panel__header">
-          <h3>{medication.title}</h3>
+          {/* Read-only medication card in the header — mirrors PrescriptionModal, which renders
+              the medication being prescribed the same way, regulatory badges included. */}
+          <MedicationCard medication={medication} handleAddPrescription={() => {}} id="ch-panel-medication-card" readOnly />
           <button type="button" aria-label="Close panel" onClick={onClose}>
             ×
           </button>
@@ -155,12 +157,7 @@ export const ChPrescriptionForm: React.FC<ChPrescriptionFormProps> = ({ medicati
               {posologySuggestions.length !== 0 && (
                 <ul className="suggestionsDropdown" role="listbox" aria-activedescendant={focusedSuggestionIndex >= 0 ? `ch-posology-${focusedSuggestionIndex}` : undefined}>
                   {posologySuggestions.map((posology, index) => (
-                    <li
-                      key={index}
-                      id={`ch-posology-${index}`}
-                      ref={(el) => (suggestionRefs.current[index] = el)}
-                      className={focusedSuggestionIndex === index ? 'focused' : ''}
-                    >
+                    <li key={index} id={`ch-posology-${index}`} ref={(el) => (suggestionRefs.current[index] = el)} className={focusedSuggestionIndex === index ? 'focused' : ''}>
                       <button type="button" onClick={() => acceptSuggestion(posology)}>
                         {posology}
                       </button>
@@ -191,10 +188,9 @@ export const ChPrescriptionForm: React.FC<ChPrescriptionFormProps> = ({ medicati
           </div>
 
           <div className="ch-panel__footer">
-            <button type="button" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit">{draftToModify ? 'Save changes' : 'Add prescription'}</button>
+            {/* Same button pairing as PrescriptionModal's footer: outlined cancel, primary submit. */}
+            <Button title="Cancel" view="outlined" handleClick={onClose} />
+            <Button title={draftToModify ? 'Save changes' : 'Add prescription'} view="primary" type="submit" />
           </div>
         </form>
       </div>

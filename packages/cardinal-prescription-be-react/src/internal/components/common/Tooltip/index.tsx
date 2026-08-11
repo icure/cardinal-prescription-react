@@ -45,6 +45,14 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, contentSnippet, iconS
         setActive(true)
       }}
       onMouseLeave={() => setActive(false)}
+      onClick={(event) => {
+        // Badges usually sit inside a clickable medication card — a click meant to open the
+        // tooltip (touch devices, or pinning it open) must not bubble up and trigger the card's
+        // own add-prescription action.
+        event.stopPropagation()
+        repositionTooltip(boundaryBox)
+        setActive((wasActive) => !wasActive)
+      }}
     >
       <div className="icon">{iconSnippet}</div>
       <div className="chevron"></div>

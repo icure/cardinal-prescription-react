@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
-import { MedIndexClient, MedicationPackageDto, MedicationProductDto } from '@icure/medindex-sdk'
+import { MedIndexClient, MedicationPackageDto, MedicationProductDto, RawInteractionDto } from '@icure/medindex-sdk'
 import { MedIndexMedicationProvider } from './medindex-medication-provider'
 import { runMedicationProviderContractTests } from '../medication-provider.contract-test'
-import { MedicationNotFoundError, MedicationProviderUnavailableError } from '../../types'
+import { Med, MedicationNotFoundError, MedicationProductType, MedicationProviderUnavailableError } from '../../types'
 
 const BASE_URL = 'http://test.invalid/rest/v2/medindex'
 
@@ -56,7 +56,7 @@ function makeSearchFetchMock(
   products: MedicationProductDto[],
   packagesByProductId: Map<string, MedicationPackageDto[]>,
   httpPageSize = 5,
-  { substanceProducts = [] as MedicationProductDto[], atcProducts = [] as MedicationProductDto[] } = {},
+  { substanceProducts = [] as MedicationProductDto[], atcProducts = [] as MedicationProductDto[], interactions = [] as RawInteractionDto[] } = {},
 ) {
   const pageIndexes = { label: 0, substance: 0, atc: 0 }
 
@@ -88,6 +88,14 @@ function makeSearchFetchMock(
       const body = JSON.parse((init?.body as string) ?? '{"ids":[]}') as { ids: string[] }
       const packages = body.ids.flatMap((id) => packagesByProductId.get(id) ?? [])
       return jsonResponse(200, packages)
+    }
+
+    if (parsedUrl.pathname.endsWith('/interaction/byIds') && method === 'POST') {
+      const body = JSON.parse((init?.body as string) ?? '{"ids":[]}') as { ids: string[] }
+      return jsonResponse(
+        200,
+        interactions.filter((interaction) => body.ids.includes(interaction.id)),
+      )
     }
 
     throw new Error(`Unhandled mock fetch call: ${method} ${parsedUrl.pathname}`)
@@ -209,6 +217,65 @@ describe('MedIndexMedicationProvider unified search lanes', () => {
     const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
 
     expect(await collectIds(provider, 'n02be01')).toEqual(['medprod:1'])
+  })
+
+  it('batch-resolves interaction refs and embeds localized titles into regulatory.ch.interactions', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const product = makeProductDto({ id: 'medprod:1', interactions: [{ id: 'ix:42', relevance: '3' }] })
+    packagesByProductId.set('medprod:1', [makePackageDto({ id: 'medpkg:medprod:1', product: { id: 'medprod:1', name: 'Aspirin' } })])
+
+    const interaction = {
+      id: 'ix:42',
+      ixno: 42,
+      titles: { de: 'Benzodiazepine - Alkohol', fr: 'Benzodiazépines - Alcool' },
+      group1: {},
+      group2: {},
+      effect: { fr: 'Sédation renforcée' },
+      relevance: '3',
+      effectText: {},
+      mechanismText: {},
+      measuresText: {},
+      remarks: {},
+      mechanisms: [],
+    } as RawInteractionDto
+
+    const fetchMock = makeSearchFetchMock([product], packagesByProductId, 5, { interactions: [interaction] })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    const results: Med[] = []
+    for await (const item of provider.findByLabel('aspirin')) {
+      results.push(item)
+    }
+
+    const medication = (results[0] as MedicationProductType).medications[0]
+    expect(medication.regulatory?.ch?.interactions).toEqual([
+      { id: 'ix:42', relevance: '3', title: 'Benzodiazépines - Alcool', effect: 'Sédation renforcée', measures: undefined },
+    ])
+    expect(fetchMock.mock.calls.filter(([url]) => (url as URL).pathname.endsWith('/interaction/byIds'))).toHaveLength(1)
+  })
+
+  it('degrades to ref-only interactions when an old server 404s on /interaction/byIds', async () => {
+    const packagesByProductId = new Map<string, MedicationPackageDto[]>()
+    const product = makeProductDto({ id: 'medprod:1', interactions: [{ id: 'ix:42', relevance: '3' }] })
+    packagesByProductId.set('medprod:1', [makePackageDto({ id: 'medpkg:medprod:1', product: { id: 'medprod:1', name: 'Aspirin' } })])
+
+    const upgraded = makeSearchFetchMock([product], packagesByProductId)
+    const fetchMock = vi.fn(async (url: URL | string, init?: RequestInit): Promise<Response> => {
+      const pathname = (typeof url === 'string' ? new URL(url) : url).pathname
+      if (pathname.endsWith('/interaction/byIds')) {
+        return new Response(null, { status: 404 })
+      }
+      return upgraded(url, init)
+    })
+    const provider = new MedIndexMedicationProvider(new MedIndexClient({ baseUrl: BASE_URL, fetch: fetchMock }))
+
+    const results: Med[] = []
+    for await (const item of provider.findByLabel('aspirin')) {
+      results.push(item)
+    }
+
+    const medication = (results[0] as MedicationProductType).medications[0]
+    expect(medication.regulatory?.ch?.interactions).toEqual([{ id: 'ix:42', relevance: '3', title: undefined, effect: undefined, measures: undefined }])
   })
 
   it('translates a substance-lane server failure into MedicationProviderUnavailableError', async () => {

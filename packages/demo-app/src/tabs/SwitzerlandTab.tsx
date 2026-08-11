@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { createMedicationProvider, MedicationSearch, MedicationType, t } from '@icure/cardinal-prescription-be-react'
+import { Button, createMedicationProvider, MedicationCard, MedicationSearch, MedicationType, t } from '@icure/cardinal-prescription-be-react'
 import { MedIndexClient } from '@icure/medindex-sdk'
 import { MEDINDEX_URL } from '../config'
 import { ChPrescriptionForm } from './switzerland/ChPrescriptionForm'
@@ -65,7 +65,7 @@ export const SwitzerlandTab = () => {
   const onDeleteDraft = (id: string) => setDrafts((prev) => prev.filter((draft) => draft.id !== id))
 
   return (
-    <div>
+    <div className="tab-panel">
       <h2>Switzerland (medINDEX)</h2>
       <div className="element">
         <MedicationSearch
@@ -84,34 +84,31 @@ export const SwitzerlandTab = () => {
             <ul className="ch-prescription-list">
               {drafts.map((draft) => (
                 <li key={draft.id}>
-                  <div>
-                    <strong>{draft.medication.title}</strong>
+                  <div className="ch-prescription-list__medication">
+                    {/* Read-only medication card, like the one PrescriptionModal shows for the
+                        medication being prescribed: title, active substances and the regulatory
+                        badges (narcotic, cold chain, composition, interactions, ...). */}
+                    <MedicationCard medication={draft.medication} handleAddPrescription={() => {}} id={`ch-draft-card-${draft.id}`} readOnly />
                     <p>{draft.posologyText}</p>
                     <p>
                       {draft.quantity} {draft.durationUnit} — starting {draft.startDate}
                     </p>
                   </div>
                   <div className="ch-prescription-list__actions">
-                    <button type="button" onClick={() => onModifyDraft(draft)}>
-                      Modify
-                    </button>
-                    <button type="button" onClick={() => onDeleteDraft(draft.id)}>
-                      Delete
-                    </button>
+                    <Button title="Modify" view="outlined" handleClick={() => onModifyDraft(draft)} />
+                    <Button title="Delete" view="outlined" handleClick={() => onDeleteDraft(draft.id)} />
                   </div>
                 </li>
               ))}
             </ul>
-            <button type="button" onClick={() => setPrintViewOpen(true)}>
-              Print
-            </button>
+            <div className="ch-form-actions">
+              <Button title="Print" view="primary" handleClick={() => setPrintViewOpen(true)} />
+            </div>
           </div>
         </>
       )}
 
-      {formState && (
-        <ChPrescriptionForm medication={formState.medication} draftToModify={formState.draftToModify} onClose={onCloseForm} onSubmit={onSubmitDraft} />
-      )}
+      {formState && <ChPrescriptionForm medication={formState.medication} draftToModify={formState.draftToModify} onClose={onCloseForm} onSubmit={onSubmitDraft} />}
       {isPrintViewOpen && <ChPrescriptionPrintView drafts={drafts} prescriber={prescriber} patient={patient} onClose={() => setPrintViewOpen(false)} />}
     </div>
   )

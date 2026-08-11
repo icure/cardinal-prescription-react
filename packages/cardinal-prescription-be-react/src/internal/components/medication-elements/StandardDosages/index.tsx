@@ -25,7 +25,7 @@ export const StandardDosages: React.FC<StandardDosagesProps> = ({ dosages, langu
   }
 
   return (
-    <StyledStandardDosages>
+    <StyledStandardDosages className="StyledStandardDosages">
       <StyledStandardDosagesHeader onClick={() => setIsExpanded((v) => !v)}>
         <StyledStandardDosagesHeaderContent>
           <WarningIcn color="#3D87C5" />
