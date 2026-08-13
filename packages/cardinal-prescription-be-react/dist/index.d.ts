@@ -54,6 +54,19 @@ interface ChPriceType {
     amount: number;
     currency: 'CHF';
 }
+interface ChCompositionLineType {
+    substanceName: string;
+    quantity?: number;
+    unit?: string;
+    isActiveSubstance: boolean;
+}
+interface ChInteractionType {
+    id?: string;
+    relevance?: string;
+    title?: string;
+    effect?: string;
+    measures?: string;
+}
 interface ChRegulatoryFields {
     pharmacode?: string;
     gtin?: string[];
@@ -62,6 +75,8 @@ interface ChRegulatoryFields {
     narcotic?: boolean;
     coldChain?: boolean;
     genericGroup?: string;
+    composition?: ChCompositionLineType[];
+    interactions?: ChInteractionType[];
 }
 interface MedicationType {
     id?: string;
@@ -203,10 +218,12 @@ declare const loadVmpGroup: (sdk: SamV2Api, vmpGroupCode: string) => Promise<Vmp
 declare const fetchSamVersion: (sdk: SamV2Api) => Promise<SamVersion | undefined>;
 
 /**
- * Swiss `MedicationProvider`, wrapping medINDEX's single product search stream. Unlike SAM's
- * three-lane AMP/VMP-group/NMP merge, medINDEX has only one product-level concept — `findByLabel`
- * adapts one already-ordered source stream instead of merging several, trusting the SDK's own
- * ordering the same way `SamMedicationProvider` trusts each of its three SAM lanes.
+ * Swiss `MedicationProvider`, wrapping medINDEX's product search. `findByLabel` is a unified
+ * search over up to three server-side lanes — product/brand names, substance names in the
+ * composition, and (when the query is shaped like an ATC code) ATC code/class prefix —
+ * deduplicated by product id and drained sequentially in that order, so exact-name matches
+ * always rank first. Within each lane the SDK's own ordering is trusted, the same way
+ * `SamMedicationProvider` trusts each of its three SAM lanes.
  *
  * `enrichForPrescription`/`loadCheapAlternatives` are intentionally left unimplemented: there is
  * no Swiss prescription-transmission or reimbursement-driven cheap-alternatives concept this
@@ -228,6 +245,15 @@ declare class MedIndexMedicationProvider implements MedicationProvider {
      * `loadMedicationsPage` returns `null` for an AMP whose AMPPs are all undeliverable. */
     private toMedicationProductType;
     private pullProducts;
+    /**
+     * One batched `interaction.byIds` call per chunk, resolving the full `RawInteraction` documents
+     * behind every product's interaction refs so `mapMedIndexMedication` can embed localized
+     * titles/effects. Enrichment only — a `MedIndexNotFoundError` (an older medINDEX server without
+     * the /interaction endpoint) degrades to an empty map, same as the optional search lanes, and
+     * the mapper falls back to ref-only entries. Any other error still propagates: it signals the
+     * same source unavailability a package lookup failure would.
+     */
+    private fetchInteractionsById;
     /** One batched `byProductIds` call per chunk, not one call per product — the whole point of
      * pulling products in chunks in the first place. */
     private fetchPackagesByProduct;
@@ -328,6 +354,7 @@ interface PractitionerCertificate {
     onUploadCertificate: (certificateData: ArrayBuffer, passphrase: string) => void;
     onResetCertificate: () => void;
     onDecryptCertificate: (passphrase: string) => void;
+    hcpSsin?: string;
 }
 declare const PractitionerCertificate: React.FC<PractitionerCertificate>;
 
@@ -336,10 +363,17 @@ interface MedicationSearchProps {
     onAddPrescription: (medication: MedicationType, cheapAlternatives: MedicationType[]) => void;
     disableInputEventsTracking: boolean;
     short?: boolean;
+    /**
+     * Input placeholder override. What a query can match is a property of the provider (e.g. the
+     * `ch` provider searches names, substances and ATC codes at once), so the host names the
+     * capability — e.g. `t('medication.search.unifiedLabel')`. Defaults to the generic
+     * `medication.search.label` text.
+     */
+    searchPlaceholder?: string;
 }
 declare const MedicationSearch: React.FC<MedicationSearchProps>;
 
-interface Props {
+interface Props$1 {
     sdk: SamV2Api;
     medicationToPrescribe?: MedicationType;
     prescriptionToModify?: PrescribedMedicationType;
@@ -349,7 +383,7 @@ interface Props {
     onSubmit: (meds: PrescribedMedicationType[]) => void;
     modalMood: 'create' | 'modify';
 }
-declare const PrescriptionModal: React.FC<Props>;
+declare const PrescriptionModal: React.FC<Props$1>;
 
 interface PrescriptionListProps {
     handleModifyPrescription: (medication: PrescribedMedicationType) => void;
@@ -369,4 +403,27 @@ interface PrintPrescriptionModalProps {
 }
 declare const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps>;
 
-export { type BeRegulatoryFields, type CertificateRecordType, type CertificateValidationResultType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+type ButtonViewType = 'primary' | 'withSpinner' | 'outlined';
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    title: string;
+    view?: ButtonViewType;
+    type?: 'button' | 'reset' | 'submit';
+    form?: string;
+    disabled?: boolean;
+    handleClick?: () => void;
+}
+declare const Button: React.FC<Props>;
+
+interface MedicationCardProps {
+    medication: MedicationType;
+    handleAddPrescription: (medication: MedicationType) => void;
+    id: string;
+    focused?: boolean;
+    disableHover?: boolean;
+    short?: boolean;
+    subMedication?: boolean;
+    readOnly?: boolean;
+}
+declare const MedicationCard: React.FC<MedicationCardProps>;
+
+export { type BeRegulatoryFields, Button, type ButtonViewType, type CertificateRecordType, type CertificateValidationResultType, type ChCompositionLineType, type ChInteractionType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, MedicationCard, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

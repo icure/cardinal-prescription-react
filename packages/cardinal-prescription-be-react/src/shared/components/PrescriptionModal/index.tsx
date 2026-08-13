@@ -21,6 +21,7 @@ import { GlobalStyles } from '../../../styles'
 import { Controller, useForm } from 'react-hook-form'
 import { trim } from '../../../internal/utils/string-helpers'
 import { CheapAlternatives } from '../../../internal/components/medication-elements/CheapAlternatives'
+import { MedicationCard } from '../../../internal/components/medication-elements/MedicationCard'
 import { StandardDosages } from '../../../internal/components/medication-elements/StandardDosages'
 import { createPosologyFromStandardDosage, createPrescribedMedication, StandardDosageContext } from '../../../internal/services/prescription/create-prescription'
 import { PrescriptionFormType as ServicePrescriptionFormType } from '../../../internal/types'
@@ -256,18 +257,28 @@ export const PrescriptionModal: React.FC<Props> = ({
               tabIndex={0}
               aria-activedescendant={focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : undefined}
             >
+              {medication && (
+                <div className="addMedicationForm__body__content">
+                  {/* Like the angular implementation: the prescribed medication is shown as a
+                      read-only medication card, and the free-text title input only exists when
+                      there is no medication (e.g. modifying a free-text prescription). */}
+                  <MedicationCard medication={medication} handleAddPrescription={() => {}} id="modal-medication-card" readOnly />
+                  {alternatives.length > 0 && <CheapAlternatives sdk={sdk} medications={alternatives} onSelectMedication={onSelectAlternativeMedication} />}
+                </div>
+              )}
               <div className="addMedicationForm__body__content">
-                <TextInput
-                  label={t('prescription.form.medicationTitle')}
-                  required
-                  disabled
-                  id="medicationTitle"
-                  {...register('medicationTitle', {
-                    required: t('prescription.form.fieldRequired'),
-                  })}
-                  errorMessage={prescriptionFormErrors['medicationTitle']?.message}
-                />
-                {alternatives.length > 0 && <CheapAlternatives sdk={sdk} medications={alternatives} onSelectMedication={onSelectAlternativeMedication} />}
+                {!medication && (
+                  <TextInput
+                    label={t('prescription.form.medicationTitle')}
+                    required
+                    disabled
+                    id="medicationTitle"
+                    {...register('medicationTitle', {
+                      required: t('prescription.form.fieldRequired'),
+                    })}
+                    errorMessage={prescriptionFormErrors['medicationTitle']?.message}
+                  />
+                )}
                 <StyledDosageInput className="StyledDosageInput">
                   <TextInput
                     label={t('prescription.form.dosage')}
@@ -410,8 +421,8 @@ export const PrescriptionModal: React.FC<Props> = ({
                         onChange={(val) => field.onChange(val)}
                         label={t('prescription.form.substitutionAllowed')}
                         options={[
-                          { label: t('medication.no'), value: false, id: 'substitutionIsNotAllowed' },
-                          { label: t('medication.yes'), value: true, id: 'substitutionIsAllowed' },
+                          { label: t('prescription.form.substitutionYes'), value: true, id: 'yes' },
+                          { label: t('prescription.form.substitutionNo'), value: false, id: 'no' },
                         ]}
                         required
                         errorMessage={prescriptionFormErrors['substitutionAllowed']?.message}

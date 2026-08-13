@@ -1,0 +1,196 @@
+{
+  "create-form": {
+    "title": "Créer la prescription",
+    "fields": {
+      "medicationTitle": null,
+      "dosage": {
+        "tag": "input",
+        "type": "text",
+        "value": "",
+        "disabled": false
+      },
+      "duration": {
+        "tag": "input",
+        "type": "number",
+        "value": "1",
+        "disabled": false
+      },
+      "durationTimeUnit": {
+        "tag": "select",
+        "selected": "jour",
+        "options": [
+          "jour",
+          "semaine"
+        ]
+      },
+      "treatmentStartDate": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "executableUntil": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "prescriptionsNumber": {
+        "tag": "input",
+        "type": "number",
+        "value": "1",
+        "disabled": false
+      },
+      "periodicityTimeUnit": null,
+      "periodicityDaysNumber": null,
+      "showExtraFields": {
+        "tag": "input",
+        "type": "checkbox",
+        "value": "false",
+        "disabled": false
+      },
+      "recipeInstructionForPatient": null,
+      "instructionsForReimbursement": null,
+      "prescriberVisibility": null,
+      "pharmacistVisibility": null
+    },
+    "medicationCard": "Dafalgan Forte 1 g compr. pellic. 32 TD paracétamol oral 1 g [CAVE séc., solide/liq.]",
+    "radios": [
+      {
+        "label": "Oui",
+        "checked": false
+      },
+      {
+        "label": "Non",
+        "checked": true
+      }
+    ],
+    "preview": [
+      "Instructions pour le patient : Aucun",
+      "Instructions remboursement : Aucun",
+      "Visibilité prescripteur : Visible pour tous les prescripteurs",
+      "Visibilité officine : Le médicament est visible par tous les pharmaciens"
+    ]
+  },
+  "posology-prescriptions": [
+    "Dafalgan Forte 1 g compr. pellic. 32 1 par jour",
+    "Dafalgan Forte 1 g compr. pellic. 32 3 fois par jour",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 inhalations 1 x par jour le matin",
+    "Dafalgan Forte 1 g compr. pellic. 32 1 comp par jour",
+    "Dafalgan Forte 1 g compr. pellic. 32 1 comp 2 x par jour",
+    "Dafalgan Forte 1 g compr. pellic. 32 3 gouttes 2 x par jour matin et soir",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 inhalations 1 x par jour à 16:00",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 inhalations 1 x par jour à 16:00, 1 inh. 1 x par jour avant le repas du soir",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 inhalations 1 x par jour à 16:00 le lundi, le mardi et le mercredi, 1 inh. 1 x par jour avant le repas du soir le vendredi"
+  ],
+  "posology-suggestions": [
+    "jour",
+    "semaine"
+  ],
+  "posology-completed-value": "3 x par",
+  "standard-dosages-panel": [],
+  "extra-fields-form": {
+    "title": "Créer la prescription",
+    "fields": {
+      "medicationTitle": null,
+      "dosage": {
+        "tag": "input",
+        "type": "text",
+        "value": "",
+        "disabled": false
+      },
+      "duration": {
+        "tag": "input",
+        "type": "number",
+        "value": "1",
+        "disabled": false
+      },
+      "durationTimeUnit": {
+        "tag": "select",
+        "selected": "jour",
+        "options": [
+          "jour",
+          "semaine"
+        ]
+      },
+      "treatmentStartDate": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "executableUntil": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "prescriptionsNumber": {
+        "tag": "input",
+        "type": "number",
+        "value": "1",
+        "disabled": false
+      },
+      "periodicityTimeUnit": null,
+      "periodicityDaysNumber": null,
+      "showExtraFields": {
+        "tag": "input",
+        "type": "checkbox",
+        "value": "true",
+        "disabled": false
+      },
+      "recipeInstructionForPatient": {
+        "tag": "textarea",
+        "type": "textarea",
+        "value": "",
+        "disabled": false
+      },
+      "instructionsForReimbursement": {
+        "tag": "select",
+        "selected": "Aucun",
+        "options": [
+          "Aucun",
+          "Tiers Payant",
+          "Première Dose",
+          "Deuxième Dose",
+          "Troisième Dose",
+          "Maladie Rénale Chronique",
+          "Traitement du Diabète",
+          "Convention Diabète",
+          "Non Remboursable",
+          "Explication du Médicament",
+          "Parcours Initial Diabète"
+        ]
+      },
+      "prescriberVisibility": {
+        "tag": "select",
+        "selected": "Visible pour tous les prescripteurs",
+        "options": [
+          "Visible pour tous les prescripteurs",
+          "Visible uniquement pour moi-même",
+          "Visible uniquement pour le titulaire du DMG"
+        ]
+      },
+      "pharmacistVisibility": {
+        "tag": "select",
+        "selected": "Le médicament est visible par tous les pharmaciens",
+        "options": [
+          "Le médicament est visible par tous les pharmaciens",
+          "Le médicament n`est pas visible par tous les pharmaciens"
+        ]
+      }
+    },
+    "medicationCard": "Dafalgan Forte 1 g compr. pellic. 32 TD paracétamol oral 1 g [CAVE séc., solide/liq.]",
+    "radios": [
+      {
+        "label": "Oui",
+        "checked": false
+      },
+      {
+        "label": "Non",
+        "checked": true
+      }
+    ],
+    "preview": []
+  }
+}

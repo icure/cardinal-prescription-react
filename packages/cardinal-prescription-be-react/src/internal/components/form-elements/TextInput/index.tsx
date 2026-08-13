@@ -43,6 +43,7 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, min, type
         type={type ?? 'text'}
         min={min}
         {...rest}
+        disabled={disabled}
         $disabled={disabled}
         $error={!!errorMessage}
       />

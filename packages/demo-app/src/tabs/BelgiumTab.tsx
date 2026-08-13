@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   createIndexedDbTokenStore,
-  deleteCertificate,
   fetchSamVersion,
   loadCertificateInformation,
   MedicationSearch,
@@ -13,6 +12,7 @@ import {
   PrescriptionPrintModal,
   SamMedicationProvider,
   sendRecipe,
+  t,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
 } from '@icure/cardinal-prescription-be-react'
@@ -27,10 +27,10 @@ const patient: Patient = {
   dateOfBirth: 19740104,
 }
 const hcp: HealthcareParty = {
-  firstName: 'Fabien',
-  lastName: 'Zimer',
-  ssin: '84100212104',
-  nihii: '10104133000',
+  firstName: 'Antoine',
+  lastName: 'Duchâteau',
+  ssin: '74010414733',
+  nihii: '10032669001',
   addresses: [
     new Address({
       addressType: Address.AddressTypeEnum.Clinic,
@@ -49,7 +49,7 @@ const vendor = {
 }
 const samPackage = {
   packageName: 'test[test/1.0]-freehealth-connector',
-  packageVersion: '1.0]-freehealth-connector',
+  packageVersion: '1.0-freehealth-connector',
 }
 
 // Credentials and environment URLs come from environment variables — see config.ts
@@ -113,34 +113,27 @@ export const BelgiumTab = () => {
     initializeAll()
   }, [])
 
+  // Mirrors the angular reference app's home component: validation only ever sets the validity
+  // flag and the verification error — it never resets `certificateUploaded`.
   const validateCertificate = async (passphrase: string) => {
     try {
       const res = await validateDecryptedCertificate(hcp, passphrase, tokenStore, FHC_URL)
 
       setIsCertificateValid(res.status)
       setErrorWhileVerifyingCertificate(res.error?.[CARDINAL_PRESCRIPTION_LANGUAGE])
-      setCertificateUploaded(!res.error)
     } catch (error) {
       setIsCertificateValid(false)
       setErrorWhileVerifyingCertificate('Unexpected error')
-      setCertificateUploaded(false)
 
       console.error('Error while validating certificate from the Demo App:', error)
     }
   }
 
-  useEffect(() => {
-    if (certificateUploaded && passphrase) {
-      validateCertificate(passphrase).catch(console.error)
-    } else {
-      setIsCertificateValid(false)
-      setErrorWhileVerifyingCertificate(undefined)
-    }
-  }, [passphrase, certificateUploaded])
-
   // We do this if the certificate is uploaded, but the passphrase is not set
-  const onDecryptCertificate = (passphrase: string) => {
+  const onDecryptCertificate = async (passphrase: string) => {
+    setCertificateUploaded(true)
     setPassphrase(passphrase)
+    await validateCertificate(passphrase)
   }
   // We do this if no certificate is uploaded
   const onUploadCertificate = async (certificateData: ArrayBuffer, passphrase: string) => {
@@ -149,21 +142,14 @@ export const BelgiumTab = () => {
     try {
       await uploadAndEncryptCertificate(hcp.ssin, passphrase, certificateData)
 
-      onDecryptCertificate(passphrase)
-      setCertificateUploaded(true)
+      await onDecryptCertificate(passphrase)
     } catch (error) {
-      setCertificateUploaded(false)
       console.error('Error while uploading certificate from the Demo App:', error)
     }
   }
-  const onResetCertificate = async (): Promise<void> => {
-    if (!hcp.ssin) return
-    await deleteCertificate(hcp.ssin)
-    setPassphrase(undefined)
-    setCertificateUploaded(false)
-    setIsCertificateValid(false)
-    setErrorWhileVerifyingCertificate(undefined)
-  }
+  // The angular reference app does nothing app-side on reset: the form only switches back to
+  // upload mode and the stored certificate stays in IndexedDB.
+  const onResetCertificate = async (): Promise<void> => {}
 
   const onCreatePrescription = (medication: MedicationType, cheapAlternatives: MedicationType[]) => {
     setPrescriptionModalOpen(true)
@@ -239,7 +225,7 @@ export const BelgiumTab = () => {
   }
 
   return (
-    <div>
+    <div className="tab-panel">
       <h2>Belgium (SAM)</h2>
       <div className="element">
         <PractitionerCertificate
@@ -249,12 +235,12 @@ export const BelgiumTab = () => {
           onResetCertificate={onResetCertificate}
           onUploadCertificate={onUploadCertificate}
           onDecryptCertificate={onDecryptCertificate}
+          hcpSsin={hcp.ssin}
         />
       </div>
       <div className="dividerApp"></div>
       <p>
-        SamVersion:
-        <strong>{samVersion?.version}</strong>
+        {t('home.samVersionLabel')} <strong>{samVersion?.version}</strong>
       </p>
       <div className="dividerApp"></div>
       <div className="element">
@@ -264,7 +250,7 @@ export const BelgiumTab = () => {
       </div>
       {prescriptions.length !== 0 && (
         <>
-          <div className="home__dividerApp"></div>
+          <div className="dividerApp"></div>
           <div className="element">
             <PrescriptionList
               handleDeletePrescription={onDeletePrescription}
@@ -272,7 +258,6 @@ export const BelgiumTab = () => {
               prescribedMedications={prescriptions}
               handleSendPrescriptions={handleSendPrescriptions}
               handlePrintPrescriptions={handlePrintPrescriptions}
-              hideSectionsTitles={true}
             />
           </div>
         </>

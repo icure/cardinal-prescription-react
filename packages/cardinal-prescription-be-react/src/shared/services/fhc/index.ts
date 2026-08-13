@@ -168,6 +168,12 @@ export const verifyCertificateWithSts = async (prescriber: HealthcareParty, pass
 
 export const validateDecryptedCertificate = async (hcp: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string): Promise<CertificateValidationResultType> => {
   try {
+    // Probe the local decryption first: a passphrase that cannot decrypt the stored envelope
+    // fails silently ({status: false}, no error message), while STS-level failures below surface
+    // their message through verifyCertificateWithSts's own error handling.
+    if (!(await loadAndDecryptCertificate(hcp.ssin!, passphrase))) {
+      return { status: false }
+    }
     return await verifyCertificateWithSts(hcp, passphrase, cache, fhc_url)
   } catch {
     return { status: false }

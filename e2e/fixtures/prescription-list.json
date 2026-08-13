@@ -1,0 +1,82 @@
+{
+  "initial-rows": [
+    "Dafalgan Forte 1 g compr. pellic. 32 1 comp par jour",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 comp matin et soir"
+  ],
+  "modify-form": {
+    "title": "Modifier la prescription",
+    "fields": {
+      "medicationTitle": {
+        "tag": "input",
+        "type": "text",
+        "value": "Dafalgan Forte 1 g compr. pellic. 32",
+        "disabled": true
+      },
+      "dosage": {
+        "tag": "input",
+        "type": "text",
+        "value": "1 comp par jour",
+        "disabled": false
+      },
+      "duration": {
+        "tag": "input",
+        "type": "number",
+        "value": "1",
+        "disabled": false
+      },
+      "durationTimeUnit": {
+        "tag": "select",
+        "selected": "jour",
+        "options": [
+          "jour",
+          "semaine"
+        ]
+      },
+      "treatmentStartDate": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "executableUntil": {
+        "tag": "input",
+        "type": "date",
+        "value": "«date»",
+        "disabled": false
+      },
+      "prescriptionsNumber": null,
+      "periodicityTimeUnit": null,
+      "periodicityDaysNumber": null,
+      "showExtraFields": {
+        "tag": "input",
+        "type": "checkbox",
+        "value": "false",
+        "disabled": false
+      }
+    },
+    "medicationCard": null,
+    "radios": [
+      {
+        "label": "Oui",
+        "checked": false
+      },
+      {
+        "label": "Non",
+        "checked": true
+      }
+    ],
+    "preview": [
+      "Instructions pour le patient : Aucun",
+      "Instructions remboursement : Aucun",
+      "Visibilité prescripteur : Visible pour tous les prescripteurs",
+      "Visibilité officine : Le médicament est visible par tous les pharmaciens"
+    ]
+  },
+  "rows-after-modify": [
+    "Dafalgan Forte 1 g compr. pellic. 32 3 comp par jour pendant le repas",
+    "Dafalgan Forte 1 g compr. pellic. 32 2 comp matin et soir"
+  ],
+  "rows-after-delete": [
+    "Dafalgan Forte 1 g compr. pellic. 32 2 comp matin et soir"
+  ]
+}

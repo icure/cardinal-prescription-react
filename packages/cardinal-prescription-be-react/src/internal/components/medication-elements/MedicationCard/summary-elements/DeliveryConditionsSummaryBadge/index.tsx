@@ -3,9 +3,9 @@ import type { RegulatoryBadgeComponent } from '../../../../../../shared/services
 import { StyledTextToIcon } from '../../medication-card-elements/Header/styles'
 
 // Registered `be` summary badge — this row is always rendered (unlike most badges, which
-// return null when absent): a real delivery-code pill when known, otherwise a "not applicable"
-// placeholder pill. That fallback is `be`-specific UX, not a generic "absent = don't render"
-// rule, so this badge intentionally never returns null.
+// return null when absent): a real delivery-code pill when known, otherwise a "free of
+// prescription" placeholder pill. That fallback is `be`-specific UX, not a generic
+// "absent = don't render" rule, so this badge intentionally never returns null.
 export const DeliveryConditionsSummaryBadge: RegulatoryBadgeComponent = ({ medication }) => {
   const code = medication.regulatory?.be?.deliveryModusCode
 
@@ -18,7 +18,7 @@ export const DeliveryConditionsSummaryBadge: RegulatoryBadgeComponent = ({ medic
         </StyledTextToIcon>
       ) : (
         <StyledTextToIcon className="StyledTextToIcon" $color="green">
-          <p>{t('medication.delivery.notApplicable')}</p>
+          <p>{t('medication.prescription.free')}</p>
         </StyledTextToIcon>
       )}
     </div>

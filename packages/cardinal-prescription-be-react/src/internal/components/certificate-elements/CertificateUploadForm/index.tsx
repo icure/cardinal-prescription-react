@@ -1,16 +1,19 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { readFileAsArrayBuffer } from '../../../utils/file-helpers'
 import { Button } from '../../form-elements/Button'
 import { TextInput } from '../../form-elements/TextInput'
 import { StyledCertificateForm, StyledCertificateUpload } from './styles'
 import { t } from '../../../../shared/services/i18n'
+import { Alert } from '../../common/Alert'
+import { loadCertificateInformation } from '../../../../shared/services/certificate'
 
 interface CertificateUploadFormProps {
   onUploadCertificate: (certificateData: ArrayBuffer, passphrase: string) => void
   onResetCertificate: () => void
   onDecryptCertificate: (passphrase: string) => void
   certificateAlreadyUploaded: boolean
+  hcpSsin?: string
 }
 
 type CertificateFormType = {
@@ -18,7 +21,20 @@ type CertificateFormType = {
   password: string
 }
 
-export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded }) => {
+export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUploadCertificate, onResetCertificate, onDecryptCertificate, certificateAlreadyUploaded, hcpSsin }) => {
+  // Mirrors the angular certificate-upload component: when the hcp ssin is known, the form probes
+  // IndexedDB once at mount and owns its upload/passphrase mode from then on (a fresh upload does
+  // not switch the mode mid-session); without an ssin it follows the live prop instead.
+  const [storedAtMount, setStoredAtMount] = useState(false)
+  useEffect(() => {
+    if (!hcpSsin) return
+    loadCertificateInformation(hcpSsin)
+      .then((stored) => setStoredAtMount(!!stored))
+      .catch(() => setStoredAtMount(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  const alreadyUploaded = hcpSsin ? storedAtMount : certificateAlreadyUploaded
+
   const {
     register,
     handleSubmit,
@@ -27,7 +43,7 @@ export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUpload
   } = useForm<CertificateFormType>()
 
   const handleFormSubmit = async ({ certificate, password }: CertificateFormType) => {
-    if (certificateAlreadyUploaded) {
+    if (alreadyUploaded) {
       onDecryptCertificate(password)
     } else {
       const certificateData: ArrayBuffer = await readFileAsArrayBuffer(certificate[0])
@@ -36,17 +52,21 @@ export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUpload
   }
 
   const onUploadedAnotherCertificate = async (): Promise<void> => {
+    setStoredAtMount(false)
     onResetCertificate()
     reset()
   }
 
   return (
     <StyledCertificateUpload className="StyledCertificateUpload">
+      {alreadyUploaded && (
+        <Alert status="error" title={t('practitioner.certificateUpload.passwordMissingTitle')} description={t('practitioner.certificateUpload.passwordMissingDescription')} />
+      )}
       <StyledCertificateForm className="StyledCertificateForm" onSubmit={handleSubmit(handleFormSubmit)} id="uploadCertificateForm">
-        <h3>{!certificateAlreadyUploaded ? t('practitioner.certificateUpload.titleUpload') : t('practitioner.certificateUpload.titlePassword')}</h3>
+        <h3>{!alreadyUploaded ? t('practitioner.certificateUpload.titleUpload') : t('practitioner.certificateUpload.titlePassword')}</h3>
 
         <div className="StyledCertificateUpload__inputs">
-          {!certificateAlreadyUploaded && (
+          {!alreadyUploaded && (
             <TextInput
               label={t('practitioner.certificateUpload.fileLabel')}
               type="file"
@@ -72,12 +92,12 @@ export const CertificateUploadForm: FC<CertificateUploadFormProps> = ({ onUpload
         </div>
 
         <Button
-          title={!certificateAlreadyUploaded ? t('practitioner.certificateUpload.submitButtonUpload') : t('practitioner.certificateUpload.submitButtonPassword')}
+          title={!alreadyUploaded ? t('practitioner.certificateUpload.submitButtonUpload') : t('practitioner.certificateUpload.submitButtonPassword')}
           type="submit"
           form="uploadCertificateForm"
         />
       </StyledCertificateForm>
-      {certificateAlreadyUploaded && (
+      {alreadyUploaded && (
         <Button title={t('practitioner.certificateUpload.resetButton')} type="reset" view="outlined" form="uploadCertificateForm" handleClick={onUploadedAnotherCertificate} />
       )}
     </StyledCertificateUpload>

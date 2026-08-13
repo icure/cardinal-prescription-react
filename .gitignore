@@ -48,3 +48,6 @@ packages/demo-app/dist/
 test-results/
 e2e-results.json
 .playwright-mcp/
+
+# Local practitioner test certificates for the Belgium e2e suite (never commit)
+resources/
