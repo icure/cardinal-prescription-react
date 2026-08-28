@@ -1,18 +1,21 @@
-# Cardinal Prescription React Component 🇧🇪
+# Cardinal Prescription React Component 🇧🇪🇨🇭
 
-This is a **Belgian-specific** React library for healthcare professionals to **manage electronic prescriptions**.  
-It integrates iCure's APIs — `@icure/be-fhc-lite-api`, `@icure/api`, and `@icure/medication-sdk` — to
-streamline:
+This started as a **Belgian-specific** React library for healthcare professionals to **manage electronic
+prescriptions**, and now also ships **Swiss medication search** powered by medINDEX. It integrates iCure's APIs —
+`@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk` (SAM, Belgium), `@icure/medindex-sdk` (medINDEX, Switzerland)
+and `@icure/medication-sdk` — to streamline:
 
-- 🔐 Practitioner certificate management
-- 🔍 Medication search
-- 📝 Electronic prescription creation & editing
-- 🧾 Prescription overview & sending
-- 🖨 Printing of prescriptions
+- 🔐 Practitioner certificate management (Belgium)
+- 🔍 Medication search — SAM (Belgium) or medINDEX (Switzerland), behind one country-configurable provider
+- 📝 Electronic prescription creation & editing (Belgium)
+- 🧾 Prescription overview & sending (Belgium)
+- 🖨 Printing of prescriptions (Belgium)
 
 > 💡**Note:**
-> This library is designed for integration with [Belgium’s SAM platform](https://www.samportal.be/nl/sam/documentation)
-> and can easily be embedded into other medical software projects as a drop-in feature for prescription management.
+> Belgium integration targets [Belgium’s SAM platform](https://www.samportal.be/nl/sam/documentation) and Recip-e.
+> Switzerland support is medication search only this phase — see
+> [`packages/cardinal-prescription-be-react/README.md`](packages/cardinal-prescription-be-react/README.md#switzerland-medindex-support)
+> for the full API and its scope. Both can be embedded into other medical software projects as a drop-in feature.
 
 ## 📚Table of Contents
 
@@ -46,20 +49,25 @@ enables secure, standards-based connections to government and regional healthcar
 
 ## ✨Features
 
-- 🇧🇪 Designed specifically for Belgian healthcare professionals
-- 🔐 Practitioner certificate upload & verification
-- 🔍 Medication search powered by iCure's SAM SDK
-- 📝 Create, edit, list, send, and print prescriptions
-- 🧠 Structured and unstructured posology support
-- 📜 Interacts with Recip-e to send prescriptions
+- 🇧🇪 Designed for Belgian healthcare professionals, with 🇨🇭 Swiss medication search alongside it
+- 🔐 Practitioner certificate upload & verification (Belgium)
+- 🔍 Medication search powered by iCure's SAM SDK (Belgium) or medINDEX (Switzerland), selected via one
+  `createMedicationProvider({ country: 'be' | 'ch', ... })` call
+- 🔎 Unified Swiss search over product/brand name, active substance, and ATC code/class in a single query
+- 🏷 Country-blind regulatory badge registry — SAM badges (Belgium) and medINDEX badges (Switzerland) render
+  automatically, no app-level setup
+- 📝 Create, edit, list, send, and print prescriptions (Belgium)
+- 🧠 Structured and unstructured posology support (Belgium)
+- 📜 Interacts with Recip-e to send prescriptions (Belgium)
 - 🧩 Ready to integrate into medical apps
-- 💾 Secure certificate storage in browser
+- 💾 Secure certificate storage in browser (Belgium)
 - 🌍 Fully internationalized (French, Dutch, German, English)
 
 ## 🧰Technologies
 
 - **React 18+**
-- **iCure SDKs** (`@icure/be-fhc-lite-api`, `@icure/api`, `@icure/medication-sdk`)
+- **iCure SDKs** (`@icure/be-fhc-lite-api`, `@icure/cardinal-be-sam-sdk` for SAM/Belgium, `@icure/medindex-sdk` for
+  medINDEX/Switzerland, `@icure/medication-sdk`)
 - **TypeScript**
 - **React Hook Form** for forms
 - **Styled-components** for UI styling
@@ -118,12 +126,18 @@ import { PractitionerCertificate } from '@icure/cardinal-prescription-be-react'
 
 ### 💊`<MedicationSearch />`
 
-Medication search interface using SAM. Triggers an event when a medication is selected for prescription.
+Medication search interface, backed by whichever `MedicationProvider` you pass in — SAM for Belgium or medINDEX
+for Switzerland. Triggers an event when a medication is selected for prescription.
 
 ```jsx
-import { MedicationSearch } from '@icure/cardinal-prescription-be-react'
-;<MedicationSearch sdk={cardinalSdkInstance} deliveryEnvironment="P" onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
+import { MedicationSearch, createMedicationProvider } from '@icure/cardinal-prescription-be-react'
+
+const medicationProvider = createMedicationProvider({ country: 'be', sdk: cardinalSdkInstance, deliveryEnvironment: 'P' })
+;<MedicationSearch medicationProvider={medicationProvider} onAddPrescription={onCreatePrescription} disableInputEventsTracking={isPrescriptionModalOpen} />
 ```
+
+> See [the library's README](packages/cardinal-prescription-be-react/README.md#switzerland-medindex-support) for
+> the `country: 'ch'` (medINDEX) variant and its scope.
 
 ### 📋`<PrescriptionList />`
 
@@ -189,7 +203,7 @@ Set the library’s language (for UI and errors):
 
 ```html
 import { cardinalLanguage } from '@icure/cardinal-prescription-be-react' // Available: 'en', 'fr', 'nl', 'de' cardinalLanguage.setLanguage('fr') const currentLang =
-cardinalLanguage.getCurrentLanguage()
+cardinalLanguage.getLanguage()
 ```
 
 ### 🗝️Certificate management
@@ -295,6 +309,11 @@ yarn start
 ```
 
 > Make sure to set up your .env variables or hardcode your credentials and HCP/Patient data for testing.
+
+The demo app has a **Belgium** tab (certificate + SAM + Recip-e, as documented above) and a **Switzerland** tab
+(medINDEX medication search only, no certificate/auth needed). The Switzerland tab needs a medINDEX server
+reachable at `VITE_MEDINDEX_URL` (defaults to `http://localhost:8080/rest/v2/medindex`) — see
+[`packages/demo-app/README.md`](packages/demo-app/README.md) for the full `.env.local` setup.
 
 ## 🆕 Update & Republish the Library
 
