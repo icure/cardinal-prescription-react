@@ -4898,30 +4898,40 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
       ] }),
       showSpinner && /* @__PURE__ */ jsx38("div", { className: "spinner", children: /* @__PURE__ */ jsx38(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
       pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ jsxs27(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
-        pages.map((entry, i) => /* @__PURE__ */ jsx38("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ jsxs27(Fragment5, { children: [
-          /* @__PURE__ */ jsx38(MedicationProductTitle, { productTitle: entry.product.title }),
-          entry.medications.map((smed, j) => /* @__PURE__ */ jsx38("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ jsx38(
-            MedicationCard,
-            {
-              medication: smed,
-              handleAddPrescription,
-              id: `result-${i}-${j}`,
-              focused: isFocused(i, j),
-              subMedication: true,
-              short
-            }
-          ) }, j))
-        ] }) : /* @__PURE__ */ jsx38("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ jsx38(
-          MedicationCard,
+        pages.map((entry, i) => /* @__PURE__ */ jsx38(
+          "div",
           {
-            medication: entry.medications[0],
-            handleAddPrescription,
-            id: `result-${i}`,
-            focused: isFocused(i, 0),
-            subMedication: false,
-            short
-          }
-        ) }) }, i)),
+            ref: (el) => {
+              resultRefs.current[i] = el;
+            },
+            className: "medOrProdWrap",
+            children: entry.product ? /* @__PURE__ */ jsxs27(Fragment5, { children: [
+              /* @__PURE__ */ jsx38(MedicationProductTitle, { productTitle: entry.product.title }),
+              entry.medications.map((smed, j) => /* @__PURE__ */ jsx38("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ jsx38(
+                MedicationCard,
+                {
+                  medication: smed,
+                  handleAddPrescription,
+                  id: `result-${i}-${j}`,
+                  focused: isFocused(i, j),
+                  subMedication: true,
+                  short
+                }
+              ) }, j))
+            ] }) : /* @__PURE__ */ jsx38("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ jsx38(
+              MedicationCard,
+              {
+                medication: entry.medications[0],
+                handleAddPrescription,
+                id: `result-${i}`,
+                focused: isFocused(i, 0),
+                subMedication: false,
+                short
+              }
+            ) })
+          },
+          i
+        )),
         /* @__PURE__ */ jsx38(
           InfiniteScroll,
           {
@@ -7028,7 +7038,14 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
             "RID ",
             prescriptionIndex + 1
           ] }),
-          /* @__PURE__ */ jsx48("div", { className: "barcode", children: /* @__PURE__ */ jsx48("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
+          /* @__PURE__ */ jsx48("div", { className: "barcode", children: /* @__PURE__ */ jsx48(
+            "svg",
+            {
+              ref: (el) => {
+                ridElements.current[chunkIndex * 4 + prescriptionIndex] = el;
+              }
+            }
+          ) })
         ] })
       ] }, prescriptionIndex))
     ] })

@@ -102,7 +102,11 @@ export const PrescriptionDocumentToPrint: React.FC<Props> = ({ prescribedMedicat
                     <div className="prescription-item__block prescription-item__block--right">
                       <strong className="ridTitle">RID {prescriptionIndex + 1}</strong>
                       <div className="barcode">
-                        <svg ref={(el) => (ridElements.current[chunkIndex * 4 + prescriptionIndex] = el)} />
+                        <svg
+                          ref={(el) => {
+                            ridElements.current[chunkIndex * 4 + prescriptionIndex] = el
+                          }}
+                        />
                       </div>
                     </div>
                   </div>

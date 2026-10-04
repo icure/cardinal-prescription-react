@@ -4960,30 +4960,40 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
       ] }),
       showSpinner && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "spinner", children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
       pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
-        pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { ref: (el) => resultRefs.current[i] = el, className: "medOrProdWrap", children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(import_jsx_runtime38.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
-          entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-            MedicationCard,
-            {
-              medication: smed,
-              handleAddPrescription,
-              id: `result-${i}-${j}`,
-              focused: isFocused(i, j),
-              subMedication: true,
-              short
-            }
-          ) }, j))
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-          MedicationCard,
+        pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+          "div",
           {
-            medication: entry.medications[0],
-            handleAddPrescription,
-            id: `result-${i}`,
-            focused: isFocused(i, 0),
-            subMedication: false,
-            short
-          }
-        ) }) }, i)),
+            ref: (el) => {
+              resultRefs.current[i] = el;
+            },
+            className: "medOrProdWrap",
+            children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(import_jsx_runtime38.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
+              entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+                MedicationCard,
+                {
+                  medication: smed,
+                  handleAddPrescription,
+                  id: `result-${i}-${j}`,
+                  focused: isFocused(i, j),
+                  subMedication: true,
+                  short
+                }
+              ) }, j))
+            ] }) : /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+              MedicationCard,
+              {
+                medication: entry.medications[0],
+                handleAddPrescription,
+                id: `result-${i}`,
+                focused: isFocused(i, 0),
+                subMedication: false,
+                short
+              }
+            ) })
+          },
+          i
+        )),
         /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
           InfiniteScroll,
           {
@@ -7090,7 +7100,14 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
             "RID ",
             prescriptionIndex + 1
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("div", { className: "barcode", children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("svg", { ref: (el) => ridElements.current[chunkIndex * 4 + prescriptionIndex] = el }) })
+          /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("div", { className: "barcode", children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(
+            "svg",
+            {
+              ref: (el) => {
+                ridElements.current[chunkIndex * 4 + prescriptionIndex] = el;
+              }
+            }
+          ) })
         ] })
       ] }, prescriptionIndex))
     ] })

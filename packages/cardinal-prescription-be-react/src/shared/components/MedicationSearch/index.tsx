@@ -211,7 +211,13 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationPr
         {pages.length !== 0 && dropdownDisplayed && (
           <StyledMedicationSearchDropdown className="medicationSearchDropdown">
             {pages.map((entry, i) => (
-              <div key={i} ref={(el) => (resultRefs.current[i] = el)} className="medOrProdWrap">
+              <div
+                key={i}
+                ref={(el) => {
+                  resultRefs.current[i] = el
+                }}
+                className="medOrProdWrap"
+              >
                 {entry.product ? (
                   <>
                     <MedicationProductTitle productTitle={entry.product.title} />

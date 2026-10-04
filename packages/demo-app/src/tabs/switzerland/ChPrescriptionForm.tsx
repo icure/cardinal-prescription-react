@@ -157,7 +157,14 @@ export const ChPrescriptionForm: React.FC<ChPrescriptionFormProps> = ({ medicati
               {posologySuggestions.length !== 0 && (
                 <ul className="suggestionsDropdown" role="listbox" aria-activedescendant={focusedSuggestionIndex >= 0 ? `ch-posology-${focusedSuggestionIndex}` : undefined}>
                   {posologySuggestions.map((posology, index) => (
-                    <li key={index} id={`ch-posology-${index}`} ref={(el) => (suggestionRefs.current[index] = el)} className={focusedSuggestionIndex === index ? 'focused' : ''}>
+                    <li
+                      key={index}
+                      id={`ch-posology-${index}`}
+                      ref={(el) => {
+                        suggestionRefs.current[index] = el
+                      }}
+                      className={focusedSuggestionIndex === index ? 'focused' : ''}
+                    >
                       <button type="button" onClick={() => acceptSuggestion(posology)}>
                         {posology}
                       </button>
