@@ -173,3 +173,13 @@ test.describe('theming', () => {
     expect(font.replace(/"/g, '')).toBe('Host Sans, Georgia, serif')
   })
 })
+
+test.describe('browser storage (MD-04)', () => {
+  for (const component of ['search', 'modal', 'list', 'print'] as const) {
+    test(`importing the library and mounting ${component} creates no IndexedDB database`, async ({ page }) => {
+      await open(page, `mount=${component}`)
+      const databases = await page.evaluate(async () => (await indexedDB.databases()).map((db) => db.name))
+      expect(databases).toEqual([])
+    })
+  }
+})
