@@ -471,6 +471,31 @@ packageName, packageVersion } }, samVersion, // Fetched from SAM SDK hcp, // Hea
 passphrase // Certificate passphrase FHC_URL // Free health connector url ) // result[0]?.rid contains the prescription RID if successful
 ```
 
+#### Send with your own connector credentials
+
+A host that already holds the eHealth connector credentials (its own certificate import and STS token loop) passes them
+instead of the passphrase. The library then reads nothing from its IndexedDB certificate store, requests no token and
+needs no `TokenStore`:
+
+```ts
+import { sendRecipe, verifyCertificateWithSts, MissingStsTokenError, type ConnectorCredentials } from '@icure/cardinal-prescription-be-react'
+
+// Or a function returning them (sync or async), read when the send happens.
+const credentials: ConnectorCredentials = { keystoreId, passphrase, tokenId }
+await verifyCertificateWithSts(hcp, credentials, undefined, FHC_URL) // { status: true } when the connector accepts the token
+const result = await sendRecipe(config, samVersion, hcp, patient, prescribedMedication, credentials, FHC_URL)
+```
+
+A missing token (`tokenId: null`, or the STS answering none on the passphrase path) rejects with `MissingStsTokenError`;
+nothing is sent.
+
+- **Dates**: the prescription's `deliveryDate` is its start (`beginMoment`, today when unset) and its `expirationDate` the
+  "executable until" date (`endMoment`), or 90 days after the start when unset. (Before 0.3.0 the expiration was the
+  start date.)
+- **`TokenStore`**: `get` resolves to `undefined` on a miss (it must not reject); `createIndexedDbTokenStore()` opens its
+  database on first use only.
+- **Console**: no SSIN, passphrase or posology text is written to `console.*`.
+
 ## Switzerland (medINDEX) Support
 
 Switzerland support is **medication search only this phase** — it swaps the medication data source, nothing else.

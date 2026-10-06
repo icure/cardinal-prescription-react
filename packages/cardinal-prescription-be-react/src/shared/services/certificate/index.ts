@@ -23,8 +23,9 @@ export const loadCertificateInformation = async (
       iv: new Uint8Array(record.iv).buffer,
       encryptedCertificate: new Uint8Array(record.encryptedCertificate).buffer,
     }
-  } catch (error) {
-    console.error(`No certificate record found for HCP SSIN ${hcp_ssin}:`, error)
+  } catch {
+    // Never the SSIN nor the error's context in the console (it names the prescriber).
+    console.error('No certificate record found for the prescriber')
     return undefined
   }
 }
@@ -55,8 +56,8 @@ export const loadAndDecryptCertificate = async (hcp_ssin: string, passphrase: st
       decryptionKey,
       new Uint8Array(encryptedCertificate),
     )
-  } catch (error) {
-    console.error(`Decryption failed for HCP SSIN "${hcp_ssin}":`, error)
+  } catch {
+    console.error('Certificate decryption failed for the prescriber')
     return undefined
   }
 }
@@ -90,8 +91,8 @@ export const uploadAndEncryptCertificate = async (hcp_ssin: string, passphrase: 
     }
 
     return await certificateStore().put(hcp_ssin, record)
-  } catch (error) {
-    console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error)
+  } catch {
+    console.error('Certificate encryption failed for the prescriber')
     return undefined
   }
 }
@@ -99,10 +100,9 @@ export const uploadAndEncryptCertificate = async (hcp_ssin: string, passphrase: 
 export const deleteCertificate = async (hcp_ssin: string): Promise<boolean> => {
   try {
     await certificateStore().delete(hcp_ssin)
-    console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`)
     return true
-  } catch (error) {
-    console.error(`Failed to delete certificate with ID ${hcp_ssin}:`, error)
+  } catch {
+    console.error('Failed to delete the prescriber certificate')
     return false
   }
 }

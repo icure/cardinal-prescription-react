@@ -3732,7 +3732,15 @@ var IndexedDbServiceStore = class {
     });
   }
 };
-var createIndexedDbTokenStore = () => new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
+var createIndexedDbTokenStore = () => {
+  let store;
+  const open = () => store ??= new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
+  return {
+    put: (key, value) => open().put(key, value),
+    // A miss (the store rejects) is `undefined`, as the TokenStore contract says.
+    get: (key) => open().get(key).catch(() => void 0)
+  };
+};
 
 // src/shared/services/certificate/index.ts
 var certificateStoreInstance;
@@ -3745,8 +3753,8 @@ var loadCertificateInformation = async (hcp_ssin) => {
       iv: new Uint8Array(record.iv).buffer,
       encryptedCertificate: new Uint8Array(record.encryptedCertificate).buffer
     };
-  } catch (error) {
-    console.error(`No certificate record found for HCP SSIN ${hcp_ssin}:`, error);
+  } catch {
+    console.error("No certificate record found for the prescriber");
     return void 0;
   }
 };
@@ -3772,8 +3780,8 @@ var loadAndDecryptCertificate = async (hcp_ssin, passphrase) => {
       decryptionKey,
       new Uint8Array(encryptedCertificate)
     );
-  } catch (error) {
-    console.error(`Decryption failed for HCP SSIN "${hcp_ssin}":`, error);
+  } catch {
+    console.error("Certificate decryption failed for the prescriber");
     return void 0;
   }
 };
@@ -3802,24 +3810,26 @@ var uploadAndEncryptCertificate = async (hcp_ssin, passphrase, certificate) => {
       encryptedCertificate: Array.from(new Uint8Array(encryptedCertificate))
     };
     return await certificateStore().put(hcp_ssin, record);
-  } catch (error) {
-    console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error);
+  } catch {
+    console.error("Certificate encryption failed for the prescriber");
     return void 0;
   }
 };
 var deleteCertificate = async (hcp_ssin) => {
   try {
     await certificateStore().delete(hcp_ssin);
-    console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`);
     return true;
-  } catch (error) {
-    console.error(`Failed to delete certificate with ID ${hcp_ssin}:`, error);
+  } catch {
+    console.error("Failed to delete the prescriber certificate");
     return false;
   }
 };
 
 // src/shared/services/fhc/index.ts
 import { Code as FhcCode, fhcRecipeApi, fhcStsApi, PrescriptionRequest } from "@icure/be-fhc-lite-api";
+var isCredentials = (value) => typeof value !== "string";
+var resolveCredentials = async (source) => typeof source === "function" ? await source() : source;
+var DEFAULT_VALIDITY_DAYS = 90;
 var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescribedMedication) => new PrescriptionRequest({
   medications: [prescribedMedication.medication],
   patient: {
@@ -3845,7 +3855,9 @@ var makePrescriptionRequest = (config, samVersion, prescriber, patient, prescrib
   visionOthers: prescribedMedication.prescriberVisibility,
   samVersion,
   deliveryDate: prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()),
-  expirationDate: prescribedMedication.medication.beginMoment ?? dateEncode(new Date(+/* @__PURE__ */ new Date() + 1e3 * 3600 * 24 * 90)),
+  // The "executable until" date; it used to be the start date (`beginMoment`), so a prescription
+  // sent from the modal expired the day it started.
+  expirationDate: prescribedMedication.medication.endMoment ?? offsetDate(prescribedMedication.medication.beginMoment ?? dateEncode(/* @__PURE__ */ new Date()), DEFAULT_VALIDITY_DAYS),
   lang: cardinalLanguage.getLanguage()
 });
 var createFhcCode = (type, code, version = "1.0") => new FhcCode({
@@ -3854,25 +3866,19 @@ var createFhcCode = (type, code, version = "1.0") => new FhcCode({
   code,
   version
 });
-var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, passphrase, fhc_url, cache) => {
-  const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication);
-  if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
-  const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
-  if (!keystore) throw new Error("Cannot obtain keystore");
-  const sts = new fhcStsApi(fhc_url, []);
+var MissingStsTokenError = class extends Error {
+  constructor() {
+    super("Cannot obtain an STS token");
+    this.name = "MissingStsTokenError";
+  }
+};
+var createPrescriptions = (fhc_url, prescriber, prescription, keystoreId, tokenId, passphrase) => {
   const recipe = new fhcRecipeApi(fhc_url, []);
-  const storeKey = `keystore.${prescriber.ssin}`;
-  const keystoreUuid = await cache.get(storeKey) ?? await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid: uuid2 }) => {
-    if (!uuid2) throw new Error("Cannot obtain keystore uuid");
-    return cache.put(storeKey, uuid2);
-  });
-  const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor", await cache.get(storeKey));
-  if (!stsToken.tokenId) console.error("Cannot obtain token");
   return Promise.all(
     prescription.medications?.map(
       (m) => recipe.createPrescriptionV4UsingPOST(
-        keystoreUuid,
-        stsToken.tokenId,
+        keystoreId,
+        tokenId,
         passphrase,
         "persphysician",
         prescriber.nihii,
@@ -3885,7 +3891,29 @@ var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedic
     ) ?? []
   );
 };
-var verifyCertificateWithSts = async (prescriber, passphrase, cache, fhc_url) => {
+var sendRecipe = async (config, samVersion, prescriber, patient, prescribedMedication, auth, fhc_url, cache) => {
+  const prescription = makePrescriptionRequest(config, samVersion, prescriber, patient, prescribedMedication);
+  if (!prescriber?.ssin || !prescriber?.nihii) throw new Error("Missing prescriber information");
+  if (isCredentials(auth)) {
+    const credentials = await resolveCredentials(auth);
+    if (!credentials.tokenId) throw new MissingStsTokenError();
+    return createPrescriptions(fhc_url, prescriber, prescription, credentials.keystoreId, credentials.tokenId, credentials.passphrase);
+  }
+  if (!cache) throw new Error("A TokenStore is needed with a passphrase");
+  const passphrase = auth;
+  const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
+  if (!keystore) throw new Error("Cannot obtain keystore");
+  const sts = new fhcStsApi(fhc_url, []);
+  const storeKey = `keystore.${prescriber.ssin}`;
+  const keystoreUuid = await cache.get(storeKey) ?? await sts.uploadKeystoreUsingPOST(keystore).then(({ uuid: uuid2 }) => {
+    if (!uuid2) throw new Error("Cannot obtain keystore uuid");
+    return cache.put(storeKey, uuid2);
+  });
+  const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor");
+  if (!stsToken.tokenId) throw new MissingStsTokenError();
+  return createPrescriptions(fhc_url, prescriber, prescription, keystoreUuid, stsToken.tokenId, passphrase);
+};
+var verifyCertificateWithSts = async (prescriber, auth, cache, fhc_url) => {
   if (!prescriber?.ssin || !prescriber?.nihii) {
     return {
       status: false,
@@ -3898,6 +3926,12 @@ var verifyCertificateWithSts = async (prescriber, passphrase, cache, fhc_url) =>
     };
   }
   try {
+    if (isCredentials(auth)) {
+      const credentials = await resolveCredentials(auth);
+      return { status: !!credentials.tokenId && await new fhcStsApi(fhc_url, []).checkTokenValidUsingGET(credentials.tokenId) };
+    }
+    if (!cache) throw new Error("A TokenStore is needed with a passphrase");
+    const passphrase = auth;
     const keystore = await loadAndDecryptCertificate(prescriber.ssin, passphrase);
     if (!keystore) {
       return {
@@ -3916,10 +3950,10 @@ var verifyCertificateWithSts = async (prescriber, passphrase, cache, fhc_url) =>
       if (!uuid2) throw new Error("Cannot obtain keystore uuid");
       return cache.put(storeKey, uuid2);
     });
-    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor", await cache.get(storeKey));
+    const stsToken = await sts.requestTokenUsingGET(passphrase, prescriber.ssin, keystoreUuid, "doctor");
     return { status: !!stsToken.tokenId };
   } catch (error) {
-    console.error("Certificate verification error:", error);
+    console.error("Certificate verification error:", error?.message ?? "unknown");
     return {
       status: false,
       error: {
@@ -6059,7 +6093,7 @@ var createRegimenItemsFromDosage = (dosage) => {
       }
     });
   } catch (e) {
-    console.error("Error parsing dosage:", dosage, e);
+    console.error("Error parsing dosage:", e instanceof Error ? e.name : "unknown");
     return void 0;
   }
 };
@@ -7453,6 +7487,7 @@ export {
   MedicationProviderUnavailableError,
   MedicationSearch,
   MedicationSearchValidationError,
+  MissingStsTokenError,
   PractitionerCertificate,
   PrescriptionList,
   PrescriptionModal,

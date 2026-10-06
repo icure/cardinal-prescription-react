@@ -82,4 +82,16 @@ export class IndexedDbServiceStore<T> {
  * FHC keystore uuid / STS token between certificate validation and prescription
  * sending. Provided so consumers don't have to wire up their own store.
  */
-export const createIndexedDbTokenStore = (): TokenStore => new IndexedDbServiceStore<string>(TOKEN_IDB_CONFIG)
+export const createIndexedDbTokenStore = (): TokenStore => {
+  // Opened on first use: creating the store opens no database.
+  let store: IndexedDbServiceStore<string> | undefined
+  const open = () => (store ??= new IndexedDbServiceStore<string>(TOKEN_IDB_CONFIG))
+  return {
+    put: (key, value) => open().put(key, value),
+    // A miss (the store rejects) is `undefined`, as the TokenStore contract says.
+    get: (key) =>
+      open()
+        .get(key)
+        .catch(() => undefined),
+  }
+}

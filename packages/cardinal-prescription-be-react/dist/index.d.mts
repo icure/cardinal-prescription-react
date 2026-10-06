@@ -162,9 +162,13 @@ interface CertificateRecordType {
     encryptedCertificate: number[];
 }
 
+/**
+ * Where the library caches the connector's keystore uuid between certificate validation and the
+ * Recip-e send. A miss resolves to `undefined` (it must not reject: a cold cache uploads instead).
+ */
 interface TokenStore {
     put: (key: string, value: string) => Promise<string>;
-    get: (key: string) => Promise<string>;
+    get: (key: string) => Promise<string | undefined>;
 }
 
 /** What a posology editor edits: the structured FHC regimen and its human-readable text. */
@@ -347,9 +351,35 @@ interface FhcServiceConfig {
     vendor: VendorType;
     samPackage: SamPackageType;
 }
+/**
+ * The eHealth connector credentials a host already holds (its own certificate import and STS token
+ * loop): the keystore id the connector returned on upload, the certificate passphrase and the SAML
+ * token id. Passed to {@link sendRecipe} / {@link verifyCertificateWithSts} instead of a passphrase,
+ * the library neither reads its own IndexedDB certificate store nor requests a token.
+ */
+interface ConnectorCredentials {
+    keystoreId: string;
+    passphrase: string;
+    tokenId: string | null;
+}
+/** The credentials, or a function giving them when the send happens (so a token renewed meanwhile is used). */
+type ConnectorCredentialsSource = ConnectorCredentials | (() => ConnectorCredentials | Promise<ConnectorCredentials>);
 declare const createFhcCode: (type: string, code: string, version?: string) => Code;
-declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, passphrase: string, fhc_url: string, cache: TokenStore) => Promise<Prescription[]>;
-declare const verifyCertificateWithSts: (prescriber: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string) => Promise<CertificateValidationResultType>;
+declare class MissingStsTokenError extends Error {
+    constructor();
+}
+/**
+ * Sends the prescription to Recip-e. `auth` is either the certificate passphrase (the library then
+ * decrypts the certificate it stored, uploads it once per `cache` and requests a token), or the
+ * host's {@link ConnectorCredentials} (nothing is read from or written to browser storage, and
+ * `cache` is unused). A missing STS token fails the send.
+ */
+declare const sendRecipe: (config: FhcServiceConfig, samVersion: string, prescriber: HealthcareParty, patient: Patient, prescribedMedication: PrescribedMedicationType, auth: string | ConnectorCredentialsSource, fhc_url: string, cache?: TokenStore) => Promise<Prescription[]>;
+/**
+ * Checks the prescriber can obtain an STS token. With the host's {@link ConnectorCredentials}, the
+ * connector checks the token the host holds (no browser storage involved, `cache` unused).
+ */
+declare const verifyCertificateWithSts: (prescriber: HealthcareParty, auth: string | ConnectorCredentialsSource, cache: TokenStore | undefined, fhc_url: string) => Promise<CertificateValidationResultType>;
 declare const validateDecryptedCertificate: (hcp: HealthcareParty, passphrase: string, cache: TokenStore, fhc_url: string) => Promise<CertificateValidationResultType>;
 
 declare class IndexedDbServiceStore<T> {
@@ -511,4 +541,4 @@ interface MedicationCardProps {
 }
 declare const MedicationCard: React.FC<MedicationCardProps>;
 
-export { type BeRegulatoryFields, Button, type ButtonViewType, type CertificateRecordType, type CertificateValidationResultType, type ChCompositionLineType, type ChInteractionType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, HOST_SLOT_ATTRIBUTE, IndexedDbServiceStore, LIBRARY_ROOT_CLASS, type Med, MedIndexMedicationProvider, MedicationCard, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, type PosologyEditorComponent, type PosologyEditorContext, type PosologyEditorProps, type PosologyEditorValue, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, THEME_PREFIX, type ThemeTokenDefinition, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, themeTokens, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, Button, type ButtonViewType, type CertificateRecordType, type CertificateValidationResultType, type ChCompositionLineType, type ChInteractionType, type ChPriceType, type ChRegulatoryFields, type ConnectorCredentials, type ConnectorCredentialsSource, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, HOST_SLOT_ATTRIBUTE, IndexedDbServiceStore, LIBRARY_ROOT_CLASS, type Med, MedIndexMedicationProvider, MedicationCard, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, MissingStsTokenError, type PharmacistVisibilityType, type PosologyEditorComponent, type PosologyEditorContext, type PosologyEditorProps, type PosologyEditorValue, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, THEME_PREFIX, type ThemeTokenDefinition, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, themeTokens, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

@@ -127,7 +127,8 @@ const createRegimenItemsFromDosage = (dosage: string | undefined): RegimenItem[]
           }
         })
   } catch (e) {
-    console.error('Error parsing dosage:', dosage, e)
+    // Never the posology text in the console (patient data).
+    console.error('Error parsing dosage:', e instanceof Error ? e.name : 'unknown')
     return undefined
   }
 }
