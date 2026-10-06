@@ -2,7 +2,9 @@ import { IndexedDbServiceStore } from '../indexed-db'
 import { CertificateRecordType } from '../../types'
 import { CERTIFICATE_IDB_CONFIG } from '../../../internal/services/constants'
 
-const certificateStore = new IndexedDbServiceStore<CertificateRecordType>(CERTIFICATE_IDB_CONFIG)
+// Opened lazily: importing the library must not create an IndexedDB database (nor fail where IndexedDB is absent).
+let certificateStoreInstance: IndexedDbServiceStore<CertificateRecordType> | undefined
+const certificateStore = (): IndexedDbServiceStore<CertificateRecordType> => (certificateStoreInstance ??= new IndexedDbServiceStore<CertificateRecordType>(CERTIFICATE_IDB_CONFIG))
 
 export const loadCertificateInformation = async (
   hcp_ssin: string,
@@ -15,7 +17,7 @@ export const loadCertificateInformation = async (
   | undefined
 > => {
   try {
-    const record = await certificateStore.get(hcp_ssin)
+    const record = await certificateStore().get(hcp_ssin)
     return {
       salt: new Uint8Array(record.salt).buffer,
       iv: new Uint8Array(record.iv).buffer,
@@ -87,7 +89,7 @@ export const uploadAndEncryptCertificate = async (hcp_ssin: string, passphrase: 
       encryptedCertificate: Array.from(new Uint8Array(encryptedCertificate)),
     }
 
-    return await certificateStore.put(hcp_ssin, record)
+    return await certificateStore().put(hcp_ssin, record)
   } catch (error) {
     console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error)
     return undefined
@@ -96,7 +98,7 @@ export const uploadAndEncryptCertificate = async (hcp_ssin: string, passphrase: 
 
 export const deleteCertificate = async (hcp_ssin: string): Promise<boolean> => {
   try {
-    await certificateStore.delete(hcp_ssin)
+    await certificateStore().delete(hcp_ssin)
     console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`)
     return true
   } catch (error) {

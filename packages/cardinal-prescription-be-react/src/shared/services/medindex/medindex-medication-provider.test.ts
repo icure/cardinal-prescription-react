@@ -248,9 +248,7 @@ describe('MedIndexMedicationProvider unified search lanes', () => {
     }
 
     const medication = (results[0] as MedicationProductType).medications[0]
-    expect(medication.regulatory?.ch?.interactions).toEqual([
-      { id: 'ix:42', relevance: '3', title: 'Benzodiazépines - Alcool', effect: 'Sédation renforcée', measures: undefined },
-    ])
+    expect(medication.regulatory?.ch?.interactions).toEqual([{ id: 'ix:42', relevance: '3', title: 'Benzodiazépines - Alcool', effect: 'Sédation renforcée', measures: undefined }])
     expect(fetchMock.mock.calls.filter(([url]) => (url as URL).pathname.endsWith('/interaction/byIds'))).toHaveLength(1)
   })
 
