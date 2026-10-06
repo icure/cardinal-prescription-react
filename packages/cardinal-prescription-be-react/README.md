@@ -561,6 +561,23 @@ https://github.com/icure/cardinal-prescription-react/tree/main/packages/demo-app
 
 > Make sure to set up your .env variables or hardcode your credentials and HCP/Patient data for testing.
 
+## 🆕 0.2.0 — theming, accessibility, posology editor slot
+
+- **No global reset** — the components no longer inject a page-wide `createGlobalStyle`; the reset is scoped to the
+  library's own roots. Hosts that relied on the library's global reset (Lato 16 px on `body`, no list bullets, no focus
+  outline on the whole page) now keep their own page styles.
+- **Theming** — every value reads a `--cp-*` custom property (see [Theming](#theming)); opt-in dark mode with
+  `data-cp-theme="dark" | "auto"`; 44 px controls on touch screens.
+- **Accessibility (WCAG 2.2 AA, axe)** — named close, edit, delete and expand buttons; the modal is a labelled
+  `dialog`; the posology field is an ARIA combobox with a `listbox` of `option`s (no more `role="listbox"` on the form
+  body); the extra-fields switch is labelled; radios are keyboard-focusable; required asterisks are hidden from
+  screen readers; field errors are linked with `aria-describedby`; text and badge colours meet 4.5:1 (some default
+  colours changed slightly, e.g. links `#2a6fa8`, badges, price, error red `#c40000`).
+- **`posologyEditor` slot** on `PrescriptionModal` — see [Custom posology editor](#custom-posology-editor-posologyeditor).
+- **Dependencies** — `@icure/be-fhc-lite-api` is now a range (`^0.6.16`), `@icure/medication-sdk` `^0.0.25`,
+  `styled-components` `^6.5.3`, `uuid` `^11.1.1`. Importing the library no longer opens the `certificate-store`
+  IndexedDB database (it is opened on first use).
+
 ## 📦 Module format & requirements
 
 This library ships ESM and CJS builds and depends on `@icure/cardinal-be-sam-sdk`,

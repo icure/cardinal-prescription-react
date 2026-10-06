@@ -30,7 +30,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   Button: () => Button,
+  HOST_SLOT_ATTRIBUTE: () => HOST_SLOT_ATTRIBUTE,
   IndexedDbServiceStore: () => IndexedDbServiceStore,
+  LIBRARY_ROOT_CLASS: () => LIBRARY_ROOT_CLASS,
   MedIndexMedicationProvider: () => MedIndexMedicationProvider,
   MedicationCard: () => MedicationCard,
   MedicationNotFoundError: () => MedicationNotFoundError,
@@ -43,6 +45,7 @@ __export(index_exports, {
   PrescriptionModal: () => PrescriptionModal,
   PrescriptionPrintModal: () => PrescriptionPrintModal,
   SamMedicationProvider: () => SamMedicationProvider,
+  THEME_PREFIX: () => THEME_PREFIX,
   cardinalLanguage: () => cardinalLanguage,
   createFhcCode: () => createFhcCode,
   createIndexedDbTokenStore: () => createIndexedDbTokenStore,
@@ -59,6 +62,7 @@ __export(index_exports, {
   registerRegulatoryBadge: () => registerRegulatoryBadge,
   sendRecipe: () => sendRecipe,
   t: () => t,
+  themeTokens: () => themeTokens,
   uploadAndEncryptCertificate: () => uploadAndEncryptCertificate,
   validateDecryptedCertificate: () => validateDecryptedCertificate,
   verifyCertificateWithSts: () => verifyCertificateWithSts
@@ -99,6 +103,7 @@ var homeTranslations = {
 var prescriptionTranslations = {
   fr: {
     createTitle: "Cr\xE9er la prescription",
+    closeDialog: "Fermer la fen\xEAtre",
     modifyTitle: "Modifier la prescription",
     pdf: {
       title: "PREUVE DE PRESCRIPTION ELECTRONIQUE",
@@ -121,7 +126,9 @@ var prescriptionTranslations = {
       pendingTitle: "Ordonnances en attente:",
       print: "Imprimer",
       send: "Envoyer",
-      sendAndPrint: "Envoyer et imprimer"
+      sendAndPrint: "Envoyer et imprimer",
+      modify: "Modifier",
+      delete: "Supprimer"
     },
     form: {
       medicationTitle: "Nom du groupe DCI",
@@ -145,11 +152,13 @@ var prescriptionTranslations = {
       submit: "Soumettre",
       fieldRequired: "Ce champ est requis",
       fieldInvalid: "Champ invalide",
-      instructionLabelNone: "Aucun"
+      instructionLabelNone: "Aucun",
+      posologySuggestions: "Suggestions de posologie"
     }
   },
   en: {
     createTitle: "Create prescription",
+    closeDialog: "Close dialog",
     modifyTitle: "Modify prescription",
     pdf: {
       title: "PROOF OF ELECTRONIC PRESCRIPTION",
@@ -172,7 +181,9 @@ var prescriptionTranslations = {
       pendingTitle: "Pending prescriptions:",
       print: "Print",
       send: "Send",
-      sendAndPrint: "Send and print"
+      sendAndPrint: "Send and print",
+      modify: "Edit",
+      delete: "Delete"
     },
     form: {
       medicationTitle: "DCI group name",
@@ -196,11 +207,13 @@ var prescriptionTranslations = {
       submit: "Submit",
       fieldRequired: "This field is required",
       fieldInvalid: "Invalid field",
-      instructionLabelNone: "None"
+      instructionLabelNone: "None",
+      posologySuggestions: "Posology suggestions"
     }
   },
   nl: {
     createTitle: "Voorschrift aanmaken",
+    closeDialog: "Venster sluiten",
     modifyTitle: "Voorschrift bewerken",
     pdf: {
       title: "BEWIJS VAN ELEKTRONISCH VOORSCHRIFT",
@@ -223,7 +236,9 @@ var prescriptionTranslations = {
       pendingTitle: "Voorschriften in afwachting:",
       print: "Afdrukken",
       send: "Verzenden",
-      sendAndPrint: "Verzenden en afdrukken"
+      sendAndPrint: "Verzenden en afdrukken",
+      modify: "Wijzigen",
+      delete: "Verwijderen"
     },
     form: {
       medicationTitle: "Naam van DCI-groep",
@@ -247,11 +262,13 @@ var prescriptionTranslations = {
       submit: "Indienen",
       fieldRequired: "Dit veld is verplicht",
       fieldInvalid: "Ongeldig veld",
-      instructionLabelNone: "Geen"
+      instructionLabelNone: "Geen",
+      posologySuggestions: "Doseringsvoorstellen"
     }
   },
   de: {
     createTitle: "Rezept erstellen",
+    closeDialog: "Fenster schlie\xDFen",
     modifyTitle: "Rezept bearbeiten",
     pdf: {
       title: "NACHWEIS DES ELEKTRONISCHEN REZEPTS",
@@ -274,7 +291,9 @@ var prescriptionTranslations = {
       pendingTitle: "Ausstehende Rezepte:",
       print: "Drucken",
       send: "Senden",
-      sendAndPrint: "Senden und drucken"
+      sendAndPrint: "Senden und drucken",
+      modify: "Bearbeiten",
+      delete: "L\xF6schen"
     },
     form: {
       medicationTitle: "Name der DCI-Gruppe",
@@ -298,7 +317,8 @@ var prescriptionTranslations = {
       submit: "Absenden",
       fieldRequired: "Dieses Feld ist erforderlich",
       fieldInvalid: "Ung\xFCltiges Feld",
-      instructionLabelNone: "Keine"
+      instructionLabelNone: "Keine",
+      posologySuggestions: "Dosierungsvorschl\xE4ge"
     }
   }
 };
@@ -389,6 +409,7 @@ var medicationTranslations = {
       dhpc: "Communication directe aux professionnels de sant\xE9 (DHPC)"
     },
     ui: {
+      showDetails: "Afficher les d\xE9tails",
       price: "Prix :"
     },
     search: {
@@ -500,6 +521,7 @@ var medicationTranslations = {
       dhpc: "Direct Healthcare Professional Communication (DHPC)"
     },
     ui: {
+      showDetails: "Show details",
       price: "Price:"
     },
     search: {
@@ -611,6 +633,7 @@ var medicationTranslations = {
       dhpc: "Rechtstreekse communicatie naar zorgverleners (DHPC)"
     },
     ui: {
+      showDetails: "Details tonen",
       price: "Prijs:"
     },
     search: {
@@ -722,6 +745,7 @@ var medicationTranslations = {
       dhpc: "Direkte Kommunikation an medizinisches Fachpersonal (DHPC)"
     },
     ui: {
+      showDetails: "Details anzeigen",
       price: "Preis :"
     },
     search: {
@@ -1206,208 +1230,232 @@ var getSamTextTranslation = (samText) => {
 // src/internal/components/medication-elements/MedicationCard/medication-card-elements/Header/styles.ts
 var import_styled_components4 = __toESM(require("styled-components"));
 
-// src/styles/reset.ts
+// src/styles/theme.ts
 var import_styled_components = require("styled-components");
-var GlobalStyles = import_styled_components.createGlobalStyle`
-  /* Reset of the user agent styles */
+var THEME_PREFIX = "--cp-";
+var DARK_PREFIX = "--cp-dark-";
+var definitions = {
+  // Typography
+  fontFamily: { name: "font-family", light: "'Lato', sans-serif", description: "Font of every library text." },
+  fontFamilyControl: { name: "font-family-control", light: "'Inter Variable', sans-serif", description: "Font of text inputs, selects and the posology suggestions." },
+  fontSizeRoot: { name: "font-size-root", light: "16px", description: "Base font size of each library root." },
+  fontSize2xs: { name: "font-size-2xs", light: "11px", description: "Badges." },
+  fontSizeXs: { name: "font-size-xs", light: "12px", description: 'Field captions, RID badge, "more" links.' },
+  fontSizeSm: { name: "font-size-sm", light: "13px", description: "Error messages, cheap alternatives, standard dosages, composition." },
+  fontSizeMd: { name: "font-size-md", light: "14px", description: "Body text, labels, inputs, buttons." },
+  fontSizeLg: { name: "font-size-lg", light: "16px", description: "Card and modal titles." },
+  fontSizeXl: { name: "font-size-xl", light: "18px", description: "Printed prescription title." },
+  // Sizes
+  controlHeight: { name: "control-height", light: "32px", description: "Height of buttons under a fine pointer (mouse)." },
+  inputHeight: { name: "input-height", light: "32px", ref: "control-height", description: "Height of text inputs and selects under a fine pointer." },
+  targetSizeMin: { name: "target-size-min", light: "24px", description: "Minimum size of small controls (close buttons, radios, icon buttons) under a fine pointer (WCAG 2.5.8)." },
+  targetSizeCoarse: { name: "target-size-coarse", light: "44px", description: "Size of every control on a touch screen or whenever the pointer is not a fine, hovering one." },
+  radiusXs: { name: "radius-xs", light: "4px", description: "Suggestion items, close buttons, RID badge." },
+  radiusSm: { name: "radius-sm", light: "5px", description: "Regulatory badges." },
+  radiusMd: { name: "radius-md", light: "6px", description: "Inputs, buttons, medication and prescription cards." },
+  radiusLg: { name: "radius-lg", light: "8px", description: "Prescription list and printed document." },
+  radiusXl: { name: "radius-xl", light: "12px", description: "Modal sections, alerts, certificate form." },
+  radiusPill: { name: "radius-pill", light: "999px", description: "Toggle switch and cheap badges." },
+  // Surfaces
+  colorSurface: { name: "color-surface", light: "#ffffff", dark: "#1b1f27", description: "Cards, modal header and footer, inputs, popups." },
+  colorSurfaceSunken: { name: "color-surface-sunken", light: "#f9fbfe", dark: "#12151b", description: "Modal body, expanded card, prescription rows." },
+  colorSurfaceAccent: { name: "color-surface-accent", light: "#eef6fe", dark: "#1d2a3a", description: "Search results panel, focused suggestion." },
+  colorSurfaceAccentSubtle: {
+    name: "color-surface-accent-subtle",
+    light: "#f2f8fd",
+    dark: "#18212d",
+    description: "Collapsible panel headers (cheap alternatives, standard dosages) and their hovered items."
+  },
+  colorSurfaceDisabled: { name: "color-surface-disabled", light: "#f5f5f5", dark: "#2a2f38", description: "Disabled inputs and buttons." },
+  colorOverlay: { name: "color-overlay", light: "rgba(8, 75, 131, 0.3)", dark: "rgba(0, 0, 0, 0.6)", description: "Backdrop behind the modals." },
+  colorPaper: { name: "color-paper", light: "#ffffff", description: "Printed prescription background (stays white in dark mode)." },
+  colorPaperText: { name: "color-paper-text", light: "#000000", description: "Printed prescription text." },
+  // Text
+  colorText: { name: "color-text", light: "#1d2235", dark: "#e6e9ef", description: "Default text, titles, labels." },
+  colorTextStrong: { name: "color-text-strong", light: "#000000", dark: "#ffffff", description: "Field values in the medication card." },
+  colorTextMuted: { name: "color-text-muted", light: "#4b6682", dark: "#a9b8c9", description: "Field captions in the medication card." },
+  colorTextSubtle: {
+    name: "color-text-subtle",
+    light: "#6b6b69",
+    dark: "#a0a4ab",
+    description: "Secondary text: empty results, excipients, extra-fields preview, disabled buttons."
+  },
+  colorPlaceholder: { name: "color-placeholder", light: "#687583", dark: "#8b95a1", description: "Input placeholders." },
+  colorLink: { name: "color-link", light: "#2a6fa8", dark: "#8cc3f2", description: "Links and accent text (panel headers)." },
+  colorPrice: { name: "color-price", light: "#b5470f", dark: "#ffa36b", description: "Price in the medication card." },
+  // Borders and accents
+  colorBorder: { name: "color-border", light: "#e4e4e7", dark: "#343a45", description: "Section and list borders, dividers." },
+  colorBorderStrong: { name: "color-border-strong", light: "#cad0d5", dark: "#4b5360", description: "Input and secondary button borders." },
+  colorBorderAccent: { name: "color-border-accent", light: "#dce7f2", dark: "#2c3a4b", description: "Medication and prescription card borders, collapsible panels." },
+  colorBorderControl: { name: "color-border-control", light: "#848482", dark: "#8b95a1", description: "Radio button ring." },
+  colorPrimary: { name: "color-primary", light: "#084b83", dark: "#7ab6ea", description: "Primary actions, checked controls, focused borders." },
+  colorOnPrimary: { name: "color-on-primary", light: "#ffffff", dark: "#0b1a2b", description: "Text on the primary colour." },
+  colorAccent: { name: "color-accent", light: "#3d87c5", dark: "#6fa8dc", description: "Hovered and focused cards, tooltip border, dividers in the expanded card." },
+  colorAccentSoft: { name: "color-accent-soft", light: "#add5ff", dark: "#2c4a6b", description: "Outlined regulatory badges, composition title." },
+  colorFocusHalo: {
+    name: "color-focus-halo",
+    light: "rgba(61, 135, 197, 0.2)",
+    dark: "rgba(111, 168, 220, 0.35)",
+    description: "Halo around focused or hovered inputs and controls."
+  },
+  colorHoverHalo: { name: "color-hover-halo", light: "rgba(61, 135, 197, 0.3)", dark: "rgba(111, 168, 220, 0.35)", description: "Halo around hovered or focused cards." },
+  colorFocusRing: { name: "color-focus-ring", light: "#3d87c5", dark: "#8cc3f2", description: "Keyboard focus outline (`:focus-visible`)." },
+  // States
+  colorCritical: { name: "color-critical", light: "#c40000", dark: "#ff7b72", description: "Errors: messages, invalid borders, required asterisk, delete hover." },
+  colorCriticalSurface: { name: "color-critical-surface", light: "#fff1f0", dark: "#3a1d1f", description: "Error alert background." },
+  colorCriticalSoft: { name: "color-critical-soft", light: "#ffccc7", dark: "#5a2a2d", description: "Error alert border, critical regulatory badges and titles." },
+  colorCaution: { name: "color-caution", light: "#a35f00", description: "Caution badges (interactions, delivery conditions) and the interactions title, under white text." },
+  colorCautionSoft: { name: "color-caution-soft", light: "#ffda83", dark: "#4d3d14", description: "Caution regulatory badges and titles." },
+  colorOk: { name: "color-ok", light: "#1e7e46", description: "Reimbursement badge, cheapest badge, under white text." },
+  colorOkStrong: { name: "color-ok-strong", light: "#237804", description: "Cheap badge, prescription RID badge, under white text." },
+  colorOkSurface: { name: "color-ok-surface", light: "#f6ffed", dark: "#1b2e1b", description: "Success alert background." },
+  colorOkSurfaceAlt: { name: "color-ok-surface-alt", light: "#e5fae5", dark: "#183222", description: "Sent prescription row." },
+  colorOkSoft: { name: "color-ok-soft", light: "#b7eb8f", dark: "#2f5a2f", description: "Success alert border, ok regulatory badges and titles." },
+  colorOkBorder: { name: "color-ok-border", light: "#008000", dark: "#3fb873", description: "Sent prescription row border." },
+  colorNeutral: { name: "color-neutral", light: "#5f6360", description: "Neutral badges (cold chain, not reimbursed), under white text." },
+  colorCriticalStrong: { name: "color-critical-strong", light: "#c40000", description: "Critical badges (prescription conditions), under white text." },
+  colorOnBadge: { name: "color-on-badge", light: "#ffffff", description: "Text on the critical, caution, ok and neutral badges." },
+  shadowPopup: {
+    name: "shadow-popup",
+    light: "0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12)",
+    dark: "0 9px 28px 0 rgba(0, 0, 0, 0.4), 0 6px 16px 0 rgba(0, 0, 0, 0.5), 0 3px 6px 0 rgba(0, 0, 0, 0.6)",
+    description: "Shadow of the posology suggestions and the search results panel."
+  },
+  shadowSection: { name: "shadow-section", light: "0 1px 1px 0 rgba(218, 218, 222, 0.25)", dark: "none", description: "Shadow of the extra-fields preview." },
+  // Buttons
+  buttonPrimaryBackground: { name: "button-primary-background", light: "#084b83", ref: "color-primary", description: "Primary button background and border." },
+  buttonPrimaryText: { name: "button-primary-text", light: "#ffffff", ref: "color-on-primary", description: "Primary button text." },
+  buttonSecondaryBackground: { name: "button-secondary-background", light: "#fcfcfd", dark: "#1b1f27", description: "Outlined button background." },
+  buttonSecondaryText: { name: "button-secondary-text", light: "#084b83", ref: "color-primary", description: "Outlined button text." },
+  buttonSecondaryBorder: { name: "button-secondary-border", light: "#cad0d5", ref: "color-border-strong", description: "Outlined button border." },
+  buttonRadius: { name: "button-radius", light: "6px", ref: "radius-md", description: "Button corner radius." },
+  // Icons
+  iconInfo: { name: "icon-info", light: "#3d87c5", dark: "#6fa8dc", description: "Information icons, chevrons, spinner of the search." },
+  iconCritical: { name: "icon-critical", light: "#ee1313", dark: "#ff6b63", description: "End of commercialisation, narcotic." },
+  iconCaution: { name: "icon-caution", light: "#ff5e00", dark: "#ff8a3d", description: "Supply problems, orange triangle." },
+  iconCautionAlt: { name: "icon-caution-alt", light: "#efac2f", description: "Composition (molecule)." },
+  iconOk: { name: "icon-ok", light: "#09853d", dark: "#3fb873", description: "Start of commercialisation." },
+  iconOkAlt: { name: "icon-ok-alt", light: "#197437", dark: "#3fb873", description: "Generic group (leaf)." },
+  iconSuccess: { name: "icon-success", light: "#52c41a", description: "Success alert." },
+  iconError: { name: "icon-error", light: "#ff4d4f", description: "Error alert." },
+  iconNeutral: { name: "icon-neutral", light: "#000000", dark: "#e6e9ef", description: "Black triangle, pill bottle, prescription icon, default spinner." },
+  iconMuted: { name: "icon-muted", light: "#9ca8b2", dark: "#8b95a1", description: "Search magnifier." },
+  iconClose: { name: "icon-close", light: "#4b6682", dark: "#a9b8c9", description: "Close cross of the modals." },
+  iconAction: { name: "icon-action", light: "#383a3c", dark: "#c9ced6", description: "Edit and delete icons of the prescription rows." }
+};
+var byName = new Map(Object.values(definitions).map((d) => [d.name, d]));
+var expression = (definition) => {
+  const referenced = "ref" in definition && definition.ref ? byName.get(definition.ref) : void 0;
+  const fallback = referenced ? expression(referenced) : "dark" in definition && definition.dark ? `var(${DARK_PREFIX}${definition.name}, ${definition.light})` : definition.light;
+  return `var(${THEME_PREFIX}${definition.name}, ${fallback})`;
+};
+var themeTokens = Object.values(definitions);
+var cp = Object.fromEntries(Object.entries(definitions).map(([key, definition]) => [key, expression(definition)]));
+var translucent = (color, percent) => `color-mix(in srgb, ${color} ${percent}%, transparent)`;
+var finePointer = "@media (hover: hover) and (pointer: fine)";
+var targetSize = (property, fineValue = cp.targetSizeMin) => import_styled_components.css`
+  ${property}: ${cp.targetSizeCoarse};
 
-  * {
+  ${finePointer} {
+    ${property}: ${fineValue};
+  }
+`;
+var darkDeclarations = themeTokens.filter((definition) => definition.dark).map((definition) => `${DARK_PREFIX}${definition.name}: ${definition.dark};`).join("\n");
+var darkModeDefaults = import_styled_components.css`
+  &[data-cp-theme='dark'],
+  [data-cp-theme='dark'] & {
+    ${darkDeclarations}
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &[data-cp-theme='auto'],
+    [data-cp-theme='auto'] & {
+      ${darkDeclarations}
+      color-scheme: dark;
+    }
+  }
+`;
+var HOST_SLOT_ATTRIBUTE = "data-cp-slot";
+var own = `:where(:not([${HOST_SLOT_ATTRIBUTE}], [${HOST_SLOT_ATTRIBUTE}] *))`;
+var elements = (...tags) => tags.map((tag) => `:where(&) ${tag}${own}`).join(", ");
+var scopedReset = import_styled_components.css`
+  :where(&) :where(*)${own}, :where(&) :where(*)${own}::before, :where(&) :where(*)${own}::after {
+    box-sizing: border-box;
+  }
+
+  :where(&) :where(*)${own} {
     margin: 0;
     padding: 0;
     font-size: 100%;
-    box-sizing: border-box;
-  }
-  
-  // Links
-  a {
-    text-decoration: none;
-
-    &:active,
-    &:hover {
-      outline: 0;
-    }
   }
 
-  // List
-  ul,
-  li {
+  ${elements("ul", "ol", "li")} {
     list-style-type: none;
     margin: 0;
     padding: 0;
   }
 
-  // Headlines
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  ${elements("h1", "h2", "h3", "h4", "h5", "h6", "p")} {
+    margin: 0;
     font-size: 100%;
   }
 
-  // Default
-  html,
-  body {
-    box-sizing: border-box;
-    font-size: 16px;
-    background-color: #fbfdff;
-    font-family: 'Lato', sans-serif;
+  ${elements("a")} {
+    text-decoration: none;
   }
 
-  *,
-  *:before,
-  *:after {
-    box-sizing: border-box;
-  }
-
-  :focus {
-    outline: 0;
-  }
-
-  img,
-  audio,
-  video {
+  ${elements("img", "audio", "video")} {
     max-width: 100%;
     height: auto;
   }
 
-  iframe {
-    border: 0;
-  }
-
-  // Form
-  textarea {
-    resize: none;
-    /*remove the resize handle on the bottom right*/
-    overflow: auto;
-    vertical-align: top;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-  }
-
-  input,
-  textarea,
-  select,
-  button {
-    outline: none;
+  ${elements("input", "textarea", "select", "button")} {
     border: none;
+    font-family: inherit;
     font-size: 100%;
+    color: inherit;
     margin: 0;
   }
 
-  button,
-  input {
+  ${elements("button", "input")} {
     line-height: normal;
   }
 
-  // browser user agent input reset
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  select:-webkit-autofill:focus {
-    -webkit-text-fill-color: rgb(0, 0, 0);
-    transition: background-color 5000s ease-in-out 0s;
+  ${elements("textarea")} {
+    resize: none;
+    overflow: auto;
+    vertical-align: top;
   }
 
-  // Table
-  table {
+  ${elements("table")} {
     border-collapse: collapse;
     border-spacing: 0;
   }
 
-  td,
-  th {
+  ${elements("td", "th")} {
     padding: 0;
     text-align: left;
   }
-`;
 
-// src/styles/variables.ts
-var colors = {
-  blue: {
-    800: "#084b83",
-    600: "#4b6682",
-    500: "#3d87c5",
-    400: "#add5ff",
-    300: "#eef6fe",
-    200: "#f9fbfe",
-    100: "#dce7f2"
-  },
-  grey: {
-    900: "#1d2235",
-    700: "#7e827f",
-    650: "#9ca8b2",
-    600: "#848482",
-    550: "#cad0d5",
-    300: "#e4e4e7",
-    200: "#f5f5f5",
-    100: "#fcfcfd"
-  },
-  orange: {
-    900: "#ef762f",
-    950: "#e5a613",
-    800: "#ffda83"
-  },
-  green: {
-    600: "#33b96b",
-    500: "#52c41a",
-    400: "#b7eb8f",
-    300: "#f6ffed",
-    200: "#e5fae5"
-  },
-  red: {
-    800: "#FF0000FF",
-    700: "#ee5d59",
-    400: "#ffccc7",
-    300: "#fff1f0"
+  :where(&) :where(*)${own}:focus-visible {
+    outline: 2px solid ${cp.colorFocusRing};
+    outline-offset: 2px;
   }
-};
-var colorsRgb = {
-  blue: {
-    800: "8, 75, 131",
-    600: "75, 102, 130",
-    500: "61, 135, 197",
-    400: "173, 213, 255",
-    300: "238, 246, 254",
-    200: "249, 251, 254",
-    100: "220, 231, 242"
-  },
-  grey: {
-    900: "29, 34, 53",
-    700: "126, 130, 127",
-    650: "156, 168, 178",
-    600: "132, 132, 130",
-    550: "202, 208, 213",
-    300: "228, 228, 231",
-    200: "245, 245, 245",
-    100: "252, 252, 253"
-  },
-  orange: {
-    900: "239, 118, 47",
-    950: "229, 166, 19",
-    800: "255, 218, 131"
-  },
-  green: {
-    600: "51, 185, 107",
-    400: "183, 235, 143",
-    300: "246, 255, 237",
-    200: "229, 250, 229"
-  },
-  red: {
-    800: "255, 0, 0",
-    700: "238, 93, 89",
-    400: "255, 204, 199",
-    300: "255, 241, 240"
-  }
-};
+`;
+var rootText = import_styled_components.css`
+  color: ${cp.colorText};
+  font-family: ${cp.fontFamily};
+  font-size: ${cp.fontSizeRoot};
+  line-height: normal;
+`;
+var libraryRoot = import_styled_components.css`
+  ${darkModeDefaults}
+  ${rootText}
+  ${scopedReset}
+  box-sizing: border-box;
+`;
+var LIBRARY_ROOT_CLASS = "cp-root";
 
 // src/styles/elements.ts
 var import_styled_components2 = require("styled-components");
@@ -1422,60 +1470,60 @@ var fieldCommonStyles = import_styled_components2.css`
 var inputCommonStyles = import_styled_components2.css`
   width: 100%;
   display: flex;
-  height: 32px;
+  ${targetSize("height", cp.inputHeight)};
   padding: 5px 12px;
   align-items: center;
   gap: 4px;
   align-self: stretch;
   cursor: pointer;
 
-  border-radius: 6px;
-  border: 1px solid ${colors.grey[550]};
-  background: #fff;
+  border-radius: ${cp.radiusMd};
+  border: 1px solid ${cp.colorBorderStrong};
+  background: ${cp.colorSurface};
 
-  color: ${colors.grey[900]};
-  font-family: 'Inter Variable', sans-serif;
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-family: ${cp.fontFamilyControl};
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
   line-height: 22px;
 
   &::placeholder {
-    color: ${colors.grey[650]};
+    color: ${cp.colorPlaceholder};
   }
 
   &:hover,
   &:focus {
-    border-color: ${colors.blue[800]};
+    border-color: ${cp.colorPrimary};
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+    box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
   }
 `;
 var inputCommonStyles_disabled = import_styled_components2.css`
   cursor: not-allowed;
-  background-color: ${colors.grey[200]};
-  border-color: ${colors.grey[550]};
+  background-color: ${cp.colorSurfaceDisabled};
+  border-color: ${cp.colorBorderStrong};
   opacity: 0.7;
 
   &:hover {
-    border-color: ${colors.grey[550]};
+    border-color: ${cp.colorBorderStrong};
   }
 `;
 var inputCommonStyles_error = import_styled_components2.css`
-  border-color: red;
-  color: red;
+  border-color: ${cp.colorCritical};
+  color: ${cp.colorCritical};
 
   &::placeholder {
-    color: rgba(255, 0, 0, 0.5);
+    color: ${translucent(cp.colorCritical, 70)};
   }
 
   &:hover {
-    border-color: rgba(255, 0, 0, 0.5);
+    border-color: ${translucent(cp.colorCritical, 50)};
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+    box-shadow: 0 0 0 2px ${translucent(cp.colorCritical, 20)};
   }
 `;
 var labelCommonStyles = import_styled_components2.css`
@@ -1483,8 +1531,8 @@ var labelCommonStyles = import_styled_components2.css`
   display: flex;
   align-items: flex-start;
   gap: 4px;
-  color: ${colors.grey[900]};
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-size: ${cp.fontSizeMd};
   font-weight: 500;
   line-height: 22px;
   cursor: pointer;
@@ -1496,16 +1544,16 @@ var labelCommonStyles = import_styled_components2.css`
 var labelCommonStyles_required = import_styled_components2.css`
   span {
     display: flex;
-    color: red;
+    color: ${cp.colorCritical};
     font-weight: bold;
   }
 `;
 var labelCommonStyles_error = import_styled_components2.css`
-  color: red;
+  color: ${cp.colorCritical};
 `;
 var errorMessageCommonStyles = import_styled_components2.css`
-  color: red;
-  font-size: 13px;
+  color: ${cp.colorCritical};
+  font-size: ${cp.fontSizeSm};
 `;
 var infographicElementCommonStyles = import_styled_components2.css`
   width: 100%;
@@ -1515,13 +1563,13 @@ var infographicElementCommonStyles = import_styled_components2.css`
 `;
 var infographicElementTitleCommonStyles = import_styled_components2.css`
   width: 100%;
-  font-size: 14px;
+  font-size: ${cp.fontSizeMd};
   font-weight: 500;
 `;
 var infographicElementTextCommonStyles = import_styled_components2.css`
-  font-size: 14px;
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
-  color: black;
+  color: ${cp.colorTextStrong};
 `;
 var infographicElementContentCommonStyles = import_styled_components2.css`
   width: 100%;
@@ -1536,9 +1584,9 @@ var infographicElementContentCommonStyles = import_styled_components2.css`
     gap: 4px;
 
     span {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
 
     p {
@@ -1547,7 +1595,7 @@ var infographicElementContentCommonStyles = import_styled_components2.css`
 
     a {
       ${infographicElementTextCommonStyles};
-      color: ${colors.blue[600]};
+      color: ${cp.colorLink};
 
       &:hover {
         text-decoration: underline;
@@ -1557,7 +1605,7 @@ var infographicElementContentCommonStyles = import_styled_components2.css`
 `;
 var infographicElementLinkCommonStyles = import_styled_components2.css`
   ${infographicElementTextCommonStyles};
-  color: ${colors.blue[500]};
+  color: ${cp.colorLink};
 
   &:hover {
     text-decoration: underline;
@@ -1601,8 +1649,8 @@ var StyledHeader = import_styled_components4.default.div`
   gap: 12px;
   align-items: center;
   align-self: stretch;
-  background: #fff;
-  border-radius: 6px;
+  background: ${cp.colorSurface};
+  border-radius: ${cp.radiusMd};
 
   ${responsiveMediaQueries.down(displayResolution.s)`
   gap: 4px;
@@ -1636,16 +1684,16 @@ var StyledHeader = import_styled_components4.default.div`
           gap: 8px;
 
           h3 {
-            color: ${colors.grey[900]};
-            font-size: 16px;
+            color: ${cp.colorText};
+            font-size: ${cp.fontSizeLg};
             font-style: normal;
             font-weight: 500;
           }
         }
 
         &__activeIngredient {
-          color: ${colors.grey[900]};
-          font-size: 14px;
+          color: ${cp.colorText};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 300;
           line-height: normal;
@@ -1665,21 +1713,21 @@ var StyledHeader = import_styled_components4.default.div`
           gap: 6px;
 
           span {
-            font-size: 12px;
+            font-size: ${cp.fontSizeXs};
             font-weight: 400;
-            color: ${colors.blue[600]};
+            color: ${cp.colorTextMuted};
           }
 
           p {
-            font-size: 14px;
+            font-size: ${cp.fontSizeMd};
             font-weight: 400;
-            color: black;
+            color: ${cp.colorTextStrong};
             font-style: normal;
             line-height: normal;
           }
 
           .price {
-            color: ${colors.orange[900]};
+            color: ${cp.colorPrice};
             font-weight: 600;
           }
         }
@@ -1692,15 +1740,20 @@ var StyledCheapBadge = import_styled_components4.default.span`
   align-items: center;
   height: 20px;
   padding: 0 8px;
-  border-radius: 10px;
-  font-size: 11px;
+  border-radius: ${cp.radiusPill};
+  font-size: ${cp.fontSize2xs};
   font-weight: 600;
   white-space: nowrap;
-  color: #fff;
-  background-color: ${({ $variant }) => $variant === "cheapest" ? colors.green[600] : colors.green[500]};
+  color: ${cp.colorOnBadge};
+  background-color: ${({ $variant }) => $variant === "cheapest" ? cp.colorOk : cp.colorOkStrong};
 `;
 var StyledExpandButton = import_styled_components4.default.button`
-  width: 18px;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  ${targetSize("width")};
+  ${targetSize("height")};
   background: none;
   cursor: pointer;
 
@@ -1715,28 +1768,28 @@ var StyledTextToIcon = import_styled_components4.default.div`
   align-items: center;
   justify-content: center;
   padding: 0 6px;
-  border-radius: 5px;
+  border-radius: ${cp.radiusSm};
 
   p {
-    font-size: 11px !important;
+    font-size: ${cp.fontSize2xs} !important;
     font-weight: 600;
-    color: white !important;
+    color: ${cp.colorOnBadge} !important;
   }
 
   ${({ $color }) => $color === "green" && import_styled_components4.css`
-      background-color: ${colors.green[600]};
+      background-color: ${cp.colorOk};
     `};
 
   ${({ $color }) => $color === "orange" && import_styled_components4.css`
-      background-color: ${colors.orange[950]};
+      background-color: ${cp.colorCaution};
     `};
 
   ${({ $color }) => $color === "red" && import_styled_components4.css`
-      background-color: ${colors.red[700]};
+      background-color: ${cp.colorCriticalStrong};
     `};
 
   ${({ $color }) => $color === "grey" && import_styled_components4.css`
-      background-color: ${colors.grey[700]};
+      background-color: ${cp.colorNeutral};
     `};
 `;
 
@@ -1798,7 +1851,7 @@ var tooltipTopOriented = import_styled_components5.css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-top: 7px solid ${colors.blue[500]};
+    border-top: 7px solid ${cp.colorAccent};
     position: absolute;
     bottom: 23px;
     left: 50%;
@@ -1813,7 +1866,7 @@ var tooltipBottomOriented = import_styled_components5.css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-bottom: 7px solid ${colors.blue[500]};
+    border-bottom: 7px solid ${cp.colorAccent};
     position: absolute;
     bottom: -8px;
     left: 50%;
@@ -1901,16 +1954,16 @@ var StyleTooltip = import_styled_components5.default.div`
     align-items: flex-start;
     gap: 6px;
     align-self: stretch;
-    border-radius: 6px;
-    border: 1px solid ${colors.blue[500]};
-    background: #fff;
+    border-radius: ${cp.radiusMd};
+    border: 1px solid ${cp.colorAccent};
+    background: ${cp.colorSurface};
 
     &__iconWrap {
       width: 100%;
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      border-bottom: 1px solid ${colors.blue[500]};
+      border-bottom: 1px solid ${cp.colorAccent};
       padding-bottom: 6px;
     }
 
@@ -1924,8 +1977,8 @@ var StyleTooltip = import_styled_components5.default.div`
     }
 
     p {
-      color: ${colors.grey[900]};
-      font-size: 14px;
+      color: ${cp.colorText};
+      font-size: ${cp.fontSizeMd};
       font-style: normal;
       font-weight: 400;
       line-height: normal;
@@ -1990,100 +2043,113 @@ var Tooltip = ({ content, contentSnippet, iconSnippet, orientation = "bl", bound
 
 // src/internal/components/common/Icons/index.tsx
 var import_jsx_runtime5 = require("react/jsx-runtime");
-function SpinnerIcn({ pathFill = "#000000", size = 12 }) {
+function SpinnerIcn({ pathFill = cp.iconNeutral, size = 12 }) {
   const sizePx = `${size}px`;
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { style: { width: sizePx, height: sizePx }, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100", preserveAspectRatio: "xMidYMid", width: "24", height: "24", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("circle", { strokeDasharray: "169.64600329384882 58.548667764616276", r: "36", strokeWidth: "12", stroke: pathFill, fill: "none", cy: "50", cx: "50", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("animateTransform", { keyTimes: "0;1", values: "0 50 50;360 50 50", dur: "1s", repeatCount: "indefinite", type: "rotate", attributeName: "transform" }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", {})
-  ] }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+    "svg",
+    {
+      "aria-hidden": "true",
+      focusable: "false",
+      style: { width: sizePx, height: sizePx, color: pathFill },
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 100 100",
+      preserveAspectRatio: "xMidYMid",
+      width: "24",
+      height: "24",
+      children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("circle", { strokeDasharray: "169.64600329384882 58.548667764616276", r: "36", strokeWidth: "12", stroke: "currentColor", fill: "none", cy: "50", cx: "50", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("animateTransform", { keyTimes: "0;1", values: "0 50 50;360 50 50", dur: "1s", repeatCount: "indefinite", type: "rotate", attributeName: "transform" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", {})
+      ] })
+    }
+  );
 }
-var StatusSuccessIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "26", height: "26", viewBox: "0 0 26 26", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var StatusSuccessIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconSuccess }, width: "26", height: "26", viewBox: "0 0 26 26", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { clipPath: "url(#clip0_1152_2420)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M13 0C5.82098 0 0 5.82098 0 13C0 20.179 5.82098 26 13 26C20.179 26 26 20.179 26 13C26 5.82098 20.179 0\n        13 0ZM18.615 8.75469L12.5038 17.2279C12.4184 17.3471 12.3058 17.4443 12.1753 17.5113C12.0449 17.5783 11.9003\n        17.6132 11.7537 17.6132C11.607 17.6132 11.4625 17.5783 11.332 17.5113C11.2016 17.4443 11.089 17.3471 11.0036\n        17.2279L7.38504 12.2136C7.27478 12.0598 7.38504 11.8451 7.57366 11.8451H8.9346C9.23058 11.8451 9.51205 11.9873\n        9.68616 12.231L11.7522 15.098L16.3138 8.7721C16.4879 8.53125 16.7665 8.38616 17.0654 8.38616H18.4263C18.615\n        8.38616 18.7252 8.60089 18.615 8.75469Z",
-      fill: "#52C41A"
+      fill: "currentColor"
     }
   ) }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_1152_2420", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "26", height: "26", fill: "white" }) }) })
 ] });
-var StatusErrorIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var StatusErrorIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconError }, width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     fillRule: "evenodd",
     clipRule: "evenodd",
     d: "M12 0C18.6268 0 24 5.37321 24 12C24 18.6268 18.6268 24 12 24C5.37321 24 0 18.6268 0 12C0 5.37321 5.37321 0\n      12 0ZM15.428 7.36125H15.427L15.4248 7.36286L12 10.7879L8.57518 7.36286C8.57411 7.36152 8.57357 7.36125 8.57304\n      7.36125C8.57242 7.36106 8.57177 7.36106 8.57116 7.36125C8.57036 7.36125 8.56982 7.36152 8.56875 7.36259L7.36286\n      8.56848C7.36221 8.56916 7.36175 8.56999 7.36152 8.57089C7.36133 8.5715 7.36133 8.57216 7.36152\n      8.57277V8.5733C7.36197 8.57392 7.36251 8.57446 7.36313 8.57491L10.7879 12L7.36286 15.4248C7.36152 15.4259\n      7.36125 15.4264 7.36125 15.427C7.36106 15.4276 7.36106 15.4282 7.36125 15.4288C7.36125 15.4296 7.36152 15.4302\n      7.36259 15.4312L8.56848 16.6371C8.56916 16.6378 8.56999 16.6383 8.57089 16.6385C8.5715 16.6387 8.57216 16.6387\n      8.57277 16.6385C8.5733 16.6385 8.57384 16.6382 8.57491 16.6371L12 13.2121L15.4248 16.6371C15.4259 16.6382 15.4264\n      16.6385 15.427 16.6385C15.4276 16.6387 15.4282 16.6387 15.4288 16.6385C15.4296 16.6385 15.4302 16.6382 15.4312\n      16.6371L16.6371 15.4312C16.6378 15.4306 16.6383 15.4297 16.6385 15.4288C16.6387 15.4282 16.6387 15.4276 16.6385\n      15.427V15.4264C16.6381 15.4258 16.6377 15.4253 16.6371 15.4248L13.2121 12L16.6371 8.57518C16.6382 8.57411 16.6385\n      8.57357 16.6385 8.57304C16.6387 8.57242 16.6387 8.57177 16.6385 8.57116C16.6385 8.57036 16.6382 8.56982 16.6371\n      8.56875L15.4312 7.36286C15.4306 7.36221 15.4297 7.36175 15.4288 7.36152C15.4282 7.36133 15.4276 7.36133 15.427\n      7.36152L15.428 7.36125Z",
-    fill: "#FF4D4F"
+    fill: "currentColor"
   }
 ) });
-var BlackTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var BlackTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconNeutral }, width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     fillRule: "evenodd",
     clipRule: "evenodd",
     d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
-    fill: "#000000"
+    fill: "currentColor"
   }
 ) });
-var OrangeTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var OrangeTriangleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconCaution }, width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     fillRule: "evenodd",
     clipRule: "evenodd",
     d: "M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282\n      8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1\n      2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z",
-    fill: "#FF5E00"
+    fill: "currentColor"
   }
 ) });
-var ChevronIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "12px", height: "12px", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var ChevronIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconInfo }, width: "12px", height: "12px", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { clipPath: "url(#clip0_153_633)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M2.57153 1.018L2.57153 2.02247C2.57153 2.09077 2.60502 2.15505 2.65993 2.19523L7.90457 6.00014L2.65993\n        9.80506C2.60502 9.84523 2.57153 9.90952 2.57153 9.97782L2.57153 10.9823C2.57153 11.0693 2.67064 11.1202 2.74162\n         11.0693L9.25189 6.34702C9.4876 6.17559 9.4876 5.8247 9.25189 5.65461L2.74162 0.932286C2.67064 0.880054 2.57153\n          0.930947 2.57153 1.018Z",
-      fill: "#3D87C5"
+      fill: "currentColor"
     }
   ) }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_153_633", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "12px", height: "12px", fill: "white", transform: "matrix(0 -1 1 0 0 12)" }) }) })
 ] });
-var EndOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var EndOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconCritical }, width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { clipPath: "url(#clip0_330_2250)", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M4.65801 10.3098C4.52446 10.2195 4.36185 10.1662 4.18897 10.1664C4.07385 10.1664 3.96278 10.1899 3.86218\n        10.2325C3.71139 10.2963 3.58384 10.4023 3.49335 10.5362C3.40283 10.6698 3.34991 10.8324 3.3501 11.0052C3.34991\n        11.1204 3.37335 11.2314 3.416 11.3318C3.47997 11.4828 3.58579 11.6104 3.71952 11.7007C3.85328 11.7914 4.01608\n        11.8443 4.18897 11.8443C4.3041 11.8443 4.41496 11.8208 4.51536 11.7782C4.66635 11.7144 4.79408 11.6082 4.88439\n         11.4745C4.97472 11.3409 5.0278 11.1781 5.0278 11.0052C5.0278 10.8901 5.00415 10.7793 4.96171 10.6787C4.89793\n          10.5277 4.79174 10.4002 4.65801 10.3098ZM4.50062 11.1368C4.47503 11.1973 4.43181 11.2495 4.37772\n          11.2859C4.32346 11.3224 4.2599 11.3435 4.18895 11.3437C4.14147 11.3435 4.09745 11.3342 4.05735\n          11.3169C3.99707 11.2917 3.94473 11.2483 3.90829 11.1944C3.87184 11.1399 3.85091 11.0762 3.85054\n          11.0052C3.85072 10.9579 3.86022 10.9141 3.87728 10.8736C3.90247 10.8134 3.9459 10.7612 3.99995\n          10.7246C4.05423 10.6882 4.11798 10.6672 4.18893 10.667C4.23622 10.667 4.28003 10.6766 4.32032\n          10.6936C4.38079 10.719 4.43272 10.7622 4.46938 10.8165C4.50583 10.8708 4.52694 10.9343 4.52694\n          11.0053C4.52699 11.0527 4.51766 11.0966 4.50062 11.1368Z",
-        fill: "#EE1313"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M3.95443 9.20724C3.86373 9.20724 3.77884 9.189 3.70093 9.15623C3.58466 9.10702 3.48425 9.02405 3.41408\n         8.91977C3.34663 8.81956 3.30671 8.70155 3.3036 8.57208C3.30709 8.4176 3.35633 8.28349 3.44277 8.17629C3.48756\n         8.12107 3.54278 8.0726 3.60983 8.03248C3.67611 7.99294 3.75423 7.96156 3.84592 7.94177L9.57245 7.00971C9.9467\n         6.94866 10.2442 6.6626 10.3198 6.29102L11.0203 2.84747V2.84709C11.0284 2.80716 11.0323 2.76645 11.0323\n          2.72616C11.0323 2.58698 10.9846 2.45093 10.895 2.34122C10.7797 2.20013 10.6068 2.11814 10.4243\n          2.11814H2.495L2.22481 1.18997V1.19016C2.10078 0.775195 1.76042 0.460828 1.33714 0.370125L0.367674\n          0.162539C0.203705 0.127266 0.0420336 0.231938 0.00678359 0.396094C-0.0283023 0.56025 0.0761586 0.721899\n          0.240526 0.756985L1.20962 0.964758C1.41601 1.00894 1.58192 1.16205 1.64221 1.36441L3.41371 7.44949C3.37379\n          7.4681 3.33521 7.48826 3.29821 7.51055C3.1071 7.62434 2.95398 7.78404 2.85125 7.97049C2.753 8.14763 2.70085\n          8.34844 2.696 8.55563H2.69502V8.5872H2.69579C2.69968 8.74906 2.73418 8.90431 2.79406 9.04599C2.89002 9.27256\n          3.04932 9.46425 3.25011 9.59991C3.4509 9.73575 3.69472 9.81541 3.95443 9.81523H7.17163C7.17064 9.7852 7.16717\n           9.75593 7.16717 9.7257C7.16717 9.54834 7.18538 9.37526 7.21815 9.20724H3.95443ZM8.28413 3.16263C8.45488\n           3.11302 8.63356 3.2107 8.68318 3.38145L9.33556 5.61441C9.38518 5.78517 9.28728 5.96367 9.11656\n           6.01366C8.94599 6.06349 8.7673 5.96562 8.71749 5.79485L8.06527 3.56187C8.01549 3.39134 8.11337 3.21265\n           8.28413 3.16263ZM6.87643 3.16845C7.04699 3.11843 7.2257 3.21631 7.27548 3.38707L7.99009 5.83418C8.0401\n           6.00476 7.94202 6.18363 7.77146 6.23346C7.60091 6.28324 7.4222 6.18539 7.37218 6.01463L6.65757\n           3.56747C6.60781 3.39696 6.70567 3.21806 6.87643 3.16845ZM5.46835 3.17348C5.6391 3.12387 5.81781 3.22174\n           5.8674 3.39248L6.64074 6.04022C6.69074 6.21099 6.59267 6.38967 6.42212 6.43948C6.25159 6.48931 6.07288\n           6.39143 6.02286 6.22066L5.24952 3.57274C5.19971 3.40219 5.29759 3.22348 5.46835 3.17348ZM4.06046\n           3.17911C4.23123 3.12928 4.40992 3.22718 4.45972 3.39795L5.29332 6.25249C5.34334 6.42324 5.24525 6.60213\n           5.0747 6.65175C4.90414 6.70174 4.72543 6.60368 4.67542 6.43313L3.84163 3.5782C3.79203 3.40763 3.88972\n           3.22891 4.06046 3.17911Z",
-        fill: "#EE1313"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M9.88112 7.60687C8.71086 7.60687 7.7627 8.55541 7.7627 9.72569C7.7627 10.8958 8.71086 11.8443 9.88112\n        11.8443C11.0514 11.8443 11.9999 10.8958 11.9999 9.72569C11.9999 8.55541 11.0514 7.60687 9.88112\n        7.60687ZM11.0917 10.0788H8.67055V9.37235H11.0917V10.0788Z",
-        fill: "#EE1313"
+        fill: "currentColor"
       }
     )
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_330_2250", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "12", height: "12", fill: "white" }) }) })
 ] });
-var LeafIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var LeafIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconOkAlt }, width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { clipPath: "url(#clip0_618_2370)", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("mask", { id: "mask0_618_2370", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { mask: "url(#mask0_618_2370)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M7.87489 0C4.49192 0 1.74989 2.74203 1.74989 6.125V11.0128L0.256266 12.5064C-0.085422 12.8481 -0.085422\n          13.4019 0.256266 13.7436C0.42711 13.9145 0.65111 14 0.874891 14C1.09867 14 1.32267 13.9145 1.49352\n          13.7436L2.98714 12.25H7.87489C11.2579 12.25 13.9999 9.50797 13.9999 6.125V0H7.87489ZM11.1185 4.11862L8.23627\n          7.00088H9.62489C10.1085 7.00088 10.4999 7.39222 10.4999 7.87588C10.4999 8.35953 10.1085 8.75088 9.62489\n          8.75088H6.48627L5.86852 9.36862C5.69767 9.53947 5.47367 9.625 5.24989 9.625C5.02611 9.625 4.80211 9.53947\n          4.63127 9.36862C4.28958 9.02694 4.28958 8.47306 4.63127 8.13138L5.24989 7.51275V4.375C5.24989 3.89134 5.64124\n           3.5 6.12489 3.5C6.60855 3.5 6.99989 3.89134 6.99989 4.375V5.76275L9.88127 2.88137C10.223 2.53969 10.7768\n           2.53969 11.1185 2.88137C11.4602 3.22306 11.4604 3.77694 11.1185 4.11862Z",
-        fill: "#197437"
+        fill: "currentColor"
       }
     ) })
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_618_2370", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
 ] });
-var MoleculeIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var MoleculeIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconCautionAlt }, width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { clipPath: "url(#clip0_618_936)", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("mask", { id: "mask0_618_936", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "14", height: "14", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M14 0H0V14H14V0Z", fill: "white" }) }),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { mask: "url(#mask0_618_936)", children: [
@@ -2091,156 +2157,156 @@ var MoleculeIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { w
         "path",
         {
           d: "M10.1245 5.15595V2.10851C10.1245 1.90286 10.016 1.71436 9.84181 1.60869L7.29986 0.0835404C7.11421\n          -0.0278468 6.88572 -0.0278468 6.70008 0.0835404L4.15531 1.60869C3.97824 1.71436 3.87256 1.90286 3.87256\n          2.10851V5.15595C3.87256 5.36159 3.98109 5.55009 4.15531 5.65576L6.70008 7.18091C6.96856 7.33514 7.19133\n          7.25231 7.29986 7.18091L9.84181 5.65576C10.016 5.55009 10.1245 5.36159 10.1245 5.15595Z",
-          fill: "#EFAC2F"
+          fill: "currentColor"
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
         "path",
         {
           d: "M5.96922 8.3405L3.4273 6.81532C3.24165 6.70393 3.01317 6.70393 2.82753 6.81532L0.282753 8.3405C0.105675\n          8.44612 0 8.63465 0 8.8403V11.8877C0 12.0934 0.108531 12.2819 0.282753 12.3875L2.82753 13.9127C3.096 14.0669\n          3.31877 13.9841 3.4273 13.9127L5.96922 12.3875C6.1463 12.2819 6.25197 12.0934 6.25197 11.8877V8.8403C6.25197\n          8.63465 6.1463 8.44612 5.96922 8.3405Z",
-          fill: "#EFAC2F"
+          fill: "currentColor"
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
         "path",
         {
           d: "M13.7119 8.33763L11.17 6.81248C10.9843 6.7011 10.7559 6.7011 10.5702 6.81248L8.02541 8.33763C7.84831\n          8.44333 7.74268 8.63178 7.74268 8.83743V11.8849C7.74268 12.0906 7.85119 12.279 8.02541 12.3847L10.5673\n          13.9099C10.8358 14.0641 11.0586 13.9813 11.1671 13.9099L13.709 12.3847C13.8861 12.279 13.9918 12.0906\n          13.9918 11.8849V8.83743C13.9946 8.63178 13.8861 8.44333 13.7119 8.33763Z",
-          fill: "#EFAC2F"
+          fill: "currentColor"
         }
       )
     ] })
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_618_936", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
 ] });
-var PillsBottleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var PillsBottleIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconNeutral }, width: "12px", height: "12px", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { clipPath: "url(#clip0_165_1782)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M7.8751 4.34052C7.86877 4.11591 7.75782 3.91751 7.58907 3.79252C7.40655 3.62106 7.2094 3.46818 7.01846\n        3.26338C6.98683 3.22948 6.96046 3.19954 6.93778 3.17205C6.93517 3.16894 6.93256 3.1658 6.92996 3.16263C6.92681\n        3.1587 6.92397 3.155 6.92093 3.15118L6.91757 3.14688C6.82224 3.02447 6.81289 2.95561 6.81289 2.83826C6.81289\n        2.77897 6.81289 2.65316 6.81289 2.52272H6.9662C7.18556 2.52272 7.3634 2.36418 7.3634 2.16861V1.35413C7.3634\n        1.15854 7.18557 1 6.9662 1H3.03366C2.81429 1 2.63645 1.15854 2.63645 1.35413V2.16859C2.63645 2.36416 2.81429\n        2.5227 3.03366 2.5227H3.18697C3.18697 2.65314 3.18697 2.77896 3.18697 2.83824C3.18697 2.95559 3.17762 3.02446\n        3.08227 3.14687L3.07893 3.15116C3.07589 3.15498 3.07308 3.1587 3.06991 3.16261C3.06734 3.16578 3.06474 3.16891\n        3.06208 3.17203C3.0394 3.19952 3.01303 3.22948 2.98144 3.26336C2.79046 3.46817 2.59332 3.62099 2.41079\n        3.79246C2.24204 3.91746 2.13109 4.11591 2.12476 4.34051C2.12476 4.34635 2.12427 4.35356 2.12427 4.36032C2.12427\n         4.86656 2.12427 7.86047 2.12427 8.24009C2.12427 8.62504 2.40714 9 2.88414 9C3.12245 9 3.82162 9 4.98483\n         9C4.98483 9 4.9887 9 4.99588 9H4.99991H5.00395C5.01113 9 5.015 9 5.015 9C6.17819 9 6.87738 9 7.11569 9C7.59269\n          9 7.87556 8.62504 7.87556 8.24009C7.87556 7.86047 7.87556 4.8673 7.87556 4.36108C7.87556 4.35432 7.8751\n          4.34637 7.8751 4.34052ZM7.08025 6.21274C7.08025 6.43213 6.90241 6.60997 6.68304\n          6.60997H4.99995H3.31686C3.0975 6.60997 2.91965 6.43213 2.91965 6.21274V5.5681C2.91965 5.34872 3.0975 5.17088\n           3.31686 5.17088H6.68304C6.90241 5.17088 7.08025 5.34874 7.08025 5.5681V6.21274Z",
-      fill: "#000000"
+      fill: "currentColor"
     }
   ) }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_165_1782", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "8", height: "8", fill: "white", transform: "translate(1 1)" }) }) })
 ] });
-var PrescriptionIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var PrescriptionIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconNeutral }, width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     d: "M8.56078 8.25L10.3903 6.42047C10.5368 6.27398 10.5368 6.03656 10.3903 5.89008L9.85992 5.35969C9.71344 5.2132\n       9.47602 5.2132 9.32953 5.35969L7.5 7.18922L5.53219 5.22141C6.64008 5.08125 7.5 4.14586 7.5 3C7.5 1.75734 6.49266\n        0.75 5.25 0.75H1.875C1.66781 0.75 1.5 0.917813 1.5 1.125V7.125C1.5 7.33219 1.66781 7.5 1.875 7.5H2.625C2.83219\n         7.5 3 7.33219 3 7.125V5.25H3.43945L6.43945 8.25L4.60992 10.0795C4.46344 10.226 4.46344 10.4634 4.60992\n          10.6099L5.14031 11.1403C5.2868 11.2868 5.52422 11.2868 5.6707 11.1403L7.5 9.31055L9.32953 11.1401C9.47602\n           11.2866 9.71344 11.2866 9.85992 11.1401L10.3903 10.6097C10.5368 10.4632 10.5368 10.2258 10.3903\n           10.0793L8.56078 8.25ZM3 2.25H5.25C5.66344 2.25 6 2.58656 6 3C6 3.41344 5.66344 3.75 5.25 3.75H3V2.25Z",
-    fill: "#000000"
+    fill: "currentColor"
   }
 ) });
-var SolidPillIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var SolidPillIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconInfo }, width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { clipPath: "url(#clip0_618_3928)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M12.5957 9.11825C12.1339 8.62182 11.5084 8.31967 10.8342 8.26742L10.8168 8.26608L3.19964 8.25861C1.71537\n        8.25861 0.507812 9.46617 0.507812 10.9505C0.507812 12.4347 1.71537 13.6423 3.19964 13.6423H3.20011L10.7994\n        13.6348L10.8342 13.6335C11.5083 13.5812 12.1339 13.2791 12.5957 12.7827C13.0601 12.2834 13.3159 11.6327 13.3159\n        10.9505C13.3159 10.2682 13.0601 9.61754 12.5957 9.11825ZM6.98957 12.7251L3.19931 12.7288C2.21893 12.7286\n        1.42131 11.9309 1.42131 10.9505C1.42131 9.96992 2.21907 9.17214 3.19918 9.17214L6.98957\n        9.17586V12.7251ZM1.69844 7.39865C2.15702 7.73348 2.72102 7.91788 3.28648 7.91794H3.28659C3.48032 7.91794\n        3.67493 7.89669 3.86497 7.85477L3.882 7.85103L11.1737 5.64824C12.5941 5.21763 13.3994 3.71168 12.9688\n        2.2912C12.7979 1.72734 12.4566 1.24606 11.9819 0.899316C11.5232 0.564246 10.9591 0.37973 10.3935\n         0.37973C10.1285 0.379872 9.86494 0.419123 9.61137 0.496215L2.34107 2.70811L2.30812 2.71951C1.67812 2.96508\n         1.16713 3.43572 0.869242 4.04475C0.569637 4.65728 0.513664 5.35421 0.711578 6.00713C0.882531 6.5709 1.22378\n         7.05207 1.69844 7.39865ZM9.87685 1.37031C10.0443 1.31935 10.2185 1.29337 10.3935 1.29323C11.1697 1.29323\n         11.8691 1.8126 12.0946 2.55621C12.379 3.49462 11.847 4.48952 10.9091 4.77387L7.28069 5.86997L6.25098\n         2.47344L9.87685 1.37031Z",
-      fill: "#3D87C5"
+      fill: "currentColor"
     }
   ) }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_618_3928", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "14", height: "14", fill: "white" }) }) })
 ] });
-var StartOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var StartOfCommercialisationIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconOk }, width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { clipPath: "url(#clip0_330_2383)", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M4.65803 10.3099C4.52448 10.2196 4.36187 10.1663 4.18897 10.1665C4.07385 10.1665 3.96278 10.1899 3.86218\n        10.2326C3.71139 10.2964 3.58384 10.4024 3.49335 10.5363C3.40283 10.6698 3.34991 10.8325 3.3501 11.0054C3.34991\n        11.1205 3.37337 11.2316 3.41601 11.3319C3.47997 11.4829 3.58579 11.6105 3.71952 11.7008C3.85326 11.7915 4.01608\n         11.8444 4.18897 11.8444C4.3041 11.8444 4.41496 11.8209 4.51536 11.7783C4.66635 11.7145 4.79408 11.6083 4.88441\n          11.4746C4.97474 11.341 5.02783 11.1782 5.02783 11.0053C5.02783 10.8902 5.00418 10.7793 4.96173\n          10.6788C4.89796 10.5278 4.79176 10.4002 4.65803 10.3099ZM4.50062 11.1369C4.47503 11.1974 4.43181\n          11.2496 4.37772 11.286C4.32346 11.3224 4.25987 11.3436 4.18895 11.3437C4.14147 11.3436 4.09745 11.3343\n          4.05735 11.317C3.99707 11.2918 3.94473 11.2484 3.90829 11.1945C3.87184 11.14 3.85091 11.0763 3.85054\n          11.0053C3.85075 10.958 3.86024 10.9142 3.8773 10.8737C3.9025 10.8134 3.94593 10.7613 3.99997 10.7247C4.05426\n          10.6882 4.11803 10.6673 4.18895 10.6671C4.23625 10.6671 4.28005 10.6766 4.32036 10.6937C4.38083 10.719\n          4.43277 10.7623 4.46943 10.8165C4.50587 10.8708 4.52699 10.9344 4.52699 11.0053C4.52699 11.0528 4.51768\n          11.0966 4.50062 11.1369Z",
-        fill: "#09853D"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M3.9545 9.20728C3.8638 9.20728 3.77891 9.18907 3.701 9.15631C3.58471 9.10709 3.4843 9.02412 3.41415\n        8.91985C3.3467 8.81965 3.30676 8.7016 3.30367 8.57215C3.30716 8.41765 3.3564 8.28354 3.44284 8.17636C3.4876\n        8.12112 3.54285 8.07267 3.6099 8.03255C3.67618 7.99301 3.75428 7.96163 3.84599 7.94185L9.57261 7.00976C9.94686\n         6.94871 10.2444 6.66263 10.32 6.29107L11.0205 2.84745V2.84707C11.0286 2.80714 11.0325 2.76645 11.0325\n         2.72614C11.0325 2.58696 10.9848 2.45091 10.8952 2.3412C10.7799 2.2001 10.607 2.11812 10.4245\n         2.11812H2.49505L2.22486 1.1899V1.19009C2.10081 0.775128 1.76045 0.460738 1.33714 0.370035L0.367674\n         0.162449C0.203705 0.127175 0.0420336 0.231824 0.00678359 0.396003C-0.0283023 0.56016 0.0761586 0.721808\n          0.240526 0.756894L1.20964 0.964667C1.41606 1.00885 1.58195 1.16196 1.64223 1.36432L3.41375 7.44949C3.37384\n           7.4681 3.33526 7.48826 3.29825 7.51055C3.10714 7.62434 2.95403 7.78404 2.8513 7.97049C2.75305 8.14765 2.7009\n            8.34844 2.69605 8.55565H2.69506V8.58722H2.69584C2.69973 8.74908 2.73423 8.90433 2.79411 9.04601C2.89006\n             9.27258 3.04937 9.46428 3.25016 9.59993C3.45095 9.73577 3.69477 9.81546 3.9545 9.81525H7.17174C7.17076\n              9.78523 7.16729 9.75595 7.16729 9.72572C7.16729 9.54837 7.1855 9.37528 7.21827\n              9.20724H3.9545V9.20728ZM8.28428 3.16259C8.45502 3.11297 8.63373 3.21066 8.68335 3.3814L9.33575\n              5.61441C9.38537 5.78517 9.28749 5.96368 9.11675 6.01367C8.94617 6.0635 8.76749 5.96562 8.71768\n              5.79485L8.06546 3.56185C8.01561 3.39129 8.11351 3.2126 8.28428 3.16259ZM6.87655 3.1684C7.04713 3.11839\n              7.22581 3.21626 7.27562 3.38703L7.99023 5.83418C8.04024 6.00476 7.94216 6.18366 7.7716 6.23346C7.60103\n              6.28327 7.42234 6.18539 7.37232 6.01463L6.65771 3.56745C6.60791 3.39694 6.70578 3.21802 6.87655\n              3.1684ZM5.46845 3.17344C5.63919 3.12382 5.8179 3.2217 5.86752 3.39244L6.64086 6.04022C6.69085 6.21099\n              6.59279 6.3897 6.42224 6.43948C6.25168 6.48931 6.07297 6.39143 6.02296 6.22067L5.24961 3.5727C5.19978\n              3.40214 5.29768 3.22346 5.46845 3.17344ZM4.06053 3.17907C4.2313 3.12924 4.41001 3.22714 4.45982\n              3.3979L5.29344 6.25249C5.34346 6.42324 5.24537 6.60214 5.07481 6.65178C4.90424 6.70177 4.72555 6.60371\n               4.67553 6.43315L3.84172 3.57818C3.79208 3.40758 3.88977 3.22889 4.06053 3.17907Z",
-        fill: "#09853D"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M9.88135 7.6069C8.71107 7.6069 7.7627 8.55547 7.7627 9.72575C7.7627 10.8958 8.71107 11.8444 9.88135\n        11.8444C11.0514 11.8444 12 10.8958 12 9.72575C12 8.55547 11.0514 7.6069 9.88135 7.6069ZM9.76121 10.7154L8.74831\n         9.90502L9.13266 9.42455L9.6583 9.84514L10.5439 8.70664L11.0298 9.0844L9.76121 10.7154Z",
-        fill: "#09853D"
+        fill: "currentColor"
       }
     )
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_330_2383", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "12", height: "12", fill: "white" }) }) })
 ] });
-var SupplyIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var SupplyIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconCaution }, width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { clipPath: "url(#clip0_329_708)", children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M5.18757 9.96101C4.45959 9.96101 3.86963 10.5508 3.86963 11.2788C3.86963 12.0069 4.45959 12.5966 5.18757\n        12.5966C5.91581 12.5966 6.50562 12.0069 6.50562 11.2788C6.50562 10.5508 5.91581 9.96101 5.18757\n        9.96101ZM5.18757 11.8517C4.87111 11.8517 4.61468 11.5953 4.61468 11.2788C4.61468 10.9622 4.87111 10.7059\n        5.18757 10.7059C5.50406 10.7059 5.76067 10.9622 5.76067 11.2788C5.76067 11.5953 5.50406 11.8517 5.18757 11.8517Z",
-        fill: "#FF5E00"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M12.1372 9.96101C11.4093 9.96101 10.8193 10.5508 10.8193 11.2788C10.8193 12.0069 11.4093 12.5966 12.1372\n        12.5966C12.8655 12.5966 13.4553 12.0069 13.4553 11.2788C13.4553 10.5508 12.8655 9.96101 12.1372 9.96101ZM12.1372\n         11.8517C11.8208 11.8517 11.5644 11.5953 11.5644 11.2788C11.5644 10.9622 11.8208 10.7059 12.1372\n         10.7059C12.4538 10.7059 12.7104 10.9622 12.7104 11.2788C12.7104 11.5953 12.4538 11.8517 12.1372 11.8517Z",
-        fill: "#FF5E00"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M6.6703 5.9117C6.6703 6.09636 6.51918 6.24744 6.33455 6.24744H1.70143C1.51676 6.24744 1.36572 6.09636 1.36572\n         5.9117V5.71025C1.36572 5.52562 1.5168 5.37454 1.70143 5.37454H6.33455C6.51922 5.37454 6.6703 5.52562 6.6703\n         5.71025V5.9117Z",
-        fill: "#FF5E00"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M14.7198 7.87737C14.2365 7.75174 13.96 7.67276 13.7703 7.30629L13.1358 6.02162C12.9459 5.65516 12.4529\n        5.35529 12.0403 5.35529H11.1725C11.1725 5.35529 11.0557 5.35773 11.0557 5.24024C11.0557 4.97087 11.0557\n        4.1628 11.0557 4.1628C11.0557 3.74512 10.8194 3.40337 10.3166 3.40337H3.24371C2.52388 3.40337 2.18213 3.74516\n        2.18213 4.1628V4.83801C2.18213 4.83801 2.18213 5.03883 2.3765 5.03883C3.36599 5.03883 6.33452 5.03883 6.33452\n        5.03883C6.70477 5.03883 7.006 5.34003 7.006 5.71028V5.91173C7.006 6.28199 6.70477 6.58318 6.33452\n        6.58318H2.3765C2.3765 6.58318 2.18213 6.56703 2.18213 6.77685C2.18213 6.88106 2.18213 6.95101 2.18213\n        7.00905C2.18213 7.19372 2.43524 7.19361 2.43524 7.19361H5.09958C5.46984 7.19361 5.77107 7.49483 5.77107\n        7.86506V8.0665C5.77107 8.43676 5.46984 8.73795 5.09958 8.73795H2.47727C2.47727 8.73795 2.18213 8.7325\n        2.18213 8.9675C2.18213 9.37541 2.18213 10.5991 2.18213 10.5991C2.18213 11.0167 2.52388 11.3585 2.94156\n        11.3585C2.94156 11.3585 3.25618 11.3585 3.36105 11.3585C3.45619 11.3585 3.4702 11.3055 3.4702 11.2789C3.4702\n        10.332 4.24066 9.5617 5.1876 9.5617C6.13462 9.5617 6.90504 10.332 6.90504 11.2789C6.90504 11.3056 6.89744\n        11.3585 6.9702 11.3585C7.80172 11.3585 10.3555 11.3585 10.3555 11.3585C10.4226 11.3585 10.4199 11.3019 10.4199\n        11.2789C10.4199 10.332 11.1903 9.5617 12.1373 9.5617C13.0843 9.5617 13.8547 10.332 13.8547 11.2789C13.8547\n        11.3056 13.854 11.3585 13.896 11.3585C14.2773 11.3585 14.7495 11.3585 14.7495 11.3585C15.1624 11.3585 15.5\n        11.0208 15.5 10.6081V9.18233C15.5001 7.98165 15.1209 7.98165 14.7198 7.87737ZM13.2917 7.81059C13.2917 7.81059\n        11.6981 7.81059 11.1557 7.81059C11.0674 7.81059 11.0557 7.72468 11.0557 7.72468V5.94529C11.0557 5.94529 11.0507\n         5.87696 11.164 5.87696C11.3164 5.87696 11.7735 5.87696 11.7735 5.87696C12.1408 5.87696 12.5794 6.14378 12.7483\n          6.46987L13.3129 7.61298C13.3367 7.659 13.3621 7.69986 13.3893 7.73647C13.4094 7.76332 13.3757 7.81059 13.2917\n           7.81059Z",
-        fill: "#FF5E00"
+        fill: "currentColor"
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
       "path",
       {
         d: "M5.43524 8.06651C5.43524 8.25118 5.28416 8.40226 5.09953 8.40226H0.835707C0.651039 8.40226 0.5 8.25118 0.5\n        8.06651V7.86506C0.5 7.68043 0.651076 7.52936 0.835707 7.52936H5.09953C5.2842 7.52936 5.43524 7.68043 5.43524\n        7.86506V8.06651Z",
-        fill: "#FF5E00"
+        fill: "currentColor"
       }
     )
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("clipPath", { id: "clip0_329_708", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("rect", { width: "15", height: "15", fill: "white", transform: "translate(0.5 0.5)" }) }) })
 ] });
-var SearchIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "20px", height: "20px", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { mask: "url(#mask0_16_247)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var SearchIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconMuted }, width: "20px", height: "20px", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("g", { mask: "url(#mask0_16_247)", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     d: "M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333\n        7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5\n        6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431\n        11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417\n        9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833\n        11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021\n        5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042\n        5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958\n        11.3021 6.875 11.6667 7.91667 11.6667Z",
-    fill: "#9CA8B2"
+    fill: "currentColor"
   }
 ) }) });
-var CloseIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var CloseIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconClose }, width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     fillRule: "evenodd",
     clipRule: "evenodd",
     d: "M13.1404 2.32697C13.1407 2.32697 13.1411 2.32732 13.1418 2.32804L14.172 3.3584C14.1727 3.35893 14.1729 3.35929\n       14.1731 3.35982C14.1732 3.36018 14.1732 3.36054 14.1731 3.3609C14.1731 3.36143 14.1727 3.36179 14.172\n       3.3625L9.0345 8.5L14.172 13.6375C14.1727 13.6382 14.1729 13.6386 14.1731 13.6391C14.1732 13.6395 14.1732 13.64\n       14.1731 13.6404C14.1731 13.6407 14.1727 13.6411 14.172 13.6418L13.1416 14.672C13.1411 14.6727 13.1407 14.6729\n       13.1404 14.673C13.14 14.6732 13.1395 14.6732 13.1391 14.673C13.1386 14.673 13.1382 14.6727 13.1375 14.672L8.00003\n        9.53447L2.86253 14.672C2.86182 14.6727 2.86146 14.6729 2.86093 14.673C2.86052 14.6732 2.86008 14.6732 2.85968\n         14.673C2.85932 14.673 2.85896 14.6727 2.85825 14.672L1.82807 13.6416C1.82735 13.6411 1.82718 13.6407 1.827\n         13.6404C1.82687 13.64 1.82687 13.6395 1.827 13.6391C1.827 13.6386 1.82735 13.6382 1.82807 13.6375L6.96557\n         8.5L1.82807 3.3625C1.82735 3.36179 1.82718 3.36143 1.827 3.3609C1.82687 3.36049 1.82687 3.36005 1.827\n         3.35965C1.827 3.35929 1.82735 3.35893 1.82807 3.35822L2.85843 2.32804C2.85896 2.32732 2.85932 2.32715 2.85968\n         2.32697C2.86008 2.32684 2.86052 2.32684 2.86093 2.32697C2.86146 2.32697 2.86182 2.32732 2.86253 2.32804L8.00003\n          7.46554L13.1375 2.32804C13.1382 2.32732 13.1386 2.32715 13.1391 2.32697C13.1395 2.32684 13.14 2.32684 13.1404\n           2.32697Z",
-    fill: "#4B6682"
+    fill: "currentColor"
   }
 ) });
-var EditIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+var EditIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconAction }, width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
   "path",
   {
     d: "M7.277 9.81458L12.1624 4.92916L11.4041 4.17083L6.51867 9.05625L7.277 9.81458ZM3.47075 11.0833C2.49853 11.0347\n      1.77422 10.8306 1.29784 10.4708C0.821446 10.1111 0.583252 9.59097 0.583252 8.91041C0.583252 8.27847 0.843321\n      7.76562 1.36346 7.37187C1.8836 6.97812 2.60547 6.74236 3.52909 6.66458C3.90825 6.63541 4.19263 6.57465 4.38221\n      6.48229C4.57179 6.38993 4.66659 6.26111 4.66659 6.09583C4.66659 5.84305 4.52318 5.65347 4.23638 5.52708C3.94957\n      5.40069 3.47561 5.30833 2.8145 5.25L2.91659 4.08333C3.91797 4.16111 4.65443 4.36284 5.12596 4.68854C5.59749\n      5.01423 5.83325 5.48333 5.83325 6.09583C5.83325 6.61111 5.6461 7.01458 5.27179 7.30625C4.89749 7.59791 4.34575\n      7.77291 3.61659 7.83125C2.99436 7.87986 2.5277 7.99409 2.21659 8.17396C1.90547 8.35382 1.74992 8.5993 1.74992\n      8.91041C1.74992 9.25069 1.88603 9.49618 2.15825 9.64687C2.43047 9.79757 2.88742 9.8875 3.52909 9.91666L3.47075\n      11.0833ZM7.55409 11.1854L5.14784 8.77916L10.7187 3.20833C10.9131 3.01389 11.144 2.91666 11.4114 2.91666C11.6787\n      2.91666 11.9096 3.01389 12.1041 3.20833L13.1249 4.22916C13.3194 4.42361 13.4166 4.65451 13.4166 4.92187C13.4166\n      5.18923 13.3194 5.42014 13.1249 5.61458L7.55409 11.1854ZM5.23534 11.6667C5.07006 11.7056 4.92422 11.6618 4.79784\n       11.5354C4.67145 11.409 4.6277 11.2632 4.66659 11.0979L5.14784 8.77916L7.55409 11.1854L5.23534 11.6667Z",
-    fill: "#383A3C"
+    fill: "currentColor"
   }
 ) });
-var DeleteIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+var DeleteIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { "aria-hidden": "true", focusable: "false", style: { color: cp.iconAction }, width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M5.83325 5.25C6.15542 5.25 6.41659 5.51117 6.41659 5.83334V9.625C6.41659 9.94717 6.15542 10.2083 5.83325\n      10.2083C5.51109 10.2083 5.24992 9.94717 5.24992 9.625V5.83334C5.24992 5.51117 5.51109 5.25 5.83325 5.25Z",
-      fill: "#383A3C"
+      fill: "currentColor"
     }
   ),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
     "path",
     {
       d: "M8.74992 5.83334C8.74992 5.51117 8.48875 5.25 8.16659 5.25C7.84442 5.25 7.58325 5.51117 7.58325\n      5.83334V9.625C7.58325 9.94717 7.84442 10.2083 8.16659 10.2083C8.48875 10.2083 8.74992 9.94717 8.74992\n      9.625V5.83334Z",
-      fill: "#383A3C"
+      fill: "currentColor"
     }
   ),
   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
@@ -2249,11 +2315,11 @@ var DeleteIcn = () => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { wid
       fillRule: "evenodd",
       clipRule: "evenodd",
       d: "M5.62588 0.583336C5.41285 0.583336 5.21676 0.699465 5.11436 0.88627L4.32112 2.33334H1.16659C0.844419 2.33334\n      0.583252 2.5945 0.583252 2.91667C0.583252 3.23884 0.844419 3.5 1.16659 3.5H2.04159V12.8333C2.04159 13.1555\n      2.30275 13.4167 2.62492 13.4167H11.3749C11.6971 13.4167 11.9583 13.1555 11.9583 12.8333V3.5H12.8333C13.1554\n      3.5 13.4166 3.23884 13.4166 2.91667C13.4166 2.5945 13.1554 2.33334 12.8333 2.33334H9.68208L8.90713\n      0.890634C8.80548 0.701395 8.60805 0.583336 8.39324 0.583336H5.62588ZM8.35775 2.33334L8.04442 1.75H5.97134L5.65158\n       2.33334H8.35775ZM3.20825 3.5V12.25H10.7916V3.5H3.20825Z",
-      fill: "#383A3C"
+      fill: "currentColor"
     }
   )
 ] });
-var WarningIcn = ({ color = "#3D87C5" }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: "16px", height: "16px", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z", fill: color }) });
+var WarningIcn = ({ color = cp.iconInfo }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { "aria-hidden": "true", focusable: "false", style: { color }, width: "16px", height: "16px", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z", fill: "currentColor" }) });
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/BlackTriangleBadge/index.tsx
 var import_jsx_runtime6 = require("react/jsx-runtime");
@@ -2380,7 +2446,7 @@ var StyledSupplyProblems = import_styled_components7.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[800]};
+    background-color: ${cp.colorCautionSoft};
   }
 
   .content {
@@ -2439,7 +2505,7 @@ var StyledEndCommercialization = import_styled_components8.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.red[400]};
+    background-color: ${cp.colorCriticalSoft};
   }
 
   .content {
@@ -2505,7 +2571,7 @@ var StyledStartCommercialization = import_styled_components9.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
+    background-color: ${cp.colorOkSoft};
   }
 
   .content {
@@ -2602,7 +2668,7 @@ var StyledReimbursement = import_styled_components10.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
+    background-color: ${cp.colorOkSoft};
   }
 
   .content {
@@ -2683,7 +2749,7 @@ var StyledDeliveryConditions = import_styled_components11.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[800]};
+    background-color: ${cp.colorCautionSoft};
   }
 
   .content {
@@ -2695,7 +2761,7 @@ var StyledDeliveryConditionsNotApplicable = import_styled_components11.default.d
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
+    background-color: ${cp.colorOkSoft};
   }
 
   .content {
@@ -2751,7 +2817,7 @@ var StyledPrescriptionConditions = import_styled_components12.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.red[400]};
+    background-color: ${cp.colorCriticalSoft};
   }
 
   .content {
@@ -2763,7 +2829,7 @@ var StyledPrescriptionConditionsNotApplicable = import_styled_components12.defau
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
+    background-color: ${cp.colorOkSoft};
   }
 
   .content {
@@ -2885,7 +2951,7 @@ var SwissmedicCategoryBadge = ({ medication, boundaryBox }) => {
 var import_jsx_runtime20 = require("react/jsx-runtime");
 var NarcoticBadge = ({ medication, boundaryBox }) => {
   if (!medication.regulatory?.ch?.narcotic) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Tooltip, { content: t("medication.swissmedic.narcotic"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(WarningIcn, { color: "#EE1313" }), boundaryBox }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { className: "regulatoryBadgeIcon regulatoryBadgeIcon--red", children: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Tooltip, { content: t("medication.swissmedic.narcotic"), iconSnippet: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(WarningIcn, { color: cp.iconCritical }), boundaryBox }) });
 };
 
 // src/internal/components/medication-elements/MedicationCard/infographic-elements/ColdChainContent/index.tsx
@@ -2909,7 +2975,7 @@ var StyledComposition = import_styled_components13.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.blue[400]};
+    background-color: ${cp.colorAccentSoft};
   }
 
   .content {
@@ -2924,15 +2990,15 @@ var StyledComposition = import_styled_components13.default.div`
       gap: 2px;
 
       li {
-        font-size: 13px;
+        font-size: ${cp.fontSizeSm};
         font-weight: 400;
-        color: black;
+        color: ${cp.colorTextStrong};
         display: flex;
         justify-content: space-between;
         gap: 8px;
 
         &.excipient {
-          color: ${colors.grey[600]};
+          color: ${cp.colorTextSubtle};
         }
 
         .quantity {
@@ -2982,22 +3048,22 @@ var StyledInteractions = import_styled_components14.default.div`
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[950]};
-    color: white;
+    background-color: ${cp.colorCaution};
+    color: ${cp.colorOnBadge};
   }
 
   .content {
     ${infographicElementContentCommonStyles};
 
     div p.effect {
-      font-size: 13px;
-      color: ${colors.grey[600]};
+      font-size: ${cp.fontSizeSm};
+      color: ${cp.colorTextSubtle};
     }
 
     p.more {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
   }
 `;
@@ -3735,10 +3801,11 @@ var IndexedDbServiceStore = class {
 var createIndexedDbTokenStore = () => new IndexedDbServiceStore(TOKEN_IDB_CONFIG);
 
 // src/shared/services/certificate/index.ts
-var certificateStore = new IndexedDbServiceStore(CERTIFICATE_IDB_CONFIG);
+var certificateStoreInstance;
+var certificateStore = () => certificateStoreInstance ??= new IndexedDbServiceStore(CERTIFICATE_IDB_CONFIG);
 var loadCertificateInformation = async (hcp_ssin) => {
   try {
-    const record = await certificateStore.get(hcp_ssin);
+    const record = await certificateStore().get(hcp_ssin);
     return {
       salt: new Uint8Array(record.salt).buffer,
       iv: new Uint8Array(record.iv).buffer,
@@ -3800,7 +3867,7 @@ var uploadAndEncryptCertificate = async (hcp_ssin, passphrase, certificate) => {
       iv: Array.from(iv),
       encryptedCertificate: Array.from(new Uint8Array(encryptedCertificate))
     };
-    return await certificateStore.put(hcp_ssin, record);
+    return await certificateStore().put(hcp_ssin, record);
   } catch (error) {
     console.error(`Encryption failed for certificate of the HCP SSIN ${hcp_ssin}:`, error);
     return void 0;
@@ -3808,7 +3875,7 @@ var uploadAndEncryptCertificate = async (hcp_ssin, passphrase, certificate) => {
 };
 var deleteCertificate = async (hcp_ssin) => {
   try {
-    await certificateStore.delete(hcp_ssin);
+    await certificateStore().delete(hcp_ssin);
     console.log(`Certificate with ID ${hcp_ssin} successfully deleted.`);
     return true;
   } catch (error) {
@@ -3954,8 +4021,8 @@ var StyledAlert = import_styled_components15.default.div`
   align-items: flex-start;
   gap: 6px;
   align-self: stretch;
-  border-radius: 12px;
-  border: 1px solid white;
+  border-radius: ${cp.radiusXl};
+  border: 1px solid ${cp.colorSurface};
 
   .heading {
     display: flex;
@@ -3970,29 +4037,29 @@ var StyledAlert = import_styled_components15.default.div`
   }
 
   h4 {
-    color: ${colors.grey[900]};
-    font-size: 16px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeLg};
     font-style: normal;
     font-weight: 400;
     line-height: 24px;
   }
 
   p {
-    color: ${colors.grey[900]};
-    font-size: 14px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeMd};
     font-style: normal;
     font-weight: 400;
     line-height: 22px;
   }
 
   ${({ $error }) => !!$error && import_styled_components15.css`
-      border-color: ${colors.red[400]};
-      background: ${colors.red[300]};
+      border-color: ${cp.colorCriticalSoft};
+      background: ${cp.colorCriticalSurface};
     `};
 
   ${({ $success }) => !!$success && import_styled_components15.css`
-      border-color: ${colors.green[400]};
-      background: ${colors.green[300]};
+      border-color: ${cp.colorOkSoft};
+      background: ${cp.colorOkSurface};
     `};
 `;
 
@@ -4029,8 +4096,9 @@ var viewStyles = ($view) => {
   switch ($view) {
     case "primary":
       return import_styled_components16.css`
-        background: ${colors.blue[800]};
-        color: #ffffff;
+        background: ${cp.buttonPrimaryBackground};
+        border-color: ${cp.buttonPrimaryBackground};
+        color: ${cp.buttonPrimaryText};
 
         &:hover {
           opacity: 0.9;
@@ -4038,21 +4106,19 @@ var viewStyles = ($view) => {
       `;
     case "outlined":
       return import_styled_components16.css`
-        border-radius: 6px;
-        border-color: ${colors.grey[550]};
-        background: ${colors.grey[100]};
-        color: ${colors.blue[800]};
+        border-color: ${cp.buttonSecondaryBorder};
+        background: ${cp.buttonSecondaryBackground};
+        color: ${cp.buttonSecondaryText};
 
         &:hover {
-          border-color: ${colors.blue[800]};
+          border-color: ${cp.buttonSecondaryText};
         }
       `;
     case "withSpinner":
       return import_styled_components16.css`
-        border-radius: 6px;
-        border-color: ${colors.grey[550]};
-        background: ${colors.grey[100]};
-        color: ${colors.blue[800]};
+        border-color: ${cp.buttonSecondaryBorder};
+        background: ${cp.buttonSecondaryBackground};
+        color: ${cp.buttonSecondaryText};
         gap: 8px;
       `;
     default:
@@ -4060,17 +4126,20 @@ var viewStyles = ($view) => {
   }
 };
 var StyledButton = import_styled_components16.default.button`
+  /* The button is a public atom that may be mounted outside any library root. */
+  ${darkModeDefaults}
   display: flex;
-  height: 32px;
+  ${targetSize("height", cp.controlHeight)};
   padding: 0 16px;
   justify-content: center;
   align-items: center;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: ${cp.buttonRadius};
+  font-family: ${cp.fontFamily};
+  font-size: ${cp.fontSizeMd};
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  border: 1px solid ${colors.blue[800]};
+  border: 1px solid ${cp.buttonPrimaryBackground};
   cursor: pointer;
   min-width: 64px;
 
@@ -4078,16 +4147,27 @@ var StyledButton = import_styled_components16.default.button`
   &[disabled],
   &[disabled]:hover {
     cursor: not-allowed;
-    border-color: ${colors.grey[550]};
-    background: ${colors.grey[200]};
-    color: ${colors.grey[600]};
+    border-color: ${cp.colorBorderStrong};
+    background: ${cp.colorSurfaceDisabled};
+    color: ${cp.colorTextSubtle};
   }
 `;
 
 // src/internal/components/form-elements/Button/index.tsx
 var import_jsx_runtime27 = require("react/jsx-runtime");
 var Button = ({ title, view = "primary", handleClick, type = "button", ...rest }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(StyledButton, { className: "StyledButton", $view: view, onClick: handleClick, type, ...rest, children: view === "withSpinner" ? SpinnerIcn({}) : title });
+  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+    StyledButton,
+    {
+      className: "StyledButton",
+      $view: view,
+      onClick: handleClick,
+      type,
+      ...view === "withSpinner" ? { "aria-label": title, "aria-busy": true } : {},
+      ...rest,
+      children: view === "withSpinner" ? SpinnerIcn({}) : title
+    }
+  );
 };
 
 // src/internal/components/form-elements/TextInput/index.tsx
@@ -4118,20 +4198,20 @@ var StyledInput = import_styled_components17.default.input`
     border-radius: 0;
     height: 100%;
     cursor: pointer;
-    background-color: white;
+    background-color: ${cp.colorSurface};
     border: none;
-    border-right: 1px solid ${colors.grey[550]};
+    border-right: 1px solid ${cp.colorBorderStrong};
     margin-right: 16px;
     padding-right: 12px;
     transition: background-color 200ms;
-    color: ${colors.grey[650]};
+    color: ${cp.colorPlaceholder};
   }
 
   ${({ $error }) => !!$error && import_styled_components17.css`
       ${inputCommonStyles_error}
       &::file-selector-button {
-        color: rgba(255, 0, 0, 0.5);
-        border-color: red;
+        color: ${translucent(cp.colorCritical, 70)};
+        border-color: ${cp.colorCritical};
       }
     `};
   ${({ $disabled }) => !!$disabled && import_styled_components17.css`
@@ -4150,7 +4230,7 @@ var TextInput = (0, import_react2.forwardRef)(({ label, min, type, id, required,
   }, [autoFocus]);
   return /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(StyledTextInput, { className: "StyledTextInput", children: [
     /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)(StyledTextInputLabel, { className: "StyledTextInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("span", { children: "*" }),
+      /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("span", { "aria-hidden": "true", children: "*" }),
       label
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(
@@ -4170,13 +4250,16 @@ var TextInput = (0, import_react2.forwardRef)(({ label, min, type, id, required,
         placeholder: label,
         type: type ?? "text",
         min,
+        "aria-required": required || void 0,
+        "aria-invalid": !!errorMessage || void 0,
+        "aria-describedby": errorMessage ? `${id}-error` : void 0,
         ...rest,
         disabled,
         $disabled: disabled,
         $error: !!errorMessage
       }
     ),
-    errorMessage && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { className: "error", children: errorMessage })
+    errorMessage && /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { id: `${id}-error`, className: "error", children: errorMessage })
   ] });
 });
 TextInput.displayName = "TextInput";
@@ -4197,9 +4280,9 @@ var StyledCertificateForm = import_styled_components18.default.form`
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  border-radius: 12px;
-  border: 1px solid ${colors.grey[300]};
-  background: #fff;
+  border-radius: ${cp.radiusXl};
+  border: 1px solid ${cp.colorBorder};
+  background: ${cp.colorSurface};
   padding: 24px;
   gap: 12px;
 
@@ -4207,8 +4290,8 @@ var StyledCertificateForm = import_styled_components18.default.form`
    padding: 18px;
   `}
   h3 {
-    color: ${colors.grey[900]};
-    font-size: 16px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeLg};
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -4301,6 +4384,7 @@ var CertificateUploadForm = ({ onUploadCertificate, onResetCertificate, onDecryp
 // src/shared/components/PractitionerCertificate/styles.ts
 var import_styled_components19 = __toESM(require("styled-components"));
 var StyledPractitionerCertificate = import_styled_components19.default.div`
+  ${libraryRoot}
   width: 100%;
 
   display: flex;
@@ -4335,24 +4419,21 @@ var PractitionerCertificate = ({
     const timer = setTimeout(() => setSuccessAlertDismissed(true), SUCCESS_ALERT_DURATION_MS);
     return () => clearTimeout(timer);
   }, [showSuccessAlert]);
-  return /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)(import_jsx_runtime30.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)(StyledPractitionerCertificate, { className: "StyledPractitionerCertificate", children: [
-      showSuccessAlert && !successAlertDismissed && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
-      !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
-      errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
-      (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
-        CertificateUploadForm,
-        {
-          onUploadCertificate,
-          onResetCertificate,
-          onDecryptCertificate,
-          certificateAlreadyUploaded: certificateUploaded,
-          hcpSsin
-        }
-      )
-    ] })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(import_jsx_runtime30.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)(StyledPractitionerCertificate, { className: `StyledPractitionerCertificate ${LIBRARY_ROOT_CLASS}`, children: [
+    showSuccessAlert && !successAlertDismissed && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "success", title: t("practitioner.certificateFeedback.successTitle"), description: t("practitioner.certificateFeedback.successDescription") }),
+    !certificateValid && !certificateUploaded && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.failureTitle"), description: t("practitioner.certificateFeedback.failureDescription") }),
+    errorWhileVerifyingCertificate && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(Alert, { status: "error", title: t("practitioner.certificateFeedback.verificationErrorTitle"), description: errorWhileVerifyingCertificate }),
+    (!certificateValid || !certificateUploaded) && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
+      CertificateUploadForm,
+      {
+        onUploadCertificate,
+        onResetCertificate,
+        onDecryptCertificate,
+        certificateAlreadyUploaded: certificateUploaded,
+        hcpSsin
+      }
+    )
+  ] }) });
 };
 
 // src/shared/components/MedicationSearch/index.tsx
@@ -4386,22 +4467,22 @@ var StyledMedicationInfographics = import_styled_components20.default.div`
     height: 22px;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
+    border-radius: ${cp.radiusSm};
 
     &--outline {
-      border: 1px solid ${colors.blue[400]};
+      border: 1px solid ${cp.colorAccentSoft};
     }
 
     &--red {
-      background-color: ${colors.red[400]};
+      background-color: ${cp.colorCriticalSoft};
     }
 
     &--orange {
-      background-color: ${colors.orange[800]};
+      background-color: ${cp.colorCautionSoft};
     }
 
     &--green {
-      background-color: ${colors.green[400]};
+      background-color: ${cp.colorOkSoft};
     }
   }
 `;
@@ -4420,8 +4501,8 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
       {
         className: "medication",
         onClick: readOnly ? void 0 : handleAddPrescription,
-        role: "button",
-        tabIndex: readOnly ? -1 : 0,
+        role: readOnly ? void 0 : "button",
+        tabIndex: readOnly ? void 0 : 0,
         onKeyDown: (event) => {
           if (event.key === "Enter" && !readOnly) handleAddPrescription();
         },
@@ -4448,6 +4529,8 @@ var Header = ({ handleAddPrescription, medication, isMedicationCardExpanded, set
           setMedicationCardExpanded(!isMedicationCardExpanded);
         },
         type: "button",
+        "aria-label": t("medication.ui.showDetails"),
+        "aria-expanded": isMedicationCardExpanded,
         children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(ChevronIcn, {})
       }
     )
@@ -4463,11 +4546,11 @@ var StyledExtension = import_styled_components21.default.div`
   padding: 18px 12px;
   gap: 18px;
 
-  background-color: ${colors.blue[200]};
+  background-color: ${cp.colorSurfaceSunken};
 
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 ${cp.radiusMd} ${cp.radiusMd};
 
-  border-top: 1px dashed ${colors.blue[500]};
+  border-top: 1px dashed ${cp.colorAccent};
 
   .vmp {
     width: 100%;
@@ -4482,15 +4565,15 @@ var StyledExtension = import_styled_components21.default.div`
       gap: 4px;
 
       span {
-        font-size: 12px;
+        font-size: ${cp.fontSizeXs};
         font-weight: 400;
-        color: ${colors.blue[600]};
+        color: ${cp.colorTextMuted};
       }
 
       p {
-        font-size: 14px;
+        font-size: ${cp.fontSizeMd};
         font-weight: 400;
-        color: black;
+        color: ${cp.colorTextStrong};
       }
     }
   }
@@ -4505,15 +4588,15 @@ var StyledExtension = import_styled_components21.default.div`
     gap: 4px;
 
     span {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
 
     p {
-      font-size: 14px;
+      font-size: ${cp.fontSizeMd};
       font-weight: 400;
-      color: black;
+      color: ${cp.colorTextStrong};
     }
   }
 
@@ -4528,7 +4611,7 @@ var StyledExtension = import_styled_components21.default.div`
   // flex item.
   & > *:not(:first-child) {
     padding-top: 18px;
-    border-top: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
+    border-top: 1px dashed ${translucent(cp.colorAccent, 25)};
   }
 
   .links {
@@ -4541,8 +4624,8 @@ var StyledExtension = import_styled_components21.default.div`
 
     a {
       width: 49%;
-      color: ${colors.blue[500]};
-      font-size: 14px;
+      color: ${cp.colorLink};
+      font-size: ${cp.fontSizeMd};
       font-style: normal;
       font-weight: 400;
       line-height: normal;
@@ -4561,16 +4644,19 @@ var Extension = ({ medication }) => /* @__PURE__ */ (0, import_jsx_runtime34.jsx
 // src/internal/components/medication-elements/MedicationCard/styles.ts
 var import_styled_components22 = __toESM(require("styled-components"));
 var activeMedicationCard = import_styled_components22.css`
-  border-color: ${colors.blue[500]};
-  box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
+  border-color: ${cp.colorAccent};
+  box-shadow: 0 0 0 2px ${cp.colorHoverHalo};
 `;
 var StyledMedicationCard = import_styled_components22.default.div`
+  /* The card is a public atom that may be mounted outside any library root. */
+  ${darkModeDefaults}
+  ${rootText}
   width: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid ${colors.blue[100]};
+  border-radius: ${cp.radiusMd};
+  background: ${cp.colorSurface};
+  border: 1px solid ${cp.colorBorderAccent};
   cursor: pointer;
 
   ${({ $subMedication }) => $subMedication && import_styled_components22.css`
@@ -4578,7 +4664,7 @@ var StyledMedicationCard = import_styled_components22.default.div`
         padding-left: 28px;
 
         h3 {
-          font-size: 14px;
+          font-size: ${cp.fontSizeMd};
         }
       }
     `};
@@ -4591,7 +4677,7 @@ var StyledMedicationCard = import_styled_components22.default.div`
       ${activeMedicationCard};
 
       ${StyledHeader} {
-        border-radius: 6px 6px 0 0;
+        border-radius: ${cp.radiusMd} ${cp.radiusMd} 0 0;
       }
     `};
 
@@ -4607,7 +4693,7 @@ var StyledMedicationCard = import_styled_components22.default.div`
 
   ${({ $disableHover }) => $disableHover && import_styled_components22.css`
       &:hover {
-        border-color: ${colors.blue[100]};
+        border-color: ${cp.colorBorderAccent};
         box-shadow: none;
         cursor: not-allowed;
       }
@@ -4641,14 +4727,14 @@ var StyledMedicationProductTitle = import_styled_components23.default.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid ${colors.blue[100]};
+  border-radius: ${cp.radiusMd};
+  background: ${cp.colorSurface};
+  border: 1px solid ${cp.colorBorderAccent};
   padding: 8px 12px;
 
   h3 {
-    color: ${colors.grey[900]};
-    font-size: 16px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeLg};
     font-style: normal;
     font-weight: 500;
   }
@@ -4697,6 +4783,7 @@ var InfiniteScroll = ({ threshold = 0, loadMore: loadMore2 }) => {
 // src/shared/components/MedicationSearch/styles.ts
 var import_styled_components24 = __toESM(require("styled-components"));
 var StyledMedicationSearch = import_styled_components24.default.div`
+  ${libraryRoot}
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -4718,8 +4805,8 @@ var StyledMedicationSearch = import_styled_components24.default.div`
     padding: 16px 12px;
 
     p {
-      color: ${colors.grey[600]};
-      font-size: 14px;
+      color: ${cp.colorTextSubtle};
+      font-size: ${cp.fontSizeMd};
       text-align: center;
     }
   }
@@ -4733,17 +4820,22 @@ var StyledMedicationSearchInput = import_styled_components24.default.div`
 
   input {
     width: 100%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    /* The surrounding field draws the focus indicator (:focus-within). */
+    outline: none;
 
     &::placeholder {
-      color: ${colors.grey[650]};
+      color: ${cp.colorPlaceholder};
     }
   }
 
   ${({ $dropdownDisplayed }) => !!$dropdownDisplayed && import_styled_components24.css`
       label {
-        border-color: ${colors.blue[800]};
-        box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        border-radius: 6px;
+        border-color: ${cp.colorPrimary};
+        box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+        border-radius: ${cp.radiusMd};
       }
     `};
 
@@ -4763,8 +4855,10 @@ var StyledLabel = import_styled_components24.default.label`
   justify-content: space-between;
 
   &:focus-within {
-    border-color: ${colors.blue[800]};
-    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+    border-color: ${cp.colorPrimary};
+    box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+    outline: 2px solid ${cp.colorFocusRing};
+    outline-offset: 1px;
   }
 
   ${({ $error }) => !!$error && import_styled_components24.css`
@@ -4784,13 +4878,10 @@ var StyledMedicationSearchDropdown = import_styled_components24.default.div`
   padding: 6px 8px 6px 6px;
   gap: 5px;
 
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 ${cp.radiusMd} ${cp.radiusMd};
   border-top: none;
-  background: ${colors.blue[300]};
-  box-shadow:
-    0 9px 28px 0 rgba(0, 0, 0, 0.05),
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px 0 rgba(0, 0, 0, 0.12);
+  background: ${cp.colorSurfaceAccent};
+  box-shadow: ${cp.shadowPopup};
 
   .medicationCardWrap {
     width: 100%;
@@ -4933,80 +5024,78 @@ var MedicationSearch = ({ medicationProvider, onAddPrescription, disableInputEve
     return !!value && value.length < 3;
   };
   const isFocused = (medicationIndex, subMedicationIndex) => focusedMedicationIndex === medicationIndex && focusedSubMedicationIndex === subMedicationIndex;
-  return /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(import_jsx_runtime38.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearch, { className: "StyledMedicationSearch", onKeyDown: handleKeyDown, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)("p", { children: [
-          t("medication.search.label"),
-          ":"
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-            "input",
-            {
-              id: "searchMedications",
-              type: "text",
-              placeholder: searchPlaceholder ?? t("medication.search.label"),
-              autoComplete: "off",
-              autoCapitalize: "off",
-              value: searchQuery,
-              onChange: (e) => setSearchQuery(e.target.value)
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(SearchIcn, {})
-        ] }),
-        showSearchError() && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("p", { className: "error", children: t("medication.search.errorMessage") })
+  return /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(import_jsx_runtime38.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearch, { className: `StyledMedicationSearch ${LIBRARY_ROOT_CLASS}`, onKeyDown: handleKeyDown, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearchInput, { className: "StyledMedicationSearchInput", $dropdownDisplayed: dropdownDisplayed, $error: showSearchError(), children: [
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)("p", { children: [
+        t("medication.search.label"),
+        ":"
       ] }),
-      showSpinner && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "spinner", children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(SpinnerIcn, { size: 32, pathFill: "#3d87c5" }) }),
-      pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
-        pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-          "div",
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledLabel, { className: "StyledLabel", $error: showSearchError(), htmlFor: "searchMedications", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+          "input",
           {
-            ref: (el) => {
-              resultRefs.current[i] = el;
-            },
-            className: "medOrProdWrap",
-            children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(import_jsx_runtime38.Fragment, { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
-              entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-                MedicationCard,
-                {
-                  medication: smed,
-                  handleAddPrescription,
-                  id: `result-${i}-${j}`,
-                  focused: isFocused(i, j),
-                  subMedication: true,
-                  short
-                }
-              ) }, j))
-            ] }) : /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+            id: "searchMedications",
+            "aria-label": t("medication.search.label"),
+            type: "text",
+            placeholder: searchPlaceholder ?? t("medication.search.label"),
+            autoComplete: "off",
+            autoCapitalize: "off",
+            value: searchQuery,
+            onChange: (e) => setSearchQuery(e.target.value)
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(SearchIcn, {})
+      ] }),
+      showSearchError() && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("p", { className: "error", children: t("medication.search.errorMessage") })
+    ] }),
+    showSpinner && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "spinner", children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(SpinnerIcn, { size: 32, pathFill: cp.iconInfo }) }),
+    pages.length !== 0 && dropdownDisplayed && /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(StyledMedicationSearchDropdown, { className: "medicationSearchDropdown", children: [
+      pages.map((entry, i) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+        "div",
+        {
+          ref: (el) => {
+            resultRefs.current[i] = el;
+          },
+          className: "medOrProdWrap",
+          children: entry.product ? /* @__PURE__ */ (0, import_jsx_runtime38.jsxs)(import_jsx_runtime38.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(MedicationProductTitle, { productTitle: entry.product.title }),
+            entry.medications.map((smed, j) => /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap subMedication${isFocused(i, j) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
               MedicationCard,
               {
-                medication: entry.medications[0],
+                medication: smed,
                 handleAddPrescription,
-                id: `result-${i}`,
-                focused: isFocused(i, 0),
-                subMedication: false,
+                id: `result-${i}-${j}`,
+                focused: isFocused(i, j),
+                subMedication: true,
                 short
               }
-            ) })
-          },
-          i
-        )),
-        /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
-          InfiniteScroll,
-          {
-            threshold: 50,
-            loadMore: () => runLoadMore().then((result) => {
-              if (result.length) setPages((prev) => [...prev, ...result.map(medMapper)]);
-            })
-          }
-        )
-      ] }),
-      showNoMatchesPlaceholder && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "placeholder", children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("p", { children: t("medication.search.noMatchingPlaceholder") }) })
-    ] })
-  ] });
+            ) }, j))
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: `cardWrap${isFocused(i, 0) ? " focused" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+            MedicationCard,
+            {
+              medication: entry.medications[0],
+              handleAddPrescription,
+              id: `result-${i}`,
+              focused: isFocused(i, 0),
+              subMedication: false,
+              short
+            }
+          ) })
+        },
+        i
+      )),
+      /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+        InfiniteScroll,
+        {
+          threshold: 50,
+          loadMore: () => runLoadMore().then((result) => {
+            if (result.length) setPages((prev) => [...prev, ...result.map(medMapper)]);
+          })
+        }
+      )
+    ] }),
+    showNoMatchesPlaceholder && /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("div", { className: "placeholder", children: /* @__PURE__ */ (0, import_jsx_runtime38.jsx)("p", { children: t("medication.search.noMatchingPlaceholder") }) })
+  ] }) });
 };
 
 // src/shared/components/PrescriptionModal/index.tsx
@@ -5144,11 +5233,27 @@ var StyledSelectDropdown = import_styled_components25.default.select`
 var import_jsx_runtime39 = require("react/jsx-runtime");
 var SelectInput = (0, import_react9.forwardRef)(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(StyledSelectInput, { className: "StyledSelectInput", children: [
   /* @__PURE__ */ (0, import_jsx_runtime39.jsxs)(StyledSelectInputLabel, { className: "StyledSelectInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { children: "*" }),
+    /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("span", { "aria-hidden": "true", children: "*" }),
     label
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(StyledSelectDropdown, { className: "StyledSelectDropdown", ref, id, name: id, value, onChange, disabled, ...rest, children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("option", { value: option.value ?? "", children: option.label }, option.value ?? "")) }),
-  !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("p", { className: "error", children: errorMessage })
+  /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+    StyledSelectDropdown,
+    {
+      className: "StyledSelectDropdown",
+      ref,
+      id,
+      name: id,
+      value,
+      onChange,
+      disabled,
+      "aria-required": required || void 0,
+      "aria-invalid": !!errorMessage || void 0,
+      "aria-describedby": errorMessage ? `${id}-error` : void 0,
+      ...rest,
+      children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("option", { value: option.value ?? "", children: option.label }, option.value ?? ""))
+    }
+  ),
+  !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime39.jsx)("p", { id: `${id}-error`, className: "error", children: errorMessage })
 ] }));
 
 // src/internal/components/form-elements/RadioInput/index.tsx
@@ -5170,28 +5275,29 @@ var StyledRadioButtonToggleStuffing = import_styled_components26.default.span`
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: ${colors.blue[800]};
+  background: ${cp.colorPrimary};
 `;
 var StyledRadioButtonToggle = import_styled_components26.default.span`
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 15px;
   height: 15px;
   padding: 2px;
   border-radius: 50%;
-  border: 1px solid ${colors.grey[600]};
-  background: #fff;
+  border: 1px solid ${cp.colorBorderControl};
+  background: ${cp.colorSurface};
 
   ${({ $error }) => !!$error && import_styled_components26.css`
-      border-color: red;
+      border-color: ${cp.colorCritical};
 
       &:hover {
-        box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+        box-shadow: 0 0 0 2px ${translucent(cp.colorCritical, 20)};
       }
 
       ${StyledRadioButtonToggleStuffing} {
-        background: red;
+        background: ${cp.colorCritical};
       }
     `}
 `;
@@ -5206,45 +5312,56 @@ var StyledRadioButtonLabel = import_styled_components26.default.span`
   font-weight: 400;
 `;
 var StyledRadioButton = import_styled_components26.default.label`
+  position: relative;
   align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
+  ${targetSize("min-height")};
   cursor: pointer;
 
   &:hover {
     ${StyledRadioButtonToggle} {
-      box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-      border-color: ${colors.blue[800]};
+      box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+      border-color: ${cp.colorPrimary};
     }
   }
 
+  /* Visually hidden but still focusable and announced; the whole label is the target. */
   input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
 
     &:checked + ${StyledRadioButtonToggle} {
-      border-color: ${colors.blue[800]};
+      border-color: ${cp.colorPrimary};
 
       ${StyledRadioButtonToggleStuffing} {
         display: flex;
       }
+    }
+
+    &:focus-visible + ${StyledRadioButtonToggle} {
+      outline: 2px solid ${cp.colorFocusRing};
+      outline-offset: 2px;
     }
   }
 
   ${({ $error }) => !!$error && import_styled_components26.css`
       &:hover {
         ${StyledRadioButtonToggle} {
-          box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
-          border-color: red;
+          box-shadow: 0 0 0 2px ${translucent(cp.colorCritical, 20)};
+          border-color: ${cp.colorCritical};
         }
       }
 
       input {
-        display: none;
-
         &:checked + ${StyledRadioButtonToggle} {
-          border-color: red;
+          border-color: ${cp.colorCritical};
 
           ${StyledRadioButtonToggleStuffing} {
             display: flex;
@@ -5262,7 +5379,7 @@ var StyledRadioInput = import_styled_components26.default.div`
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
-    gap: 18px;
+    column-gap: 18px;
   }
 
   .error {
@@ -5273,29 +5390,42 @@ var StyledRadioInput = import_styled_components26.default.div`
 // src/internal/components/form-elements/RadioInput/index.tsx
 var import_jsx_runtime40 = require("react/jsx-runtime");
 var RadioInput = (0, import_react10.forwardRef)(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
+  const groupLabelId = (0, import_react10.useId)();
+  const errorId = (0, import_react10.useId)();
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledRadioInput, { className: "StyledRadioInput", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledRadioGroupLabel, { className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("span", { children: "*" }),
+    /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledRadioGroupLabel, { id: groupLabelId, className: "StyledRadioGroupLabel", $required: required, $error: !!errorMessage, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("span", { "aria-hidden": "true", children: "*" }),
       label
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", { className: "radioBtnsGroup", children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
-        "input",
-        {
-          id: option.id,
-          name,
-          type: "radio",
-          checked: value === option.value,
-          value: String(option.value),
-          required,
-          onChange: () => onChange?.(option.value),
-          ref
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
-    ] }, option.id)) }),
-    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("p", { className: "error", children: errorMessage })
+    /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
+      "div",
+      {
+        className: "radioBtnsGroup",
+        role: "radiogroup",
+        "aria-labelledby": groupLabelId,
+        "aria-required": required || void 0,
+        "aria-invalid": !!errorMessage || void 0,
+        "aria-describedby": errorMessage ? errorId : void 0,
+        children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime40.jsxs)(StyledRadioButton, { className: "StyledRadioButton", htmlFor: option.id, $error: !!errorMessage, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
+            "input",
+            {
+              id: option.id,
+              name,
+              type: "radio",
+              checked: value === option.value,
+              value: String(option.value),
+              required,
+              onChange: () => onChange?.(option.value),
+              ref
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonToggle, { className: "StyledRadioButtonToggle", $error: !!errorMessage, children: /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonToggleStuffing, { className: "StyledRadioButtonToggleStuffing" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(StyledRadioButtonLabel, { $error: !!errorMessage, children: option.label })
+        ] }, option.id))
+      }
+    ),
+    !!errorMessage && /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("p", { id: errorId, className: "error", children: errorMessage })
   ] });
 });
 RadioInput.displayName = "RadioInput";
@@ -5306,7 +5436,6 @@ var import_react11 = require("react");
 // src/internal/components/form-elements/ToggleSwitch/styles.ts
 var import_styled_components27 = __toESM(require("styled-components"));
 var StyledSwitch = import_styled_components27.default.div`
-
   ${fieldCommonStyles};
 
   .toggleSwitchLabel {
@@ -5315,6 +5444,7 @@ var StyledSwitch = import_styled_components27.default.div`
 
   .toggleWrapper {
     display: flex;
+    ${targetSize("min-height")};
     padding: 4px 0;
     align-items: center;
     gap: 12px;
@@ -5323,25 +5453,21 @@ var StyledSwitch = import_styled_components27.default.div`
     .toggle {
       position: relative;
       display: inline-block;
+      flex-shrink: 0;
       width: 46px;
       height: 24px;
 
       .slider {
         position: absolute;
-        cursor: pointer;
+        pointer-events: none;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: ${colors.grey[550]};
+        background-color: ${cp.colorBorderStrong};
         border: 1px solid transparent;
         transition: 0.4s;
-        border-radius: 34px;
-
-        &:hover {
-          border-color: ${colors.blue[800]};
-          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        }
+        border-radius: ${cp.radiusPill};
 
         &::before {
           position: absolute;
@@ -5350,40 +5476,49 @@ var StyledSwitch = import_styled_components27.default.div`
           width: 18px;
           left: 2px;
           bottom: 2px;
-          background-color: white;
+          background-color: ${cp.colorSurface};
           transition: 0.4s;
           border-radius: 50%;
         }
       }
 
       input {
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        ${targetSize("height", "24px")};
+        margin: 0;
         opacity: 0;
-        width: 0;
-        height: 0;
+        cursor: pointer;
+
+        &:hover + .slider {
+          border-color: ${cp.colorPrimary};
+          box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+        }
 
         &:checked + .slider {
-          background-color: ${colors.blue[800]};
+          background-color: ${cp.colorPrimary};
         }
 
-        &:checked + .slider:hover {
-          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        }
-
-        &:focus + .slider {
-          box-shadow: 0 0 1px ${colors.blue[800]};
+        &:focus-visible + .slider {
+          outline: 2px solid ${cp.colorFocusRing};
+          outline-offset: 2px;
         }
 
         &:checked + .slider::before {
-          -webkit-transform: translateX(20px);
-          -ms-transform: translateX(20px);
           transform: translateX(20px);
         }
       }
     }
 
-    p {
+    .toggleSwitchText {
       ${labelCommonStyles};
+      width: auto;
     }
+  }
 `;
 
 // src/internal/components/form-elements/ToggleSwitch/index.tsx
@@ -5392,11 +5527,11 @@ var ToggleSwitch = (0, import_react11.forwardRef)(({ id, value, label, onChange,
   return /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)(StyledSwitch, { className: "StyledSwitch", children: [
     label && /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("p", { className: "toggleSwitchLabel", children: label }),
     /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("div", { className: "toggleWrapper", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("label", { htmlFor: id, className: "toggle", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("input", { id, name: id, type: "checkbox", checked, onChange, ref }),
-        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("span", { className: "slider" })
+      /* @__PURE__ */ (0, import_jsx_runtime41.jsxs)("span", { className: "toggle", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("input", { id, name: id, type: "checkbox", role: "switch", checked, onChange, ref }),
+        /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("span", { className: "slider", "aria-hidden": "true" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("p", { children: value })
+      /* @__PURE__ */ (0, import_jsx_runtime41.jsx)("label", { htmlFor: id, className: "toggleSwitchText", children: value })
     ] })
   ] });
 });
@@ -5439,7 +5574,7 @@ var StyledTextarea = import_styled_components28.default.textarea`
 var import_jsx_runtime42 = require("react/jsx-runtime");
 var TextareaInput = import_react12.default.forwardRef(({ label, id, required, disabled, errorMessage, ...rest }, ref) => /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(StyledTextareaInput, { className: "StyledTextareaInput", children: [
   /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(StyledTextareaInputLabel, { className: "StyledTextareaInputLabel", htmlFor: id, $required: required, $error: !!errorMessage, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("span", { children: "*" }),
+    /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("span", { "aria-hidden": "true", children: "*" }),
     label
   ] }),
   /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(
@@ -5453,23 +5588,27 @@ var TextareaInput = import_react12.default.forwardRef(({ label, id, required, di
       $error: !!errorMessage,
       disabled,
       rows: 3,
+      "aria-required": required || void 0,
+      "aria-invalid": !!errorMessage || void 0,
+      "aria-describedby": errorMessage && id ? `${id}-error` : void 0,
       ref,
       ...rest
     }
   ),
-  errorMessage && /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("p", { className: "error", children: errorMessage })
+  errorMessage && /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("p", { id: id ? `${id}-error` : void 0, className: "error", children: errorMessage })
 ] }));
 
 // src/shared/components/PrescriptionModal/styles.ts
 var import_styled_components29 = __toESM(require("styled-components"));
 var StyledPrescriptionModal = import_styled_components29.default.div`
+  ${libraryRoot}
   width: 100vw;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
-  background-color: rgba(${colorsRgb.blue[800]}, 0.3);
+  background-color: ${cp.colorOverlay};
   z-index: 1020;
 
   .content {
@@ -5502,33 +5641,34 @@ var StyledPrescriptionModal = import_styled_components29.default.div`
       align-items: center;
       align-self: stretch;
 
-      border-bottom: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-bottom: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
       padding: 20px 16px;
   `};
 
       h3 {
-        color: ${colors.grey[900]};
-        font-size: 16px;
+        color: ${cp.colorText};
+        font-size: ${cp.fontSizeLg};
         font-style: normal;
         font-weight: 500;
         line-height: normal;
       }
 
       &__closeIcn {
-        width: 22px;
-        height: 22px;
+        ${targetSize("width")};
+        ${targetSize("height")};
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        background-color: #ffffff;
-        border-radius: 4px;
+        background-color: ${cp.colorSurface};
+        border-radius: ${cp.radiusXs};
 
         &:hover {
-          background-color: rgba(${colorsRgb.grey[300]};, 0.4);
+          background-color: ${cp.colorSurfaceDisabled};
         }
       }
     }
@@ -5544,7 +5684,7 @@ var StyledPrescriptionModal = import_styled_components29.default.div`
       align-self: stretch;
       flex: 1 0 0;
       gap: 12px;
-      background-color: ${colors.blue[200]};
+      background-color: ${cp.colorSurfaceSunken};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
        padding: 16px;
@@ -5560,9 +5700,9 @@ var StyledPrescriptionModal = import_styled_components29.default.div`
         flex-direction: column;
         align-items: flex-start;
         align-self: stretch;
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
         padding: 24px;
         gap: 12px;
 
@@ -5592,14 +5732,14 @@ var StyledPrescriptionModal = import_styled_components29.default.div`
         align-items: flex-start;
         align-self: stretch;
 
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
-        box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
+        box-shadow: ${cp.shadowSection};
 
         p {
-          color: rgba(${colorsRgb.grey[600]}, 0.7);
-          font-size: 14px;
+          color: ${cp.colorTextSubtle};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 400;
           line-height: 22px; /* 169.231% */
@@ -5614,8 +5754,8 @@ var StyledPrescriptionModal = import_styled_components29.default.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      border-top: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-top: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
 
     @keyframes zoom {
@@ -5644,8 +5784,17 @@ var StyledDosageInput = import_styled_components29.default.div`
   flex-direction: column;
   align-items: flex-start;
 
+  .posologyEditorSlot {
+    width: 100%;
+  }
+
+  .suggestionsDropdown[hidden] {
+    display: none;
+  }
+
   .suggestionsDropdown {
     position: absolute;
+    z-index: 1;
     top: calc(100% + 2px);
 
     width: 100%;
@@ -5655,36 +5804,38 @@ var StyledDosageInput = import_styled_components29.default.div`
     padding: 2px;
     gap: 2px;
 
-    border-radius: 6px;
-    background: #fff;
-    box-shadow:
-      0 9px 28px 0 rgba(0, 0, 0, 0.05),
-      0 6px 16px 0 rgba(0, 0, 0, 0.08),
-      0 3px 6px 0 rgba(0, 0, 0, 0.12);
+    border-radius: ${cp.radiusMd};
+    background: ${cp.colorSurface};
+    box-shadow: ${cp.shadowPopup};
   }
 `;
 var suggestionItemOnAction = import_styled_components29.css`
-  background: ${colors.blue[300]};
-  color: ${colors.blue[800]} !important;
+  background: ${cp.colorSurfaceAccent};
+  color: ${cp.colorPrimary} !important;
 `;
 var StyledSuggestionItem = import_styled_components29.default.li`
   width: 100%;
   display: flex;
-  padding: 8px;
+  padding: 0;
   align-items: center;
   align-self: stretch;
 
-  border-radius: 4px;
-  background: #fff;
+  border-radius: ${cp.radiusXs};
+  background: ${cp.colorSurface};
 
-  color: ${colors.grey[900]};
-  font-family: 'Inter Variable', sans-serif;
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-family: ${cp.fontFamilyControl};
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
   line-height: 22px;
 
   button {
+    width: 100%;
+    padding: 8px;
+    ${targetSize("min-height")};
+    text-align: left;
     background: none;
+    cursor: pointer;
   }
 
   &:hover {
@@ -5718,29 +5869,31 @@ var import_react13 = require("react");
 var import_styled_components30 = __toESM(require("styled-components"));
 var StyledCheapAlternatives = import_styled_components30.default.div`
   margin: 8px 0;
-  border: 1px solid #d9e6f2;
-  border-radius: 6px;
+  border: 1px solid ${cp.colorBorderAccent};
+  border-radius: ${cp.radiusMd};
   overflow: hidden;
 `;
-var StyledCheapAlternativesHeader = import_styled_components30.default.div`
+var StyledCheapAlternativesHeader = import_styled_components30.default.button`
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${targetSize("min-height")};
   padding: 8px 12px;
+  border: none;
   cursor: pointer;
-  background: #f2f8fd;
-  color: #3d87c5;
-  font-size: 13px;
+  text-align: left;
+  background: ${cp.colorSurfaceAccentSubtle};
+  color: ${cp.colorLink};
+  font-family: inherit;
+  font-size: ${cp.fontSizeSm};
 `;
-var StyledCheapAlternativesHeaderContent = import_styled_components30.default.div`
+var StyledCheapAlternativesHeaderContent = import_styled_components30.default.span`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
-var StyledCheapAlternativesToggle = import_styled_components30.default.button`
-  border: none;
-  background: none;
-  cursor: pointer;
+var StyledCheapAlternativesToggle = import_styled_components30.default.span`
   display: flex;
   align-items: center;
   transition: transform 0.2s ease;
@@ -5754,15 +5907,18 @@ var StyledCheapAlternativesContent = import_styled_components30.default.ul`
 var StyledCheapAlternativesItem = import_styled_components30.default.li`
   button {
     width: 100%;
+    ${targetSize("min-height")};
     text-align: left;
     padding: 6px 12px;
     border: none;
     background: none;
+    color: ${cp.colorText};
     cursor: pointer;
-    font-size: 13px;
+    font-family: inherit;
+    font-size: ${cp.fontSizeSm};
 
     &:hover {
-      background: #f2f8fd;
+      background: ${cp.colorSurfaceAccentSubtle};
     }
   }
 `;
@@ -5782,12 +5938,12 @@ var CheapAlternatives = ({ sdk, medications, onSelectMedication }) => {
     onSelectMedication({ ...medication, regulatory: { ...medication.regulatory, be: { ...medication.regulatory?.be, vmpGroup } } });
   };
   return /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(StyledCheapAlternatives, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(StyledCheapAlternativesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+    /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(StyledCheapAlternativesHeader, { type: "button", "aria-expanded": isExpanded, onClick: () => setIsExpanded((v) => !v), children: [
       /* @__PURE__ */ (0, import_jsx_runtime43.jsxs)(StyledCheapAlternativesHeaderContent, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(WarningIcn, { color: "#3D87C5" }),
+        /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(WarningIcn, {}),
         /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("span", { children: isCheap ? t("medication.drugInfographic.otherCheapAlternativesMessage") : t("medication.drugInfographic.cheapAlternativesMessage") })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledCheapAlternativesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(ChevronIcn, {}) })
+      /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledCheapAlternativesToggle, { "aria-hidden": "true", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(ChevronIcn, {}) })
     ] }),
     isExpanded && /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledCheapAlternativesContent, { children: medications.map((medication, index) => /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(StyledCheapAlternativesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("button", { type: "button", onClick: () => onMedicationClick(medication), children: medication.title }) }, medication.id ?? index)) })
   ] });
@@ -5801,29 +5957,31 @@ var import_medication_sdk = require("@icure/medication-sdk");
 var import_styled_components31 = __toESM(require("styled-components"));
 var StyledStandardDosages = import_styled_components31.default.div`
   margin: 8px 0;
-  border: 1px solid #d9e6f2;
-  border-radius: 6px;
+  border: 1px solid ${cp.colorBorderAccent};
+  border-radius: ${cp.radiusMd};
   overflow: hidden;
 `;
-var StyledStandardDosagesHeader = import_styled_components31.default.div`
+var StyledStandardDosagesHeader = import_styled_components31.default.button`
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${targetSize("min-height")};
   padding: 8px 12px;
+  border: none;
   cursor: pointer;
-  background: #f2f8fd;
-  color: #3d87c5;
-  font-size: 13px;
+  text-align: left;
+  background: ${cp.colorSurfaceAccentSubtle};
+  color: ${cp.colorLink};
+  font-family: inherit;
+  font-size: ${cp.fontSizeSm};
 `;
-var StyledStandardDosagesHeaderContent = import_styled_components31.default.div`
+var StyledStandardDosagesHeaderContent = import_styled_components31.default.span`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
-var StyledStandardDosagesToggle = import_styled_components31.default.button`
-  border: none;
-  background: none;
-  cursor: pointer;
+var StyledStandardDosagesToggle = import_styled_components31.default.span`
   display: flex;
   align-items: center;
   transition: transform 0.2s ease;
@@ -5837,15 +5995,18 @@ var StyledStandardDosagesContent = import_styled_components31.default.ul`
 var StyledStandardDosagesItem = import_styled_components31.default.li`
   button {
     width: 100%;
+    ${targetSize("min-height")};
     text-align: left;
     padding: 6px 12px;
     border: none;
     background: none;
+    color: ${cp.colorText};
     cursor: pointer;
-    font-size: 13px;
+    font-family: inherit;
+    font-size: ${cp.fontSizeSm};
 
     &:hover {
-      background: #f2f8fd;
+      background: ${cp.colorSurfaceAccentSubtle};
     }
   }
 `;
@@ -5858,12 +6019,12 @@ var StandardDosages = ({ dosages, language, onSelectDosage }) => {
     return null;
   }
   return /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)(StyledStandardDosages, { className: "StyledStandardDosages", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)(StyledStandardDosagesHeader, { onClick: () => setIsExpanded((v) => !v), children: [
+    /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)(StyledStandardDosagesHeader, { type: "button", "aria-expanded": isExpanded, onClick: () => setIsExpanded((v) => !v), children: [
       /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)(StyledStandardDosagesHeaderContent, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(WarningIcn, { color: "#3D87C5" }),
+        /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(WarningIcn, {}),
         t("medication.drugInfographic.standardDosagesMessage")
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(StyledStandardDosagesToggle, { type: "button", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(ChevronIcn, {}) })
+      /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(StyledStandardDosagesToggle, { "aria-hidden": "true", $expanded: isExpanded, children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(ChevronIcn, {}) })
     ] }),
     isExpanded && /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(StyledStandardDosagesContent, { children: dosages.map((dosage, index) => /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(StyledStandardDosagesItem, { children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)("button", { type: "button", onClick: () => onSelectDosage(dosage), children: (0, import_medication_sdk.marshal)(dosage, language) }) }, index)) })
   ] });
@@ -5968,6 +6129,7 @@ var createRegimenItemsFromDosage = (dosage) => {
     return void 0;
   }
 };
+var regimenOf = (formValues) => formValues.regimen !== void 0 ? formValues.regimen.length > 0 ? formValues.regimen : void 0 : createRegimenItemsFromDosage(formValues.dosage);
 var createSinglePrescribedMedication = (prescribedMedication, formValues) => {
   return [
     {
@@ -5986,7 +6148,7 @@ var createSinglePrescribedMedication = (prescribedMedication, formValues) => {
           unit: createFhcCode("CD-TIMEUNIT", "D"),
           value: getDurationInDays(formValues.durationTimeUnit, formValues.duration)
         }),
-        regimen: createRegimenItemsFromDosage(formValues.dosage),
+        regimen: regimenOf(formValues),
         instructionForPatient: formValues.dosage,
         recipeInstructionForPatient: formValues.recipeInstructionForPatient,
         instructionsForReimbursement: formValues.instructionsForReimbursement,
@@ -6035,7 +6197,7 @@ var createMedicationForPrescription = (formValues, medicationToPrescribe, idx) =
       unit: createFhcCode("CD-TIMEUNIT", "D"),
       value: getDurationInDays(formValues.durationTimeUnit, formValues.duration)
     }),
-    regimen: createRegimenItemsFromDosage(formValues.dosage),
+    regimen: regimenOf(formValues),
     instructionForPatient: formValues.dosage,
     recipeInstructionForPatient: formValues.recipeInstructionForPatient,
     instructionsForReimbursement: formValues.instructionsForReimbursement,
@@ -6142,8 +6304,11 @@ var PrescriptionModal = ({
   standardDosageContext,
   onClose,
   onSubmit,
-  modalMood
+  modalMood,
+  posologyEditor: PosologyEditor
 }) => {
+  const titleId = (0, import_react15.useId)();
+  const suggestionsId = (0, import_react15.useId)();
   const [posologySuggestions, setPosologySuggestions] = (0, import_react15.useState)([]);
   const [focusedDosageIndex, setFocusedDosageIndex] = (0, import_react15.useState)(-1);
   const [disableHover, setDisableHover] = (0, import_react15.useState)(false);
@@ -6156,6 +6321,8 @@ var PrescriptionModal = ({
       medicationToPrescribe?.title ?? prescriptionToModify?.medication?.medicinalProduct?.intendedname ?? prescriptionToModify?.medication?.substanceProduct?.intendedname ?? prescriptionToModify?.medication?.compoundPrescription ?? prescriptionToModify?.medication?.compoundPrescriptionV2?.text ?? ""
     ),
     dosage: prescriptionToModify?.medication?.instructionForPatient ?? "",
+    // Only a host editor works on the structured regimen; the free-text editor parses it at submit time.
+    regimen: PosologyEditor ? prescriptionToModify?.medication?.regimen ?? [] : void 0,
     duration: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).duration,
     durationTimeUnit: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).durationTimeUnit,
     treatmentStartDate: getTreatmentStartDate(prescriptionToModify),
@@ -6180,6 +6347,7 @@ var PrescriptionModal = ({
     formState: { errors: prescriptionFormErrors }
   } = (0, import_react_hook_form2.useForm)({ defaultValues });
   const dosage = watch("dosage");
+  const regimen = watch("regimen");
   const prescriptionsNumber = watch("prescriptionsNumber");
   const periodicityTimeUnit = watch("periodicityTimeUnit");
   const showExtraFields = watch("showExtraFields");
@@ -6227,8 +6395,22 @@ var PrescriptionModal = ({
     onSubmit(prescribedMedications);
     handleModalClose();
   };
+  const onPosologyEditorChange = (value) => {
+    setValue("regimen", value.regimen, { shouldDirty: true });
+    setValue("dosage", value.text, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+  };
   const handleKeyDown = (event) => {
     const length = posologySuggestions.length;
+    if (event.key === "Enter" && event.target instanceof HTMLInputElement) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (length && focusedDosageIndex >= 0 && focusedDosageIndex < length) {
+        setDisableHover(false);
+        validateSuggestion(posologySuggestions[focusedDosageIndex]);
+      }
+      return;
+    }
+    if (!length) return;
     const defaultActions = () => {
       event.preventDefault();
       setDisableHover(true);
@@ -6241,20 +6423,11 @@ var PrescriptionModal = ({
       defaultActions();
       setFocusedDosageIndex((prev) => (prev - 1 + length) % length);
       scrollToFocusedItem((focusedDosageIndex - 1 + length) % length);
-    } else if (event.key === "Enter") {
+    } else if (event.key === "Escape") {
       event.preventDefault();
       event.stopPropagation();
-      if (focusedDosageIndex >= 0) {
-        setDisableHover(false);
-        validateSuggestion(posologySuggestions[focusedDosageIndex]);
-      }
-    } else if (event.key === "Escape") {
-      if (posologySuggestions.length) {
-        event.preventDefault();
-        event.stopPropagation();
-        setPosologySuggestions([]);
-        setFocusedDosageIndex(-1);
-      }
+      setPosologySuggestions([]);
+      setFocusedDosageIndex(-1);
     }
   };
   const scrollToFocusedItem = (index) => {
@@ -6280,316 +6453,340 @@ var PrescriptionModal = ({
       setFocusedDosageIndex(1);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(StyledPrescriptionModal, { className: "StyledPrescriptionModal", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "content", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__header", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("h3", { children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
-        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(CloseIcn, {}) })
+  const suggestionsDisplayed = posologySuggestions.length !== 0;
+  const activeSuggestionId = suggestionsDisplayed && focusedDosageIndex >= 0 && focusedDosageIndex < posologySuggestions.length ? `posology-${focusedDosageIndex}` : void 0;
+  return /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(StyledPrescriptionModal, { className: `StyledPrescriptionModal ${LIBRARY_ROOT_CLASS}`, children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "content", role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("form", { id: "prescriptionForm", className: "addMedicationForm", onSubmit: handleSubmit(handleFormSubmit), autoComplete: "off", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("h3", { id: titleId, children: modalMood === "create" ? t("prescription.createTitle") : t("prescription.modifyTitle") }),
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("button", { className: "addMedicationForm__header__closeIcn", onClick: handleModalClose, type: "reset", "aria-label": t("prescription.closeDialog"), children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(CloseIcn, {}) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body", onKeyDown: handleKeyDown, children: [
+      medication && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(MedicationCard, { medication, handleAddPrescription: () => {
+        }, id: "modal-medication-card", readOnly: true }),
+        alternatives.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(
-        "div",
-        {
-          className: "addMedicationForm__body",
-          onKeyDown: handleKeyDown,
-          role: "listbox",
-          tabIndex: 0,
-          "aria-activedescendant": focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : void 0,
-          children: [
-            medication && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(MedicationCard, { medication, handleAddPrescription: () => {
-              }, id: "modal-medication-card", readOnly: true }),
-              alternatives.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(CheapAlternatives, { sdk, medications: alternatives, onSelectMedication: onSelectAlternativeMedication })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
-              !medication && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                TextInput,
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+        !medication && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          TextInput,
+          {
+            label: t("prescription.form.medicationTitle"),
+            required: true,
+            disabled: true,
+            id: "medicationTitle",
+            ...register("medicationTitle", {
+              required: t("prescription.form.fieldRequired")
+            }),
+            errorMessage: prescriptionFormErrors["medicationTitle"]?.message
+          }
+        ),
+        PosologyEditor ? /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          import_react_hook_form2.Controller,
+          {
+            name: "dosage",
+            control,
+            rules: { required: t("prescription.form.fieldRequired") },
+            render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "posologyEditorSlot", ...{ [HOST_SLOT_ATTRIBUTE]: "" }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                PosologyEditor,
                 {
-                  label: t("prescription.form.medicationTitle"),
-                  required: true,
-                  disabled: true,
-                  id: "medicationTitle",
-                  ...register("medicationTitle", {
-                    required: t("prescription.form.fieldRequired")
-                  }),
-                  errorMessage: prescriptionFormErrors["medicationTitle"]?.message
+                  id: "dosage",
+                  label: t("prescription.form.dosage"),
+                  value: { regimen: regimen ?? [], text: field.value ?? "" },
+                  context: { medication, prescriptionToModify, language, standardDosages, standardDosageContext },
+                  onChange: onPosologyEditorChange,
+                  errorMessage: prescriptionFormErrors["dosage"]?.message,
+                  errorMessageId: "dosage-error"
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(StyledDosageInput, { className: "StyledDosageInput", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.dosage"),
-                    id: "dosage",
-                    required: true,
-                    autoFocus: true,
-                    ...register("dosage", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["dosage"]?.message
-                  }
-                ),
-                posologySuggestions.length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("ul", { className: "suggestionsDropdown", onMouseMove: handleMouseMove, children: posologySuggestions.map((posology, index) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  StyledSuggestionItem,
-                  {
-                    id: `posology-${index}`,
-                    $disableHover: disableHover,
-                    $focused: focusedDosageIndex === index,
-                    className: "StyledSuggestionItem",
-                    children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                      "button",
-                      {
-                        onClick: (e) => {
-                          e.preventDefault();
-                          validateSuggestion(posology);
-                        },
-                        children: posology
-                      }
-                    )
-                  },
-                  index
-                )) })
-              ] }),
-              standardDosages.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.duration"),
-                    id: "duration",
-                    type: "number",
-                    min: 1,
-                    required: true,
-                    ...register("duration", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["duration"]?.message
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  import_react_hook_form2.Controller,
-                  {
-                    name: "durationTimeUnit",
-                    control,
-                    rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                      SelectInput,
-                      {
-                        ...field,
-                        label: t("prescription.form.durationTimeUnit"),
-                        id: "durationTimeUnit",
-                        required: true,
-                        options: getDurationTimeUnits(),
-                        errorMessage: prescriptionFormErrors["durationTimeUnit"]?.message
-                      }
-                    )
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.treatmentStartDate"),
-                    id: "treatmentStartDate",
-                    type: "date",
-                    required: true,
-                    ...register("treatmentStartDate", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.executableUntil"),
-                    id: "executableUntil",
-                    type: "date",
-                    required: true,
-                    ...register("executableUntil", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["executableUntil"]?.message
-                  }
-                )
-              ] }),
-              !prescriptionToModify && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.prescriptionsNumber"),
-                    id: "prescriptionsNumber",
-                    type: "number",
-                    min: 1,
-                    max: 12,
-                    required: true,
-                    ...register("prescriptionsNumber", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
-                  }
-                ),
-                prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  import_react_hook_form2.Controller,
-                  {
-                    name: "periodicityTimeUnit",
-                    control,
-                    rules: { required: t("prescription.form.fieldRequired") },
-                    render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                      SelectInput,
-                      {
-                        ...field,
-                        label: t("prescription.form.periodicityTimeUnit"),
-                        id: "periodicityTimeUnit",
-                        required: true,
-                        options: getPeriodicityTimeUnits(),
-                        errorMessage: prescriptionFormErrors["periodicityTimeUnit"]?.message
-                      }
-                    )
-                  }
-                ),
-                periodicityTimeUnit === "1" && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                  TextInput,
-                  {
-                    label: t("prescription.form.periodicityDaysNumber"),
-                    id: "periodicityDaysNumber",
-                    type: "number",
-                    min: 1,
-                    required: true,
-                    ...register("periodicityDaysNumber", {
-                      required: t("prescription.form.fieldRequired")
-                    }),
-                    errorMessage: prescriptionFormErrors["periodicityDaysNumber"]?.message
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                import_react_hook_form2.Controller,
-                {
-                  name: "substitutionAllowed",
-                  control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                    RadioInput,
-                    {
-                      ...field,
-                      value: field.value,
-                      onChange: (val) => field.onChange(val),
-                      label: t("prescription.form.substitutionAllowed"),
-                      options: [
-                        { label: t("prescription.form.substitutionYes"), value: true, id: "yes" },
-                        { label: t("prescription.form.substitutionNo"), value: false, id: "no" }
-                      ],
-                      required: true,
-                      errorMessage: prescriptionFormErrors["substitutionAllowed"]?.message
-                    }
-                  )
-                }
-              ) })
-            ] }),
+              prescriptionFormErrors["dosage"]?.message && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("p", { id: "dosage-error", className: "error", children: prescriptionFormErrors["dosage"]?.message })
+            ] })
+          }
+        ) : /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(StyledDosageInput, { className: "StyledDosageInput", children: [
             /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-              import_react_hook_form2.Controller,
+              TextInput,
               {
-                name: "showExtraFields",
-                control,
-                render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
+                label: t("prescription.form.dosage"),
+                id: "dosage",
+                required: true,
+                autoFocus: true,
+                role: "combobox",
+                "aria-autocomplete": "list",
+                "aria-expanded": suggestionsDisplayed,
+                "aria-controls": suggestionsId,
+                "aria-activedescendant": activeSuggestionId,
+                ...register("dosage", {
+                  required: t("prescription.form.fieldRequired")
+                }),
+                errorMessage: prescriptionFormErrors["dosage"]?.message
               }
             ),
-            !showExtraFields ? /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
-                  t("prescription.form.patientInstructions"),
-                  " :"
-                ] }),
-                " ",
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
-                  t("prescription.form.reimbursementInstructions"),
-                  " :"
-                ] }),
-                " ",
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
-                  t("prescription.form.prescriberVisibility"),
-                  " :"
-                ] }),
-                " ",
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
-                  t("prescription.form.pharmacistVisibility"),
-                  " :"
-                ] }),
-                " ",
-                /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
-              ] })
-            ] }) : /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                import_react_hook_form2.Controller,
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              "ul",
+              {
+                id: suggestionsId,
+                className: "suggestionsDropdown",
+                role: "listbox",
+                "aria-label": t("prescription.form.posologySuggestions"),
+                hidden: !suggestionsDisplayed,
+                onMouseMove: handleMouseMove,
+                children: posologySuggestions.map((posology, index) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(StyledSuggestionItem, { role: "none", $disableHover: disableHover, $focused: focusedDosageIndex === index, className: "StyledSuggestionItem", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                  "button",
+                  {
+                    id: `posology-${index}`,
+                    type: "button",
+                    role: "option",
+                    "aria-selected": focusedDosageIndex === index,
+                    tabIndex: -1,
+                    onClick: (e) => {
+                      e.preventDefault();
+                      validateSuggestion(posology);
+                    },
+                    children: posology
+                  }
+                ) }, index))
+              }
+            )
+          ] }),
+          standardDosages.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(StandardDosages, { dosages: standardDosages, language, onSelectDosage: onSelectStandardDosage })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            TextInput,
+            {
+              label: t("prescription.form.duration"),
+              id: "duration",
+              type: "number",
+              min: 1,
+              required: true,
+              ...register("duration", {
+                required: t("prescription.form.fieldRequired")
+              }),
+              errorMessage: prescriptionFormErrors["duration"]?.message
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            import_react_hook_form2.Controller,
+            {
+              name: "durationTimeUnit",
+              control,
+              rules: { required: t("prescription.form.fieldRequired") },
+              render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                SelectInput,
                 {
-                  name: "instructionsForReimbursement",
-                  control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                    SelectInput,
-                    {
-                      ...field,
-                      label: t("prescription.form.reimbursementInstructions"),
-                      id: "instructionsForReimbursement",
-                      options: getReimbursementOptions(),
-                      value: field.value ?? "",
-                      onChange: (e) => {
-                        const val = e.target.value === "" ? null : e.target.value;
-                        field.onChange(val);
-                      }
-                    }
-                  )
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                import_react_hook_form2.Controller,
-                {
-                  name: "prescriberVisibility",
-                  control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                import_react_hook_form2.Controller,
-                {
-                  name: "pharmacistVisibility",
-                  control,
-                  render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
-                    SelectInput,
-                    {
-                      ...field,
-                      label: t("prescription.form.pharmacistVisibility"),
-                      id: "pharmacistVisibility",
-                      options: getPharmacistVisibilityOptions(),
-                      value: field.value ?? "",
-                      onChange: (e) => {
-                        const val = e.target.value === "" ? null : e.target.value;
-                        field.onChange(val);
-                      }
-                    }
-                  )
+                  ...field,
+                  label: t("prescription.form.durationTimeUnit"),
+                  id: "durationTimeUnit",
+                  required: true,
+                  options: getDurationTimeUnits(),
+                  errorMessage: prescriptionFormErrors["durationTimeUnit"]?.message
                 }
               )
-            ] })
-          ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            TextInput,
+            {
+              label: t("prescription.form.treatmentStartDate"),
+              id: "treatmentStartDate",
+              type: "date",
+              required: true,
+              ...register("treatmentStartDate", {
+                required: t("prescription.form.fieldRequired")
+              }),
+              errorMessage: prescriptionFormErrors["treatmentStartDate"]?.message
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            TextInput,
+            {
+              label: t("prescription.form.executableUntil"),
+              id: "executableUntil",
+              type: "date",
+              required: true,
+              ...register("executableUntil", {
+                required: t("prescription.form.fieldRequired")
+              }),
+              errorMessage: prescriptionFormErrors["executableUntil"]?.message
+            }
+          )
+        ] }),
+        !prescriptionToModify && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content__inputsGroup", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            TextInput,
+            {
+              label: t("prescription.form.prescriptionsNumber"),
+              id: "prescriptionsNumber",
+              type: "number",
+              min: 1,
+              max: 12,
+              required: true,
+              ...register("prescriptionsNumber", {
+                required: t("prescription.form.fieldRequired")
+              }),
+              errorMessage: prescriptionFormErrors["prescriptionsNumber"]?.message
+            }
+          ),
+          prescriptionsNumber && prescriptionsNumber > 1 && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            import_react_hook_form2.Controller,
+            {
+              name: "periodicityTimeUnit",
+              control,
+              rules: { required: t("prescription.form.fieldRequired") },
+              render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                SelectInput,
+                {
+                  ...field,
+                  label: t("prescription.form.periodicityTimeUnit"),
+                  id: "periodicityTimeUnit",
+                  required: true,
+                  options: getPeriodicityTimeUnits(),
+                  errorMessage: prescriptionFormErrors["periodicityTimeUnit"]?.message
+                }
+              )
+            }
+          ),
+          periodicityTimeUnit === "1" && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            TextInput,
+            {
+              label: t("prescription.form.periodicityDaysNumber"),
+              id: "periodicityDaysNumber",
+              type: "number",
+              min: 1,
+              required: true,
+              ...register("periodicityDaysNumber", {
+                required: t("prescription.form.fieldRequired")
+              }),
+              errorMessage: prescriptionFormErrors["periodicityDaysNumber"]?.message
+            }
+          )
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "addMedicationForm__body__content__radioBtns", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          import_react_hook_form2.Controller,
+          {
+            name: "substitutionAllowed",
+            control,
+            render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              RadioInput,
+              {
+                ...field,
+                value: field.value,
+                onChange: (val) => field.onChange(val),
+                label: t("prescription.form.substitutionAllowed"),
+                options: [
+                  { label: t("prescription.form.substitutionYes"), value: true, id: "yes" },
+                  { label: t("prescription.form.substitutionNo"), value: false, id: "no" }
+                ],
+                required: true,
+                errorMessage: prescriptionFormErrors["substitutionAllowed"]?.message
+              }
+            )
+          }
+        ) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+        import_react_hook_form2.Controller,
+        {
+          name: "showExtraFields",
+          control,
+          render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(ToggleSwitch, { ...field, id: "showExtraFields", value: t("prescription.form.toggleExtraFields") })
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__footer", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
-        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+      !showExtraFields ? /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__extraFieldsPreview", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
+            t("prescription.form.patientInstructions"),
+            " :"
+          ] }),
+          " ",
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: recipeInstructionForPatient || t("prescription.form.instructionLabelNone") }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
+            t("prescription.form.reimbursementInstructions"),
+            " :"
+          ] }),
+          " ",
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t("prescription.form.instructionLabelNone") }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
+            t("prescription.form.prescriberVisibility"),
+            " :"
+          ] }),
+          " ",
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("p", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { children: [
+            t("prescription.form.pharmacistVisibility"),
+            " :"
+          ] }),
+          " ",
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("i", { children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { children: getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label }) })
+        ] })
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__body__content", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(TextareaInput, { label: t("prescription.form.patientInstructions"), id: "recipeInstructionForPatient", ...register("recipeInstructionForPatient") }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          import_react_hook_form2.Controller,
+          {
+            name: "instructionsForReimbursement",
+            control,
+            render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              SelectInput,
+              {
+                ...field,
+                label: t("prescription.form.reimbursementInstructions"),
+                id: "instructionsForReimbursement",
+                options: getReimbursementOptions(),
+                value: field.value ?? "",
+                onChange: (e) => {
+                  const val = e.target.value === "" ? null : e.target.value;
+                  field.onChange(val);
+                }
+              }
+            )
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          import_react_hook_form2.Controller,
+          {
+            name: "prescriberVisibility",
+            control,
+            render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(SelectInput, { ...field, label: t("prescription.form.prescriberVisibility"), id: "prescriberVisibility", options: getPractitionerVisibilityOptions() })
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+          import_react_hook_form2.Controller,
+          {
+            name: "pharmacistVisibility",
+            control,
+            render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              SelectInput,
+              {
+                ...field,
+                label: t("prescription.form.pharmacistVisibility"),
+                id: "pharmacistVisibility",
+                options: getPharmacistVisibilityOptions(),
+                value: field.value ?? "",
+                onChange: (e) => {
+                  const val = e.target.value === "" ? null : e.target.value;
+                  field.onChange(val);
+                }
+              }
+            )
+          }
+        )
       ] })
-    ] }) }) })
-  ] });
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "addMedicationForm__footer", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Button, { title: t("prescription.form.cancel"), type: "reset", view: "outlined", onClick: handleModalClose }),
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Button, { title: t("prescription.form.submit"), type: "submit", view: "primary" })
+    ] })
+  ] }) }) });
 };
 
 // src/shared/components/PrescriptionList/index.tsx
@@ -6601,15 +6798,16 @@ var actionBtnCommonStyles = import_styled_components32.css`
   background: none;
   cursor: pointer;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  ${targetSize("width")};
+  ${targetSize("height")};
+  border-radius: ${cp.radiusMd};
 
   ${responsiveMediaQueries.down(displayResolution.s)`
-        width: 32px;
-        height: 32px;
-        border: 1px solid #eef6fe;
-        background: rgba(238, 246, 254, 0.3);
-        border-radius: 6px;
+        border: 1px solid ${cp.colorSurfaceAccent};
+        background: ${cp.colorSurfaceAccentSubtle};
     `};
 `;
 var StyledPrescriptionCard = import_styled_components32.default.div`
@@ -6620,25 +6818,25 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
   align-items: center;
   padding: 8px 12px;
   gap: 12px;
-  border-radius: 6px;
-  background: ${colors.blue[200]};
-  border: 1px solid ${colors.blue[100]};
+  border-radius: ${cp.radiusMd};
+  background: ${cp.colorSurfaceSunken};
+  border: 1px solid ${cp.colorBorderAccent};
 
   &:hover {
-    border-radius: 6px;
-    border-color: ${colors.blue[500]};
-    box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
-    background-color: white;
+    border-radius: ${cp.radiusMd};
+    border-color: ${cp.colorAccent};
+    box-shadow: 0 0 0 2px ${cp.colorHoverHalo};
+    background-color: ${cp.colorSurface};
   }
 
   ${({ $prescribed }) => !!$prescribed && import_styled_components32.css`
-      background: ${colors.green[200]};
-      border-color: green;
+      background: ${cp.colorOkSurfaceAlt};
+      border-color: ${cp.colorOkBorder};
 
       &:hover {
-        border-color: green;
+        border-color: ${cp.colorOkBorder};
         border-radius: inherit;
-        background: ${colors.green[200]};
+        background: ${cp.colorOkSurfaceAlt};
         box-shadow: inherit;
       }
     `};
@@ -6671,16 +6869,16 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
           gap: 8px;
 
           h3 {
-            color: ${colors.grey[900]};
-            font-size: 16px;
+            color: ${cp.colorText};
+            font-size: ${cp.fontSizeLg};
             font-style: normal;
             font-weight: 500;
           }
         }
 
         p {
-          color: ${colors.grey[900]};
-          font-size: 14px;
+          color: ${cp.colorText};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 300;
           line-height: normal;
@@ -6690,7 +6888,6 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
   }
 
   .actions {
-    width: 36px;
     display: flex;
     gap: 8px;
 
@@ -6705,7 +6902,7 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
       &:hover {
         svg {
           path {
-            fill: ${colors.blue[500]};
+            fill: ${cp.colorAccent};
           }
         }
       }
@@ -6717,7 +6914,7 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
       &:hover {
         svg {
           path {
-            fill: ${colors.red[800]};
+            fill: ${cp.colorCritical};
           }
         }
       }
@@ -6725,12 +6922,12 @@ var StyledPrescriptionCard = import_styled_components32.default.div`
   }
 
   .rid {
-    font-size: 12px;
+    font-size: ${cp.fontSizeXs};
     letter-spacing: 1.2px;
-    background-color: ${colors.green[500]};
-    color: white;
+    background-color: ${cp.colorOkStrong};
+    color: ${cp.colorOnBadge};
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: ${cp.radiusXs};
   }
 `;
 
@@ -6743,8 +6940,8 @@ var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handle
       /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("p", { children: prescribedMedication.medication.instructionForPatient })
     ] }) }) }),
     !prescribedMedication.rid ? /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "actions", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("button", { className: "edit", onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(EditIcn, {}) }),
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("button", { className: "delete", onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(DeleteIcn, {}) })
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("button", { className: "edit", type: "button", "aria-label": t("prescription.list.modify"), onClick: () => handleModifyPrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(EditIcn, {}) }),
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("button", { className: "delete", type: "button", "aria-label": t("prescription.list.delete"), onClick: () => handleDeletePrescription(prescribedMedication), children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(DeleteIcn, {}) })
     ] }) : /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "rid", children: prescribedMedication.rid })
   ] });
 };
@@ -6752,6 +6949,7 @@ var PrescriptionCard = ({ prescribedMedication, handleModifyPrescription, handle
 // src/shared/components/PrescriptionList/styles.ts
 var import_styled_components33 = __toESM(require("styled-components"));
 var StyledPrescriptionList = import_styled_components33.default.div`
+  ${libraryRoot}
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -6782,9 +6980,9 @@ var StyledPrescriptionList = import_styled_components33.default.div`
 
       padding: 6px 8px 6px 6px;
       gap: 5px;
-      border-radius: 8px;
-      border: 1px solid ${colors.grey[300]};
-      background: white;
+      border-radius: ${cp.radiusLg};
+      border: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
 
     &__footer {
@@ -6793,7 +6991,6 @@ var StyledPrescriptionList = import_styled_components33.default.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      background: #fff;
     }
   }
 `;
@@ -6827,72 +7024,72 @@ var PrescriptionList = ({
     return prescribedMedications.filter((item) => !item.rid);
   };
   if (!prescribedMedications) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(import_jsx_runtime47.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(StyledPrescriptionList, { className: "StyledPrescriptionList", children: [
-      sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
-        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
-          PrescriptionCard,
-          {
-            prescribedMedication: medication,
-            handleModifyPrescription,
-            handleDeletePrescription
-          },
-          medication.uuid || idx
-        )) }),
-        handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(import_jsx_runtime47.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(StyledPrescriptionList, { className: `StyledPrescriptionList ${LIBRARY_ROOT_CLASS}`, children: [
+    sentPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions", children: [
+      !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("p", { className: "cardinal-prescriptions__title", children: t("prescription.list.sentTitle") }),
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__rows", children: sentPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+        PrescriptionCard,
+        {
+          prescribedMedication: medication,
+          handleModifyPrescription,
+          handleDeletePrescription
+        },
+        medication.uuid || idx
+      )) }),
+      handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__footer", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+        Button,
+        {
+          disabled: sending,
+          title: t("prescription.list.print"),
+          handleClick: () => spinPrint(handlePrintPrescriptions),
+          view: printing && !sending ? "withSpinner" : "outlined",
+          type: "button"
+        }
+      ) })
+    ] }),
+    pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions", children: [
+      !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
+        " ",
+        t("prescription.list.pendingTitle")
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+        PrescriptionCard,
+        {
+          prescribedMedication: medication,
+          handleModifyPrescription,
+          handleDeletePrescription
+        },
+        medication.uuid || idx
+      )) }),
+      (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions__footer", children: [
+        handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
           Button,
           {
             disabled: sending,
-            title: t("prescription.list.print"),
+            title: t("prescription.list.sendAndPrint"),
             handleClick: () => spinPrint(handlePrintPrescriptions),
-            view: printing && !sending ? "withSpinner" : "outlined",
-            type: "button"
+            view: printing ? "withSpinner" : "outlined",
+            type: "submit",
+            form: "prescriptionForm"
           }
-        ) })
-      ] }),
-      pendingPrescriptions().length !== 0 && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions", children: [
-        !hideSectionsTitles && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("p", { className: "cardinal-prescriptions__title", children: [
-          " ",
-          t("prescription.list.pendingTitle")
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "cardinal-prescriptions__rows", children: pendingPrescriptions().map((medication, idx) => /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
-          PrescriptionCard,
+        ),
+        handleSendPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+          Button,
           {
-            prescribedMedication: medication,
-            handleModifyPrescription,
-            handleDeletePrescription
-          },
-          medication.uuid || idx
-        )) }),
-        (handlePrintPrescriptions || handleSendPrescriptions) && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "cardinal-prescriptions__footer", children: [
-          handlePrintPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
-            Button,
-            {
-              disabled: sending,
-              title: t("prescription.list.sendAndPrint"),
-              handleClick: () => spinPrint(handlePrintPrescriptions),
-              view: printing ? "withSpinner" : "outlined",
-              type: "submit",
-              form: "prescriptionForm"
-            }
-          ),
-          handleSendPrescriptions && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
-            Button,
-            {
-              disabled: printing,
-              title: t("prescription.list.send"),
-              view: sending && !printing ? "withSpinner" : "primary",
-              type: "submit",
-              handleClick: () => spinSend(handleSendPrescriptions)
-            }
-          )
-        ] })
+            disabled: printing,
+            title: t("prescription.list.send"),
+            view: sending && !printing ? "withSpinner" : "primary",
+            type: "submit",
+            handleClick: () => spinSend(handleSendPrescriptions)
+          }
+        )
       ] })
     ] })
-  ] });
+  ] }) });
 };
+
+// src/shared/components/PrescriptionPrintModal/index.tsx
+var import_react18 = require("react");
 
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/index.tsx
 var import_react17 = require("react");
@@ -6901,6 +7098,8 @@ var import_jsbarcode = __toESM(require("jsbarcode"));
 // src/internal/components/prescription-elements/PrescriptionDocumentToPrint/styles.ts
 var import_styled_components34 = __toESM(require("styled-components"));
 var StyledPrescriptionDocument = import_styled_components34.default.div`
+  ${libraryRoot}
+  color: ${cp.colorPaperText};
   @media print {
     .prescription {
       page-break-after: always;
@@ -6913,18 +7112,18 @@ var StyledPrescriptionDocument = import_styled_components34.default.div`
   gap: 24px;
 
   .prescription-document {
-    border: 1px solid ${colors.grey[300]};
-    border-radius: 8px;
-    background-color: white;
+    border: 1px solid ${cp.colorBorder};
+    border-radius: ${cp.radiusLg};
+    background-color: ${cp.colorPaper};
     padding: 24px;
-    font-size: 14px;
+    font-size: ${cp.fontSizeMd};
 
     display: flex;
     flex-direction: column;
     gap: 24px;
 
     &__divider {
-      border-top: 1px solid ${colors.grey[300]};
+      border-top: 1px solid ${cp.colorBorder};
     }
 
     &__header {
@@ -6936,7 +7135,7 @@ var StyledPrescriptionDocument = import_styled_components34.default.div`
 
       h1 {
         margin: 0;
-        font-size: 18px;
+        font-size: ${cp.fontSizeXl};
         padding-bottom: 4px;
       }
     }
@@ -6960,7 +7159,7 @@ var StyledPrescriptionDocument = import_styled_components34.default.div`
     }
 
     h3 {
-      font-size: 14px;
+      font-size: ${cp.fontSizeMd};
     }
 
     .prescription-item {
@@ -6968,8 +7167,8 @@ var StyledPrescriptionDocument = import_styled_components34.default.div`
       align-items: flex-start;
       justify-content: space-between;
       padding: 24px 12px;
-      border-radius: 12px;
-      border: 1px dashed ${colors.grey[600]};
+      border-radius: ${cp.radiusXl};
+      border: 1px dashed ${cp.colorBorderControl};
 
       &__block {
         display: flex;
@@ -7018,6 +7217,7 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
       if (med.rid && ridElements.current[idx]) {
         (0, import_jsbarcode.default)(ridElements.current[idx], med.rid, {
           format: "CODE128A",
+          // Barcodes stay black on white whatever the theme: pharmacy scanners need the contrast.
           lineColor: "#000",
           width: 2,
           height: 40,
@@ -7036,7 +7236,7 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("div", { className: "prescription-document__divider" }),
     /* @__PURE__ */ (0, import_jsx_runtime48.jsxs)("div", { className: "prescription-document__options", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("h5", { children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("strong", { children: t("prescription.pdf.options.title") }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("h2", { children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("strong", { children: t("prescription.pdf.options.title") }) }),
       /* @__PURE__ */ (0, import_jsx_runtime48.jsxs)("ol", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("li", { children: t("prescription.pdf.options.option1") }),
         /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("li", { children: t("prescription.pdf.options.option2") })
@@ -7117,6 +7317,7 @@ var PrescriptionDocumentToPrint = ({ prescribedMedications, prescriber, patient 
 // src/shared/components/PrescriptionPrintModal/styles.ts
 var import_styled_components35 = __toESM(require("styled-components"));
 var StyledPrescriptionPrintModal = import_styled_components35.default.div`
+  ${libraryRoot}
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -7124,7 +7325,7 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
   left: 0;
   z-index: 1020;
   display: flex;
-  background: rgba(${colorsRgb.blue[800]}, 0.3);
+  background: ${cp.colorOverlay};
 
   .contentWrap {
     width: 900px;
@@ -7156,33 +7357,34 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
       align-items: center;
       align-self: stretch;
 
-      border-bottom: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-bottom: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
         padding: 20px 16px;
       `};
 
       h3 {
-        color: ${colors.grey[900]};
-        font-size: 16px;
+        color: ${cp.colorText};
+        font-size: ${cp.fontSizeLg};
         font-style: normal;
         font-weight: 500;
         line-height: normal;
       }
 
       &__closeIcn {
-        width: 22px;
-        height: 22px;
+        ${targetSize("width")};
+        ${targetSize("height")};
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        background-color: #ffffff;
-        border-radius: 4px;
+        background-color: ${cp.colorSurface};
+        border-radius: ${cp.radiusXs};
 
         &:hover {
-          background-color: rgba(${colorsRgb.grey[300]} 0.4);
+          background-color: ${cp.colorSurfaceDisabled};
         }
       }
     }
@@ -7198,7 +7400,7 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
       align-self: stretch;
       flex: 1 0 0;
       gap: 12px;
-      background-color: ${colors.blue[200]};
+      background-color: ${cp.colorSurfaceSunken};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
         padding: 16px;
@@ -7214,9 +7416,9 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
         flex-direction: column;
         align-items: flex-start;
         align-self: stretch;
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
         padding: 24px;
         gap: 12px;
 
@@ -7233,14 +7435,14 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
         align-items: flex-start;
         align-self: stretch;
 
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
-        box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
+        box-shadow: ${cp.shadowSection};
 
         p {
-          color: rgba(${colorsRgb.grey[600]}, 0.7);
-          font-size: 14px;
+          color: ${cp.colorTextSubtle};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 400;
           line-height: 22px; /* 169.231% */
@@ -7255,8 +7457,8 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      border-top: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-top: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
   }
 `;
@@ -7264,6 +7466,7 @@ var StyledPrescriptionPrintModal = import_styled_components35.default.div`
 // src/shared/components/PrescriptionPrintModal/index.tsx
 var import_jsx_runtime49 = require("react/jsx-runtime");
 var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, patient }) => {
+  const titleId = (0, import_react18.useId)();
   const print = () => {
     const div = document.getElementById("print-container");
     if (div) {
@@ -7292,25 +7495,24 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
       document.body.appendChild(hideFrame);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(import_jsx_runtime49.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(GlobalStyles, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(StyledPrescriptionPrintModal, { className: "StyledPrescriptionPrintModal", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "contentWrap", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content__header", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("h3", { children: t("practitioner.printModal.title") }),
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("button", { className: "content__header__closeIcn", onClick: closeModal, type: "reset", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(CloseIcn, {}) })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "content__body", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { id: "print-container", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content__footer", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
-      ] })
-    ] }) }) })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_jsx_runtime49.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(StyledPrescriptionPrintModal, { className: `StyledPrescriptionPrintModal ${LIBRARY_ROOT_CLASS}`, children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "contentWrap", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content", role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("h3", { id: titleId, children: t("practitioner.printModal.title") }),
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("button", { className: "content__header__closeIcn", onClick: closeModal, type: "button", "aria-label": t("prescription.closeDialog"), children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(CloseIcn, {}) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "content__body", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { id: "print-container", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(PrescriptionDocumentToPrint, { prescribedMedications, prescriber, patient }) }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "content__footer", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { title: t("practitioner.printModal.close"), type: "reset", view: "outlined", handleClick: closeModal }),
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { title: t("practitioner.printModal.print"), type: "submit", view: "primary", handleClick: print })
+    ] })
+  ] }) }) }) });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Button,
+  HOST_SLOT_ATTRIBUTE,
   IndexedDbServiceStore,
+  LIBRARY_ROOT_CLASS,
   MedIndexMedicationProvider,
   MedicationCard,
   MedicationNotFoundError,
@@ -7323,6 +7525,7 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
   PrescriptionModal,
   PrescriptionPrintModal,
   SamMedicationProvider,
+  THEME_PREFIX,
   cardinalLanguage,
   createFhcCode,
   createIndexedDbTokenStore,
@@ -7339,6 +7542,7 @@ var PrescriptionPrintModal = ({ closeModal, prescribedMedications, prescriber, p
   registerRegulatoryBadge,
   sendRecipe,
   t,
+  themeTokens,
   uploadAndEncryptCertificate,
   validateDecryptedCertificate,
   verifyCertificateWithSts

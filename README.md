@@ -25,6 +25,7 @@ and `@icure/medication-sdk` — to streamline:
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Available Components and How to Use Them](#available-components-and-how-to-use-them)
+- [Theming, dark mode and a custom posology editor](#theming-dark-mode-and-a-custom-posology-editor)
 - [Available APIs](#available-apis)
 - [SAM and Recip-e Requirements](#sam-and-recip-e-requirements)
 - [Medications of Interest for Tests](#medications-of-interest-for-tests)
@@ -190,6 +191,14 @@ import { PrescriptionPrintModal } from '@icure/cardinal-prescription-be-react' i
 
 <PrescriptionPrintModal prescribedMedications="{prescriptions}" prescriber="{hcp}" patient="{patient}" closeModal="{onClosePrescriptionPrintModal}" />
 ```
+
+## 🎨Theming, dark mode and a custom posology editor
+
+Since 0.2.0 the components inject no global CSS, read every visual value from a `--cp-*` CSS custom property (with the
+library's value as the fallback), offer opt-in dark defaults (`data-cp-theme="dark" | "auto"`), size every control to
+44 px on touch screens, and `PrescriptionModal` accepts a `posologyEditor` component in place of its free-text posology
+field. The package README ([`packages/cardinal-prescription-be-react/README.md`](packages/cardinal-prescription-be-react/README.md),
+sections "Theming" and "Custom posology editor") lists every property and documents the editor interface.
 
 ## 🧠Available APIs
 

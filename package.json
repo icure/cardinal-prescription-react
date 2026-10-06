@@ -16,7 +16,8 @@
     "format:check": "prettier --check .",
     "test": "yarn workspace @icure/cardinal-prescription-be-react test",
     "test:coverage": "yarn workspace @icure/cardinal-prescription-be-react test:coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:harness": "playwright test -c playwright.harness.config.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

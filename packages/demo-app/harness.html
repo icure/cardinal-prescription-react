@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Library harness</title>
+    <!--
+      Offline host page for the library's own browser checks (e2e/harness): host chrome with its own
+      font, background, focus ring and list bullets, and one library component chosen by URL.
+      No backend: the components get fixtures. Never loaded by the demo app itself.
+    -->
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Host Sans', Georgia, serif;
+        font-size: 14px;
+        background-color: rgb(18, 20, 23);
+        color: rgb(235, 239, 242);
+      }
+      /* Light host page for the light library (the dark one shows MD-00's dark host). */
+      body[data-host='light'] {
+        background-color: rgb(249, 250, 252);
+        color: rgb(28, 34, 43);
+      }
+      ul {
+        list-style-type: disc;
+        padding-inline-start: 24px;
+      }
+      :focus-visible {
+        outline: 2px solid rgb(255, 200, 0);
+      }
+      .host-chrome {
+        padding: 8px;
+      }
+      /* A host skin: only set when the URL asks for it, to show hosts can restyle every surface. */
+      .skinned {
+        --cp-color-surface: rgb(27, 30, 35);
+        --cp-color-surface-sunken: rgb(18, 20, 23);
+        --cp-color-text: rgb(235, 239, 242);
+        --cp-color-border: rgb(60, 66, 76);
+        --cp-color-primary: rgb(120, 180, 240);
+        --cp-color-on-primary: rgb(10, 20, 30);
+        --cp-font-family: 'Host Sans', Georgia, serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="host-chrome">
+      <button id="host-button" type="button">Host button</button>
+      <ul id="host-list">
+        <li>Host item</li>
+      </ul>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/harness/main.tsx"></script>
+  </body>
+</html>

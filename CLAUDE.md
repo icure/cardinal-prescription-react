@@ -21,7 +21,7 @@ Run from the repo root unless noted.
 - Watch-build the library while developing: `yarn workspace @icure/cardinal-prescription-be-react dev` (`tsup --watch`)
 - Build the demo app: `yarn workspace demo-app build`
 
-There is **no lint script and no test suite** configured in either package (`demo-app`'s `test` script is CRA's default `react-scripts test`, but no test files exist in the repo). ESLint/Prettier configs exist (`.eslintrc`, `.prettierrc` in each package) but must be invoked directly via `npx eslint` / `npx prettier` if needed — there's no npm script wired up for them.
+Lint: `yarn lint` (ESLint + Prettier, root `eslint.config.mjs`). Unit and component tests: `yarn test` (Vitest + Testing Library + axe-core on happy-dom). Offline browser checks of the library (host isolation, axe with contrast, target sizes, theming; Chromium, Firefox, WebKit): `yarn build && yarn test:e2e:harness`. The parity e2e suite (`yarn test:e2e`) needs live SAM/FHC credentials. See `TESTING.md`.
 
 ### Publishing the library
 
@@ -68,7 +68,7 @@ All of the above SDK instances, the FHC URL, HCP/patient data, and vendor/SAM-pa
 
 ### Styling
 
-Styling uses `styled-components` (v6) exclusively — no CSS modules or Tailwind. Shared variables/tokens live in `src/styles/variables.ts`, with a reset (`styles/reset.ts`) and responsive breakpoint helpers (`styles/responsive-media-queries.ts`) applied globally. Follow the existing pattern of a component's markup in `index.tsx` and its styled-components in a sibling `styles.ts`.
+Styling uses `styled-components` (v6) exclusively — no CSS modules or Tailwind. Every visual value comes from the theme tokens in `src/styles/theme.ts` (`cp.colorSurface` → `var(--cp-color-surface, …)`): never write a raw colour, font size or radius in a component, add a token instead and document it (the README "Theming" table is checked by `theme.test.ts`). Nothing is global: each public component's root applies `libraryRoot` (scoped reset, base text, opt-in dark defaults) and carries `LIBRARY_ROOT_CLASS`; never use `createGlobalStyle`. Controls use `targetSize(...)` (44 px by default, compact only under `@media (hover: hover) and (pointer: fine)`). Responsive breakpoint helpers live in `styles/responsive-media-queries.ts`. Follow the existing pattern of a component's markup in `index.tsx` and its styled-components in a sibling `styles.ts`.
 
 ### Code style
 

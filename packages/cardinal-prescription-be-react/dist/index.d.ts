@@ -1,8 +1,9 @@
 import { SamText, VmpStub, VmpGroup, SupplyProblem, Commercialization, Reimbursement, SamV2Api, PaginatedListIterator, Amp, Nmp, SamVersion } from '@icure/cardinal-be-sam-sdk';
 export { PaginatedListIterator } from '@icure/cardinal-be-sam-sdk';
 import { MedIndexClient } from '@icure/medindex-sdk';
-import { Medication, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
-import React, { RefObject, FC } from 'react';
+import { Medication, RegimenItem, Code, HealthcareParty, Patient, Prescription } from '@icure/be-fhc-lite-api';
+import React, { ComponentType, RefObject, FC } from 'react';
+import { RegimenItem as RegimenItem$1 } from '@icure/medication-sdk';
 
 type SamLanguage = keyof SamText;
 declare class CardinalLanguage {
@@ -165,6 +166,48 @@ interface TokenStore {
     put: (key: string, value: string) => Promise<string>;
     get: (key: string) => Promise<string>;
 }
+
+/** What a posology editor edits: the structured FHC regimen and its human-readable text. */
+interface PosologyEditorValue {
+    /** Structured regimen sent to Recip-e as `Medication.regimen`. Empty when the posology is text only. */
+    regimen: RegimenItem[];
+    /** Posology text sent as `Medication.instructionForPatient` and shown on the printed prescription. */
+    text: string;
+}
+/** The product being prescribed and what the library knows about it. Read-only for the editor. */
+interface PosologyEditorContext {
+    /** The medication being prescribed; undefined when modifying a free-text (compound) prescription. */
+    medication?: MedicationType;
+    /** The prescription being modified, when the modal is in `modify` mode. */
+    prescriptionToModify?: PrescribedMedicationType;
+    /** Current library language. */
+    language: 'fr' | 'nl' | 'de' | 'en';
+    /** SAM standard dosages of the medication's VMP group, filtered by `standardDosageContext`. */
+    standardDosages: RegimenItem$1[];
+    /** Patient context the host passed to the modal. */
+    standardDosageContext?: {
+        ageInYears?: number;
+        weightInKg?: number;
+        renalFunctionMlPerMin?: number;
+    };
+}
+interface PosologyEditorProps {
+    /** Id the editor's main control should carry (the modal's form field id, `dosage`). */
+    id: string;
+    /** Translated field label ("Posologie" / "Dosering" / ...). The editor renders it. */
+    label: string;
+    /** Current value: the regimen and text of the prescription being modified, or empty. */
+    value: PosologyEditorValue;
+    context: PosologyEditorContext;
+    /** Call on every change; the modal keeps the last value and submits it unchanged. */
+    onChange: (value: PosologyEditorValue) => void;
+    /** Validation message the modal shows below the editor, if any. */
+    errorMessage?: string;
+    /** Id of the element holding `errorMessage`, for `aria-describedby`. */
+    errorMessageId: string;
+}
+/** A host-supplied posology editor, rendered by `PrescriptionModal` in place of its free-text field. */
+type PosologyEditorComponent = ComponentType<PosologyEditorProps>;
 
 /**
  * Belgian `MedicationProvider`, wrapping SAM's AMP/VMP-group/NMP search + the existing
@@ -341,6 +384,41 @@ interface RegisteredRegulatoryBadge {
 declare function registerRegulatoryBadge(country: string, key: string, Component: RegulatoryBadgeComponent, placement: RegulatoryBadgePlacement): void;
 declare function getRegulatoryBadges(country: string, placement: RegulatoryBadgePlacement): RegisteredRegulatoryBadge[];
 
+/**
+ * The library's theming contract: every visual value used by the public components reads a CSS
+ * custom property with the library's own default as its fallback, so a host skins the components
+ * by setting `--cp-*` properties on any ancestor (`:root`, a wrapper, ...) without touching the
+ * library's class names.
+ *
+ * Each token resolves as `var(--cp-<name>, <fallback>)`, where the fallback is:
+ * - `var(--cp-dark-<name>, <default>)` for tokens with a dark default (the private `--cp-dark-*`
+ *   layer is only ever set by the library root when dark mode is active, see `darkModeDefaults`);
+ * - otherwise another token (`ref`), so e.g. the primary button follows `--cp-color-primary`;
+ * - otherwise the literal light default.
+ *
+ * A property set by the host therefore always wins, in light and in dark mode.
+ *
+ * `README.md` ("Theming") lists every token; `theme.test.ts` keeps the two in sync.
+ */
+interface ThemeTokenDefinition {
+    /** Property name without the `--cp-` prefix. */
+    name: string;
+    /** Default value in light mode (and in dark mode when `dark` is absent). */
+    light: string;
+    /** Default value in dark mode, when it differs from `light`. */
+    dark?: string;
+    /** Another token this one defaults to, so overriding the referenced token also restyles this one. */
+    ref?: string;
+    description: string;
+}
+declare const THEME_PREFIX = "--cp-";
+/** Every token, as documented in the README: the public list hosts map their own design tokens to. */
+declare const themeTokens: readonly ThemeTokenDefinition[];
+/** Elements rendered by the host inside a library component (e.g. the posology editor slot) carry this attribute and are left out of the scoped reset. */
+declare const HOST_SLOT_ATTRIBUTE = "data-cp-slot";
+/** CSS class every library root carries, for hosts that scope their own rules. */
+declare const LIBRARY_ROOT_CLASS = "cp-root";
+
 interface StandardDosageContext {
     ageInYears?: number;
     weightInKg?: number;
@@ -382,6 +460,13 @@ interface Props$1 {
     onClose: () => void;
     onSubmit: (meds: PrescribedMedicationType[]) => void;
     modalMood: 'create' | 'modify';
+    /**
+     * Host posology editor rendered in place of the free-text posology field, the parser's
+     * suggestions and the standard-dosage panel. It receives the current regimen and the product
+     * context, and returns the FHC regimen with its posology text (see `PosologyEditorProps`).
+     * Without it, the library's free-text editor is used, as before.
+     */
+    posologyEditor?: PosologyEditorComponent;
 }
 declare const PrescriptionModal: React.FC<Props$1>;
 
@@ -426,4 +511,4 @@ interface MedicationCardProps {
 }
 declare const MedicationCard: React.FC<MedicationCardProps>;
 
-export { type BeRegulatoryFields, Button, type ButtonViewType, type CertificateRecordType, type CertificateValidationResultType, type ChCompositionLineType, type ChInteractionType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, IndexedDbServiceStore, type Med, MedIndexMedicationProvider, MedicationCard, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };
+export { type BeRegulatoryFields, Button, type ButtonViewType, type CertificateRecordType, type CertificateValidationResultType, type ChCompositionLineType, type ChInteractionType, type ChPriceType, type ChRegulatoryFields, type DeliveryModusSpecificationCodeType, type FhcServiceConfig, type GenericStoreType, HOST_SLOT_ATTRIBUTE, IndexedDbServiceStore, LIBRARY_ROOT_CLASS, type Med, MedIndexMedicationProvider, MedicationCard, type MedicationKind, MedicationNotFoundError, type MedicationProductType, type MedicationProvider, type MedicationProviderConfig, MedicationProviderError, MedicationProviderUnavailableError, MedicationSearch, MedicationSearchValidationError, type MedicationType, type PharmacistVisibilityType, type PosologyEditorComponent, type PosologyEditorContext, type PosologyEditorProps, type PosologyEditorValue, PractitionerCertificate, type PractitionerVisibilityType, type PrescribedMedicationType, PrescriptionList, PrescriptionModal, PrescriptionPrintModal, type RegisteredRegulatoryBadge, type RegulatoryBadgeComponent, type RegulatoryBadgePlacement, type RegulatoryBadgeProps, SamMedicationProvider, type SamPackageType, type StandardDosageContext, THEME_PREFIX, type ThemeTokenDefinition, type TokenStore, type VendorType, cardinalLanguage, createFhcCode, createIndexedDbTokenStore, createMedicationProvider, deleteCertificate, fetchSamVersion, findMedicationsByLabel, getRegulatoryBadges, getSamTextTranslation, loadAlternativeMedications, loadAndDecryptCertificate, loadCertificateInformation, loadVmpGroup, registerRegulatoryBadge, sendRecipe, t, themeTokens, uploadAndEncryptCertificate, validateDecryptedCertificate, verifyCertificateWithSts };

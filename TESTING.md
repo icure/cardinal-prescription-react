@@ -48,6 +48,26 @@ yarn workspace @icure/cardinal-prescription-be-react test:watch
 - `internal/translations/translations.test.ts` — asserts all four languages
   (fr/nl/de/en) expose an identical set of translation keys.
 
+- `shared/components/__tests__/host-isolation.test.tsx` — mounting each public component leaves the
+  host page's `body` font and background, focus ring and list bullets unchanged, and every injected rule is
+  scoped to a library class (no global reset).
+- `shared/components/__tests__/accessibility.test.tsx` — axe-core (WCAG 2.2 A/AA + best practices, minus the
+  layout rules happy-dom cannot evaluate) on every public component, plus names and roles of the modal.
+- `shared/components/PrescriptionModal/posology-editor.test.tsx` — the `posologyEditor` slot, and the default
+  free-text editor unchanged without it.
+- `styles/theme.test.ts` — the README "Theming" table matches the tokens the components read.
+
+Component tests resolve `styled-components` to its browser build (`vitest.config.ts`), so `createGlobalStyle`
+and friends behave as in a browser.
+
+## Offline browser checks (harness)
+
+`yarn build && yarn test:e2e:harness` runs `e2e/harness/*.spec.ts` (config `playwright.harness.config.ts`) against
+`packages/demo-app/harness.html`, which mounts one public component with fixtures beside host chrome — no backend,
+no credentials. It checks, in Chromium, Firefox and WebKit: host page isolation (MD-00's "global reset" table),
+axe with colour contrast in light and dark, 24 px targets under a fine pointer and 44 px on touch devices
+(Pixel 7 and iPad emulation), and the theming hooks (`data-cp-theme`, host custom properties).
+
 ## End-to-end tests
 
 `yarn test:e2e` runs the Playwright suite against the demo app (started
