@@ -3,7 +3,7 @@ import { Alert } from '../../../internal/components/common/Alert'
 import { CertificateUploadForm } from '../../../internal/components/certificate-elements/CertificateUploadForm'
 import { StyledPractitionerCertificate } from './styles'
 import { t } from '../../services/i18n'
-import { GlobalStyles } from '../../../styles'
+import { LIBRARY_ROOT_CLASS } from '../../../styles'
 
 // How long the "certificate uploaded" success alert stays on screen before auto-dismissing.
 const SUCCESS_ALERT_DURATION_MS = 5_000
@@ -46,8 +46,7 @@ export const PractitionerCertificate: React.FC<PractitionerCertificate> = ({
 
   return (
     <>
-      <GlobalStyles />
-      <StyledPractitionerCertificate className="StyledPractitionerCertificate">
+      <StyledPractitionerCertificate className={`StyledPractitionerCertificate ${LIBRARY_ROOT_CLASS}`}>
         {showSuccessAlert && !successAlertDismissed && (
           <Alert status="success" title={t('practitioner.certificateFeedback.successTitle')} description={t('practitioner.certificateFeedback.successDescription')} />
         )}

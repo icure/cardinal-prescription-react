@@ -13,6 +13,11 @@ export * from './shared/services/indexed-db'
 export * from './shared/services/regulatory-badges'
 export * from './shared/types'
 
+// Theming: the documented `--cp-*` custom properties (README, "Theming"), the class every library
+// root carries, and the attribute that keeps host-rendered slot content out of the library reset.
+export { themeTokens, THEME_PREFIX, LIBRARY_ROOT_CLASS, HOST_SLOT_ATTRIBUTE } from './styles/theme'
+export type { ThemeTokenDefinition } from './styles/theme'
+
 // StandardDosageContext is part of the public PrescriptionModal prop surface.
 export type { StandardDosageContext } from './internal/services/prescription/create-prescription'
 

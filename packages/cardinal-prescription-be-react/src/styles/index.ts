@@ -1,4 +1,3 @@
-export { GlobalStyles } from './reset'
-export * from './variables'
+export * from './theme'
 export * from './elements'
 export * from './responsive-media-queries'

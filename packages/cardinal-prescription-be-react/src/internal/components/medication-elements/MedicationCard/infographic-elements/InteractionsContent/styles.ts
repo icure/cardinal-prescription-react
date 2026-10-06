@@ -1,27 +1,27 @@
 import styled from 'styled-components'
-import { colors, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
+import { cp, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
 
 export const StyledInteractions = styled.div`
   ${infographicElementCommonStyles};
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.orange[950]};
-    color: white;
+    background-color: ${cp.colorCaution};
+    color: ${cp.colorOnBadge};
   }
 
   .content {
     ${infographicElementContentCommonStyles};
 
     div p.effect {
-      font-size: 13px;
-      color: ${colors.grey[600]};
+      font-size: ${cp.fontSizeSm};
+      color: ${cp.colorTextSubtle};
     }
 
     p.more {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
   }
 `

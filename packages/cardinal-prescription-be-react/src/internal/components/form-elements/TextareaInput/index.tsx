@@ -12,7 +12,7 @@ interface TextareaInputProps {
 export const TextareaInput = React.forwardRef<HTMLTextAreaElement, TextareaInputProps>(({ label, id, required, disabled, errorMessage, ...rest }, ref) => (
   <StyledTextareaInput className="StyledTextareaInput">
     <StyledTextareaInputLabel className="StyledTextareaInputLabel" htmlFor={id} $required={required} $error={!!errorMessage}>
-      <span>*</span>
+      <span aria-hidden="true">*</span>
       {label}
     </StyledTextareaInputLabel>
 
@@ -25,9 +25,16 @@ export const TextareaInput = React.forwardRef<HTMLTextAreaElement, TextareaInput
       $error={!!errorMessage}
       disabled={disabled}
       rows={3}
+      aria-required={required || undefined}
+      aria-invalid={!!errorMessage || undefined}
+      aria-describedby={errorMessage && id ? `${id}-error` : undefined}
       ref={ref}
       {...rest}
     />
-    {errorMessage && <p className="error">{errorMessage}</p>}
+    {errorMessage && (
+      <p id={id ? `${id}-error` : undefined} className="error">
+        {errorMessage}
+      </p>
+    )}
   </StyledTextareaInput>
 ))

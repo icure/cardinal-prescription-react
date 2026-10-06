@@ -24,6 +24,7 @@ medical software projects as a drop-in feature.
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Available Components and How to Use Them](#available-components-and-how-to-use-them)
+- [Theming](#theming)
 - [Available APIs](#available-apis)
 - [Switzerland (medINDEX) Support](#switzerland-medindex-support)
 - [SAM and Recip-e Requirements](#sam-and-recip-e-requirements)
@@ -213,6 +214,130 @@ import { PrescriptionPrintModal } from '@icure/cardinal-prescription-be-react' i
 
 <PrescriptionPrintModal prescribedMedications="{prescriptions}" prescriber="{hcp}" patient="{patient}" closeModal="{onClosePrescriptionPrintModal}" />
 ```
+
+## Theming
+
+Every visual value of the public components (typography, control heights, radii, critical / caution / ok states,
+surfaces, borders, buttons and icons) reads a CSS custom property with the library's own value as its fallback, for
+example `var(--cp-color-surface, #ffffff)`. A host skins the library by setting `--cp-*` properties on any ancestor;
+the library's class names are not a contract. All properties share the `--cp-` prefix, and `themeTokens` (exported)
+lists them at runtime.
+
+```css
+/* e.g. in the host's stylesheet */
+:root {
+  --cp-font-family: 'Atkinson Hyperlegible Next', sans-serif;
+  --cp-color-surface: var(--surface);
+  --cp-color-text: var(--text);
+  --cp-color-primary: var(--accent);
+  --cp-input-height: 28px;
+}
+```
+
+Some properties default to another one (`follows` in the table): `--cp-button-primary-background` follows
+`--cp-color-primary`, so setting the colour restyles the button unless the host sets the button property too.
+
+**No global styles.** No component injects page-wide CSS: the reset the library needs is scoped to its own roots
+(each public component's root element carries the `cp-root` class), with the specificity a global reset would have, so
+the host's focus ring, `body` font and background and list bullets are untouched. Elements a host renders inside a
+library component sit under `data-cp-slot` and are left out of that reset. Each root sets
+its own text colour and font, so it never inherits the host's.
+
+**Dark mode** is opt-in, so existing hosts see no change: put `data-cp-theme="dark"` on a library root or any ancestor
+for the built-in dark defaults, or `data-cp-theme="auto"` to follow `prefers-color-scheme`. Properties the host sets
+always win over the built-in dark defaults (they live in a private `--cp-dark-*` layer that hosts should not set), so a
+host with its own light and dark tokens simply maps them and needs no attribute. The printed prescription stays on
+white paper (`--cp-color-paper`) and barcodes stay black on white.
+
+**Target sizes** (WCAG 2.5.8 / 2.5.5): every control is at least 44 x 44 px on a touch screen. Only a fine pointer that
+can hover (`@media (hover: hover) and (pointer: fine)`, a mouse or a trackpad) gets compact controls: buttons
+`--cp-control-height` (32 px), text inputs and selects `--cp-input-height` (32 px, set it to 28 px for a denser host),
+and small controls (close buttons, radios, icon buttons) `--cp-target-size-min` (24 px). When no media query matches,
+the safe 44 px (`--cp-target-size-coarse`) applies.
+
+<!-- theme-tokens:start -->
+| Property | Default (light) | Built-in dark default | Used for |
+|---|---|---|---|
+| `--cp-font-family` | `'Lato', sans-serif` | — | Font of every library text. |
+| `--cp-font-family-control` | `'Inter Variable', sans-serif` | — | Font of text inputs, selects and the posology suggestions. |
+| `--cp-font-size-root` | `16px` | — | Base font size of each library root. |
+| `--cp-font-size-2xs` | `11px` | — | Badges. |
+| `--cp-font-size-xs` | `12px` | — | Field captions, RID badge, "more" links. |
+| `--cp-font-size-sm` | `13px` | — | Error messages, cheap alternatives, standard dosages, composition. |
+| `--cp-font-size-md` | `14px` | — | Body text, labels, inputs, buttons. |
+| `--cp-font-size-lg` | `16px` | — | Card and modal titles. |
+| `--cp-font-size-xl` | `18px` | — | Printed prescription title. |
+| `--cp-control-height` | `32px` | — | Height of buttons under a fine pointer (mouse). |
+| `--cp-input-height` | `32px` (follows `--cp-control-height`) | — | Height of text inputs and selects under a fine pointer. |
+| `--cp-target-size-min` | `24px` | — | Minimum size of small controls (close buttons, radios, icon buttons) under a fine pointer (WCAG 2.5.8). |
+| `--cp-target-size-coarse` | `44px` | — | Size of every control on a touch screen or whenever the pointer is not a fine, hovering one. |
+| `--cp-radius-xs` | `4px` | — | Suggestion items, close buttons, RID badge. |
+| `--cp-radius-sm` | `5px` | — | Regulatory badges. |
+| `--cp-radius-md` | `6px` | — | Inputs, buttons, medication and prescription cards. |
+| `--cp-radius-lg` | `8px` | — | Prescription list and printed document. |
+| `--cp-radius-xl` | `12px` | — | Modal sections, alerts, certificate form. |
+| `--cp-radius-pill` | `999px` | — | Toggle switch and cheap badges. |
+| `--cp-color-surface` | `#ffffff` | `#1b1f27` | Cards, modal header and footer, inputs, popups. |
+| `--cp-color-surface-sunken` | `#f9fbfe` | `#12151b` | Modal body, expanded card, prescription rows. |
+| `--cp-color-surface-accent` | `#eef6fe` | `#1d2a3a` | Search results panel, focused suggestion. |
+| `--cp-color-surface-accent-subtle` | `#f2f8fd` | `#18212d` | Collapsible panel headers (cheap alternatives, standard dosages) and their hovered items. |
+| `--cp-color-surface-disabled` | `#f5f5f5` | `#2a2f38` | Disabled inputs and buttons. |
+| `--cp-color-overlay` | `rgba(8, 75, 131, 0.3)` | `rgba(0, 0, 0, 0.6)` | Backdrop behind the modals. |
+| `--cp-color-paper` | `#ffffff` | — | Printed prescription background (stays white in dark mode). |
+| `--cp-color-paper-text` | `#000000` | — | Printed prescription text. |
+| `--cp-color-text` | `#1d2235` | `#e6e9ef` | Default text, titles, labels. |
+| `--cp-color-text-strong` | `#000000` | `#ffffff` | Field values in the medication card. |
+| `--cp-color-text-muted` | `#4b6682` | `#a9b8c9` | Field captions in the medication card. |
+| `--cp-color-text-subtle` | `#6b6b69` | `#a0a4ab` | Secondary text: empty results, excipients, extra-fields preview, disabled buttons. |
+| `--cp-color-placeholder` | `#687583` | `#8b95a1` | Input placeholders. |
+| `--cp-color-link` | `#2a6fa8` | `#8cc3f2` | Links and accent text (panel headers). |
+| `--cp-color-price` | `#b5470f` | `#ffa36b` | Price in the medication card. |
+| `--cp-color-border` | `#e4e4e7` | `#343a45` | Section and list borders, dividers. |
+| `--cp-color-border-strong` | `#cad0d5` | `#4b5360` | Input and secondary button borders. |
+| `--cp-color-border-accent` | `#dce7f2` | `#2c3a4b` | Medication and prescription card borders, collapsible panels. |
+| `--cp-color-border-control` | `#848482` | `#8b95a1` | Radio button ring. |
+| `--cp-color-primary` | `#084b83` | `#7ab6ea` | Primary actions, checked controls, focused borders. |
+| `--cp-color-on-primary` | `#ffffff` | `#0b1a2b` | Text on the primary colour. |
+| `--cp-color-accent` | `#3d87c5` | `#6fa8dc` | Hovered and focused cards, tooltip border, dividers in the expanded card. |
+| `--cp-color-accent-soft` | `#add5ff` | `#2c4a6b` | Outlined regulatory badges, composition title. |
+| `--cp-color-focus-halo` | `rgba(61, 135, 197, 0.2)` | `rgba(111, 168, 220, 0.35)` | Halo around focused or hovered inputs and controls. |
+| `--cp-color-hover-halo` | `rgba(61, 135, 197, 0.3)` | `rgba(111, 168, 220, 0.35)` | Halo around hovered or focused cards. |
+| `--cp-color-focus-ring` | `#3d87c5` | `#8cc3f2` | Keyboard focus outline (`:focus-visible`). |
+| `--cp-color-critical` | `#c40000` | `#ff7b72` | Errors: messages, invalid borders, required asterisk, delete hover. |
+| `--cp-color-critical-surface` | `#fff1f0` | `#3a1d1f` | Error alert background. |
+| `--cp-color-critical-soft` | `#ffccc7` | `#5a2a2d` | Error alert border, critical regulatory badges and titles. |
+| `--cp-color-caution` | `#a35f00` | — | Caution badges (interactions, delivery conditions) and the interactions title, under white text. |
+| `--cp-color-caution-soft` | `#ffda83` | `#4d3d14` | Caution regulatory badges and titles. |
+| `--cp-color-ok` | `#1e7e46` | — | Reimbursement badge, cheapest badge, under white text. |
+| `--cp-color-ok-strong` | `#237804` | — | Cheap badge, prescription RID badge, under white text. |
+| `--cp-color-ok-surface` | `#f6ffed` | `#1b2e1b` | Success alert background. |
+| `--cp-color-ok-surface-alt` | `#e5fae5` | `#183222` | Sent prescription row. |
+| `--cp-color-ok-soft` | `#b7eb8f` | `#2f5a2f` | Success alert border, ok regulatory badges and titles. |
+| `--cp-color-ok-border` | `#008000` | `#3fb873` | Sent prescription row border. |
+| `--cp-color-neutral` | `#5f6360` | — | Neutral badges (cold chain, not reimbursed), under white text. |
+| `--cp-color-critical-strong` | `#c40000` | — | Critical badges (prescription conditions), under white text. |
+| `--cp-color-on-badge` | `#ffffff` | — | Text on the critical, caution, ok and neutral badges. |
+| `--cp-shadow-popup` | `0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12)` | `0 9px 28px 0 rgba(0, 0, 0, 0.4), 0 6px 16px 0 rgba(0, 0, 0, 0.5), 0 3px 6px 0 rgba(0, 0, 0, 0.6)` | Shadow of the posology suggestions and the search results panel. |
+| `--cp-shadow-section` | `0 1px 1px 0 rgba(218, 218, 222, 0.25)` | `none` | Shadow of the extra-fields preview. |
+| `--cp-button-primary-background` | `#084b83` (follows `--cp-color-primary`) | — | Primary button background and border. |
+| `--cp-button-primary-text` | `#ffffff` (follows `--cp-color-on-primary`) | — | Primary button text. |
+| `--cp-button-secondary-background` | `#fcfcfd` | `#1b1f27` | Outlined button background. |
+| `--cp-button-secondary-text` | `#084b83` (follows `--cp-color-primary`) | — | Outlined button text. |
+| `--cp-button-secondary-border` | `#cad0d5` (follows `--cp-color-border-strong`) | — | Outlined button border. |
+| `--cp-button-radius` | `6px` (follows `--cp-radius-md`) | — | Button corner radius. |
+| `--cp-icon-info` | `#3d87c5` | `#6fa8dc` | Information icons, chevrons, spinner of the search. |
+| `--cp-icon-critical` | `#ee1313` | `#ff6b63` | End of commercialisation, narcotic. |
+| `--cp-icon-caution` | `#ff5e00` | `#ff8a3d` | Supply problems, orange triangle. |
+| `--cp-icon-caution-alt` | `#efac2f` | — | Composition (molecule). |
+| `--cp-icon-ok` | `#09853d` | `#3fb873` | Start of commercialisation. |
+| `--cp-icon-ok-alt` | `#197437` | `#3fb873` | Generic group (leaf). |
+| `--cp-icon-success` | `#52c41a` | — | Success alert. |
+| `--cp-icon-error` | `#ff4d4f` | — | Error alert. |
+| `--cp-icon-neutral` | `#000000` | `#e6e9ef` | Black triangle, pill bottle, prescription icon, default spinner. |
+| `--cp-icon-muted` | `#9ca8b2` | `#8b95a1` | Search magnifier. |
+| `--cp-icon-close` | `#4b6682` | `#a9b8c9` | Close cross of the modals. |
+| `--cp-icon-action` | `#383a3c` | `#c9ced6` | Edit and delete icons of the prescription rows. |
+<!-- theme-tokens:end -->
 
 ## Available APIs
 

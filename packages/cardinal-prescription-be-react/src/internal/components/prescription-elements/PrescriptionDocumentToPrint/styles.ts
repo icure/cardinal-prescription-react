@@ -1,7 +1,11 @@
 import styled from 'styled-components'
-import { colors } from '../../../../styles'
+import { cp, libraryRoot } from '../../../../styles'
 
+// The printed document is also a library root: the print view copies it into an iframe, outside
+// the modal, and it must keep its own reset there. Paper colours stay light in dark mode.
 export const StyledPrescriptionDocument = styled.div`
+  ${libraryRoot}
+  color: ${cp.colorPaperText};
   @media print {
     .prescription {
       page-break-after: always;
@@ -14,18 +18,18 @@ export const StyledPrescriptionDocument = styled.div`
   gap: 24px;
 
   .prescription-document {
-    border: 1px solid ${colors.grey[300]};
-    border-radius: 8px;
-    background-color: white;
+    border: 1px solid ${cp.colorBorder};
+    border-radius: ${cp.radiusLg};
+    background-color: ${cp.colorPaper};
     padding: 24px;
-    font-size: 14px;
+    font-size: ${cp.fontSizeMd};
 
     display: flex;
     flex-direction: column;
     gap: 24px;
 
     &__divider {
-      border-top: 1px solid ${colors.grey[300]};
+      border-top: 1px solid ${cp.colorBorder};
     }
 
     &__header {
@@ -37,7 +41,7 @@ export const StyledPrescriptionDocument = styled.div`
 
       h1 {
         margin: 0;
-        font-size: 18px;
+        font-size: ${cp.fontSizeXl};
         padding-bottom: 4px;
       }
     }
@@ -61,7 +65,7 @@ export const StyledPrescriptionDocument = styled.div`
     }
 
     h3 {
-      font-size: 14px;
+      font-size: ${cp.fontSizeMd};
     }
 
     .prescription-item {
@@ -69,8 +73,8 @@ export const StyledPrescriptionDocument = styled.div`
       align-items: flex-start;
       justify-content: space-between;
       padding: 24px 12px;
-      border-radius: 12px;
-      border: 1px dashed ${colors.grey[600]};
+      border-radius: ${cp.radiusXl};
+      border: 1px dashed ${cp.colorBorderControl};
 
       &__block {
         display: flex;

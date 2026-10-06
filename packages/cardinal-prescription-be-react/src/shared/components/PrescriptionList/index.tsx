@@ -4,7 +4,7 @@ import { PrescribedMedicationType } from '../../types'
 import { PrescriptionCard } from '../../../internal/components/prescription-elements/PrescriptionCard'
 import { Button } from '../../../internal/components/form-elements/Button'
 import { t } from '../../services/i18n'
-import { GlobalStyles } from '../../../styles'
+import { LIBRARY_ROOT_CLASS } from '../../../styles'
 import { StyledPrescriptionList } from './styles'
 
 interface PrescriptionListProps {
@@ -51,8 +51,7 @@ export const PrescriptionList: React.FC<PrescriptionListProps> = ({
 
   return (
     <>
-      <GlobalStyles />
-      <StyledPrescriptionList className="StyledPrescriptionList">
+      <StyledPrescriptionList className={`StyledPrescriptionList ${LIBRARY_ROOT_CLASS}`}>
         {sentPrescriptions().length !== 0 && (
           <div className="cardinal-prescriptions">
             {!hideSectionsTitles && <p className="cardinal-prescriptions__title">{t('prescription.list.sentTitle')}</p>}

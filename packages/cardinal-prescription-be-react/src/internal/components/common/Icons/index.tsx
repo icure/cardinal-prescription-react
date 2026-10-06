@@ -1,11 +1,21 @@
 import React from 'react'
+import { cp } from '../../../../styles'
 
-export function SpinnerIcn({ pathFill = '#000000', size = 12 }: { pathFill?: string; size?: number }) {
+export function SpinnerIcn({ pathFill = cp.iconNeutral, size = 12 }: { pathFill?: string; size?: number }) {
   const sizePx = `${size}px`
   return (
-    <svg style={{ width: sizePx, height: sizePx }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" width="24" height="24">
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      style={{ width: sizePx, height: sizePx, color: pathFill }}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid"
+      width="24"
+      height="24"
+    >
       <g>
-        <circle strokeDasharray="169.64600329384882 58.548667764616276" r="36" strokeWidth="12" stroke={pathFill} fill="none" cy="50" cx="50">
+        <circle strokeDasharray="169.64600329384882 58.548667764616276" r="36" strokeWidth="12" stroke="currentColor" fill="none" cy="50" cx="50">
           <animateTransform keyTimes="0;1" values="0 50 50;360 50 50" dur="1s" repeatCount="indefinite" type="rotate" attributeName="transform"></animateTransform>
         </circle>
         <g></g>
@@ -15,7 +25,7 @@ export function SpinnerIcn({ pathFill = '#000000', size = 12 }: { pathFill?: str
 }
 
 export const StatusSuccessIcn = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconSuccess }} width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_1152_2420)">
       <path
         d="M13 0C5.82098 0 0 5.82098 0 13C0 20.179 5.82098 26 13 26C20.179 26 26 20.179 26 13C26 5.82098 20.179 0
@@ -24,7 +34,7 @@ export const StatusSuccessIcn = () => (
         17.2279L7.38504 12.2136C7.27478 12.0598 7.38504 11.8451 7.57366 11.8451H8.9346C9.23058 11.8451 9.51205 11.9873
         9.68616 12.231L11.7522 15.098L16.3138 8.7721C16.4879 8.53125 16.7665 8.38616 17.0654 8.38616H18.4263C18.615
         8.38616 18.7252 8.60089 18.615 8.75469Z"
-        fill="#52C41A"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -36,7 +46,7 @@ export const StatusSuccessIcn = () => (
 )
 
 export const StatusErrorIcn = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconError }} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -54,46 +64,46 @@ export const StatusErrorIcn = () => (
       8.57357 16.6385 8.57304C16.6387 8.57242 16.6387 8.57177 16.6385 8.57116C16.6385 8.57036 16.6382 8.56982 16.6371
       8.56875L15.4312 7.36286C15.4306 7.36221 15.4297 7.36175 15.4288 7.36152C15.4282 7.36133 15.4276 7.36133 15.427
       7.36152L15.428 7.36125Z"
-      fill="#FF4D4F"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const BlackTriangleIcn = () => (
-  <svg width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconNeutral }} width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
       d="M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282
       8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1
       2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z"
-      fill="#000000"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const OrangeTriangleIcn = () => (
-  <svg width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconCaution }} width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
       d="M5.37602 8.49475C5.49353 8.4276 5.59093 8.33021 5.65808 8.21269L8.9 2.53934C9.1077 2.17586 8.98142 1.71282
       8.61793 1.50511C8.5034 1.43966 8.37377 1.40524 8.24185 1.40524H1.75802C1.33938 1.40524 1 1.74461 1 2.16326C1
       2.29517 1.03443 2.4248 1.09987 2.53934L4.34179 8.21269C4.54949 8.57617 5.01253 8.70246 5.37602 8.49475Z"
-      fill="#FF5E00"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const ChevronIcn = () => (
-  <svg width="12px" height="12px" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconInfo }} width="12px" height="12px" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_153_633)">
       <path
         d="M2.57153 1.018L2.57153 2.02247C2.57153 2.09077 2.60502 2.15505 2.65993 2.19523L7.90457 6.00014L2.65993
         9.80506C2.60502 9.84523 2.57153 9.90952 2.57153 9.97782L2.57153 10.9823C2.57153 11.0693 2.67064 11.1202 2.74162
          11.0693L9.25189 6.34702C9.4876 6.17559 9.4876 5.8247 9.25189 5.65461L2.74162 0.932286C2.67064 0.880054 2.57153
           0.930947 2.57153 1.018Z"
-        fill="#3D87C5"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -105,7 +115,7 @@ export const ChevronIcn = () => (
 )
 
 export const EndOfCommercialisationIcn = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconCritical }} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_330_2250)">
       <path
         d="M4.65801 10.3098C4.52446 10.2195 4.36185 10.1662 4.18897 10.1664C4.07385 10.1664 3.96278 10.1899 3.86218
@@ -120,7 +130,7 @@ export const EndOfCommercialisationIcn = () => (
           10.7246C4.05423 10.6882 4.11798 10.6672 4.18893 10.667C4.23622 10.667 4.28003 10.6766 4.32032
           10.6936C4.38079 10.719 4.43272 10.7622 4.46938 10.8165C4.50583 10.8708 4.52694 10.9343 4.52694
           11.0053C4.52699 11.0527 4.51766 11.0966 4.50062 11.1368Z"
-        fill="#EE1313"
+        fill="currentColor"
       />
       <path
         d="M3.95443 9.20724C3.86373 9.20724 3.77884 9.189 3.70093 9.15623C3.58466 9.10702 3.48425 9.02405 3.41408
@@ -145,13 +155,13 @@ export const EndOfCommercialisationIcn = () => (
            3.17911C4.23123 3.12928 4.40992 3.22718 4.45972 3.39795L5.29332 6.25249C5.34334 6.42324 5.24525 6.60213
            5.0747 6.65175C4.90414 6.70174 4.72543 6.60368 4.67542 6.43313L3.84163 3.5782C3.79203 3.40763 3.88972
            3.22891 4.06046 3.17911Z"
-        fill="#EE1313"
+        fill="currentColor"
       />
       <path
         d="M9.88112 7.60687C8.71086 7.60687 7.7627 8.55541 7.7627 9.72569C7.7627 10.8958 8.71086 11.8443 9.88112
         11.8443C11.0514 11.8443 11.9999 10.8958 11.9999 9.72569C11.9999 8.55541 11.0514 7.60687 9.88112
         7.60687ZM11.0917 10.0788H8.67055V9.37235H11.0917V10.0788Z"
-        fill="#EE1313"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -163,7 +173,7 @@ export const EndOfCommercialisationIcn = () => (
 )
 
 export const LeafIcn = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconOkAlt }} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_618_2370)">
       <mask id="mask0_618_2370" maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
         <path d="M14 0H0V14H14V0Z" fill="white" />
@@ -178,7 +188,7 @@ export const LeafIcn = () => (
           4.63127 9.36862C4.28958 9.02694 4.28958 8.47306 4.63127 8.13138L5.24989 7.51275V4.375C5.24989 3.89134 5.64124
            3.5 6.12489 3.5C6.60855 3.5 6.99989 3.89134 6.99989 4.375V5.76275L9.88127 2.88137C10.223 2.53969 10.7768
            2.53969 11.1185 2.88137C11.4602 3.22306 11.4604 3.77694 11.1185 4.11862Z"
-          fill="#197437"
+          fill="currentColor"
         />
       </g>
     </g>
@@ -191,7 +201,7 @@ export const LeafIcn = () => (
 )
 
 export const MoleculeIcn = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconCautionAlt }} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_618_936)">
       <mask id="mask0_618_936" maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
         <path d="M14 0H0V14H14V0Z" fill="white" />
@@ -202,21 +212,21 @@ export const MoleculeIcn = () => (
           -0.0278468 6.88572 -0.0278468 6.70008 0.0835404L4.15531 1.60869C3.97824 1.71436 3.87256 1.90286 3.87256
           2.10851V5.15595C3.87256 5.36159 3.98109 5.55009 4.15531 5.65576L6.70008 7.18091C6.96856 7.33514 7.19133
           7.25231 7.29986 7.18091L9.84181 5.65576C10.016 5.55009 10.1245 5.36159 10.1245 5.15595Z"
-          fill="#EFAC2F"
+          fill="currentColor"
         />
         <path
           d="M5.96922 8.3405L3.4273 6.81532C3.24165 6.70393 3.01317 6.70393 2.82753 6.81532L0.282753 8.3405C0.105675
           8.44612 0 8.63465 0 8.8403V11.8877C0 12.0934 0.108531 12.2819 0.282753 12.3875L2.82753 13.9127C3.096 14.0669
           3.31877 13.9841 3.4273 13.9127L5.96922 12.3875C6.1463 12.2819 6.25197 12.0934 6.25197 11.8877V8.8403C6.25197
           8.63465 6.1463 8.44612 5.96922 8.3405Z"
-          fill="#EFAC2F"
+          fill="currentColor"
         />
         <path
           d="M13.7119 8.33763L11.17 6.81248C10.9843 6.7011 10.7559 6.7011 10.5702 6.81248L8.02541 8.33763C7.84831
           8.44333 7.74268 8.63178 7.74268 8.83743V11.8849C7.74268 12.0906 7.85119 12.279 8.02541 12.3847L10.5673
           13.9099C10.8358 14.0641 11.0586 13.9813 11.1671 13.9099L13.709 12.3847C13.8861 12.279 13.9918 12.0906
           13.9918 11.8849V8.83743C13.9946 8.63178 13.8861 8.44333 13.7119 8.33763Z"
-          fill="#EFAC2F"
+          fill="currentColor"
         />
       </g>
     </g>
@@ -229,7 +239,7 @@ export const MoleculeIcn = () => (
 )
 
 export const PillsBottleIcn = () => (
-  <svg width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconNeutral }} width="12px" height="12px" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_165_1782)">
       <path
         d="M7.8751 4.34052C7.86877 4.11591 7.75782 3.91751 7.58907 3.79252C7.40655 3.62106 7.2094 3.46818 7.01846
@@ -247,7 +257,7 @@ export const PillsBottleIcn = () => (
           4.34637 7.8751 4.34052ZM7.08025 6.21274C7.08025 6.43213 6.90241 6.60997 6.68304
           6.60997H4.99995H3.31686C3.0975 6.60997 2.91965 6.43213 2.91965 6.21274V5.5681C2.91965 5.34872 3.0975 5.17088
            3.31686 5.17088H6.68304C6.90241 5.17088 7.08025 5.34874 7.08025 5.5681V6.21274Z"
-        fill="#000000"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -259,7 +269,7 @@ export const PillsBottleIcn = () => (
 )
 
 export const PrescriptionIcn = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconNeutral }} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M8.56078 8.25L10.3903 6.42047C10.5368 6.27398 10.5368 6.03656 10.3903 5.89008L9.85992 5.35969C9.71344 5.2132
        9.47602 5.2132 9.32953 5.35969L7.5 7.18922L5.53219 5.22141C6.64008 5.08125 7.5 4.14586 7.5 3C7.5 1.75734 6.49266
@@ -268,13 +278,13 @@ export const PrescriptionIcn = () => (
           10.6099L5.14031 11.1403C5.2868 11.2868 5.52422 11.2868 5.6707 11.1403L7.5 9.31055L9.32953 11.1401C9.47602
            11.2866 9.71344 11.2866 9.85992 11.1401L10.3903 10.6097C10.5368 10.4632 10.5368 10.2258 10.3903
            10.0793L8.56078 8.25ZM3 2.25H5.25C5.66344 2.25 6 2.58656 6 3C6 3.41344 5.66344 3.75 5.25 3.75H3V2.25Z"
-      fill="#000000"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const SolidPillIcn = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconInfo }} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_618_3928)">
       <path
         d="M12.5957 9.11825C12.1339 8.62182 11.5084 8.31967 10.8342 8.26742L10.8168 8.26608L3.19964 8.25861C1.71537
@@ -290,7 +300,7 @@ export const SolidPillIcn = () => (
          7.05207 1.69844 7.39865ZM9.87685 1.37031C10.0443 1.31935 10.2185 1.29337 10.3935 1.29323C11.1697 1.29323
          11.8691 1.8126 12.0946 2.55621C12.379 3.49462 11.847 4.48952 10.9091 4.77387L7.28069 5.86997L6.25098
          2.47344L9.87685 1.37031Z"
-        fill="#3D87C5"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -302,7 +312,7 @@ export const SolidPillIcn = () => (
 )
 
 export const StartOfCommercialisationIcn = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconOk }} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_330_2383)">
       <path
         d="M4.65803 10.3099C4.52448 10.2196 4.36187 10.1663 4.18897 10.1665C4.07385 10.1665 3.96278 10.1899 3.86218
@@ -317,7 +327,7 @@ export const StartOfCommercialisationIcn = () => (
           10.6882 4.11803 10.6673 4.18895 10.6671C4.23625 10.6671 4.28005 10.6766 4.32036 10.6937C4.38083 10.719
           4.43277 10.7623 4.46943 10.8165C4.50587 10.8708 4.52699 10.9344 4.52699 11.0053C4.52699 11.0528 4.51768
           11.0966 4.50062 11.1369Z"
-        fill="#09853D"
+        fill="currentColor"
       />
       <path
         d="M3.9545 9.20728C3.8638 9.20728 3.77891 9.18907 3.701 9.15631C3.58471 9.10709 3.4843 9.02412 3.41415
@@ -342,13 +352,13 @@ export const StartOfCommercialisationIcn = () => (
               3.40214 5.29768 3.22346 5.46845 3.17344ZM4.06053 3.17907C4.2313 3.12924 4.41001 3.22714 4.45982
               3.3979L5.29344 6.25249C5.34346 6.42324 5.24537 6.60214 5.07481 6.65178C4.90424 6.70177 4.72555 6.60371
                4.67553 6.43315L3.84172 3.57818C3.79208 3.40758 3.88977 3.22889 4.06053 3.17907Z"
-        fill="#09853D"
+        fill="currentColor"
       />
       <path
         d="M9.88135 7.6069C8.71107 7.6069 7.7627 8.55547 7.7627 9.72575C7.7627 10.8958 8.71107 11.8444 9.88135
         11.8444C11.0514 11.8444 12 10.8958 12 9.72575C12 8.55547 11.0514 7.6069 9.88135 7.6069ZM9.76121 10.7154L8.74831
          9.90502L9.13266 9.42455L9.6583 9.84514L10.5439 8.70664L11.0298 9.0844L9.76121 10.7154Z"
-        fill="#09853D"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -360,27 +370,27 @@ export const StartOfCommercialisationIcn = () => (
 )
 
 export const SupplyIcn = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconCaution }} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_329_708)">
       <path
         d="M5.18757 9.96101C4.45959 9.96101 3.86963 10.5508 3.86963 11.2788C3.86963 12.0069 4.45959 12.5966 5.18757
         12.5966C5.91581 12.5966 6.50562 12.0069 6.50562 11.2788C6.50562 10.5508 5.91581 9.96101 5.18757
         9.96101ZM5.18757 11.8517C4.87111 11.8517 4.61468 11.5953 4.61468 11.2788C4.61468 10.9622 4.87111 10.7059
         5.18757 10.7059C5.50406 10.7059 5.76067 10.9622 5.76067 11.2788C5.76067 11.5953 5.50406 11.8517 5.18757 11.8517Z"
-        fill="#FF5E00"
+        fill="currentColor"
       />
       <path
         d="M12.1372 9.96101C11.4093 9.96101 10.8193 10.5508 10.8193 11.2788C10.8193 12.0069 11.4093 12.5966 12.1372
         12.5966C12.8655 12.5966 13.4553 12.0069 13.4553 11.2788C13.4553 10.5508 12.8655 9.96101 12.1372 9.96101ZM12.1372
          11.8517C11.8208 11.8517 11.5644 11.5953 11.5644 11.2788C11.5644 10.9622 11.8208 10.7059 12.1372
          10.7059C12.4538 10.7059 12.7104 10.9622 12.7104 11.2788C12.7104 11.5953 12.4538 11.8517 12.1372 11.8517Z"
-        fill="#FF5E00"
+        fill="currentColor"
       />
       <path
         d="M6.6703 5.9117C6.6703 6.09636 6.51918 6.24744 6.33455 6.24744H1.70143C1.51676 6.24744 1.36572 6.09636 1.36572
          5.9117V5.71025C1.36572 5.52562 1.5168 5.37454 1.70143 5.37454H6.33455C6.51922 5.37454 6.6703 5.52562 6.6703
          5.71025V5.9117Z"
-        fill="#FF5E00"
+        fill="currentColor"
       />
       <path
         d="M14.7198 7.87737C14.2365 7.75174 13.96 7.67276 13.7703 7.30629L13.1358 6.02162C12.9459 5.65516 12.4529
@@ -402,13 +412,13 @@ export const SupplyIcn = () => (
          5.87696 11.164 5.87696C11.3164 5.87696 11.7735 5.87696 11.7735 5.87696C12.1408 5.87696 12.5794 6.14378 12.7483
           6.46987L13.3129 7.61298C13.3367 7.659 13.3621 7.69986 13.3893 7.73647C13.4094 7.76332 13.3757 7.81059 13.2917
            7.81059Z"
-        fill="#FF5E00"
+        fill="currentColor"
       />
       <path
         d="M5.43524 8.06651C5.43524 8.25118 5.28416 8.40226 5.09953 8.40226H0.835707C0.651039 8.40226 0.5 8.25118 0.5
         8.06651V7.86506C0.5 7.68043 0.651076 7.52936 0.835707 7.52936H5.09953C5.2842 7.52936 5.43524 7.68043 5.43524
         7.86506V8.06651Z"
-        fill="#FF5E00"
+        fill="currentColor"
       />
     </g>
     <defs>
@@ -420,7 +430,7 @@ export const SupplyIcn = () => (
 )
 
 export const SearchIcn = () => (
-  <svg width="20px" height="20px" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconMuted }} width="20px" height="20px" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g mask="url(#mask0_16_247)">
       <path
         d="M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333
@@ -432,14 +442,14 @@ export const SearchIcn = () => (
         5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042
         5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958
         11.3021 6.875 11.6667 7.91667 11.6667Z"
-        fill="#9CA8B2"
+        fill="currentColor"
       />
     </g>
   </svg>
 )
 
 export const CloseIcn = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconClose }} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -456,13 +466,13 @@ export const CloseIcn = () => (
          2.32697C2.86008 2.32684 2.86052 2.32684 2.86093 2.32697C2.86146 2.32697 2.86182 2.32732 2.86253 2.32804L8.00003
           7.46554L13.1375 2.32804C13.1382 2.32732 13.1386 2.32715 13.1391 2.32697C13.1395 2.32684 13.14 2.32684 13.1404
            2.32697Z"
-      fill="#4B6682"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const EditIcn = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconAction }} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M7.277 9.81458L12.1624 4.92916L11.4041 4.17083L6.51867 9.05625L7.277 9.81458ZM3.47075 11.0833C2.49853 11.0347
       1.77422 10.8306 1.29784 10.4708C0.821446 10.1111 0.583252 9.59097 0.583252 8.91041C0.583252 8.27847 0.843321
@@ -476,23 +486,23 @@ export const EditIcn = () => (
       2.91666 11.9096 3.01389 12.1041 3.20833L13.1249 4.22916C13.3194 4.42361 13.4166 4.65451 13.4166 4.92187C13.4166
       5.18923 13.3194 5.42014 13.1249 5.61458L7.55409 11.1854ZM5.23534 11.6667C5.07006 11.7056 4.92422 11.6618 4.79784
        11.5354C4.67145 11.409 4.6277 11.2632 4.66659 11.0979L5.14784 8.77916L7.55409 11.1854L5.23534 11.6667Z"
-      fill="#383A3C"
+      fill="currentColor"
     />
   </svg>
 )
 
 export const DeleteIcn = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" focusable="false" style={{ color: cp.iconAction }} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M5.83325 5.25C6.15542 5.25 6.41659 5.51117 6.41659 5.83334V9.625C6.41659 9.94717 6.15542 10.2083 5.83325
       10.2083C5.51109 10.2083 5.24992 9.94717 5.24992 9.625V5.83334C5.24992 5.51117 5.51109 5.25 5.83325 5.25Z"
-      fill="#383A3C"
+      fill="currentColor"
     />
     <path
       d="M8.74992 5.83334C8.74992 5.51117 8.48875 5.25 8.16659 5.25C7.84442 5.25 7.58325 5.51117 7.58325
       5.83334V9.625C7.58325 9.94717 7.84442 10.2083 8.16659 10.2083C8.48875 10.2083 8.74992 9.94717 8.74992
       9.625V5.83334Z"
-      fill="#383A3C"
+      fill="currentColor"
     />
     <path
       fillRule="evenodd"
@@ -503,13 +513,13 @@ export const DeleteIcn = () => (
       3.5 13.4166 3.23884 13.4166 2.91667C13.4166 2.5945 13.1554 2.33334 12.8333 2.33334H9.68208L8.90713
       0.890634C8.80548 0.701395 8.60805 0.583336 8.39324 0.583336H5.62588ZM8.35775 2.33334L8.04442 1.75H5.97134L5.65158
        2.33334H8.35775ZM3.20825 3.5V12.25H10.7916V3.5H3.20825Z"
-      fill="#383A3C"
+      fill="currentColor"
     />
   </svg>
 )
 
-export const WarningIcn = ({ color = '#3D87C5' }: { color?: string }) => (
-  <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z" fill={color} />
+export const WarningIcn = ({ color = cp.iconInfo }: { color?: string }) => (
+  <svg aria-hidden="true" focusable="false" style={{ color }} width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2 1 21h22L12 2Zm0 4.5 7.53 13H4.47L12 6.5ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z" fill="currentColor" />
   </svg>
 )

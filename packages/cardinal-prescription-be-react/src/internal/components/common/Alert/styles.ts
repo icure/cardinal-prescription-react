@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { colors } from '../../../../styles'
+import { cp } from '../../../../styles'
 
 export const StyledAlert = styled.div<{ $success: boolean; $error: boolean }>`
   width: 100%;
@@ -9,8 +9,8 @@ export const StyledAlert = styled.div<{ $success: boolean; $error: boolean }>`
   align-items: flex-start;
   gap: 6px;
   align-self: stretch;
-  border-radius: 12px;
-  border: 1px solid white;
+  border-radius: ${cp.radiusXl};
+  border: 1px solid ${cp.colorSurface};
 
   .heading {
     display: flex;
@@ -25,16 +25,16 @@ export const StyledAlert = styled.div<{ $success: boolean; $error: boolean }>`
   }
 
   h4 {
-    color: ${colors.grey[900]};
-    font-size: 16px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeLg};
     font-style: normal;
     font-weight: 400;
     line-height: 24px;
   }
 
   p {
-    color: ${colors.grey[900]};
-    font-size: 14px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeMd};
     font-style: normal;
     font-weight: 400;
     line-height: 22px;
@@ -43,14 +43,14 @@ export const StyledAlert = styled.div<{ $success: boolean; $error: boolean }>`
   ${({ $error }) =>
     !!$error &&
     css`
-      border-color: ${colors.red[400]};
-      background: ${colors.red[300]};
+      border-color: ${cp.colorCriticalSoft};
+      background: ${cp.colorCriticalSurface};
     `};
 
   ${({ $success }) =>
     !!$success &&
     css`
-      border-color: ${colors.green[400]};
-      background: ${colors.green[300]};
+      border-color: ${cp.colorOkSoft};
+      background: ${cp.colorOkSurface};
     `};
 `

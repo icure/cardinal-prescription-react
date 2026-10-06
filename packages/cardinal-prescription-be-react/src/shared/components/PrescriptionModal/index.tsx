@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import React, { KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { makeParser, marshal, RegimenItem as ParsedRegimenItem } from '@icure/medication-sdk'
 import { MagistralText } from '@icure/be-fhc-lite-api'
 import { SamText, SamV2Api } from '@icure/cardinal-be-sam-sdk'
@@ -17,7 +17,7 @@ import { getReimbursementOptions } from '../../../internal/utils/reimbursement-h
 import { TextareaInput } from '../../../internal/components/form-elements/TextareaInput'
 import { Button } from '../../../internal/components/form-elements/Button'
 import { StyledDosageInput, StyledPrescriptionModal, StyledSuggestionItem } from './styles'
-import { GlobalStyles } from '../../../styles'
+import { LIBRARY_ROOT_CLASS } from '../../../styles'
 import { Controller, useForm } from 'react-hook-form'
 import { trim } from '../../../internal/utils/string-helpers'
 import { CheapAlternatives } from '../../../internal/components/medication-elements/CheapAlternatives'
@@ -67,6 +67,8 @@ export const PrescriptionModal: React.FC<Props> = ({
   onSubmit,
   modalMood,
 }) => {
+  const titleId = useId()
+  const suggestionsId = useId()
   // State for all form fields and logic
 
   const [posologySuggestions, setPosologySuggestions] = useState<string[]>([])
@@ -178,6 +180,20 @@ export const PrescriptionModal: React.FC<Props> = ({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const length = posologySuggestions.length
+    if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
+      // Enter never submits the form from a field (as before); in the posology field it only
+      // accepts the focused suggestion (if any). Buttons keep their own Enter activation.
+      event.preventDefault()
+      event.stopPropagation()
+      if (length && focusedDosageIndex >= 0 && focusedDosageIndex < length) {
+        setDisableHover(false)
+        validateSuggestion(posologySuggestions[focusedDosageIndex])
+      }
+      return
+    }
+    // The arrow keys and Escape only drive the suggestions while they are displayed, so selects
+    // and number fields keep their own keyboard behaviour.
+    if (!length) return
     const defaultActions = () => {
       event.preventDefault()
       setDisableHover(true)
@@ -190,22 +206,11 @@ export const PrescriptionModal: React.FC<Props> = ({
       defaultActions()
       setFocusedDosageIndex((prev) => (prev - 1 + length) % length)
       scrollToFocusedItem((focusedDosageIndex - 1 + length) % length)
-    } else if (event.key === 'Enter') {
-      // Enter never submits the form from within the dosage field; it only
-      // accepts the focused posology suggestion (if any).
+    } else if (event.key === 'Escape') {
       event.preventDefault()
       event.stopPropagation()
-      if (focusedDosageIndex >= 0) {
-        setDisableHover(false)
-        validateSuggestion(posologySuggestions[focusedDosageIndex])
-      }
-    } else if (event.key === 'Escape') {
-      if (posologySuggestions.length) {
-        event.preventDefault()
-        event.stopPropagation()
-        setPosologySuggestions([])
-        setFocusedDosageIndex(-1)
-      }
+      setPosologySuggestions([])
+      setFocusedDosageIndex(-1)
     }
   }
 
@@ -238,291 +243,294 @@ export const PrescriptionModal: React.FC<Props> = ({
     }
   }
 
+  const suggestionsDisplayed = posologySuggestions.length !== 0
+  const activeSuggestionId = suggestionsDisplayed && focusedDosageIndex >= 0 && focusedDosageIndex < posologySuggestions.length ? `posology-${focusedDosageIndex}` : undefined
+
   return (
-    <>
-      <GlobalStyles />
-      <StyledPrescriptionModal className="StyledPrescriptionModal">
-        <div className="content">
-          <form id="prescriptionForm" className="addMedicationForm" onSubmit={handleSubmit(handleFormSubmit)} autoComplete="off">
-            <div className="addMedicationForm__header">
-              <h3>{modalMood === 'create' ? t('prescription.createTitle') : t('prescription.modifyTitle')}</h3>
-              <button className="addMedicationForm__header__closeIcn" onClick={handleModalClose} type="reset">
-                <CloseIcn />
-              </button>
-            </div>
-            <div
-              className="addMedicationForm__body"
-              onKeyDown={handleKeyDown}
-              role="listbox"
-              tabIndex={0}
-              aria-activedescendant={focusedDosageIndex >= 0 ? `posology-${focusedDosageIndex}` : undefined}
-            >
-              {medication && (
-                <div className="addMedicationForm__body__content">
-                  {/* Like the angular implementation: the prescribed medication is shown as a
+    <StyledPrescriptionModal className={`StyledPrescriptionModal ${LIBRARY_ROOT_CLASS}`}>
+      <div className="content" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+        <form id="prescriptionForm" className="addMedicationForm" onSubmit={handleSubmit(handleFormSubmit)} autoComplete="off">
+          <div className="addMedicationForm__header">
+            <h3 id={titleId}>{modalMood === 'create' ? t('prescription.createTitle') : t('prescription.modifyTitle')}</h3>
+            <button className="addMedicationForm__header__closeIcn" onClick={handleModalClose} type="reset" aria-label={t('prescription.closeDialog')}>
+              <CloseIcn />
+            </button>
+          </div>
+          <div className="addMedicationForm__body" onKeyDown={handleKeyDown}>
+            {medication && (
+              <div className="addMedicationForm__body__content">
+                {/* Like the angular implementation: the prescribed medication is shown as a
                       read-only medication card, and the free-text title input only exists when
                       there is no medication (e.g. modifying a free-text prescription). */}
-                  <MedicationCard medication={medication} handleAddPrescription={() => {}} id="modal-medication-card" readOnly />
-                  {alternatives.length > 0 && <CheapAlternatives sdk={sdk} medications={alternatives} onSelectMedication={onSelectAlternativeMedication} />}
-                </div>
+                <MedicationCard medication={medication} handleAddPrescription={() => {}} id="modal-medication-card" readOnly />
+                {alternatives.length > 0 && <CheapAlternatives sdk={sdk} medications={alternatives} onSelectMedication={onSelectAlternativeMedication} />}
+              </div>
+            )}
+            <div className="addMedicationForm__body__content">
+              {!medication && (
+                <TextInput
+                  label={t('prescription.form.medicationTitle')}
+                  required
+                  disabled
+                  id="medicationTitle"
+                  {...register('medicationTitle', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['medicationTitle']?.message}
+                />
               )}
-              <div className="addMedicationForm__body__content">
-                {!medication && (
-                  <TextInput
-                    label={t('prescription.form.medicationTitle')}
-                    required
-                    disabled
-                    id="medicationTitle"
-                    {...register('medicationTitle', {
-                      required: t('prescription.form.fieldRequired'),
-                    })}
-                    errorMessage={prescriptionFormErrors['medicationTitle']?.message}
-                  />
-                )}
-                <StyledDosageInput className="StyledDosageInput">
-                  <TextInput
-                    label={t('prescription.form.dosage')}
-                    id="dosage"
-                    required
-                    autoFocus
-                    {...register('dosage', {
-                      required: t('prescription.form.fieldRequired'),
-                    })}
-                    errorMessage={prescriptionFormErrors['dosage']?.message}
-                  />
-                  {posologySuggestions.length !== 0 && (
-                    <ul className="suggestionsDropdown" onMouseMove={handleMouseMove}>
-                      {posologySuggestions.map((posology, index) => (
-                        <StyledSuggestionItem
-                          key={index}
-                          id={`posology-${index}`}
-                          $disableHover={disableHover}
-                          $focused={focusedDosageIndex === index}
-                          className="StyledSuggestionItem"
-                        >
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              validateSuggestion(posology)
-                            }}
-                          >
-                            {posology}
-                          </button>
-                        </StyledSuggestionItem>
-                      ))}
-                    </ul>
+              <StyledDosageInput className="StyledDosageInput">
+                <TextInput
+                  label={t('prescription.form.dosage')}
+                  id="dosage"
+                  required
+                  autoFocus
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={suggestionsDisplayed}
+                  aria-controls={suggestionsId}
+                  aria-activedescendant={activeSuggestionId}
+                  {...register('dosage', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['dosage']?.message}
+                />
+                <ul
+                  id={suggestionsId}
+                  className="suggestionsDropdown"
+                  role="listbox"
+                  aria-label={t('prescription.form.posologySuggestions')}
+                  hidden={!suggestionsDisplayed}
+                  onMouseMove={handleMouseMove}
+                >
+                  {posologySuggestions.map((posology, index) => (
+                    <StyledSuggestionItem key={index} role="none" $disableHover={disableHover} $focused={focusedDosageIndex === index} className="StyledSuggestionItem">
+                      <button
+                        id={`posology-${index}`}
+                        type="button"
+                        role="option"
+                        aria-selected={focusedDosageIndex === index}
+                        tabIndex={-1}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          validateSuggestion(posology)
+                        }}
+                      >
+                        {posology}
+                      </button>
+                    </StyledSuggestionItem>
+                  ))}
+                </ul>
+              </StyledDosageInput>
+              {standardDosages.length > 0 && <StandardDosages dosages={standardDosages} language={language} onSelectDosage={onSelectStandardDosage} />}
+              <div className="addMedicationForm__body__content__inputsGroup">
+                <TextInput
+                  label={t('prescription.form.duration')}
+                  id="duration"
+                  type="number"
+                  min={1}
+                  required
+                  {...register('duration', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['duration']?.message}
+                />
+                <Controller
+                  name="durationTimeUnit"
+                  control={control}
+                  rules={{ required: t('prescription.form.fieldRequired') }}
+                  render={({ field }) => (
+                    <SelectInput
+                      {...field}
+                      label={t('prescription.form.durationTimeUnit')}
+                      id="durationTimeUnit"
+                      required
+                      options={getDurationTimeUnits()}
+                      errorMessage={prescriptionFormErrors['durationTimeUnit']?.message}
+                    />
                   )}
-                </StyledDosageInput>
-                {standardDosages.length > 0 && <StandardDosages dosages={standardDosages} language={language} onSelectDosage={onSelectStandardDosage} />}
+                />
+              </div>
+              <div className="addMedicationForm__body__content__inputsGroup">
+                <TextInput
+                  label={t('prescription.form.treatmentStartDate')}
+                  id="treatmentStartDate"
+                  type="date"
+                  required
+                  {...register('treatmentStartDate', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['treatmentStartDate']?.message}
+                />
+                <TextInput
+                  label={t('prescription.form.executableUntil')}
+                  id="executableUntil"
+                  type="date"
+                  required
+                  {...register('executableUntil', {
+                    required: t('prescription.form.fieldRequired'),
+                  })}
+                  errorMessage={prescriptionFormErrors['executableUntil']?.message}
+                />
+              </div>
+              {!prescriptionToModify && (
                 <div className="addMedicationForm__body__content__inputsGroup">
                   <TextInput
-                    label={t('prescription.form.duration')}
-                    id="duration"
+                    label={t('prescription.form.prescriptionsNumber')}
+                    id="prescriptionsNumber"
                     type="number"
                     min={1}
+                    max={12}
                     required
-                    {...register('duration', {
+                    {...register('prescriptionsNumber', {
                       required: t('prescription.form.fieldRequired'),
                     })}
-                    errorMessage={prescriptionFormErrors['duration']?.message}
+                    errorMessage={prescriptionFormErrors['prescriptionsNumber']?.message}
                   />
-                  <Controller
-                    name="durationTimeUnit"
-                    control={control}
-                    rules={{ required: t('prescription.form.fieldRequired') }}
-                    render={({ field }) => (
-                      <SelectInput
-                        {...field}
-                        label={t('prescription.form.durationTimeUnit')}
-                        id="durationTimeUnit"
-                        required
-                        options={getDurationTimeUnits()}
-                        errorMessage={prescriptionFormErrors['durationTimeUnit']?.message}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="addMedicationForm__body__content__inputsGroup">
-                  <TextInput
-                    label={t('prescription.form.treatmentStartDate')}
-                    id="treatmentStartDate"
-                    type="date"
-                    required
-                    {...register('treatmentStartDate', {
-                      required: t('prescription.form.fieldRequired'),
-                    })}
-                    errorMessage={prescriptionFormErrors['treatmentStartDate']?.message}
-                  />
-                  <TextInput
-                    label={t('prescription.form.executableUntil')}
-                    id="executableUntil"
-                    type="date"
-                    required
-                    {...register('executableUntil', {
-                      required: t('prescription.form.fieldRequired'),
-                    })}
-                    errorMessage={prescriptionFormErrors['executableUntil']?.message}
-                  />
-                </div>
-                {!prescriptionToModify && (
-                  <div className="addMedicationForm__body__content__inputsGroup">
+                  {prescriptionsNumber && prescriptionsNumber > 1 && (
+                    <Controller
+                      name="periodicityTimeUnit"
+                      control={control}
+                      rules={{ required: t('prescription.form.fieldRequired') }}
+                      render={({ field }) => (
+                        <SelectInput
+                          {...field}
+                          label={t('prescription.form.periodicityTimeUnit')}
+                          id="periodicityTimeUnit"
+                          required
+                          options={getPeriodicityTimeUnits()}
+                          errorMessage={prescriptionFormErrors['periodicityTimeUnit']?.message}
+                        />
+                      )}
+                    />
+                  )}
+                  {periodicityTimeUnit === '1' && (
                     <TextInput
-                      label={t('prescription.form.prescriptionsNumber')}
-                      id="prescriptionsNumber"
+                      label={t('prescription.form.periodicityDaysNumber')}
+                      id="periodicityDaysNumber"
                       type="number"
                       min={1}
-                      max={12}
                       required
-                      {...register('prescriptionsNumber', {
+                      {...register('periodicityDaysNumber', {
                         required: t('prescription.form.fieldRequired'),
                       })}
-                      errorMessage={prescriptionFormErrors['prescriptionsNumber']?.message}
+                      errorMessage={prescriptionFormErrors['periodicityDaysNumber']?.message}
                     />
-                    {prescriptionsNumber && prescriptionsNumber > 1 && (
-                      <Controller
-                        name="periodicityTimeUnit"
-                        control={control}
-                        rules={{ required: t('prescription.form.fieldRequired') }}
-                        render={({ field }) => (
-                          <SelectInput
-                            {...field}
-                            label={t('prescription.form.periodicityTimeUnit')}
-                            id="periodicityTimeUnit"
-                            required
-                            options={getPeriodicityTimeUnits()}
-                            errorMessage={prescriptionFormErrors['periodicityTimeUnit']?.message}
-                          />
-                        )}
-                      />
-                    )}
-                    {periodicityTimeUnit === '1' && (
-                      <TextInput
-                        label={t('prescription.form.periodicityDaysNumber')}
-                        id="periodicityDaysNumber"
-                        type="number"
-                        min={1}
-                        required
-                        {...register('periodicityDaysNumber', {
-                          required: t('prescription.form.fieldRequired'),
-                        })}
-                        errorMessage={prescriptionFormErrors['periodicityDaysNumber']?.message}
-                      />
-                    )}
-                  </div>
-                )}
-                <div className="addMedicationForm__body__content__radioBtns">
-                  <Controller
-                    name="substitutionAllowed"
-                    control={control}
-                    render={({ field }) => (
-                      <RadioInput
-                        {...field}
-                        value={field.value}
-                        onChange={(val) => field.onChange(val)}
-                        label={t('prescription.form.substitutionAllowed')}
-                        options={[
-                          { label: t('prescription.form.substitutionYes'), value: true, id: 'yes' },
-                          { label: t('prescription.form.substitutionNo'), value: false, id: 'no' },
-                        ]}
-                        required
-                        errorMessage={prescriptionFormErrors['substitutionAllowed']?.message}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-
-              <Controller
-                name="showExtraFields"
-                control={control}
-                render={({ field }) => <ToggleSwitch {...field} id="showExtraFields" value={t('prescription.form.toggleExtraFields')} />}
-              />
-
-              {!showExtraFields ? (
-                <div className="addMedicationForm__body__extraFieldsPreview">
-                  <p>
-                    <span>{t('prescription.form.patientInstructions')} :</span>{' '}
-                    <i>
-                      <span>{recipeInstructionForPatient || t('prescription.form.instructionLabelNone')}</span>
-                    </i>
-                  </p>
-                  <p>
-                    <span>{t('prescription.form.reimbursementInstructions')} :</span>{' '}
-                    <i>
-                      <span>{getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t('prescription.form.instructionLabelNone')}</span>
-                    </i>
-                  </p>
-                  <p>
-                    <span>{t('prescription.form.prescriberVisibility')} :</span>{' '}
-                    <i>
-                      <span>{getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label}</span>
-                    </i>
-                  </p>
-                  <p>
-                    <span>{t('prescription.form.pharmacistVisibility')} :</span>{' '}
-                    <i>
-                      <span>{getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label}</span>
-                    </i>
-                  </p>
-                </div>
-              ) : (
-                <div className="addMedicationForm__body__content">
-                  <TextareaInput label={t('prescription.form.patientInstructions')} id="recipeInstructionForPatient" {...register('recipeInstructionForPatient')} />
-                  <Controller
-                    name="instructionsForReimbursement"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectInput
-                        {...field}
-                        label={t('prescription.form.reimbursementInstructions')}
-                        id="instructionsForReimbursement"
-                        options={getReimbursementOptions()}
-                        value={field.value ?? ''}
-                        onChange={(e) => {
-                          // Convert empty string back to null before updating RHF state
-                          const val = e.target.value === '' ? null : e.target.value
-                          field.onChange(val)
-                        }}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="prescriberVisibility"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectInput {...field} label={t('prescription.form.prescriberVisibility')} id="prescriberVisibility" options={getPractitionerVisibilityOptions()} />
-                    )}
-                  />
-
-                  <Controller
-                    name="pharmacistVisibility"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectInput
-                        {...field}
-                        label={t('prescription.form.pharmacistVisibility')}
-                        id="pharmacistVisibility"
-                        options={getPharmacistVisibilityOptions()}
-                        value={field.value ?? ''}
-                        onChange={(e) => {
-                          // Convert empty string back to null before updating RHF state
-                          const val = e.target.value === '' ? null : e.target.value
-                          field.onChange(val)
-                        }}
-                      />
-                    )}
-                  />
+                  )}
                 </div>
               )}
+              <div className="addMedicationForm__body__content__radioBtns">
+                <Controller
+                  name="substitutionAllowed"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioInput
+                      {...field}
+                      value={field.value}
+                      onChange={(val) => field.onChange(val)}
+                      label={t('prescription.form.substitutionAllowed')}
+                      options={[
+                        { label: t('prescription.form.substitutionYes'), value: true, id: 'yes' },
+                        { label: t('prescription.form.substitutionNo'), value: false, id: 'no' },
+                      ]}
+                      required
+                      errorMessage={prescriptionFormErrors['substitutionAllowed']?.message}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="addMedicationForm__footer">
-              <Button title={t('prescription.form.cancel')} type="reset" view={'outlined'} onClick={handleModalClose} />
-              <Button title={t('prescription.form.submit')} type="submit" view={'primary'} />
-            </div>
-          </form>
-        </div>
-      </StyledPrescriptionModal>
-    </>
+            <Controller
+              name="showExtraFields"
+              control={control}
+              render={({ field }) => <ToggleSwitch {...field} id="showExtraFields" value={t('prescription.form.toggleExtraFields')} />}
+            />
+
+            {!showExtraFields ? (
+              <div className="addMedicationForm__body__extraFieldsPreview">
+                <p>
+                  <span>{t('prescription.form.patientInstructions')} :</span>{' '}
+                  <i>
+                    <span>{recipeInstructionForPatient || t('prescription.form.instructionLabelNone')}</span>
+                  </i>
+                </p>
+                <p>
+                  <span>{t('prescription.form.reimbursementInstructions')} :</span>{' '}
+                  <i>
+                    <span>{getReimbursementOptions().find((x) => x.value === instructionsForReimbursement)?.label || t('prescription.form.instructionLabelNone')}</span>
+                  </i>
+                </p>
+                <p>
+                  <span>{t('prescription.form.prescriberVisibility')} :</span>{' '}
+                  <i>
+                    <span>{getPractitionerVisibilityOptions().find((o) => o.value === prescriberVisibility)?.label}</span>
+                  </i>
+                </p>
+                <p>
+                  <span>{t('prescription.form.pharmacistVisibility')} :</span>{' '}
+                  <i>
+                    <span>{getPharmacistVisibilityOptions().find((o) => o.value === pharmacistVisibility)?.label}</span>
+                  </i>
+                </p>
+              </div>
+            ) : (
+              <div className="addMedicationForm__body__content">
+                <TextareaInput label={t('prescription.form.patientInstructions')} id="recipeInstructionForPatient" {...register('recipeInstructionForPatient')} />
+                <Controller
+                  name="instructionsForReimbursement"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectInput
+                      {...field}
+                      label={t('prescription.form.reimbursementInstructions')}
+                      id="instructionsForReimbursement"
+                      options={getReimbursementOptions()}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        // Convert empty string back to null before updating RHF state
+                        const val = e.target.value === '' ? null : e.target.value
+                        field.onChange(val)
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  name="prescriberVisibility"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectInput {...field} label={t('prescription.form.prescriberVisibility')} id="prescriberVisibility" options={getPractitionerVisibilityOptions()} />
+                  )}
+                />
+
+                <Controller
+                  name="pharmacistVisibility"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectInput
+                      {...field}
+                      label={t('prescription.form.pharmacistVisibility')}
+                      id="pharmacistVisibility"
+                      options={getPharmacistVisibilityOptions()}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        // Convert empty string back to null before updating RHF state
+                        const val = e.target.value === '' ? null : e.target.value
+                        field.onChange(val)
+                      }}
+                    />
+                  )}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="addMedicationForm__footer">
+            <Button title={t('prescription.form.cancel')} type="reset" view={'outlined'} onClick={handleModalClose} />
+            <Button title={t('prescription.form.submit')} type="submit" view={'primary'} />
+          </div>
+        </form>
+      </div>
+    </StyledPrescriptionModal>
   )
 }

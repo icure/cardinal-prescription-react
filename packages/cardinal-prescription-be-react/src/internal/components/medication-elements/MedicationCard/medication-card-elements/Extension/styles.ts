@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors, colorsRgb } from '../../../../../../styles'
+import { cp, translucent } from '../../../../../../styles'
 
 export const StyledExtension = styled.div`
   width: 100%;
@@ -8,11 +8,11 @@ export const StyledExtension = styled.div`
   padding: 18px 12px;
   gap: 18px;
 
-  background-color: ${colors.blue[200]};
+  background-color: ${cp.colorSurfaceSunken};
 
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 ${cp.radiusMd} ${cp.radiusMd};
 
-  border-top: 1px dashed ${colors.blue[500]};
+  border-top: 1px dashed ${cp.colorAccent};
 
   .vmp {
     width: 100%;
@@ -27,15 +27,15 @@ export const StyledExtension = styled.div`
       gap: 4px;
 
       span {
-        font-size: 12px;
+        font-size: ${cp.fontSizeXs};
         font-weight: 400;
-        color: ${colors.blue[600]};
+        color: ${cp.colorTextMuted};
       }
 
       p {
-        font-size: 14px;
+        font-size: ${cp.fontSizeMd};
         font-weight: 400;
-        color: black;
+        color: ${cp.colorTextStrong};
       }
     }
   }
@@ -50,15 +50,15 @@ export const StyledExtension = styled.div`
     gap: 4px;
 
     span {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
 
     p {
-      font-size: 14px;
+      font-size: ${cp.fontSizeMd};
       font-weight: 400;
-      color: black;
+      color: ${cp.colorTextStrong};
     }
   }
 
@@ -73,7 +73,7 @@ export const StyledExtension = styled.div`
   // flex item.
   & > *:not(:first-child) {
     padding-top: 18px;
-    border-top: 1px dashed rgba(${colorsRgb.blue[500]}, 0.25);
+    border-top: 1px dashed ${translucent(cp.colorAccent, 25)};
   }
 
   .links {
@@ -86,8 +86,8 @@ export const StyledExtension = styled.div`
 
     a {
       width: 49%;
-      color: ${colors.blue[500]};
-      font-size: 14px;
+      color: ${cp.colorLink};
+      font-size: ${cp.fontSizeMd};
       font-style: normal;
       font-weight: 400;
       line-height: normal;

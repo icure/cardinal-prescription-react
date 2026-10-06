@@ -1,6 +1,17 @@
+import { createRequire } from 'node:module'
 import { defineConfig } from 'vitest/config'
 
+const require = createRequire(import.meta.url)
+
 export default defineConfig({
+  resolve: {
+    alias: {
+      // Node resolution picks styled-components' server build, which never injects
+      // `createGlobalStyle` rules into the DOM; the browser build behaves like a host app's, so
+      // the host-isolation tests see exactly what a browser would.
+      'styled-components': require.resolve('styled-components/dist/styled-components.browser.esm.js'),
+    },
+  },
   test: {
     globals: true,
     environment: 'happy-dom',

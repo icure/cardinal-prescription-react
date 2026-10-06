@@ -1,19 +1,22 @@
 import styled, { css } from 'styled-components'
-import { colors, colorsRgb } from '../../../../styles'
+import { cp, darkModeDefaults, rootText } from '../../../../styles'
 import { StyledHeader } from './medication-card-elements/Header/styles'
 
 export const activeMedicationCard = css`
-  border-color: ${colors.blue[500]};
-  box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
+  border-color: ${cp.colorAccent};
+  box-shadow: 0 0 0 2px ${cp.colorHoverHalo};
 `
 
 export const StyledMedicationCard = styled.div<{ $focused?: boolean; $isExpanded: boolean; $disableHover?: boolean; $subMedication?: boolean }>`
+  /* The card is a public atom that may be mounted outside any library root. */
+  ${darkModeDefaults}
+  ${rootText}
   width: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid ${colors.blue[100]};
+  border-radius: ${cp.radiusMd};
+  background: ${cp.colorSurface};
+  border: 1px solid ${cp.colorBorderAccent};
   cursor: pointer;
 
   ${({ $subMedication }) =>
@@ -23,7 +26,7 @@ export const StyledMedicationCard = styled.div<{ $focused?: boolean; $isExpanded
         padding-left: 28px;
 
         h3 {
-          font-size: 14px;
+          font-size: ${cp.fontSizeMd};
         }
       }
     `};
@@ -38,7 +41,7 @@ export const StyledMedicationCard = styled.div<{ $focused?: boolean; $isExpanded
       ${activeMedicationCard};
 
       ${StyledHeader} {
-        border-radius: 6px 6px 0 0;
+        border-radius: ${cp.radiusMd} ${cp.radiusMd} 0 0;
       }
     `};
 
@@ -61,7 +64,7 @@ export const StyledMedicationCard = styled.div<{ $focused?: boolean; $isExpanded
     $disableHover &&
     css`
       &:hover {
-        border-color: ${colors.blue[100]};
+        border-color: ${cp.colorBorderAccent};
         box-shadow: none;
         cursor: not-allowed;
       }

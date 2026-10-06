@@ -1,6 +1,7 @@
 export const prescriptionTranslations = {
   fr: {
     createTitle: 'Créer la prescription',
+    closeDialog: 'Fermer la fenêtre',
     modifyTitle: 'Modifier la prescription',
     pdf: {
       title: 'PREUVE DE PRESCRIPTION ELECTRONIQUE',
@@ -25,6 +26,8 @@ export const prescriptionTranslations = {
       print: 'Imprimer',
       send: 'Envoyer',
       sendAndPrint: 'Envoyer et imprimer',
+      modify: 'Modifier',
+      delete: 'Supprimer',
     },
     form: {
       medicationTitle: 'Nom du groupe DCI',
@@ -49,10 +52,12 @@ export const prescriptionTranslations = {
       fieldRequired: 'Ce champ est requis',
       fieldInvalid: 'Champ invalide',
       instructionLabelNone: 'Aucun',
+      posologySuggestions: 'Suggestions de posologie',
     },
   },
   en: {
     createTitle: 'Create prescription',
+    closeDialog: 'Close dialog',
     modifyTitle: 'Modify prescription',
     pdf: {
       title: 'PROOF OF ELECTRONIC PRESCRIPTION',
@@ -77,6 +82,8 @@ export const prescriptionTranslations = {
       print: 'Print',
       send: 'Send',
       sendAndPrint: 'Send and print',
+      modify: 'Edit',
+      delete: 'Delete',
     },
     form: {
       medicationTitle: 'DCI group name',
@@ -101,10 +108,12 @@ export const prescriptionTranslations = {
       fieldRequired: 'This field is required',
       fieldInvalid: 'Invalid field',
       instructionLabelNone: 'None',
+      posologySuggestions: 'Posology suggestions',
     },
   },
   nl: {
     createTitle: 'Voorschrift aanmaken',
+    closeDialog: 'Venster sluiten',
     modifyTitle: 'Voorschrift bewerken',
     pdf: {
       title: 'BEWIJS VAN ELEKTRONISCH VOORSCHRIFT',
@@ -129,6 +138,8 @@ export const prescriptionTranslations = {
       print: 'Afdrukken',
       send: 'Verzenden',
       sendAndPrint: 'Verzenden en afdrukken',
+      modify: 'Wijzigen',
+      delete: 'Verwijderen',
     },
     form: {
       medicationTitle: 'Naam van DCI-groep',
@@ -153,10 +164,12 @@ export const prescriptionTranslations = {
       fieldRequired: 'Dit veld is verplicht',
       fieldInvalid: 'Ongeldig veld',
       instructionLabelNone: 'Geen',
+      posologySuggestions: 'Doseringsvoorstellen',
     },
   },
   de: {
     createTitle: 'Rezept erstellen',
+    closeDialog: 'Fenster schließen',
     modifyTitle: 'Rezept bearbeiten',
     pdf: {
       title: 'NACHWEIS DES ELEKTRONISCHEN REZEPTS',
@@ -181,6 +194,8 @@ export const prescriptionTranslations = {
       print: 'Drucken',
       send: 'Senden',
       sendAndPrint: 'Senden und drucken',
+      modify: 'Bearbeiten',
+      delete: 'Löschen',
     },
     form: {
       medicationTitle: 'Name der DCI-Gruppe',
@@ -205,6 +220,7 @@ export const prescriptionTranslations = {
       fieldRequired: 'Dieses Feld ist erforderlich',
       fieldInvalid: 'Ungültiges Feld',
       instructionLabelNone: 'Keine',
+      posologySuggestions: 'Dosierungsvorschläge',
     },
   },
 }

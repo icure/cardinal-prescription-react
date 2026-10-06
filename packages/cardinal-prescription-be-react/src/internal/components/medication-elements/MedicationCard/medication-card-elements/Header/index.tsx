@@ -26,8 +26,8 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
       <div
         className="medication"
         onClick={readOnly ? undefined : handleAddPrescription}
-        role="button"
-        tabIndex={readOnly ? -1 : 0}
+        role={readOnly ? undefined : 'button'}
+        tabIndex={readOnly ? undefined : 0}
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !readOnly) handleAddPrescription()
         }}
@@ -68,6 +68,8 @@ export const Header: FC<Props> = ({ handleAddPrescription, medication, isMedicat
             setMedicationCardExpanded(!isMedicationCardExpanded)
           }}
           type="button"
+          aria-label={t('medication.ui.showDetails')}
+          aria-expanded={isMedicationCardExpanded}
         >
           <ChevronIcn />
         </StyledExpandButton>

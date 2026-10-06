@@ -1,8 +1,7 @@
 import styled from 'styled-components'
-import { colors, fieldCommonStyles, labelCommonStyles } from '../../../../styles'
+import { cp, fieldCommonStyles, labelCommonStyles, targetSize } from '../../../../styles'
 
 export const StyledSwitch = styled.div`
-
   ${fieldCommonStyles};
 
   .toggleSwitchLabel {
@@ -11,6 +10,7 @@ export const StyledSwitch = styled.div`
 
   .toggleWrapper {
     display: flex;
+    ${targetSize('min-height')};
     padding: 4px 0;
     align-items: center;
     gap: 12px;
@@ -19,25 +19,21 @@ export const StyledSwitch = styled.div`
     .toggle {
       position: relative;
       display: inline-block;
+      flex-shrink: 0;
       width: 46px;
       height: 24px;
 
       .slider {
         position: absolute;
-        cursor: pointer;
+        pointer-events: none;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: ${colors.grey[550]};
+        background-color: ${cp.colorBorderStrong};
         border: 1px solid transparent;
         transition: 0.4s;
-        border-radius: 34px;
-
-        &:hover {
-          border-color: ${colors.blue[800]};
-          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        }
+        border-radius: ${cp.radiusPill};
 
         &::before {
           position: absolute;
@@ -46,38 +42,47 @@ export const StyledSwitch = styled.div`
           width: 18px;
           left: 2px;
           bottom: 2px;
-          background-color: white;
+          background-color: ${cp.colorSurface};
           transition: 0.4s;
           border-radius: 50%;
         }
       }
 
       input {
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        ${targetSize('height', '24px')};
+        margin: 0;
         opacity: 0;
-        width: 0;
-        height: 0;
+        cursor: pointer;
+
+        &:hover + .slider {
+          border-color: ${cp.colorPrimary};
+          box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+        }
 
         &:checked + .slider {
-          background-color: ${colors.blue[800]};
+          background-color: ${cp.colorPrimary};
         }
 
-        &:checked + .slider:hover {
-          box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        }
-
-        &:focus + .slider {
-          box-shadow: 0 0 1px ${colors.blue[800]};
+        &:focus-visible + .slider {
+          outline: 2px solid ${cp.colorFocusRing};
+          outline-offset: 2px;
         }
 
         &:checked + .slider::before {
-          -webkit-transform: translateX(20px);
-          -ms-transform: translateX(20px);
           transform: translateX(20px);
         }
       }
     }
 
-    p {
+    .toggleSwitchText {
       ${labelCommonStyles};
+      width: auto;
     }
+  }
 `

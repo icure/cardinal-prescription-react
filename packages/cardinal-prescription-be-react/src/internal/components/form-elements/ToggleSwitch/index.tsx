@@ -14,11 +14,14 @@ export const ToggleSwitch = forwardRef<HTMLInputElement, ToggleSwitchProps>(({ i
     <StyledSwitch className="StyledSwitch">
       {label && <p className="toggleSwitchLabel">{label}</p>}
       <div className="toggleWrapper">
-        <label htmlFor={id} className="toggle">
-          <input id={id} name={id} type="checkbox" checked={checked} onChange={onChange} ref={ref} />
-          <span className="slider"></span>
+        <span className="toggle">
+          {/* The checkbox covers the whole switch, so the switch itself is the touch target. */}
+          <input id={id} name={id} type="checkbox" role="switch" checked={checked} onChange={onChange} ref={ref} />
+          <span className="slider" aria-hidden="true"></span>
+        </span>
+        <label htmlFor={id} className="toggleSwitchText">
+          {value}
         </label>
-        <p>{value}</p>
       </div>
     </StyledSwitch>
   )

@@ -1,13 +1,14 @@
 import styled, { css } from 'styled-components'
-import { colors } from '../../../../styles'
+import { cp, darkModeDefaults, targetSize } from '../../../../styles'
 import { ButtonViewType } from './index'
 
 const viewStyles = ($view?: ButtonViewType) => {
   switch ($view) {
     case 'primary':
       return css`
-        background: ${colors.blue[800]};
-        color: #ffffff;
+        background: ${cp.buttonPrimaryBackground};
+        border-color: ${cp.buttonPrimaryBackground};
+        color: ${cp.buttonPrimaryText};
 
         &:hover {
           opacity: 0.9;
@@ -15,21 +16,19 @@ const viewStyles = ($view?: ButtonViewType) => {
       `
     case 'outlined':
       return css`
-        border-radius: 6px;
-        border-color: ${colors.grey[550]};
-        background: ${colors.grey[100]};
-        color: ${colors.blue[800]};
+        border-color: ${cp.buttonSecondaryBorder};
+        background: ${cp.buttonSecondaryBackground};
+        color: ${cp.buttonSecondaryText};
 
         &:hover {
-          border-color: ${colors.blue[800]};
+          border-color: ${cp.buttonSecondaryText};
         }
       `
     case 'withSpinner':
       return css`
-        border-radius: 6px;
-        border-color: ${colors.grey[550]};
-        background: ${colors.grey[100]};
-        color: ${colors.blue[800]};
+        border-color: ${cp.buttonSecondaryBorder};
+        background: ${cp.buttonSecondaryBackground};
+        color: ${cp.buttonSecondaryText};
         gap: 8px;
       `
     default:
@@ -38,17 +37,20 @@ const viewStyles = ($view?: ButtonViewType) => {
 }
 
 export const StyledButton = styled.button<{ $view?: 'primary' | 'withSpinner' | 'outlined' }>`
+  /* The button is a public atom that may be mounted outside any library root. */
+  ${darkModeDefaults}
   display: flex;
-  height: 32px;
+  ${targetSize('height', cp.controlHeight)};
   padding: 0 16px;
   justify-content: center;
   align-items: center;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: ${cp.buttonRadius};
+  font-family: ${cp.fontFamily};
+  font-size: ${cp.fontSizeMd};
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  border: 1px solid ${colors.blue[800]};
+  border: 1px solid ${cp.buttonPrimaryBackground};
   cursor: pointer;
   min-width: 64px;
 
@@ -56,8 +58,8 @@ export const StyledButton = styled.button<{ $view?: 'primary' | 'withSpinner' | 
   &[disabled],
   &[disabled]:hover {
     cursor: not-allowed;
-    border-color: ${colors.grey[550]};
-    background: ${colors.grey[200]};
-    color: ${colors.grey[600]};
+    border-color: ${cp.colorBorderStrong};
+    background: ${cp.colorSurfaceDisabled};
+    color: ${cp.colorTextSubtle};
   }
 `

@@ -1,5 +1,5 @@
 import { css } from 'styled-components'
-import { colors } from './variables'
+import { cp, targetSize, translucent } from './theme'
 
 // Input common styles
 export const fieldCommonStyles = css`
@@ -14,62 +14,62 @@ export const fieldCommonStyles = css`
 export const inputCommonStyles = css`
   width: 100%;
   display: flex;
-  height: 32px;
+  ${targetSize('height', cp.inputHeight)};
   padding: 5px 12px;
   align-items: center;
   gap: 4px;
   align-self: stretch;
   cursor: pointer;
 
-  border-radius: 6px;
-  border: 1px solid ${colors.grey[550]};
-  background: #fff;
+  border-radius: ${cp.radiusMd};
+  border: 1px solid ${cp.colorBorderStrong};
+  background: ${cp.colorSurface};
 
-  color: ${colors.grey[900]};
-  font-family: 'Inter Variable', sans-serif;
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-family: ${cp.fontFamilyControl};
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
   line-height: 22px;
 
   &::placeholder {
-    color: ${colors.grey[650]};
+    color: ${cp.colorPlaceholder};
   }
 
   &:hover,
   &:focus {
-    border-color: ${colors.blue[800]};
+    border-color: ${cp.colorPrimary};
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+    box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
   }
 `
 
 export const inputCommonStyles_disabled = css`
   cursor: not-allowed;
-  background-color: ${colors.grey[200]};
-  border-color: ${colors.grey[550]};
+  background-color: ${cp.colorSurfaceDisabled};
+  border-color: ${cp.colorBorderStrong};
   opacity: 0.7;
 
   &:hover {
-    border-color: ${colors.grey[550]};
+    border-color: ${cp.colorBorderStrong};
   }
 `
 
 export const inputCommonStyles_error = css`
-  border-color: red;
-  color: red;
+  border-color: ${cp.colorCritical};
+  color: ${cp.colorCritical};
 
   &::placeholder {
-    color: rgba(255, 0, 0, 0.5);
+    color: ${translucent(cp.colorCritical, 70)};
   }
 
   &:hover {
-    border-color: rgba(255, 0, 0, 0.5);
+    border-color: ${translucent(cp.colorCritical, 50)};
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+    box-shadow: 0 0 0 2px ${translucent(cp.colorCritical, 20)};
   }
 `
 
@@ -78,8 +78,8 @@ export const labelCommonStyles = css`
   display: flex;
   align-items: flex-start;
   gap: 4px;
-  color: ${colors.grey[900]};
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-size: ${cp.fontSizeMd};
   font-weight: 500;
   line-height: 22px;
   cursor: pointer;
@@ -92,18 +92,18 @@ export const labelCommonStyles = css`
 export const labelCommonStyles_required = css`
   span {
     display: flex;
-    color: red;
+    color: ${cp.colorCritical};
     font-weight: bold;
   }
 `
 
 export const labelCommonStyles_error = css`
-  color: red;
+  color: ${cp.colorCritical};
 `
 
 export const errorMessageCommonStyles = css`
-  color: red;
-  font-size: 13px;
+  color: ${cp.colorCritical};
+  font-size: ${cp.fontSizeSm};
 `
 
 // Infographic-elements common styles
@@ -117,14 +117,14 @@ export const infographicElementCommonStyles = css`
 
 export const infographicElementTitleCommonStyles = css`
   width: 100%;
-  font-size: 14px;
+  font-size: ${cp.fontSizeMd};
   font-weight: 500;
 `
 
 export const infographicElementTextCommonStyles = css`
-  font-size: 14px;
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
-  color: black;
+  color: ${cp.colorTextStrong};
 `
 
 export const infographicElementContentCommonStyles = css`
@@ -140,9 +140,9 @@ export const infographicElementContentCommonStyles = css`
     gap: 4px;
 
     span {
-      font-size: 12px;
+      font-size: ${cp.fontSizeXs};
       font-weight: 400;
-      color: ${colors.blue[600]};
+      color: ${cp.colorTextMuted};
     }
 
     p {
@@ -151,7 +151,7 @@ export const infographicElementContentCommonStyles = css`
 
     a {
       ${infographicElementTextCommonStyles};
-      color: ${colors.blue[600]};
+      color: ${cp.colorLink};
 
       &:hover {
         text-decoration: underline;
@@ -162,7 +162,7 @@ export const infographicElementContentCommonStyles = css`
 
 export const infographicElementLinkCommonStyles = css`
   ${infographicElementTextCommonStyles};
-  color: ${colors.blue[500]};
+  color: ${cp.colorLink};
 
   &:hover {
     text-decoration: underline;

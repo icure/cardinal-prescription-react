@@ -29,6 +29,7 @@ export const PrescriptionDocumentToPrint: React.FC<Props> = ({ prescribedMedicat
       if (med.rid && ridElements.current[idx]) {
         JsBarcode(ridElements.current[idx], med.rid, {
           format: 'CODE128A',
+          // Barcodes stay black on white whatever the theme: pharmacy scanners need the contrast.
           lineColor: '#000',
           width: 2,
           height: 40,
@@ -53,9 +54,9 @@ export const PrescriptionDocumentToPrint: React.FC<Props> = ({ prescribedMedicat
               </div>
               <div className="prescription-document__divider"></div>
               <div className="prescription-document__options">
-                <h5>
+                <h2>
                   <strong>{t('prescription.pdf.options.title')}</strong>
-                </h5>
+                </h2>
                 <ol>
                   <li>{t('prescription.pdf.options.option1')}</li>
                   <li>{t('prescription.pdf.options.option2')}</li>

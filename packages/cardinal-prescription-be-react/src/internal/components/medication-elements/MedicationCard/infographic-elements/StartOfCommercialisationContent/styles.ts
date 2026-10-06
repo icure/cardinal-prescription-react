@@ -1,12 +1,12 @@
 import styled from 'styled-components'
-import { colors, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
+import { cp, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
 
 export const StyledStartCommercialization = styled.div`
   ${infographicElementCommonStyles};
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.green[400]};
+    background-color: ${cp.colorOkSoft};
   }
 
   .content {

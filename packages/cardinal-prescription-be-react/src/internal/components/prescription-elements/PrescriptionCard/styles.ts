@@ -1,19 +1,20 @@
 import styled, { css } from 'styled-components'
-import { colors, colorsRgb, displayResolution, responsiveMediaQueries } from '../../../../styles'
+import { cp, displayResolution, responsiveMediaQueries, targetSize } from '../../../../styles'
 
 export const actionBtnCommonStyles = css`
   background: none;
   cursor: pointer;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  ${targetSize('width')};
+  ${targetSize('height')};
+  border-radius: ${cp.radiusMd};
 
   ${responsiveMediaQueries.down(displayResolution.s)`
-        width: 32px;
-        height: 32px;
-        border: 1px solid #eef6fe;
-        background: rgba(238, 246, 254, 0.3);
-        border-radius: 6px;
+        border: 1px solid ${cp.colorSurfaceAccent};
+        background: ${cp.colorSurfaceAccentSubtle};
     `};
 `
 
@@ -25,27 +26,27 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
   align-items: center;
   padding: 8px 12px;
   gap: 12px;
-  border-radius: 6px;
-  background: ${colors.blue[200]};
-  border: 1px solid ${colors.blue[100]};
+  border-radius: ${cp.radiusMd};
+  background: ${cp.colorSurfaceSunken};
+  border: 1px solid ${cp.colorBorderAccent};
 
   &:hover {
-    border-radius: 6px;
-    border-color: ${colors.blue[500]};
-    box-shadow: 0 0 0 2px rgba(${colorsRgb.blue[500]}, 0.3);
-    background-color: white;
+    border-radius: ${cp.radiusMd};
+    border-color: ${cp.colorAccent};
+    box-shadow: 0 0 0 2px ${cp.colorHoverHalo};
+    background-color: ${cp.colorSurface};
   }
 
   ${({ $prescribed }) =>
     !!$prescribed &&
     css`
-      background: ${colors.green[200]};
-      border-color: green;
+      background: ${cp.colorOkSurfaceAlt};
+      border-color: ${cp.colorOkBorder};
 
       &:hover {
-        border-color: green;
+        border-color: ${cp.colorOkBorder};
         border-radius: inherit;
-        background: ${colors.green[200]};
+        background: ${cp.colorOkSurfaceAlt};
         box-shadow: inherit;
       }
     `};
@@ -78,16 +79,16 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
           gap: 8px;
 
           h3 {
-            color: ${colors.grey[900]};
-            font-size: 16px;
+            color: ${cp.colorText};
+            font-size: ${cp.fontSizeLg};
             font-style: normal;
             font-weight: 500;
           }
         }
 
         p {
-          color: ${colors.grey[900]};
-          font-size: 14px;
+          color: ${cp.colorText};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 300;
           line-height: normal;
@@ -97,7 +98,6 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
   }
 
   .actions {
-    width: 36px;
     display: flex;
     gap: 8px;
 
@@ -112,7 +112,7 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
       &:hover {
         svg {
           path {
-            fill: ${colors.blue[500]};
+            fill: ${cp.colorAccent};
           }
         }
       }
@@ -124,7 +124,7 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
       &:hover {
         svg {
           path {
-            fill: ${colors.red[800]};
+            fill: ${cp.colorCritical};
           }
         }
       }
@@ -132,11 +132,11 @@ export const StyledPrescriptionCard = styled.div<{ $prescribed?: boolean }>`
   }
 
   .rid {
-    font-size: 12px;
+    font-size: ${cp.fontSizeXs};
     letter-spacing: 1.2px;
-    background-color: ${colors.green[500]};
-    color: white;
+    background-color: ${cp.colorOkStrong};
+    color: ${cp.colorOnBadge};
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: ${cp.radiusXs};
   }
 `

@@ -1,4 +1,4 @@
-import { css } from 'styled-components'
+import { css, Interpolation } from 'styled-components'
 
 export const displayResolution = {
   xs: 420,
@@ -12,21 +12,21 @@ export const displayResolution = {
 export const responsiveMediaQueries = {
   up:
     (size: number) =>
-    (first: TemplateStringsArray, ...args: { [key: string]: string }[]) => css`
+    (first: TemplateStringsArray, ...args: Interpolation<object>[]) => css`
       @media (min-width: ${size}px) {
         ${css(first, ...args)}
       }
     `,
   down:
     (size: number) =>
-    (first: TemplateStringsArray, ...args: { [key: string]: string }[]) => css`
+    (first: TemplateStringsArray, ...args: Interpolation<object>[]) => css`
       @media (max-width: ${size}px) {
         ${css(first, ...args)}
       }
     `,
   between:
     (min: number, max: number) =>
-    (first: TemplateStringsArray, ...args: { [key: string]: string }[]) => css`
+    (first: TemplateStringsArray, ...args: Interpolation<object>[]) => css`
       @media (min-width: ${displayResolution[min]}px) and (max-width: ${displayResolution[max]}px) {
         ${css(first, ...args)}
       }

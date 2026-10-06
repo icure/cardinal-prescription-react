@@ -1,7 +1,8 @@
 import styled from 'styled-components'
-import { displayResolution, responsiveMediaQueries } from '../../../styles'
+import { displayResolution, libraryRoot, responsiveMediaQueries } from '../../../styles'
 
 export const StyledPractitionerCertificate = styled.div`
+  ${libraryRoot}
   width: 100%;
 
   display: flex;

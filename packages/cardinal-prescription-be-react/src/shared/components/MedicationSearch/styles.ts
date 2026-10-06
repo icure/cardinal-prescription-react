@@ -1,7 +1,17 @@
 import styled, { css } from 'styled-components'
-import { colors, errorMessageCommonStyles, fieldCommonStyles, inputCommonStyles, inputCommonStyles_error, labelCommonStyles, labelCommonStyles_error } from '../../../styles'
+import {
+  cp,
+  libraryRoot,
+  errorMessageCommonStyles,
+  fieldCommonStyles,
+  inputCommonStyles,
+  inputCommonStyles_error,
+  labelCommonStyles,
+  labelCommonStyles_error,
+} from '../../../styles'
 
 export const StyledMedicationSearch = styled.div`
+  ${libraryRoot}
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -23,8 +33,8 @@ export const StyledMedicationSearch = styled.div`
     padding: 16px 12px;
 
     p {
-      color: ${colors.grey[600]};
-      font-size: 14px;
+      color: ${cp.colorTextSubtle};
+      font-size: ${cp.fontSizeMd};
       text-align: center;
     }
   }
@@ -39,9 +49,14 @@ export const StyledMedicationSearchInput = styled.div<{ $dropdownDisplayed?: boo
 
   input {
     width: 100%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    /* The surrounding field draws the focus indicator (:focus-within). */
+    outline: none;
 
     &::placeholder {
-      color: ${colors.grey[650]};
+      color: ${cp.colorPlaceholder};
     }
   }
 
@@ -49,9 +64,9 @@ export const StyledMedicationSearchInput = styled.div<{ $dropdownDisplayed?: boo
     !!$dropdownDisplayed &&
     css`
       label {
-        border-color: ${colors.blue[800]};
-        box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
-        border-radius: 6px;
+        border-color: ${cp.colorPrimary};
+        box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+        border-radius: ${cp.radiusMd};
       }
     `};
 
@@ -74,8 +89,10 @@ export const StyledLabel = styled.label<{ $error?: boolean }>`
   justify-content: space-between;
 
   &:focus-within {
-    border-color: ${colors.blue[800]};
-    box-shadow: 0 0 0 2px rgba(61, 135, 197, 0.2);
+    border-color: ${cp.colorPrimary};
+    box-shadow: 0 0 0 2px ${cp.colorFocusHalo};
+    outline: 2px solid ${cp.colorFocusRing};
+    outline-offset: 1px;
   }
 
   ${({ $error }) =>
@@ -97,13 +114,10 @@ export const StyledMedicationSearchDropdown = styled.div`
   padding: 6px 8px 6px 6px;
   gap: 5px;
 
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 ${cp.radiusMd} ${cp.radiusMd};
   border-top: none;
-  background: ${colors.blue[300]};
-  box-shadow:
-    0 9px 28px 0 rgba(0, 0, 0, 0.05),
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px 0 rgba(0, 0, 0, 0.12);
+  background: ${cp.colorSurfaceAccent};
+  box-shadow: ${cp.shadowPopup};
 
   .medicationCardWrap {
     width: 100%;

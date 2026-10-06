@@ -1,6 +1,6 @@
 import { TooltipOrientationType } from './index'
 import styled, { css } from 'styled-components'
-import { colors } from '../../../../styles'
+import { cp } from '../../../../styles'
 
 export const tooltipArrow = css`
   content: '';
@@ -13,7 +13,7 @@ export const tooltipTopOriented = css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-top: 7px solid ${colors.blue[500]};
+    border-top: 7px solid ${cp.colorAccent};
     position: absolute;
     bottom: 23px;
     left: 50%;
@@ -28,7 +28,7 @@ export const tooltipBottomOriented = css`
   .chevron {
     display: none;
     ${tooltipArrow};
-    border-bottom: 7px solid ${colors.blue[500]};
+    border-bottom: 7px solid ${cp.colorAccent};
     position: absolute;
     bottom: -8px;
     left: 50%;
@@ -118,16 +118,16 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
     align-items: flex-start;
     gap: 6px;
     align-self: stretch;
-    border-radius: 6px;
-    border: 1px solid ${colors.blue[500]};
-    background: #fff;
+    border-radius: ${cp.radiusMd};
+    border: 1px solid ${cp.colorAccent};
+    background: ${cp.colorSurface};
 
     &__iconWrap {
       width: 100%;
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      border-bottom: 1px solid ${colors.blue[500]};
+      border-bottom: 1px solid ${cp.colorAccent};
       padding-bottom: 6px;
     }
 
@@ -141,8 +141,8 @@ export const StyleTooltip = styled.div<{ $tooltipOrientation: TooltipOrientation
     }
 
     p {
-      color: ${colors.grey[900]};
-      font-size: 14px;
+      color: ${cp.colorText};
+      font-size: ${cp.fontSizeMd};
       font-style: normal;
       font-weight: 400;
       line-height: normal;

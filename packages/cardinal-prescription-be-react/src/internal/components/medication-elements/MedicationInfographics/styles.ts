@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors } from '../../../../styles'
+import { cp } from '../../../../styles'
 
 // Detail badges used to be laid out in 3 hardcoded sub-groups (core infographics / availability
 // / delivery-prescription), each with its own wrapper div, 2px gap within a group and 12px
@@ -19,22 +19,22 @@ export const StyledMedicationInfographics = styled.div`
     height: 22px;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
+    border-radius: ${cp.radiusSm};
 
     &--outline {
-      border: 1px solid ${colors.blue[400]};
+      border: 1px solid ${cp.colorAccentSoft};
     }
 
     &--red {
-      background-color: ${colors.red[400]};
+      background-color: ${cp.colorCriticalSoft};
     }
 
     &--orange {
-      background-color: ${colors.orange[800]};
+      background-color: ${cp.colorCautionSoft};
     }
 
     &--green {
-      background-color: ${colors.green[400]};
+      background-color: ${cp.colorOkSoft};
     }
   }
 `

@@ -26,12 +26,12 @@ export const StandardDosages: React.FC<StandardDosagesProps> = ({ dosages, langu
 
   return (
     <StyledStandardDosages className="StyledStandardDosages">
-      <StyledStandardDosagesHeader onClick={() => setIsExpanded((v) => !v)}>
+      <StyledStandardDosagesHeader type="button" aria-expanded={isExpanded} onClick={() => setIsExpanded((v) => !v)}>
         <StyledStandardDosagesHeaderContent>
-          <WarningIcn color="#3D87C5" />
+          <WarningIcn />
           {t('medication.drugInfographic.standardDosagesMessage')}
         </StyledStandardDosagesHeaderContent>
-        <StyledStandardDosagesToggle type="button" $expanded={isExpanded}>
+        <StyledStandardDosagesToggle aria-hidden="true" $expanded={isExpanded}>
           <ChevronIcn />
         </StyledStandardDosagesToggle>
       </StyledStandardDosagesHeader>

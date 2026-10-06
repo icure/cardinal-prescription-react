@@ -1,14 +1,15 @@
 import styled, { css } from 'styled-components'
-import { colors, colorsRgb, displayResolution, responsiveMediaQueries } from '../../../styles'
+import { cp, displayResolution, libraryRoot, responsiveMediaQueries, targetSize } from '../../../styles'
 
 export const StyledPrescriptionModal = styled.div`
+  ${libraryRoot}
   width: 100vw;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
-  background-color: rgba(${colorsRgb.blue[800]}, 0.3);
+  background-color: ${cp.colorOverlay};
   z-index: 1020;
 
   .content {
@@ -41,33 +42,34 @@ export const StyledPrescriptionModal = styled.div`
       align-items: center;
       align-self: stretch;
 
-      border-bottom: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-bottom: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
       padding: 20px 16px;
   `};
 
       h3 {
-        color: ${colors.grey[900]};
-        font-size: 16px;
+        color: ${cp.colorText};
+        font-size: ${cp.fontSizeLg};
         font-style: normal;
         font-weight: 500;
         line-height: normal;
       }
 
       &__closeIcn {
-        width: 22px;
-        height: 22px;
+        ${targetSize('width')};
+        ${targetSize('height')};
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        background-color: #ffffff;
-        border-radius: 4px;
+        background-color: ${cp.colorSurface};
+        border-radius: ${cp.radiusXs};
 
         &:hover {
-          background-color: rgba(${colorsRgb.grey[300]};, 0.4);
+          background-color: ${cp.colorSurfaceDisabled};
         }
       }
     }
@@ -83,7 +85,7 @@ export const StyledPrescriptionModal = styled.div`
       align-self: stretch;
       flex: 1 0 0;
       gap: 12px;
-      background-color: ${colors.blue[200]};
+      background-color: ${cp.colorSurfaceSunken};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
        padding: 16px;
@@ -99,9 +101,9 @@ export const StyledPrescriptionModal = styled.div`
         flex-direction: column;
         align-items: flex-start;
         align-self: stretch;
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
         padding: 24px;
         gap: 12px;
 
@@ -131,14 +133,14 @@ export const StyledPrescriptionModal = styled.div`
         align-items: flex-start;
         align-self: stretch;
 
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
-        box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
+        box-shadow: ${cp.shadowSection};
 
         p {
-          color: rgba(${colorsRgb.grey[600]}, 0.7);
-          font-size: 14px;
+          color: ${cp.colorTextSubtle};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 400;
           line-height: 22px; /* 169.231% */
@@ -153,8 +155,8 @@ export const StyledPrescriptionModal = styled.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      border-top: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-top: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
 
     @keyframes zoom {
@@ -184,8 +186,13 @@ export const StyledDosageInput = styled.div`
   flex-direction: column;
   align-items: flex-start;
 
+  .suggestionsDropdown[hidden] {
+    display: none;
+  }
+
   .suggestionsDropdown {
     position: absolute;
+    z-index: 1;
     top: calc(100% + 2px);
 
     width: 100%;
@@ -195,38 +202,40 @@ export const StyledDosageInput = styled.div`
     padding: 2px;
     gap: 2px;
 
-    border-radius: 6px;
-    background: #fff;
-    box-shadow:
-      0 9px 28px 0 rgba(0, 0, 0, 0.05),
-      0 6px 16px 0 rgba(0, 0, 0, 0.08),
-      0 3px 6px 0 rgba(0, 0, 0, 0.12);
+    border-radius: ${cp.radiusMd};
+    background: ${cp.colorSurface};
+    box-shadow: ${cp.shadowPopup};
   }
 `
 
 export const suggestionItemOnAction = css`
-  background: ${colors.blue[300]};
-  color: ${colors.blue[800]} !important;
+  background: ${cp.colorSurfaceAccent};
+  color: ${cp.colorPrimary} !important;
 `
 
 export const StyledSuggestionItem = styled.li<{ $focused?: boolean; $disableHover: boolean }>`
   width: 100%;
   display: flex;
-  padding: 8px;
+  padding: 0;
   align-items: center;
   align-self: stretch;
 
-  border-radius: 4px;
-  background: #fff;
+  border-radius: ${cp.radiusXs};
+  background: ${cp.colorSurface};
 
-  color: ${colors.grey[900]};
-  font-family: 'Inter Variable', sans-serif;
-  font-size: 14px;
+  color: ${cp.colorText};
+  font-family: ${cp.fontFamilyControl};
+  font-size: ${cp.fontSizeMd};
   font-weight: 400;
   line-height: 22px;
 
   button {
+    width: 100%;
+    padding: 8px;
+    ${targetSize('min-height')};
+    text-align: left;
     background: none;
+    cursor: pointer;
   }
 
   &:hover {

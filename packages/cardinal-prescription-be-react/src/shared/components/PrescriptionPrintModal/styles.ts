@@ -1,7 +1,8 @@
 import styled from 'styled-components'
-import { colors, colorsRgb, displayResolution, responsiveMediaQueries } from '../../../styles'
+import { cp, displayResolution, libraryRoot, responsiveMediaQueries, targetSize } from '../../../styles'
 
 export const StyledPrescriptionPrintModal = styled.div`
+  ${libraryRoot}
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -9,7 +10,7 @@ export const StyledPrescriptionPrintModal = styled.div`
   left: 0;
   z-index: 1020;
   display: flex;
-  background: rgba(${colorsRgb.blue[800]}, 0.3);
+  background: ${cp.colorOverlay};
 
   .contentWrap {
     width: 900px;
@@ -41,33 +42,34 @@ export const StyledPrescriptionPrintModal = styled.div`
       align-items: center;
       align-self: stretch;
 
-      border-bottom: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-bottom: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
         padding: 20px 16px;
       `};
 
       h3 {
-        color: ${colors.grey[900]};
-        font-size: 16px;
+        color: ${cp.colorText};
+        font-size: ${cp.fontSizeLg};
         font-style: normal;
         font-weight: 500;
         line-height: normal;
       }
 
       &__closeIcn {
-        width: 22px;
-        height: 22px;
+        ${targetSize('width')};
+        ${targetSize('height')};
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        background-color: #ffffff;
-        border-radius: 4px;
+        background-color: ${cp.colorSurface};
+        border-radius: ${cp.radiusXs};
 
         &:hover {
-          background-color: rgba(${colorsRgb.grey[300]} 0.4);
+          background-color: ${cp.colorSurfaceDisabled};
         }
       }
     }
@@ -83,7 +85,7 @@ export const StyledPrescriptionPrintModal = styled.div`
       align-self: stretch;
       flex: 1 0 0;
       gap: 12px;
-      background-color: ${colors.blue[200]};
+      background-color: ${cp.colorSurfaceSunken};
 
       ${responsiveMediaQueries.down(displayResolution.l)`
         padding: 16px;
@@ -99,9 +101,9 @@ export const StyledPrescriptionPrintModal = styled.div`
         flex-direction: column;
         align-items: flex-start;
         align-self: stretch;
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
         padding: 24px;
         gap: 12px;
 
@@ -118,14 +120,14 @@ export const StyledPrescriptionPrintModal = styled.div`
         align-items: flex-start;
         align-self: stretch;
 
-        border-radius: 12px;
-        border: 1px solid ${colors.grey[300]};
-        background: #fff;
-        box-shadow: 0 1px 1px 0 rgba(218, 218, 222, 0.25);
+        border-radius: ${cp.radiusXl};
+        border: 1px solid ${cp.colorBorder};
+        background: ${cp.colorSurface};
+        box-shadow: ${cp.shadowSection};
 
         p {
-          color: rgba(${colorsRgb.grey[600]}, 0.7);
-          font-size: 14px;
+          color: ${cp.colorTextSubtle};
+          font-size: ${cp.fontSizeMd};
           font-style: normal;
           font-weight: 400;
           line-height: 22px; /* 169.231% */
@@ -140,8 +142,8 @@ export const StyledPrescriptionPrintModal = styled.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      border-top: 1px solid ${colors.grey[300]};
-      background: #fff;
+      border-top: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
   }
 `

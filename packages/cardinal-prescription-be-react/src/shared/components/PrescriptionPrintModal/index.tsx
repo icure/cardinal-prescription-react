@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 import { CloseIcn } from '../../../internal/components/common/Icons'
 import { Button } from '../../../internal/components/form-elements/Button'
@@ -6,7 +6,7 @@ import { PrescriptionDocumentToPrint } from '../../../internal/components/prescr
 import { t } from '../../services/i18n'
 import { HealthcareParty, Patient } from '@icure/be-fhc-lite-api'
 import { PrescribedMedicationType } from '../../types'
-import { GlobalStyles } from '../../../styles'
+import { LIBRARY_ROOT_CLASS } from '../../../styles'
 import { StyledPrescriptionPrintModal } from './styles'
 
 interface PrintPrescriptionModalProps {
@@ -17,6 +17,7 @@ interface PrintPrescriptionModalProps {
 }
 
 export const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps> = ({ closeModal, prescribedMedications, prescriber, patient }) => {
+  const titleId = useId()
   const print = () => {
     const div = document.getElementById('print-container')
     if (div) {
@@ -50,14 +51,13 @@ export const PrescriptionPrintModal: React.FC<PrintPrescriptionModalProps> = ({ 
 
   return (
     <>
-      <GlobalStyles />
-      <StyledPrescriptionPrintModal className="StyledPrescriptionPrintModal">
+      <StyledPrescriptionPrintModal className={`StyledPrescriptionPrintModal ${LIBRARY_ROOT_CLASS}`}>
         <div className="contentWrap">
-          <div className="content">
+          <div className="content" role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <div className="content__header">
-              <h3>{t('practitioner.printModal.title')}</h3>
+              <h3 id={titleId}>{t('practitioner.printModal.title')}</h3>
 
-              <button className="content__header__closeIcn" onClick={closeModal} type="reset">
+              <button className="content__header__closeIcn" onClick={closeModal} type="button" aria-label={t('prescription.closeDialog')}>
                 <CloseIcn />
               </button>
             </div>

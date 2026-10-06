@@ -36,12 +36,12 @@ export const CheapAlternatives: React.FC<CheapAlternativesProps> = ({ sdk, medic
 
   return (
     <StyledCheapAlternatives>
-      <StyledCheapAlternativesHeader onClick={() => setIsExpanded((v) => !v)}>
+      <StyledCheapAlternativesHeader type="button" aria-expanded={isExpanded} onClick={() => setIsExpanded((v) => !v)}>
         <StyledCheapAlternativesHeaderContent>
-          <WarningIcn color="#3D87C5" />
+          <WarningIcn />
           <span>{isCheap ? t('medication.drugInfographic.otherCheapAlternativesMessage') : t('medication.drugInfographic.cheapAlternativesMessage')}</span>
         </StyledCheapAlternativesHeaderContent>
-        <StyledCheapAlternativesToggle type="button" $expanded={isExpanded}>
+        <StyledCheapAlternativesToggle aria-hidden="true" $expanded={isExpanded}>
           <ChevronIcn />
         </StyledCheapAlternativesToggle>
       </StyledCheapAlternativesHeader>

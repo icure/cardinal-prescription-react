@@ -20,16 +20,32 @@ interface SelectInputProps {
 export const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(({ label, id, required, disabled, options, value, onChange, errorMessage, ...rest }, ref) => (
   <StyledSelectInput className="StyledSelectInput">
     <StyledSelectInputLabel className="StyledSelectInputLabel" htmlFor={id} $required={required} $error={!!errorMessage}>
-      <span>*</span>
+      <span aria-hidden="true">*</span>
       {label}
     </StyledSelectInputLabel>
-    <StyledSelectDropdown className="StyledSelectDropdown" ref={ref} id={id} name={id} value={value} onChange={onChange} disabled={disabled} {...rest}>
+    <StyledSelectDropdown
+      className="StyledSelectDropdown"
+      ref={ref}
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      aria-required={required || undefined}
+      aria-invalid={!!errorMessage || undefined}
+      aria-describedby={errorMessage ? `${id}-error` : undefined}
+      {...rest}
+    >
       {options.map((option) => (
         <option key={option.value ?? ''} value={option.value ?? ''}>
           {option.label}
         </option>
       ))}
     </StyledSelectDropdown>
-    {!!errorMessage && <p className="error">{errorMessage}</p>}
+    {!!errorMessage && (
+      <p id={`${id}-error`} className="error">
+        {errorMessage}
+      </p>
+    )}
   </StyledSelectInput>
 ))

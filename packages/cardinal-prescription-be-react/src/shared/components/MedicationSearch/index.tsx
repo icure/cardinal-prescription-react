@@ -7,7 +7,7 @@ import { Med, MedicationProductType, MedicationProvider, MedicationType } from '
 import { SearchIcn, SpinnerIcn } from '../../../internal/components/common/Icons'
 import { StyledLabel, StyledMedicationSearch, StyledMedicationSearchDropdown, StyledMedicationSearchInput } from './styles'
 import { t } from '../../services/i18n'
-import { GlobalStyles } from '../../../styles'
+import { cp, LIBRARY_ROOT_CLASS } from '../../../styles'
 
 // Matches the `limit` default the loaders used before this component was routed through
 // `MedicationProvider` — keeps the incremental-scroll UX (page size, spinner, append-on-scroll)
@@ -183,13 +183,13 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationPr
 
   return (
     <>
-      <GlobalStyles />
-      <StyledMedicationSearch className="StyledMedicationSearch" onKeyDown={handleKeyDown}>
+      <StyledMedicationSearch className={`StyledMedicationSearch ${LIBRARY_ROOT_CLASS}`} onKeyDown={handleKeyDown}>
         <StyledMedicationSearchInput className="StyledMedicationSearchInput" $dropdownDisplayed={dropdownDisplayed} $error={showSearchError()}>
           <p>{t('medication.search.label')}:</p>
           <StyledLabel className="StyledLabel" $error={showSearchError()} htmlFor="searchMedications">
             <input
               id="searchMedications"
+              aria-label={t('medication.search.label')}
               type="text"
               placeholder={searchPlaceholder ?? t('medication.search.label')}
               autoComplete="off"
@@ -204,7 +204,7 @@ export const MedicationSearch: React.FC<MedicationSearchProps> = ({ medicationPr
 
         {showSpinner && (
           <div className="spinner">
-            <SpinnerIcn size={32} pathFill="#3d87c5" />
+            <SpinnerIcn size={32} pathFill={cp.iconInfo} />
           </div>
         )}
 

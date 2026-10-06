@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors, displayResolution, responsiveMediaQueries } from '../../../../styles'
+import { cp, displayResolution, responsiveMediaQueries } from '../../../../styles'
 
 export const StyledCertificateUpload = styled.div`
   width: 100%;
@@ -16,9 +16,9 @@ export const StyledCertificateForm = styled.form`
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  border-radius: 12px;
-  border: 1px solid ${colors.grey[300]};
-  background: #fff;
+  border-radius: ${cp.radiusXl};
+  border: 1px solid ${cp.colorBorder};
+  background: ${cp.colorSurface};
   padding: 24px;
   gap: 12px;
 
@@ -26,8 +26,8 @@ export const StyledCertificateForm = styled.form`
    padding: 18px;
   `}
   h3 {
-    color: ${colors.grey[900]};
-    font-size: 16px;
+    color: ${cp.colorText};
+    font-size: ${cp.fontSizeLg};
     font-style: normal;
     font-weight: 700;
     line-height: normal;

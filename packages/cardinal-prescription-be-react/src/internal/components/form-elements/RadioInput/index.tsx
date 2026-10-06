@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useId } from 'react'
 import { StyledRadioButton, StyledRadioButtonLabel, StyledRadioButtonToggle, StyledRadioButtonToggleStuffing, StyledRadioGroupLabel, StyledRadioInput } from './styles'
 
 export interface RadioOption {
@@ -18,13 +18,22 @@ interface RadioInputProps {
 }
 
 export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(({ label, name, options, required, errorMessage, value, onChange }, ref) => {
+  const groupLabelId = useId()
+  const errorId = useId()
   return (
     <StyledRadioInput className="StyledRadioInput">
-      <StyledRadioGroupLabel className="StyledRadioGroupLabel" $required={required} $error={!!errorMessage}>
-        <span>*</span>
+      <StyledRadioGroupLabel id={groupLabelId} className="StyledRadioGroupLabel" $required={required} $error={!!errorMessage}>
+        <span aria-hidden="true">*</span>
         {label}
       </StyledRadioGroupLabel>
-      <div className="radioBtnsGroup">
+      <div
+        className="radioBtnsGroup"
+        role="radiogroup"
+        aria-labelledby={groupLabelId}
+        aria-required={required || undefined}
+        aria-invalid={!!errorMessage || undefined}
+        aria-describedby={errorMessage ? errorId : undefined}
+      >
         {options.map((option) => (
           <StyledRadioButton className="StyledRadioButton" key={option.id} htmlFor={option.id} $error={!!errorMessage}>
             <input
@@ -44,7 +53,11 @@ export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(({ label
           </StyledRadioButton>
         ))}
       </div>
-      {!!errorMessage && <p className="error">{errorMessage}</p>}
+      {!!errorMessage && (
+        <p id={errorId} className="error">
+          {errorMessage}
+        </p>
+      )}
     </StyledRadioInput>
   )
 })

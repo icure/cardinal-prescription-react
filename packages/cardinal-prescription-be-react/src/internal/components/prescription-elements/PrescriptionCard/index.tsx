@@ -2,6 +2,7 @@ import React from 'react'
 import { PrescribedMedicationType } from '../../../../shared/types'
 import { DeleteIcn, EditIcn } from '../../common/Icons'
 import { StyledPrescriptionCard } from './styles'
+import { t } from '../../../../shared/services/i18n'
 
 interface PrescriptionCardProps {
   prescribedMedication: PrescribedMedicationType
@@ -29,10 +30,10 @@ export const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescribedMe
 
       {!prescribedMedication.rid ? (
         <div className="actions">
-          <button className="edit" onClick={() => handleModifyPrescription(prescribedMedication)}>
+          <button className="edit" type="button" aria-label={t('prescription.list.modify')} onClick={() => handleModifyPrescription(prescribedMedication)}>
             <EditIcn />
           </button>
-          <button className="delete" onClick={() => handleDeletePrescription(prescribedMedication)}>
+          <button className="delete" type="button" aria-label={t('prescription.list.delete')} onClick={() => handleDeletePrescription(prescribedMedication)}>
             <DeleteIcn />
           </button>
         </div>

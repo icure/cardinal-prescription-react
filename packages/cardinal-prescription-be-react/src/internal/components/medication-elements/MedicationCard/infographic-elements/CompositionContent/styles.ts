@@ -1,12 +1,12 @@
 import styled from 'styled-components'
-import { colors, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
+import { cp, infographicElementCommonStyles, infographicElementContentCommonStyles, infographicElementTitleCommonStyles } from '../../../../../../styles'
 
 export const StyledComposition = styled.div`
   ${infographicElementCommonStyles};
 
   h6 {
     ${infographicElementTitleCommonStyles};
-    background-color: ${colors.blue[400]};
+    background-color: ${cp.colorAccentSoft};
   }
 
   .content {
@@ -21,15 +21,15 @@ export const StyledComposition = styled.div`
       gap: 2px;
 
       li {
-        font-size: 13px;
+        font-size: ${cp.fontSizeSm};
         font-weight: 400;
-        color: black;
+        color: ${cp.colorTextStrong};
         display: flex;
         justify-content: space-between;
         gap: 8px;
 
         &.excipient {
-          color: ${colors.grey[600]};
+          color: ${cp.colorTextSubtle};
         }
 
         .quantity {

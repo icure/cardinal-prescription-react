@@ -1,7 +1,8 @@
 import styled from 'styled-components'
-import { colors, displayResolution, labelCommonStyles, responsiveMediaQueries } from '../../../styles'
+import { cp, displayResolution, labelCommonStyles, libraryRoot, responsiveMediaQueries } from '../../../styles'
 
 export const StyledPrescriptionList = styled.div`
+  ${libraryRoot}
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -32,9 +33,9 @@ export const StyledPrescriptionList = styled.div`
 
       padding: 6px 8px 6px 6px;
       gap: 5px;
-      border-radius: 8px;
-      border: 1px solid ${colors.grey[300]};
-      background: white;
+      border-radius: ${cp.radiusLg};
+      border: 1px solid ${cp.colorBorder};
+      background: ${cp.colorSurface};
     }
 
     &__footer {
@@ -43,7 +44,6 @@ export const StyledPrescriptionList = styled.div`
       align-items: flex-start;
       gap: 12px;
       align-self: stretch;
-      background: #fff;
     }
   }
 `

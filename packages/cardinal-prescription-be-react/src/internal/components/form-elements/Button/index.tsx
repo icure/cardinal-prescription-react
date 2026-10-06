@@ -15,7 +15,15 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button: React.FC<Props> = ({ title, view = 'primary', handleClick, type = 'button', ...rest }) => {
   return (
-    <StyledButton className="StyledButton" $view={view} onClick={handleClick} type={type} {...rest}>
+    <StyledButton
+      className="StyledButton"
+      $view={view}
+      onClick={handleClick}
+      type={type}
+      // The spinner replaces the visible title, so the title stays the accessible name.
+      {...(view === 'withSpinner' ? { 'aria-label': title, 'aria-busy': true } : {})}
+      {...rest}
+    >
       {view === 'withSpinner' ? SpinnerIcn({}) : title}
     </StyledButton>
   )

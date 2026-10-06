@@ -24,7 +24,7 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, min, type
   return (
     <StyledTextInput className="StyledTextInput">
       <StyledTextInputLabel className="StyledTextInputLabel" htmlFor={id} $required={required} $error={!!errorMessage}>
-        <span>*</span>
+        <span aria-hidden="true">*</span>
         {label}
       </StyledTextInputLabel>
       <StyledInput
@@ -42,12 +42,19 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(({ label, min, type
         placeholder={label}
         type={type ?? 'text'}
         min={min}
+        aria-required={required || undefined}
+        aria-invalid={!!errorMessage || undefined}
+        aria-describedby={errorMessage ? `${id}-error` : undefined}
         {...rest}
         disabled={disabled}
         $disabled={disabled}
         $error={!!errorMessage}
       />
-      {errorMessage && <p className="error">{errorMessage}</p>}
+      {errorMessage && (
+        <p id={`${id}-error`} className="error">
+          {errorMessage}
+        </p>
+      )}
     </StyledTextInput>
   )
 })

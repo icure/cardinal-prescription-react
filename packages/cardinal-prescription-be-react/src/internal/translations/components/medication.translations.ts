@@ -83,6 +83,7 @@ export const medicationTranslations = {
       dhpc: 'Communication directe aux professionnels de santé (DHPC)',
     },
     ui: {
+      showDetails: 'Afficher les détails',
       price: 'Prix :',
     },
     search: {
@@ -194,6 +195,7 @@ export const medicationTranslations = {
       dhpc: 'Direct Healthcare Professional Communication (DHPC)',
     },
     ui: {
+      showDetails: 'Show details',
       price: 'Price:',
     },
     search: {
@@ -305,6 +307,7 @@ export const medicationTranslations = {
       dhpc: 'Rechtstreekse communicatie naar zorgverleners (DHPC)',
     },
     ui: {
+      showDetails: 'Details tonen',
       price: 'Prijs:',
     },
     search: {
@@ -416,6 +419,7 @@ export const medicationTranslations = {
       dhpc: 'Direkte Kommunikation an medizinisches Fachpersonal (DHPC)',
     },
     ui: {
+      showDetails: 'Details anzeigen',
       price: 'Preis :',
     },
     search: {
