@@ -1,8 +1,8 @@
 import React, { KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { makeParser, marshal, RegimenItem as ParsedRegimenItem } from '@icure/medication-sdk'
-import { MagistralText } from '@icure/be-fhc-lite-api'
+import { MagistralText, RegimenItem } from '@icure/be-fhc-lite-api'
 import { SamText, SamV2Api } from '@icure/cardinal-be-sam-sdk'
-import { MedicationType, PrescribedMedicationType } from '../../types'
+import { MedicationType, PosologyEditorComponent, PosologyEditorValue, PrescribedMedicationType } from '../../types'
 import { getExecutableUntilDate, getTreatmentStartDate } from '../../../internal/utils/date-helpers'
 import { suffixPrefixOverlap } from '../../../internal/utils/dosage-helpers'
 import { cardinalLanguage, t } from '../../services/i18n'
@@ -17,7 +17,7 @@ import { getReimbursementOptions } from '../../../internal/utils/reimbursement-h
 import { TextareaInput } from '../../../internal/components/form-elements/TextareaInput'
 import { Button } from '../../../internal/components/form-elements/Button'
 import { StyledDosageInput, StyledPrescriptionModal, StyledSuggestionItem } from './styles'
-import { LIBRARY_ROOT_CLASS } from '../../../styles'
+import { HOST_SLOT_ATTRIBUTE, LIBRARY_ROOT_CLASS } from '../../../styles'
 import { Controller, useForm } from 'react-hook-form'
 import { trim } from '../../../internal/utils/string-helpers'
 import { CheapAlternatives } from '../../../internal/components/medication-elements/CheapAlternatives'
@@ -37,11 +37,20 @@ interface Props {
   onSubmit: (meds: PrescribedMedicationType[]) => void
 
   modalMood: 'create' | 'modify'
+
+  /**
+   * Host posology editor rendered in place of the free-text posology field, the parser's
+   * suggestions and the standard-dosage panel. It receives the current regimen and the product
+   * context, and returns the FHC regimen with its posology text (see `PosologyEditorProps`).
+   * Without it, the library's free-text editor is used, as before.
+   */
+  posologyEditor?: PosologyEditorComponent
 }
 
 type PrescriptionFormType = {
   medicationTitle: string
   dosage: string
+  regimen?: RegimenItem[]
   duration: number
   durationTimeUnit: string
   treatmentStartDate: string
@@ -66,6 +75,7 @@ export const PrescriptionModal: React.FC<Props> = ({
   onClose,
   onSubmit,
   modalMood,
+  posologyEditor: PosologyEditor,
 }) => {
   const titleId = useId()
   const suggestionsId = useId()
@@ -93,6 +103,8 @@ export const PrescriptionModal: React.FC<Props> = ({
         '',
     ),
     dosage: prescriptionToModify?.medication?.instructionForPatient ?? '',
+    // Only a host editor works on the structured regimen; the free-text editor parses it at submit time.
+    regimen: PosologyEditor ? (prescriptionToModify?.medication?.regimen ?? []) : undefined,
     duration: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).duration,
     durationTimeUnit: getDurationFromDays(prescriptionToModify?.medication?.duration?.value ?? 1).durationTimeUnit,
     treatmentStartDate: getTreatmentStartDate(prescriptionToModify),
@@ -119,6 +131,7 @@ export const PrescriptionModal: React.FC<Props> = ({
   } = useForm<PrescriptionFormType>({ defaultValues })
 
   const dosage = watch('dosage')
+  const regimen = watch('regimen')
   const prescriptionsNumber = watch('prescriptionsNumber')
   const periodicityTimeUnit = watch('periodicityTimeUnit')
   const showExtraFields = watch('showExtraFields')
@@ -176,6 +189,11 @@ export const PrescriptionModal: React.FC<Props> = ({
 
     onSubmit(prescribedMedications)
     handleModalClose()
+  }
+
+  const onPosologyEditorChange = (value: PosologyEditorValue) => {
+    setValue('regimen', value.regimen, { shouldDirty: true })
+    setValue('dosage', value.text, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -279,50 +297,78 @@ export const PrescriptionModal: React.FC<Props> = ({
                   errorMessage={prescriptionFormErrors['medicationTitle']?.message}
                 />
               )}
-              <StyledDosageInput className="StyledDosageInput">
-                <TextInput
-                  label={t('prescription.form.dosage')}
-                  id="dosage"
-                  required
-                  autoFocus
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-expanded={suggestionsDisplayed}
-                  aria-controls={suggestionsId}
-                  aria-activedescendant={activeSuggestionId}
-                  {...register('dosage', {
-                    required: t('prescription.form.fieldRequired'),
-                  })}
-                  errorMessage={prescriptionFormErrors['dosage']?.message}
+              {PosologyEditor ? (
+                <Controller
+                  name="dosage"
+                  control={control}
+                  rules={{ required: t('prescription.form.fieldRequired') }}
+                  render={({ field }) => (
+                    <div className="posologyEditorSlot" {...{ [HOST_SLOT_ATTRIBUTE]: '' }}>
+                      <PosologyEditor
+                        id="dosage"
+                        label={t('prescription.form.dosage')}
+                        value={{ regimen: regimen ?? [], text: field.value ?? '' }}
+                        context={{ medication, prescriptionToModify, language, standardDosages, standardDosageContext }}
+                        onChange={onPosologyEditorChange}
+                        errorMessage={prescriptionFormErrors['dosage']?.message}
+                        errorMessageId="dosage-error"
+                      />
+                      {prescriptionFormErrors['dosage']?.message && (
+                        <p id="dosage-error" className="error">
+                          {prescriptionFormErrors['dosage']?.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
-                <ul
-                  id={suggestionsId}
-                  className="suggestionsDropdown"
-                  role="listbox"
-                  aria-label={t('prescription.form.posologySuggestions')}
-                  hidden={!suggestionsDisplayed}
-                  onMouseMove={handleMouseMove}
-                >
-                  {posologySuggestions.map((posology, index) => (
-                    <StyledSuggestionItem key={index} role="none" $disableHover={disableHover} $focused={focusedDosageIndex === index} className="StyledSuggestionItem">
-                      <button
-                        id={`posology-${index}`}
-                        type="button"
-                        role="option"
-                        aria-selected={focusedDosageIndex === index}
-                        tabIndex={-1}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          validateSuggestion(posology)
-                        }}
-                      >
-                        {posology}
-                      </button>
-                    </StyledSuggestionItem>
-                  ))}
-                </ul>
-              </StyledDosageInput>
-              {standardDosages.length > 0 && <StandardDosages dosages={standardDosages} language={language} onSelectDosage={onSelectStandardDosage} />}
+              ) : (
+                <>
+                  <StyledDosageInput className="StyledDosageInput">
+                    <TextInput
+                      label={t('prescription.form.dosage')}
+                      id="dosage"
+                      required
+                      autoFocus
+                      role="combobox"
+                      aria-autocomplete="list"
+                      aria-expanded={suggestionsDisplayed}
+                      aria-controls={suggestionsId}
+                      aria-activedescendant={activeSuggestionId}
+                      {...register('dosage', {
+                        required: t('prescription.form.fieldRequired'),
+                      })}
+                      errorMessage={prescriptionFormErrors['dosage']?.message}
+                    />
+                    <ul
+                      id={suggestionsId}
+                      className="suggestionsDropdown"
+                      role="listbox"
+                      aria-label={t('prescription.form.posologySuggestions')}
+                      hidden={!suggestionsDisplayed}
+                      onMouseMove={handleMouseMove}
+                    >
+                      {posologySuggestions.map((posology, index) => (
+                        <StyledSuggestionItem key={index} role="none" $disableHover={disableHover} $focused={focusedDosageIndex === index} className="StyledSuggestionItem">
+                          <button
+                            id={`posology-${index}`}
+                            type="button"
+                            role="option"
+                            aria-selected={focusedDosageIndex === index}
+                            tabIndex={-1}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              validateSuggestion(posology)
+                            }}
+                          >
+                            {posology}
+                          </button>
+                        </StyledSuggestionItem>
+                      ))}
+                    </ul>
+                  </StyledDosageInput>
+                  {standardDosages.length > 0 && <StandardDosages dosages={standardDosages} language={language} onSelectDosage={onSelectStandardDosage} />}
+                </>
+              )}
               <div className="addMedicationForm__body__content__inputsGroup">
                 <TextInput
                   label={t('prescription.form.duration')}

@@ -186,6 +186,10 @@ export const StyledDosageInput = styled.div`
   flex-direction: column;
   align-items: flex-start;
 
+  .posologyEditorSlot {
+    width: 100%;
+  }
+
   .suggestionsDropdown[hidden] {
     display: none;
   }

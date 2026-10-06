@@ -205,6 +205,48 @@ Modal for creating or modifying prescriptions.
 <PrescriptionModal onClose="{onClosePrescriptionModal}" onSubmit="{onSubmitModifyPrescription}" modalMood="modify" prescriptionToModify="{prescriptionToModify}" />
 ```
 
+#### Custom posology editor (`posologyEditor`)
+
+By default the modal offers a free-text posology field with parser suggestions and SAM standard dosages; the text is
+parsed into an FHC regimen at submit time. A host can replace that field with its own editor (a visual posology
+module, for instance) through the optional `posologyEditor` prop, a React component receiving `PosologyEditorProps`:
+
+```tsx
+import type { PosologyEditorProps } from '@icure/cardinal-prescription-be-react'
+
+const MyPosologyEditor = ({ id, label, value, context, onChange, errorMessage, errorMessageId }: PosologyEditorProps) => (
+  <div>
+    <label htmlFor={id}>{label}</label>
+    <input id={id} value={value.text} aria-invalid={!!errorMessage} aria-describedby={errorMessageId}
+      onChange={(e) => onChange({ regimen: value.regimen, text: e.target.value })} />
+    {/* ... build value.regimen (FHC RegimenItem[]) from context.medication, context.standardDosages ... */}
+  </div>
+)
+
+<PrescriptionModal sdk={sam} medicationToPrescribe={medication} modalMood="create" onClose={close} onSubmit={submit}
+  posologyEditor={MyPosologyEditor} />
+```
+
+| Prop | Type | Meaning |
+|---|---|---|
+| `id` | `string` | Id for the editor's main control (`dosage`), so the label and validation target it. |
+| `label` | `string` | Translated field label; the editor renders it. |
+| `value` | `{ regimen: RegimenItem[]; text: string }` | Current posology: the regimen (`@icure/be-fhc-lite-api` `RegimenItem[]`) and text of the prescription being modified, or `{ regimen: [], text: '' }`. |
+| `context.medication` | `MedicationType \| undefined` | The product being prescribed (undefined when modifying a free-text prescription). |
+| `context.prescriptionToModify` | `PrescribedMedicationType \| undefined` | The prescription being modified. |
+| `context.language` | `'fr' \| 'nl' \| 'de' \| 'en'` | Current library language. |
+| `context.standardDosages` | `RegimenItem[]` (`@icure/medication-sdk`) | SAM standard dosages of the product's VMP group, filtered by `standardDosageContext`. |
+| `context.standardDosageContext` | `StandardDosageContext \| undefined` | The patient context passed to the modal. |
+| `onChange` | `(value: PosologyEditorValue) => void` | Call on every change. |
+| `errorMessage` / `errorMessageId` | `string \| undefined` / `string` | The modal's validation message (a posology is required), shown below the editor in the element with `errorMessageId`. |
+
+On submit the modal sends the editor's `text` as `Medication.instructionForPatient` and its `regimen` as
+`Medication.regimen`, **as returned** (the text is not re-parsed; an empty regimen means a text-only posology and is
+sent as no regimen). With a slot, the library's own free-text field, suggestions and standard-dosage panel are not
+rendered: the standard dosages reach the editor through `context`. The editor is rendered inside a wrapper carrying
+`data-cp-slot`, which the library's scoped reset skips, so the host's own styles apply unchanged inside it. Without the
+prop, nothing changes.
+
 ### `<PrescriptionPrintModal />`
 
 Printable PDF view of prescriptions.
@@ -240,7 +282,7 @@ Some properties default to another one (`follows` in the table): `--cp-button-pr
 **No global styles.** No component injects page-wide CSS: the reset the library needs is scoped to its own roots
 (each public component's root element carries the `cp-root` class), with the specificity a global reset would have, so
 the host's focus ring, `body` font and background and list bullets are untouched. Elements a host renders inside a
-library component sit under `data-cp-slot` and are left out of that reset. Each root sets
+library component (the `posologyEditor` slot) sit under `data-cp-slot` and are left out of that reset. Each root sets
 its own text colour and font, so it never inherits the host's.
 
 **Dark mode** is opt-in, so existing hosts see no change: put `data-cp-theme="dark"` on a library root or any ancestor

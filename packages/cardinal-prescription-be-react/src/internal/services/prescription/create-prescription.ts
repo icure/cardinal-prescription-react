@@ -132,6 +132,13 @@ const createRegimenItemsFromDosage = (dosage: string | undefined): RegimenItem[]
   }
 }
 
+/**
+ * A host posology editor's regimen is taken as is (an empty one means "text only"); without an
+ * editor, the regimen is parsed from the free-text posology, as before.
+ */
+const regimenOf = (formValues: PrescriptionFormType): RegimenItem[] | undefined =>
+  formValues.regimen !== undefined ? (formValues.regimen.length > 0 ? formValues.regimen : undefined) : createRegimenItemsFromDosage(formValues.dosage)
+
 const createSinglePrescribedMedication = (prescribedMedication: PrescribedMedicationType, formValues: PrescriptionFormType): PrescribedMedicationType[] => {
   return [
     {
@@ -151,7 +158,7 @@ const createSinglePrescribedMedication = (prescribedMedication: PrescribedMedica
           unit: createFhcCode('CD-TIMEUNIT', 'D'),
           value: getDurationInDays(formValues.durationTimeUnit as durationTimeUnitsEnum, formValues.duration as number),
         }),
-        regimen: createRegimenItemsFromDosage(formValues.dosage),
+        regimen: regimenOf(formValues),
         instructionForPatient: formValues.dosage,
         recipeInstructionForPatient: formValues.recipeInstructionForPatient,
         instructionsForReimbursement: formValues.instructionsForReimbursement,
@@ -204,7 +211,7 @@ const createMedicationForPrescription = (formValues: PrescriptionFormType, medic
       unit: createFhcCode('CD-TIMEUNIT', 'D'),
       value: getDurationInDays(formValues.durationTimeUnit as durationTimeUnitsEnum, formValues.duration as number),
     }),
-    regimen: createRegimenItemsFromDosage(formValues.dosage),
+    regimen: regimenOf(formValues),
     instructionForPatient: formValues.dosage,
     recipeInstructionForPatient: formValues.recipeInstructionForPatient,
     instructionsForReimbursement: formValues.instructionsForReimbursement,
