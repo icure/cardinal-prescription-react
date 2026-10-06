@@ -19,6 +19,7 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.30.0",
     "@playwright/test": "^1.61.1",
     "eslint": "^9.30.0",
@@ -30,5 +31,8 @@
     "prettier": "^3.6.2",
     "typescript-eslint": "^8.35.0"
   },
-  "packageManager": "yarn@4.5.2+sha512.570504f67349ef26d2d86a768dc5ec976ead977aa086b0bb4237e97d5db7ae5c620f9f0e0edf3ea5047205063faff102bf2a2d778664a94eaaa1085ad483fe2e"
+  "packageManager": "yarn@4.5.2+sha512.570504f67349ef26d2d86a768dc5ec976ead977aa086b0bb4237e97d5db7ae5c620f9f0e0edf3ea5047205063faff102bf2a2d778664a94eaaa1085ad483fe2e",
+  "resolutions": {
+    "lodash-es": "^4.18.1"
+  }
 }
